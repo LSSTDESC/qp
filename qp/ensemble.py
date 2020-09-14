@@ -10,14 +10,14 @@ import scipy.interpolate as spi
 import matplotlib.pyplot as plt
 
 import qp
-import utils as u
-from utils import infty as default_infty
-from utils import epsilon as default_eps
-from utils import lims as default_lims
+from . import utils as u
+from .utils import infty as default_infty
+from .utils import epsilon as default_eps
+from .utils import lims as default_lims
 
 class Ensemble(object):
 
-    def __init__(self, N, funcform=None, quantiles=None, histogram=None, gridded=None, samples=None, limits=None, scheme='linear', vb=True, procs=None):# where='ensemble.db', procs=None):#
+    def __init__(self, N, funcform=None, quantiles=None, histogram=None, gridded=None, samples=None, limits=None, scheme='linear', vb=False, procs=None):# where='ensemble.db', procs=None):#
         """
         Creates an object comprised of many qp.PDF objects to efficiently
         perform operations on all of them
@@ -72,10 +72,10 @@ class Ensemble(object):
         print('made the pool of '+str(self.n_procs)+' in '+str(timeit.default_timer() - start_time))
 
         self.n_pdfs = N
-        self.pdf_range = range(N)
+        self.pdf_range = list(range(N))
 
         if funcform is None and quantiles is None and histogram is None and gridded is None and samples is None:
-            print 'Warning: initializing an Ensemble object without inputs'
+            print('Warning: initializing an Ensemble object without inputs')
             return
 
         if limits is None:
@@ -132,7 +132,7 @@ class Ensemble(object):
 
         return
 
-    def sample(self, samps=100, infty=default_infty, using=None, vb=True):
+    def sample(self, samps=100, infty=default_infty, using=None, vb=False):
         """
         Samples the pdf in given representation
 
@@ -168,7 +168,7 @@ class Ensemble(object):
 
         return self.samples
 
-    def quantize(self, quants=None, N=None, limits=None, vb=True):
+    def quantize(self, quants=None, N=None, limits=None, vb=False):
         """
         Computes an array of evenly-spaced quantiles for each PDF
 
@@ -205,7 +205,7 @@ class Ensemble(object):
 
         return self.quantiles
 
-    def histogramize(self, binends=None, N=10, binrange=None, vb=True):
+    def histogramize(self, binends=None, N=10, binrange=None, vb=False):
         """
         Computes integrated histogram bin values for all PDFs
 
@@ -241,7 +241,7 @@ class Ensemble(object):
 
         return self.histogram
 
-    def mix_mod_fit(self, comps=5, using=None, vb=True):
+    def mix_mod_fit(self, comps=5, using=None, vb=False):
         """
         Fits the parameters of a given functional form to an approximation
 
@@ -303,9 +303,9 @@ class Ensemble(object):
             except Exception:
                  print('REAL ERROR: evaluation with '+using+' failed on '+str(i)+' because '+str(sys.exc_info()[0]))
             # return result
-        self.gridded = self.pool.map(evaluate_helper, self.pdf_range)
-        self.gridded = np.swapaxes(np.array(self.gridded), 0, 1)
-        self.gridded = (using, (self.gridded[0][0], self.gridded[1]))
+        self.gridded = self.pool.map(evaluate_helper, self.pdf_range);
+        self.gridded = np.swapaxes(np.array(self.gridded), 0, 1);
+        self.gridded = (using, (self.gridded[0][0], self.gridded[1]));
 
         return self.gridded[-1]
 
@@ -523,7 +523,7 @@ class Ensemble(object):
 
         return rmses
 
-    # def stack(self, loc, using, vb=True):
+    # def stack(self, loc, using, vb=False):
     #     """
     #     Produces an average of the PDFs in the ensemble
     #

@@ -28,7 +28,7 @@ class PDF(object):
     def __init__(self, funcform=None,
                  quantiles=None, histogram=None,
                  gridded=None, samples=None, limits=default_lims, scheme='linear',
-                 vb=True):
+                 vb=False):
         """
         An object representing a probability density function in
         various ways.
@@ -100,7 +100,7 @@ class PDF(object):
             self.first = 'quantiles'
             self.limits = (min(self.limits[0], np.min(self.quantiles[-1])), max(self.limits[-1], np.max(self.quantiles[-1])))
         else:
-            print 'Warning: initializing a PDF object without inputs'
+            print('Warning: initializing a PDF object without inputs')
             return
 
         # The most recent parametrization used is, at this point, the
@@ -111,7 +111,7 @@ class PDF(object):
 
         return
 
-    def evaluate(self, loc, using=None, norm=False, vb=True):
+    def evaluate(self, loc, using=None, norm=False, vb=False):
         """
         Evaluates the PDF (either the true version or the first
         approximation of it if no parametrization is specified)
@@ -146,7 +146,7 @@ class PDF(object):
         if using == 'mix_mod':
             if self.mix_mod is None:
                 self.mix_mod = self.mix_mod_fit(vb=vb)
-            if vb: print 'Evaluating the fitted mixture model distribution.'
+            if vb: print('Evaluating the fitted mixture model distribution.')
             val = self.mix_mod.pdf(loc)
             self.evaluated = (loc, val)
         else:
@@ -160,7 +160,7 @@ class PDF(object):
 
         return gridded
 
-    def integrate(self, limits=None, dx=0.001, using=None, vb=True):
+    def integrate(self, limits=None, dx=0.001, using=None, vb=False):
         """
         Computes the integral under the PDF between the given limits.
 
@@ -192,7 +192,7 @@ class PDF(object):
 
         return integral
 
-    def quantize(self, quants=None, N=9, limits=None, vb=True):
+    def quantize(self, quants=None, N=9, limits=None, vb=False):
         """
         Computes an array of evenly-spaced quantiles from the truth.
 
@@ -311,7 +311,7 @@ class PDF(object):
                     locs = np.array([bisect.bisect_right(icdf[:-1], quantpoints[n]) for n in range(N)])
                     quantiles = self.mixmod.ppf(quantpoints, ivals=grid[locs])
                     assert(not np.any(np.isnan(quantiles)))
-                except Exception, e:
+                except Exception as e:
                     print('ERROR in `scipy.interpolate.InterpolatedUnivariateSpline`')
                 if vb: print('output quantiles = '+str(quantiles))
             else:
@@ -330,7 +330,7 @@ class PDF(object):
         self.last = 'quantiles'
         return self.quantiles
 
-    def histogramize(self, binends=None, N=10, binrange=None, vb=True):
+    def histogramize(self, binends=None, N=10, binrange=None, vb=False):
         """
         Computes integrated histogram bin values from the truth via the CDF.
 
@@ -369,7 +369,7 @@ class PDF(object):
             N = len(binends) - 1
 
         histogram = np.zeros(N)
-        if vb: print 'Calculating histogram: ', binends
+        if vb: print('Calculating histogram: ', binends)
         if self.mixmod is not None:
             cdf = self.mixmod.cdf(binends)
             heights = cdf[1:] - cdf[:-1]
@@ -377,15 +377,15 @@ class PDF(object):
             # for b in range(N):
             #     histogram[b] = (cdf[b+1]-cdf[b])/(binends[b+1]-binends[b])
         else:
-            print 'New histograms can only be computed from a mixmod format in this version.'
+            print('New histograms can only be computed from a mixmod format in this version.')
             return
 
-        if vb: print 'Result: ', histogram
+        if vb: print('Result: ', histogram)
         self.histogram = histogram
         self.last = 'histogram'
         return self.histogram
 
-    def mix_mod_fit(self, n_components=5, using=None, vb=True):
+    def mix_mod_fit(self, n_components=5, using=None, vb=False):
         """
         Fits the parameters of a given functional form to an approximation
 
@@ -408,7 +408,7 @@ class PDF(object):
         Currently only supports mixture of Gaussians
         TO DO: change syntax n_components --> N
         """
-        comp_range = range(n_components)
+        comp_range = list(range(n_components))
         if using == None:
             using = self.first
 
@@ -467,7 +467,7 @@ class PDF(object):
         self.mix_mod = qp.composite(components)
         return self.mix_mod
 
-    def sample(self, N=1000, infty=default_infty, using=None, vb=True):
+    def sample(self, N=1000, infty=default_infty, using=None, vb=False):
         """
         Samples the pdf in given representation
 
@@ -496,7 +496,7 @@ class PDF(object):
         if using is None:
             using = self.first
 
-        if vb: print 'Sampling from '+using+' parametrization.'
+        if vb: print('Sampling from '+using+' parametrization.')
 
         # if using == 'truth':
         #     samples = self.truth.rvs(size=N)
@@ -536,7 +536,7 @@ class PDF(object):
                 weights = self.histogram[1]
 
             ncats = len(weights)
-            cats = range(ncats)
+            cats = list(range(ncats))
             sampbins = [0]*ncats
             for item in range(N):
                 sampbins[qp.utils.choice(cats, weights)] += 1
@@ -545,13 +545,13 @@ class PDF(object):
                 for n in range(sampbins[c]):
                     samples.append(np.random.uniform(low=endpoints[c], high=endpoints[c+1]))
 
-        if vb: print 'Sampled values: ', samples
+        if vb: print('Sampled values: ', samples)
         self.samples = np.array(samples)
         self.limits = (min(self.limits[0], np.min(self.samples)), max(self.limits[-1], np.max(self.samples)))
         self.last = 'samples'
         return self.samples
 
-    def interpolate(self, using=None, vb=True):
+    def interpolate(self, using=None, vb=False):
         """
         Constructs an `interpolator` function based on the parametrization.
 
@@ -581,7 +581,7 @@ class PDF(object):
 
         if using == 'truth' or using == 'mix_mod':
             interpolator = self.mix_mod.pdf
-            print 'A functional form needs no interpolation.  Try converting to an approximate parametrization first.'
+            print('A functional form needs no interpolation.  Try converting to an approximate parametrization first.')
             # return
 
         if using == 'quantiles':
@@ -655,7 +655,7 @@ class PDF(object):
                     yf[in_inds] = inside(xf[in_inds])
                     assert(np.all(yf >= default_eps))
                     if vb:
-                        print 'Created a k=`'+str(order)+'`B-spline interpolator for the '+using+' parametrization.'
+                        print('Created a k=`'+str(order)+'`B-spline interpolator for the '+using+' parametrization.')
                 except AssertionError:
                     print('ERROR: spline interpolation failed with '+str((xf[in_inds], yf[in_inds])))
                     try:
@@ -663,13 +663,13 @@ class PDF(object):
                         yf[in_inds] = alternate(xf[in_inds])
                         assert(np.all(yf >= default_eps))
                         if vb:
-                            print 'Created a linear interpolator for the '+using+' parametrization.'
+                            print('Created a linear interpolator for the '+using+' parametrization.')
                     except AssertionError:
-                        print 'ERROR: linear interpolation failed for the '+using+' parametrization with '+str((xf[in_inds], yf[in_inds]))
+                        print('ERROR: linear interpolation failed for the '+using+' parametrization with '+str((xf[in_inds], yf[in_inds])))
                         backup = qp.utils.make_kludge_interpolator((x, y), threshold=default_eps)
                         yf[in_inds] = backup(xf[in_inds])
                         if vb:
-                            print 'Doing linear interpolation by hand for the '+using+' parametrization.'
+                            print('Doing linear interpolation by hand for the '+using+' parametrization.')
                         assert(np.all(yf >= default_eps))
                 if vb:
                     print('evaluated inside '+str((xf[in_inds], yf[in_inds])))
@@ -725,7 +725,7 @@ class PDF(object):
             interpolator = histogram_interpolator#qp.utils.evaluate_histogram()
 
             if vb:
-                print 'Created a piecewise constant interpolator for the '+using+' parametrization.'
+                print('Created a piecewise constant interpolator for the '+using+' parametrization.')
 
         if using == 'samples':
             # First sample if not already done:
@@ -739,7 +739,7 @@ class PDF(object):
                 return (yf)
             interpolator = samples_interpolator
             if vb:
-                print 'Created a KDE interpolator for the '+using+' parametrization.'
+                print('Created a KDE interpolator for the '+using+' parametrization.')
 
             # (x, y) = qp.evaluate_samples(self.samples)
             # interpolator = spi.interp1d(x, y, kind=self.scheme, bounds_error=False, fill_value=default_eps)
@@ -747,20 +747,20 @@ class PDF(object):
 
         if using == 'gridded':
             if self.gridded is None:
-                print 'Interpolation from a gridded parametrization requires a previous gridded parametrization.'
+                print('Interpolation from a gridded parametrization requires a previous gridded parametrization.')
                 return
             (x, y) = self.gridded
 
             interpolator = spi.interp1d(x, y, kind=self.scheme, bounds_error=False, fill_value=default_eps)
 
             if vb:
-                print 'Created a `'+self.scheme+'` interpolator for the '+using+' parametrization.'
+                print('Created a `'+self.scheme+'` interpolator for the '+using+' parametrization.')
 
         self.interpolator = [interpolator, using]
 
         return self.interpolator
 
-    def approximate(self, points, using=None, scheme=None, vb=True):
+    def approximate(self, points, using=None, scheme=None, vb=False):
         """
         Interpolates the parametrization to get an approximation to the density.
 
@@ -816,7 +816,7 @@ class PDF(object):
 
         return interpolated#(points, interpolated)
 
-    def plot(self, limits=None, loc='plot.pdf', vb=True):
+    def plot(self, limits=None, loc='plot.pdf', vb=False):
         """
         Plots the PDF, in various ways.
 
@@ -864,7 +864,7 @@ class PDF(object):
             y = self.mixmod.pdf(x)
             plt.plot(x, y, color=colors['truth'], linestyle=styles['truth'], lw=5.0, alpha=0.25, label='True PDF')
             if vb:
-                print 'Plotted truth.'
+                print('Plotted truth.')
 
         if self.mix_mod is not None:
             [min_x, max_x] = [self.mix_mod.ppf(np.array([0.001])), self.mix_mod.ppf(np.array([0.999]))]
@@ -874,24 +874,26 @@ class PDF(object):
             y = self.mix_mod.pdf(x)
             plt.plot(x, y, color=colors['mix_mod'], linestyle=styles['mix_mod'], lw=2.0, alpha=1.0, label='Mixture Model PDF')
             if vb:
-                print 'Plotted mixture model.'
+                print('Plotted mixture model.')
 
         if self.quantiles is not None:
             # (z, p) = self.evaluate(self.quantiles[1], using='quantiles', vb=vb)
             # print('first: '+str((z,p)))
             (x, y) = qp.utils.normalize_quantiles(self.quantiles)
-            print('second: '+str((x, y)))
+            if vb:
+                print('second: '+str((x, y)))
             [min_x, max_x] = [min(x), max(x)]
             extrema = [min(extrema[0], min_x), max(extrema[1], max_x)]
             [min_x, max_x] = extrema
             x = np.linspace(min_x, max_x, 100)
-            print('third: '+str(x))
+            if vb:
+                print('third: '+str(x))
             (grid, qinterpolated) = self.approximate(x, vb=vb, using='quantiles')
             plt.scatter(self.quantiles[1], np.zeros(np.shape(self.quantiles[1])), color=colors['quantiles'], marker='|', s=100, label='Quantiles', alpha=0.75)
             # plt.vlines(z, np.zeros(len(self.quantiles[1])), p, color=colors['quantiles'], linestyle=styles['quantiles'], lw=1.0, alpha=1.0, label='Quantiles')
             plt.plot(grid, qinterpolated, color=colors['quantiles'], lw=2.0, alpha=1.0, linestyle=styles['quantiles'], label='Quantile Interpolated PDF')
             if vb:
-                print 'Plotted quantiles.'
+                print('Plotted quantiles.')
 
         if self.histogram is not None:
             [min_x, max_x] = [min(self.histogram[0]), max(self.histogram[0])]
@@ -908,7 +910,7 @@ class PDF(object):
                      label='Histogram Interpolated PDF')
             extrema = [min(extrema[0], min_x), max(extrema[1], max_x)]
             if vb:
-                print 'Plotted histogram.'
+                print('Plotted histogram.')
 
         if self.gridded is not None:
             [min_x, max_x] = [min(self.gridded[0]), max(self.gridded[0])]
@@ -918,7 +920,7 @@ class PDF(object):
             plt.plot(x, y, color=colors['gridded'], lw=1.0, alpha=0.5,
                      linestyle=styles['gridded'], label='Gridded PDF')
             if vb:
-                print 'Plotted gridded.'
+                print('Plotted gridded.')
 
         if self.samples is not None:
             [min_x, max_x] = [min(self.samples), max(self.samples)]
