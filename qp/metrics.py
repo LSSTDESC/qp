@@ -111,7 +111,7 @@ def calculate_kld(p, q, limits=qp.utils.lims, dx=0.01, vb=False):
     # Calculate the KLD from q to p
     Dpq = quick_kld(pn, qn, dx=dx)# np.dot(pn * logquotient, np.ones(len(grid)) * dx)
     if Dpq < 0.:
-        print('broken KLD: '+str((Dpq, pn, qn, dx)))
+        print(('broken KLD: '+str((Dpq, pn, qn, dx))))
         Dpq = qp.utils.epsilon
     return Dpq
 

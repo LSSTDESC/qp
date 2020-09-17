@@ -4,7 +4,7 @@ import scipy.stats as sps
 import scipy.interpolate as spi
 import scipy.optimize as spo
 import sklearn as skl
-from sklearn import mixture
+#from sklearn import mixture
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -23,7 +23,7 @@ from qp.utils import infty as default_infty
 from qp.utils import epsilon as default_eps
 from qp.utils import lims as default_lims
 
-class PDF(object):
+class PDF:
 
     def __init__(self, funcform=None,
                  quantiles=None, histogram=None,
@@ -100,8 +100,7 @@ class PDF(object):
             self.first = 'quantiles'
             self.limits = (min(self.limits[0], np.min(self.quantiles[-1])), max(self.limits[-1], np.max(self.quantiles[-1])))
         else:
-            print('Warning: initializing a PDF object without inputs')
-            return
+            raise ValueError('Warning: initializing a PDF object without inputs')
 
         # The most recent parametrization used is, at this point, the
         # first one:
@@ -109,7 +108,6 @@ class PDF(object):
         self.last = self.first
         # self.klds = {}
 
-        return
 
     def evaluate(self, loc, using=None, norm=False, vb=False):
         """
@@ -146,7 +144,8 @@ class PDF(object):
         if using == 'mix_mod':
             if self.mix_mod is None:
                 self.mix_mod = self.mix_mod_fit(vb=vb)
-            if vb: print('Evaluating the fitted mixture model distribution.')
+            if vb:
+                print('Evaluating the fitted mixture model distribution.')
             val = self.mix_mod.pdf(loc)
             self.evaluated = (loc, val)
         else:
@@ -183,7 +182,7 @@ class PDF(object):
         if limits is None:
             limits = self.limits
             if vb:
-                print('Integrating over '+str(limits)+' because no limits provided')
+                print(('Integrating over '+str(limits)+' because no limits provided'))
         lim_range = limits[-1] - limits[0]
         fine_grid = np.arange(limits[0], limits[-1] + dx, dx)
 
@@ -232,14 +231,14 @@ class PDF(object):
             quantpoints = np.linspace(0.+quantum, 1.-quantum, N)
 
         if vb:
-            print("Calculating "+str(len(quantpoints))+" quantiles: "+str(quantpoints))
+            print(("Calculating "+str(len(quantpoints))+" quantiles: "+str(quantpoints)))
 
         if limits is None:
             limits = self.limits
 
         if self.mixmod is not None:
             if isinstance(self.mixmod, qp.composite):
-                if type(self.scheme) != int:
+                if not isinstance(self.scheme, int):
                     order = 5
                 else:
                     order = self.scheme
@@ -259,7 +258,7 @@ class PDF(object):
                     icdf = np.concatenate((subcdf, icdf))
                     limits = (limits[0] - 1., limits[-1])
                     if vb:
-                        print('lower limits extended '+str(low_extended)+' times')
+                        print(('lower limits extended '+str(low_extended)+' times'))
                 high_extended = 0
                 while icdf[-1] <= quantpoints[-1]:
                     high_extended += 1
@@ -269,7 +268,7 @@ class PDF(object):
                     icdf = np.concatenate((icdf, subcdf))
                     limits = (limits[0], limits[-1] + 1.)
                     if vb:
-                        print('upper_limits extended '+str(high_extended)+' times')
+                        print(('upper_limits extended '+str(high_extended)+' times'))
                 new_deltas = icdf[1:] - icdf[:-1]
                 expanded = 0
                 while np.max(new_deltas) >= min_delta:
@@ -284,7 +283,7 @@ class PDF(object):
                         icdf = np.sort(np.insert(icdf, i, subcdf))
                     new_deltas = icdf[1:] - icdf[:-1]
                 if vb:
-                    print('grid expanded '+str(expanded)+' times')
+                    print(('grid expanded '+str(expanded)+' times'))
                 # locs = np.array([bisect.bisect_right(icdf[:-1], quantpoints[n]) for n in range(N)])
                 i = np.min(np.where(icdf > default_eps**(1./order)))
                 f = np.max(np.where(1.-icdf > default_eps**(1./order)))
@@ -301,31 +300,33 @@ class PDF(object):
                 quantiles = np.flip(quantpoints, axis=0)
                 try:
                     while (order>0) and (not np.array_equal(quantiles, np.sort(quantiles))):
-                        if vb: print('order is '+str(order))
+                        if vb:
+                            print(('order is '+str(order)))
                         b = spi.InterpolatedUnivariateSpline(icdf, grid, k=order, ext=1, check_finite=True)
                         quantiles = b(quantpoints)
                         order -= 1
-                    assert(not np.any(np.isnan(quantiles)))
+                    assert not np.any(np.isnan(quantiles))
                 except AssertionError:
-                    print('ERROR: splines failed because '+str(AssertionError)+', defaulting to optimization for '+str((icdf, grid)))
+                    print(('ERROR: splines failed because '+str(AssertionError)+', defaulting to optimization for '+str((icdf, grid))))
                     locs = np.array([bisect.bisect_right(icdf[:-1], quantpoints[n]) for n in range(N)])
                     quantiles = self.mixmod.ppf(quantpoints, ivals=grid[locs])
-                    assert(not np.any(np.isnan(quantiles)))
+                    assert not np.any(np.isnan(quantiles))
                 except Exception as e:
                     print('ERROR in `scipy.interpolate.InterpolatedUnivariateSpline`')
-                if vb: print('output quantiles = '+str(quantiles))
+                if vb:
+                    print(('output quantiles = '+str(quantiles)))
             else:
                 quantiles = self.mixmod.ppf(quantpoints)
         else:
             print('New quantiles can only be computed from a truth distribution in this version.')
-            return
+            return None
 
         # integrals = self.truth.cdf(quantiles)
         # assert np.isclose(integrals, quantpoints)
-        assert(type(quantiles) is np.ndarray)
+        assert isinstance(quantiles, np.ndarray)
         self.quantiles = (quantpoints, quantiles)
         if vb:
-            print("Resulting "+str(len(quantiles))+" quantiles: "+str(self.quantiles))
+            print(("Resulting "+str(len(quantiles))+" quantiles: "+str(self.quantiles)))
         self.limits = (min(limits[0], np.min(quantiles)), max(limits[-1], np.max(quantiles)))
         self.last = 'quantiles'
         return self.quantiles
@@ -369,7 +370,8 @@ class PDF(object):
             N = len(binends) - 1
 
         histogram = np.zeros(N)
-        if vb: print('Calculating histogram: ', binends)
+        if vb:
+            print('Calculating histogram: ', binends)
         if self.mixmod is not None:
             cdf = self.mixmod.cdf(binends)
             heights = cdf[1:] - cdf[:-1]
@@ -378,9 +380,10 @@ class PDF(object):
             #     histogram[b] = (cdf[b+1]-cdf[b])/(binends[b+1]-binends[b])
         else:
             print('New histograms can only be computed from a mixmod format in this version.')
-            return
+            return None
 
-        if vb: print('Result: ', histogram)
+        if vb:
+            print('Result: ', histogram)
         self.histogram = histogram
         self.last = 'histogram'
         return self.histogram
@@ -409,7 +412,7 @@ class PDF(object):
         TO DO: change syntax n_components --> N
         """
         comp_range = list(range(n_components))
-        if using == None:
+        if using is None:
             using = self.first
 
         if using == 'gridded':
@@ -448,7 +451,7 @@ class PDF(object):
             stdevs = np.sqrt(estimator.covariances_[:, 0, 0])
 
         if vb:
-            print('weights, means, stds = '+str((weights, means, stdevs)))
+            print(('weights, means, stds = '+str((weights, means, stdevs))))
 
         components = []
         for i in comp_range:
@@ -496,7 +499,8 @@ class PDF(object):
         if using is None:
             using = self.first
 
-        if vb: print('Sampling from '+using+' parametrization.')
+        if vb:
+            print('Sampling from '+using+' parametrization.')
 
         # if using == 'truth':
         #     samples = self.truth.rvs(size=N)
@@ -545,7 +549,8 @@ class PDF(object):
                 for n in range(sampbins[c]):
                     samples.append(np.random.uniform(low=endpoints[c], high=endpoints[c+1]))
 
-        if vb: print('Sampled values: ', samples)
+        if vb:
+            print('Sampled values: ', samples)
         self.samples = np.array(samples)
         self.limits = (min(self.limits[0], np.min(self.samples)), max(self.limits[-1], np.max(self.samples)))
         self.last = 'samples'
@@ -589,18 +594,20 @@ class PDF(object):
             if self.quantiles is None:
                 self.quantiles = self.quantize(vb=vb)
 
-            if type(self.scheme) != int:
+            if not isinstance(self.scheme, int):
                 order = min(5, len(self.quantiles[0]))
             else:
                 order = self.scheme
 
-            if vb: print('input quantiles are '+str(self.quantiles[1]))
+            if vb:
+                print(('input quantiles are '+str(self.quantiles[1])))
             # (x, y) = qp.utils.evaluate_quantiles(self.quantiles, vb=vb)
             # if vb: print('evaluated quantile PDF: '+str((x, y)))
             # [x_crit_lo, x_crit_hi] = [x[0], x[-1]]
             # [y_crit_lo, y_crit_hi] = [y[0], y[-1]]
             (x, y) = qp.utils.normalize_quantiles(self.quantiles, vb=vb)
-            if vb: print('complete evaluated quantile PDF: '+str((x, y)))
+            if vb:
+                print(('complete evaluated quantile PDF: '+str((x, y))))
 
             z = np.insert(self.quantiles[1], 0, min(x))
             z = np.append(z, max(x))
@@ -617,18 +624,20 @@ class PDF(object):
 
             try:
                 while (order>0) and ((y_crit_lo <= 0.) or (y_crit_hi <= 0.)):
-                    if vb: print('order is '+str(order))
+                    if vb:
+                        print(('order is '+str(order)))
                     inside = spi.InterpolatedUnivariateSpline(z, q, k=order, ext=1).derivative()
                     [y_crit_lo, y_crit_hi] = inside([x_crit_lo, x_crit_hi])
                     order -= 1
-                assert((y_crit_lo > 0.) and (y_crit_hi > 0.))
+                assert (y_crit_lo > 0.) and (y_crit_hi > 0.)
             except AssertionError:
-                print('ERROR: spline tangents '+str((y_crit_lo, y_crit_hi))+'<0')
-                if type(self.scheme) == str:
+                print(('ERROR: spline tangents '+str((y_crit_lo, y_crit_hi))+'<0'))
+                if isinstance(self.scheme, str):
                     scheme = self.scheme
                 else:
                     scheme = 'linear'
-                if vb: print('defaulting to '+scheme+' interpolation')
+                if vb:
+                    print(('defaulting to '+scheme+' interpolation'))
                 inside_int = spi.interp1d(z, q, kind=scheme, bounds_error=False, fill_value=default_eps)
                 derivative = (q[1:] - q[:-1]) / (z[1:] - z[:-1])
                 derivative = np.insert(derivative, 0, default_eps)
@@ -639,9 +648,9 @@ class PDF(object):
                     for n in range(nx):
                         i = bisect.bisect_left(z, xf[n])
                         yf[n] = derivative[i]
-                    return(yf)
+                    return yf
                 [y_crit_lo, y_crit_hi] = inside([x_crit_lo, x_crit_hi])
-                assert((y_crit_lo > 0.) and (y_crit_hi > 0.))
+                assert (y_crit_lo > 0.) and (y_crit_hi > 0.)
 
             def quantile_interpolator(xf):
                 yf = np.ones(np.shape(xf)) * default_eps
@@ -649,19 +658,19 @@ class PDF(object):
                 lo_inds = ((xf < self.quantiles[1][0]) & (xf >= z[0])).nonzero()[0]
                 hi_inds = ((xf > self.quantiles[1][-1]) & (xf <= z[-1])).nonzero()[0]
                 if vb:
-                    print('divided into '+str((lo_inds, in_inds, hi_inds)))
+                    print(('divided into '+str((lo_inds, in_inds, hi_inds))))
 
                 try:
                     yf[in_inds] = inside(xf[in_inds])
-                    assert(np.all(yf >= default_eps))
+                    assert np.all(yf >= default_eps)
                     if vb:
                         print('Created a k=`'+str(order)+'`B-spline interpolator for the '+using+' parametrization.')
                 except AssertionError:
-                    print('ERROR: spline interpolation failed with '+str((xf[in_inds], yf[in_inds])))
+                    print(('ERROR: spline interpolation failed with '+str((xf[in_inds], yf[in_inds]))))
                     try:
                         alternate = spi.interp1d(x, y, kind='linear', bounds_error=False, fill_value=default_eps)
                         yf[in_inds] = alternate(xf[in_inds])
-                        assert(np.all(yf >= default_eps))
+                        assert np.all(yf >= default_eps)
                         if vb:
                             print('Created a linear interpolator for the '+using+' parametrization.')
                     except AssertionError:
@@ -670,29 +679,29 @@ class PDF(object):
                         yf[in_inds] = backup(xf[in_inds])
                         if vb:
                             print('Doing linear interpolation by hand for the '+using+' parametrization.')
-                        assert(np.all(yf >= default_eps))
+                        assert np.all(yf >= default_eps)
                 if vb:
-                    print('evaluated inside '+str((xf[in_inds], yf[in_inds])))
+                    print(('evaluated inside '+str((xf[in_inds], yf[in_inds]))))
 
                 try:
                     tan_lo = y_crit_lo / (x_crit_lo - z[0])
                     yf[lo_inds] = tan_lo * (xf[lo_inds] - z[0])# yf[in_inds[0]] / (xf[in_inds[0]] - z[0])
-                    assert(np.all(yf >= default_eps))
+                    assert np.all(yf >= default_eps)
                     if vb:
-                        print('evaluated below '+str((xf[lo_inds], yf[lo_inds])))
+                        print(('evaluated below '+str((xf[lo_inds], yf[lo_inds]))))
                 except AssertionError:
-                    print('ERROR: linear extrapolation below failed with '+str((xf[lo_inds], yf[lo_inds]))+' via '+str((tan_lo, x_crit_lo, z[0])))
+                    print(('ERROR: linear extrapolation below failed with '+str((xf[lo_inds], yf[lo_inds]))+' via '+str((tan_lo, x_crit_lo, z[0]))))
 
                 try:
                     tan_hi = y_crit_hi / (z[-1] - x_crit_hi)
                     yf[hi_inds] = tan_hi * (z[-1] - xf[hi_inds])# yf[in_inds[-1]] * (xf[hi_inds] - z[-1]) / (xf[in_inds[-1]] - z[-1])
-                    assert(np.all(yf >= default_eps))
+                    assert np.all(yf >= default_eps)
                     if vb:
-                        print('evaluated above '+str((xf[hi_inds], yf[hi_inds])))
+                        print(('evaluated above '+str((xf[hi_inds], yf[hi_inds]))))
                 except AssertionError:
-                    print('ERROR: linear extrapolation above failed with '+str((xf[hi_inds], yf[hi_inds]))+' via '+str((tan_hi, z[-1], x_crit_hi)))
+                    print(('ERROR: linear extrapolation above failed with '+str((xf[hi_inds], yf[hi_inds]))+' via '+str((tan_hi, z[-1], x_crit_hi))))
 
-                return(yf)
+                return yf
             # if vb:
             #     print(tck)
 
@@ -718,7 +727,7 @@ class PDF(object):
                 for n in range(nx):
                     i = bisect.bisect_left(self.histogram[0], xf[n])
                     yf[n] = extra_y[i]
-                return(yf)
+                return yf
 
             #(x, y) = qp.utils.evaluate_histogram(self.histogram)
 
@@ -736,7 +745,7 @@ class PDF(object):
             def samples_interpolator(xf):
                 kde = sps.gaussian_kde(self.samples)# , bw_method=bandwidth)
                 yf = kde(xf)
-                return (yf)
+                return yf
             interpolator = samples_interpolator
             if vb:
                 print('Created a KDE interpolator for the '+using+' parametrization.')
@@ -748,7 +757,7 @@ class PDF(object):
         if using == 'gridded':
             if self.gridded is None:
                 print('Interpolation from a gridded parametrization requires a previous gridded parametrization.')
-                return
+                return None
             (x, y) = self.gridded
 
             interpolator = spi.interp1d(x, y, kind=self.scheme, bounds_error=False, fill_value=default_eps)
@@ -943,7 +952,6 @@ class PDF(object):
         plt.tight_layout()
         plt.savefig(loc, dpi=250)
 
-        return
 
     # def kld(self, using=None, limits=None, dx=0.01):
     #     """

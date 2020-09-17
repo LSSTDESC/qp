@@ -1,5 +1,4 @@
 import numpy as np
-import scipy as sp
 from scipy import stats as sps
 import sys
 
@@ -26,11 +25,11 @@ def sandwich(in_arr, ends):
     out_arr: numpy.ndarray, float
         array with front and back concatenations
     """
-    if type(ends[0]) == np.ndarray:
+    if isinstance(ends[0], np.ndarray):
         prepend = len(ends[0])
     else:
         prepend = 1
-    if type(ends[-1]) == np.ndarray:
+    if isinstance(ends[-1], np.ndarray):
         append = -1 * len(ends[-1])
     else:
         append = -1
@@ -97,7 +96,7 @@ def normalize_integral(in_data, vb=False):
             my = (y[1:] + y[:-1]) / 2.
             assert np.isclose(np.dot(my, dx), 1.)
         except AssertionError:
-            print('`qp.utils.normalize_integral`: broken integral = '+str((my, dx)))
+            print(('`qp.utils.normalize_integral`: broken integral = '+str((my, dx))))
             assert False
     out_data = (x, y)
     return out_data
@@ -124,7 +123,7 @@ def evaluate_samples(in_data, bw_method=None, vb=False):
     x.sort()
     kde = sps.gaussian_kde(x, bw_method)
     if vb:
-        print('`qp.utils.evaluate_samples` made a KDE with bandwidth = '+str(kde.factor))
+        print(('`qp.utils.evaluate_samples` made a KDE with bandwidth = '+str(kde.factor)))
     y = kde(x)
     out_data = (x, y)
     return out_data
@@ -160,7 +159,7 @@ def evaluate_histogram(in_data, threshold=epsilon, vb=False):
         try:
             assert np.all(ys >= threshold)
         except AssertionError:
-            print('broken self-evaluations in `qp.utils.evaluate_histogram`: '+str((xs, ys)))
+            print(('broken self-evaluations in `qp.utils.evaluate_histogram`: '+str((xs, ys))))
             assert False
     out_data = (xs, ys)
     return out_data
@@ -193,7 +192,7 @@ def normalize_histogram(in_data, threshold=epsilon, vb=False):
         try:
             assert np.isclose(np.dot(y, dx), 1.)
         except AssertionError:
-            print('`qp.utils.normalize_histogram`: broken integral = '+str(np.dot(y, dx)))
+            print(('`qp.utils.normalize_histogram`: broken integral = '+str(np.dot(y, dx))))
             assert False
     out_data = (x, y)
     return out_data
@@ -247,18 +246,19 @@ def evaluate_quantiles(in_data, threshold=epsilon, vb=False):
         try:
             assert np.all(dx > threshold)
         except AssertionError:
-            print('broken quantile locations in `qp.utils.evaluate_quantiles`: '+str(x))
+            print(('broken quantile locations in `qp.utils.evaluate_quantiles`: '+str(x)))
             assert False
     diy = iy[1:] - iy[:-1]
     if vb:
         try:
             assert np.all(diy > threshold)
         except AssertionError:
-            print('broken CDF values in `qp.utils.evaluate_quantiles`: '+str(iy))
+            print(('broken CDF values in `qp.utils.evaluate_quantiles`: '+str(iy)))
             assert False
     y = diy / dx
     (xs, ys) = evaluate_histogram((x, y), threshold=threshold, vb=vb)
-    if vb: print('input shape: '+str((len(x), len(y)))+', output shape: '+str((len(xs), len(ys))))
+    if vb:
+        print(('input shape: '+str((len(x), len(y)))+', output shape: '+str((len(xs), len(ys)))))
     #     try:
     #         assert (np.all(xs > threshold) and np.all(ys > threshold))
     #     except AssertionError:

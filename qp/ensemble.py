@@ -3,19 +3,19 @@ import pathos
 from pathos.multiprocessing import ProcessingPool as Pool
 # import psutil
 import timeit
-import os
+#import os
 import sys
 # import sqlalchemy
-import scipy.interpolate as spi
-import matplotlib.pyplot as plt
+#import scipy.interpolate as spi
+#import matplotlib.pyplot as plt
 
 import qp
-from . import utils as u
+#from . import utils as u
 from .utils import infty as default_infty
-from .utils import epsilon as default_eps
+#from .utils import epsilon as default_eps
 from .utils import lims as default_lims
 
-class Ensemble(object):
+class Ensemble:
 
     def __init__(self, N, funcform=None, quantiles=None, histogram=None, gridded=None, samples=None, limits=None, scheme='linear', vb=False, procs=None):# where='ensemble.db', procs=None):#
         """
@@ -69,7 +69,7 @@ class Ensemble(object):
         else:
             self.n_procs = pathos.helpers.cpu_count()
         self.pool = Pool(self.n_procs)
-        print('made the pool of '+str(self.n_procs)+' in '+str(timeit.default_timer() - start_time))
+        print(('made the pool of '+str(self.n_procs)+' in '+str(timeit.default_timer() - start_time)))
 
         self.n_pdfs = N
         self.pdf_range = list(range(N))
@@ -128,9 +128,8 @@ class Ensemble(object):
 
         start_time = timeit.default_timer()
         self.pdfs = self.pool.map(make_pdfs_helper, self.pdf_range)
-        print('made the catalog in '+str(timeit.default_timer() - start_time))
+        print(('made the catalog in '+str(timeit.default_timer() - start_time)))
 
-        return
 
     def sample(self, samps=100, infty=default_infty, using=None, vb=False):
         """
@@ -162,7 +161,7 @@ class Ensemble(object):
             #     logfile.write('sampling pdf '+str(i)+'\n')
                 return self.pdfs[i].sample(N=samps, infty=infty, using=using, vb=False)
             except Exception:
-                print('ERROR: sampling failed on '+str(i)+' because '+str(sys.exc_info()[0]))
+                print(('ERROR: sampling failed on '+str(i)+' because '+str(sys.exc_info()[0])))
 
         self.samples = self.pool.map(sample_helper, self.pdf_range)
 
@@ -233,7 +232,7 @@ class Ensemble(object):
                 return self.pdfs[i].histogramize(binends=binends, N=N,
                                                 binrange=binrange, vb=False)
             except Exception:
-                print('ERROR: histogramization failed on '+str(i)+' because '+str(sys.exc_info()[0]))
+                print(('ERROR: histogramization failed on '+str(i)+' because '+str(sys.exc_info()[0])))
 
         self.histogram = self.pool.map(histogram_helper, self.pdf_range)
         self.histogram = np.swapaxes(np.array(self.histogram), 0, 1)
@@ -269,7 +268,7 @@ class Ensemble(object):
             #     logfile.write('fitting pdf '+str(i)+'\n')
                 return self.pdfs[i].mix_mod_fit(n_components=comps, using=using, vb=False)
             except Exception:
-                print('ERROR: mixture model fitting failed on '+str(i)+' because '+str(sys.exc_info()[0]))
+                print(('ERROR: mixture model fitting failed on '+str(i)+' because '+str(sys.exc_info()[0])))
 
         self.mix_mod = self.pool.map(mixmod_helper, self.pdf_range)
 
@@ -301,11 +300,11 @@ class Ensemble(object):
             #     logfile.write('evaluating pdf '+str(i)+'\n')
                 return self.pdfs[i].evaluate(loc=loc, using=using, norm=norm, vb=vb)
             except Exception:
-                 print('REAL ERROR: evaluation with '+using+' failed on '+str(i)+' because '+str(sys.exc_info()[0]))
+                print(('REAL ERROR: evaluation with '+using+' failed on '+str(i)+' because '+str(sys.exc_info()[0])))
             # return result
-        self.gridded = self.pool.map(evaluate_helper, self.pdf_range);
-        self.gridded = np.swapaxes(np.array(self.gridded), 0, 1);
-        self.gridded = (using, (self.gridded[0][0], self.gridded[1]));
+        self.gridded = self.pool.map(evaluate_helper, self.pdf_range)
+        self.gridded = np.swapaxes(np.array(self.gridded), 0, 1)
+        self.gridded = (using, (self.gridded[0][0], self.gridded[1]))
 
         return self.gridded[-1]
 
@@ -333,7 +332,7 @@ class Ensemble(object):
             try:
                 return self.pdfs[i].integrate(limits[i], using=using, dx=dx, vb=False)
             except Exception:
-                print('ERROR: integration failed on '+str(i)+' because '+str(sys.exc_info()[0]))
+                print(('ERROR: integration failed on '+str(i)+' because '+str(sys.exc_info()[0])))
 
         integrals = self.pool.map(integrate_helper, self.pdf_range)
 
@@ -367,13 +366,14 @@ class Ensemble(object):
         grid_to_N = grid ** N
 
         if self.gridded[0] == using and np.array_equal(self.gridded[-1][0], grid):
-            if vb: print('taking a shortcut')
+            if vb:
+                print('taking a shortcut')
             def moment_helper(i):
-                return u.quick_moment(self.gridded[-1][-1][i], grid_to_N, dx)
+                return qp.metrics.quick_moment(self.gridded[-1][-1][i], grid_to_N, dx)
         else:
             def moment_helper(i):
                 p_eval = self.pdfs[i].evaluate(grid, using=using, vb=vb)[1]
-                return u.quick_moment(p_eval, grid_to_N, dx)
+                return qp.metrics.quick_moment(p_eval, grid_to_N, dx)
 
         moments = self.pool.map(moment_helper, self.pdf_range)
 
@@ -402,33 +402,33 @@ class Ensemble(object):
         """
         if self.truth is None:
             print('Metrics can only be calculated relative to the truth.')
-            return
-        else:
-            def P_func(pdf):
-                return qp.PDF(truth=pdf.truth, vb=False)
+            return None
+
+        def P_func(pdf):
+            return qp.PDF(truth=pdf.truth, vb=False)
 
         if limits is None:
             limits = self.limits
 
         if using == 'quantiles':
             def Q_func(pdf):
-                assert(pdf.quantiles is not None)
+                assert pdf.quantiles is not None
                 return qp.PDF(quantiles=pdf.quantiles, limits=limits, vb=False)
         elif using == 'histogram':
             def Q_func(pdf):
-                assert(pdf.histogram is not None)
+                assert pdf.histogram is not None
                 return qp.PDF(histogram=pdf.histogram, limits=limits, vb=False)
         elif using == 'samples':
             def Q_func(pdf):
-                assert(pdf.samples is not None)
+                assert pdf.samples is not None
                 return qp.PDF(samples=pdf.samples, limits=limits, vb=False)
         elif using == 'gridded':
             def Q_func(pdf):
-                assert(pdf.gridded is not None)
+                assert pdf.gridded is not None
                 return qp.PDF(gridded=pdf.gridded, limits=limits, vb=False)
         else:
-            print(using + ' not available; try a different parametrization.')
-            return
+            print((using + ' not available; try a different parametrization.'))
+            return None
 
         D = int((limits[-1] - limits[0]) / dx)
         grid = np.linspace(limits[0], limits[1], D)
@@ -436,10 +436,11 @@ class Ensemble(object):
 
         self.klds[using] = np.empty(self.n_pdfs)
         if self.gridded[0] == using and np.array_equal(self.gridded[-1][0], grid):
-            if vb: print('taking a shortcut')
+            if vb:
+                print('taking a shortcut')
             def kld_helper(i):
                 P_eval = P_func(self.pdfs[i]).evaluate(grid, using='truth', vb=vb, norm=True)[-1]
-                KL = u.quick_kl_divergence(P_eval, self.gridded[-1][-1][i], dx=dx)
+                KL = qp.metrics.quick_kld(P_eval, self.gridded[-1][-1][i], dx=dx)
                 self.pdfs[i].klds[using] = KL
                 self.klds[using][i] = KL
                 return KL
@@ -447,7 +448,7 @@ class Ensemble(object):
             def kld_helper(i):
                 P_eval = P_func(self.pdfs[i]).evaluate(grid, using='truth', vb=vb, norm=True)[-1]
                 Q_eval = Q_func(self.pdfs[i]).evaluate(grid, vb=vb, using=using, norm=True)[-1]
-                KL = u.quick_kl_divergence(P_eval, Q_eval, dx=dx)
+                KL = qp.metrics.quick_kld(P_eval, Q_eval, dx=dx)
                 self.pdfs[i].klds[using] = KL
                 self.klds[using][i] = KL
                 return KL
@@ -479,10 +480,10 @@ class Ensemble(object):
         """
         if self.truth is None:
             print('Metrics can only be calculated relative to the truth.')
-            return
-        else:
-            def P_func(pdf):
-                return qp.PDF(truth=pdf.truth, vb=False)
+            return None
+
+        def P_func(pdf):
+            return qp.PDF(truth=pdf.truth, vb=False)
 
         if limits is None:
             limits = self.limits
@@ -500,22 +501,23 @@ class Ensemble(object):
             def Q_func(pdfs):
                 return qp.PDF(quantiles=pdf.gridded, vb=False)
         else:
-            print(using + ' not available; try a different parametrization.')
-            return
+            print((using + ' not available; try a different parametrization.'))
+            return None
 
         D = int((limits[-1] - limits[0]) / dx)
         grid = np.linspace(limits[0], limits[1], D)
         dx = (limits[-1] - limits[0]) / (D - 1)
 
         if self.gridded[0] == using and np.array_equal(self.gridded[-1][0], grid):
-            if vb: print('taking a shortcut')
+            if vb:
+                print('taking a shortcut')
             def rmse_helper(i):
-                return u.quick_rmse(self.gridded[-1][-1][i], grid, dx=dx)
+                return qp.metrics.quick_rmse(self.gridded[-1][-1][i], grid, dx=dx)
         else:
             def rmse_helper(i):
                 P_eval = P_func(self.pdfs[i]).evaluate(grid, norm=True, vb=vb)[-1]
                 Q_eval = Q_func(self.pdfs[i]).evaluate(grid, norm=True, vb=vb)[-1]
-                return u.quick_rmse(P_eval, Q_eval, dx=dx)
+                return qp.metrics.quick_rmse(P_eval, Q_eval, dx=dx)
 
         rmses = self.pool.map(rmse_helper, self.pdf_range)
 

@@ -1,11 +1,11 @@
 import numpy as np
-import scipy as sp
-from scipy import stats as sps
+#import scipy as sp
+#from scipy import stats as sps
 import scipy.optimize as op
 
-import qp
+#import qp
 
-class composite(object):
+class composite:
 
     def __init__(self, components, vb=False):
         """
