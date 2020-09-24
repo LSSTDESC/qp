@@ -4,7 +4,7 @@ import scipy.stats as sps
 import scipy.interpolate as spi
 import scipy.optimize as spo
 import sklearn as skl
-#from sklearn import mixture
+from sklearn import mixture
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -183,7 +183,7 @@ class PDF:
             limits = self.limits
             if vb:
                 print(('Integrating over '+str(limits)+' because no limits provided'))
-        lim_range = limits[-1] - limits[0]
+        #lim_range = limits[-1] - limits[0]
         fine_grid = np.arange(limits[0], limits[-1] + dx, dx)
 
         evaluated = self.evaluate(fine_grid, vb=vb, using=using)
@@ -299,7 +299,7 @@ class PDF:
 
                 quantiles = np.flip(quantpoints, axis=0)
                 try:
-                    while (order>0) and (not np.array_equal(quantiles, np.sort(quantiles))):
+                    while order > 0 and not np.array_equal(quantiles, np.sort(quantiles)):
                         if vb:
                             print(('order is '+str(order)))
                         b = spi.InterpolatedUnivariateSpline(icdf, grid, k=order, ext=1, check_finite=True)
@@ -311,7 +311,7 @@ class PDF:
                     locs = np.array([bisect.bisect_right(icdf[:-1], quantpoints[n]) for n in range(N)])
                     quantiles = self.mixmod.ppf(quantpoints, ivals=grid[locs])
                     assert not np.any(np.isnan(quantiles))
-                except Exception as e:
+                except Exception:
                     print('ERROR in `scipy.interpolate.InterpolatedUnivariateSpline`')
                 if vb:
                     print(('output quantiles = '+str(quantiles)))
@@ -417,7 +417,7 @@ class PDF:
 
         if using == 'gridded':
             if self.gridded is not None:
-                (x, y) = self.gridded
+                (x, _) = self.gridded
                 ival_weights = np.ones(n_components) / n_components
                 ival_means = min(x) + (max(x) - min(x)) * np.arange(n_components) / n_components
                 ival_stdevs = np.sqrt((max(x) - min(x)) * np.ones(n_components) / n_components)
@@ -427,23 +427,23 @@ class PDF:
                     args = np.array(args).reshape((n_components, 3))
                     for c in comp_range:
                         # index = c * n_components
-                        y += args[c][0] *  sps.norm(loc = args[c][1], scale = args[c][2]).pdf(x)
+                        y += args[c][0] *  sps.norm(loc=args[c][1], scale=args[c][2]).pdf(x)
                     return y
                 low_bounds = np.array([np.zeros(n_components), min(x) * np.ones(n_components), np.ones(n_components) * (max(x) - min(x)) / len(x)]).T.flatten()
                 high_bounds = np.array([np.ones(n_components), max(x) * np.ones(n_components), np.ones(n_components) * (max(x) - min(x))]).T.flatten()
-                popt, pcov = spo.curve_fit(gmm, self.gridded[0], self.gridded[1], ivals, bounds = (low_bounds, high_bounds))
+                popt, _ = spo.curve_fit(gmm, self.gridded[0], self.gridded[1], ivals, bounds=(low_bounds, high_bounds))
                 popt = popt.reshape((n_components, 3)).T
                 weights = popt[0]
                 means = popt[1]
                 stdevs = popt[2]
             else:
                 print('No gridded parametrization available.  Try using a different format.')
-                return
+                return None
         else:
             if self.samples is None:
                 self.samples = self.sample(using=using, vb=vb)
 
-            estimator = skl.mixture.GaussianMixture(n_components=n_components)
+            estimator = mixture.GaussianMixture(n_components=n_components)
             estimator.fit(self.samples.reshape(-1, 1))
 
             weights = estimator.weights_
@@ -456,7 +456,7 @@ class PDF:
         components = []
         for i in comp_range:
             mix_mod_dict = {}
-            function = sps.norm(loc = means[i], scale = stdevs[i])
+            function = sps.norm(loc=means[i], scale=stdevs[i])
             coefficient = weights[i]
             mix_mod_dict['function'] = function
             mix_mod_dict['coefficient'] = coefficient
@@ -470,7 +470,8 @@ class PDF:
         self.mix_mod = qp.composite(components)
         return self.mix_mod
 
-    def sample(self, N=1000, infty=default_infty, using=None, vb=False):
+#    def sample(self, N=1000, infty=default_infty, using=None, vb=False):
+    def sample(self, N=1000, using=None, vb=False):
         """
         Samples the pdf in given representation
 
@@ -508,7 +509,7 @@ class PDF:
             samples = self.mix_mod.rvs(size=N)
 
         elif using == 'gridded':
-            interpolator = self.interpolate(using = 'gridded', vb=vb)[0]
+            interpolator = self.interpolate(using='gridded', vb=vb)[0]
             # (xlims, ylims) = self.evaluate(self.limits, using='gridded', vb=vb)
             (xmin, xmax) = (min(self.gridded[0]), max(self.gridded[0]))
             (ymin, ymax) = (min(self.gridded[1]), max(self.gridded[1]))
@@ -542,12 +543,14 @@ class PDF:
             ncats = len(weights)
             cats = list(range(ncats))
             sampbins = [0]*ncats
-            for item in range(N):
-                sampbins[qp.utils.choice(cats, weights)] += 1
+            #for item in range(N):
+            #    sampbins[qp.utils.choice(cats, weights)] += 1
+            sampbins[qp.utils.choice(cats, weights)] += N
             samples = []*N
             for c in cats:
-                for n in range(sampbins[c]):
-                    samples.append(np.random.uniform(low=endpoints[c], high=endpoints[c+1]))
+                #for n in range(sampbins[c]):
+                #    samples.append(np.random.uniform(low=endpoints[c], high=endpoints[c+1]))
+                samples.append(np.random.uniform(low=endpoints[c], high=endpoints[c+1], size=sampbins[c]))
 
         if vb:
             print('Sampled values: ', samples)
@@ -623,7 +626,7 @@ class PDF:
             [y_crit_lo, y_crit_hi] = [-1., -1.]
 
             try:
-                while (order>0) and ((y_crit_lo <= 0.) or (y_crit_hi <= 0.)):
+                while order > 0 and ((y_crit_lo <= 0.) or (y_crit_hi <= 0.)):
                     if vb:
                         print(('order is '+str(order)))
                     inside = spi.InterpolatedUnivariateSpline(z, q, k=order, ext=1).derivative()
@@ -940,8 +943,8 @@ class PDF:
             (grid, sinterpolated) = self.approximate(x, vb=vb,
                                                      using='samples')
             plt.plot(grid, sinterpolated, color=colors['samples'], lw=2.0,
-                        alpha=1.0, linestyle=styles['samples'],
-                        label='Samples Interpolated PDF')
+                     alpha=1.0, linestyle=styles['samples'],
+                     label='Samples Interpolated PDF')
             if vb:
                 print('Plotted samples')
 

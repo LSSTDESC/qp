@@ -1,6 +1,11 @@
+"""Utility functions for the qp package"""
+
 import numpy as np
 from scipy import stats as sps
 import sys
+
+from sklearn import mixture
+
 
 global epsilon
 epsilon = sys.float_info.epsilon
@@ -55,78 +60,9 @@ def safelog(arr, threshold=epsilon):
     logged: numpy.ndarray
         logarithms, with approximation in place of zeros and negative numbers
     """
-    shape = np.shape(arr)
-    flat = arr.flatten()
-    logged = np.log(np.array([max(a, threshold) for a in flat])).reshape(shape)
-    return logged
+    return np.log(arr.clip(threshold, np.inf))
 
-def normalize_integral(in_data, vb=False):
-    """
-    Normalizes integrals of PDF evaluations on a grid
 
-    Parameters
-    ----------
-    in_data: None or tuple, numpy.ndarray, float
-        tuple of points x at which function is evaluated and the PDF y at those
-        points
-    vb: boolean, optional
-        be careful and print progress to stdout?
-
-    Returns
-    -------
-    out_data: tuple, numpy.ndarray, float
-        tuple of ordered input x and normalized y
-    """
-    if in_data is None:
-        return in_data
-    (x, y) = in_data
-    # if vb:
-    a = x.argsort()
-    #     try:
-    #         assert np.array_equal(x[a], x.sort())
-    #     except AssertionError:
-    x.sort()
-    y = y[a]
-    dx = x[1:] - x[:-1]
-    my = (y[1:] + y[:-1]) / 2.
-    norm = np.dot(my, dx)
-    y = y / norm
-    if vb:
-        try:
-            my = (y[1:] + y[:-1]) / 2.
-            assert np.isclose(np.dot(my, dx), 1.)
-        except AssertionError:
-            print(('`qp.utils.normalize_integral`: broken integral = '+str((my, dx))))
-            assert False
-    out_data = (x, y)
-    return out_data
-
-def evaluate_samples(in_data, bw_method=None, vb=False):
-    """
-    Produces PDF values given samples
-
-    Parameters
-    ----------
-    in_data: numpy.ndarray, float
-        samples x from the PDF
-    bw_method: string or scalar or callable function, optional
-        `scipy.stats.gaussian_kde` bandwidth methods: 'scott', 'silverman'
-    vb: boolean, optional
-        be careful and print progress to stdout?
-
-    Returns
-    -------
-    out_data: tuple, float
-        sorted samples x and corresponding PDF values y
-    """
-    x = in_data
-    x.sort()
-    kde = sps.gaussian_kde(x, bw_method)
-    if vb:
-        print(('`qp.utils.evaluate_samples` made a KDE with bandwidth = '+str(kde.factor)))
-    y = kde(x)
-    out_data = (x, y)
-    return out_data
 
 def evaluate_histogram(in_data, threshold=epsilon, vb=False):
     """
@@ -222,111 +158,114 @@ def normalize_gridded(in_data, thresholds=(epsilon, infty)):
     out_data = (x, y)
     return out_data
 
-def evaluate_quantiles(in_data, threshold=epsilon, vb=False):
+
+
+def histogramize_dist(dist, bins, normalize=False):
     """
-    Estimates PDF values given quantile information
+    Extracts a histogram from a distribution
 
     Parameters
     ----------
-    in_data: tuple, numpy.ndarray, float
-        tuple of CDF values iy and values x at which those CDFs are achieved
-    threshold: float, optional
-        optional minimum threshold for CDF difference
-    vb: boolean, optional
-        be careful and print progress to stdout?
+    dist : `scipy.stats.rv_continuous`
+        distribution
+    bins : `np.array'
+        Histogram bin edges
+    normalize : `bool`
+        If true, normalize the histogram
 
     Returns
     -------
-    out_data: tuple, numpy.ndarray, float
-        values xs and corresponding PDF values ys
+    (bins, heights) : the histogram
     """
-    (iy, x) = in_data
-    dx = x[1:] - x[:-1]
-    if vb:
-        try:
-            assert np.all(dx > threshold)
-        except AssertionError:
-            print(('broken quantile locations in `qp.utils.evaluate_quantiles`: '+str(x)))
-            assert False
-    diy = iy[1:] - iy[:-1]
-    if vb:
-        try:
-            assert np.all(diy > threshold)
-        except AssertionError:
-            print(('broken CDF values in `qp.utils.evaluate_quantiles`: '+str(iy)))
-            assert False
-    y = diy / dx
-    (xs, ys) = evaluate_histogram((x, y), threshold=threshold, vb=vb)
-    if vb:
-        print(('input shape: '+str((len(x), len(y)))+', output shape: '+str((len(xs), len(ys)))))
-    #     try:
-    #         assert (np.all(xs > threshold) and np.all(ys > threshold))
-    #     except AssertionError:
-    #         print('broken quantile self-evaluations in `qp.utils.evaluate_quantiles`: '+str((xs, ys)))
-    #         assert False
-    # ys = ys[1:-1]
-    # xs = xs[1:-1]
-    # ys = sandwich(ys, (threshold, threshold))
-    # x_min = xs[0] - 2 * iy[0] / y[0]
-    # x_max = xs[-1] + 2 * iy[-1] / y[-1]
-    # xs = sandwich(xs, (x_min, x_max))
-    out_data = (xs[1:-1], ys[1:-1])
-    return out_data
+    cdf = dist.cdf(bins)
+    heights = cdf[1:] - cdf[:-1]
+    if normalize:
+        return normalize_histogram((bins, heights))
+    return (bins, heights)
 
-def normalize_quantiles(in_data, threshold=epsilon, vb=False):
-    """
-    Evaluates PDF from quantiles including endpoints from linear extrapolation
+
+def integrate_dist(dist, limits):
+    """Integrate a distribution between two limits
 
     Parameters
     ----------
-    in_data: tuple, numpy.ndarray, float
-        tuple of CDF values iy corresponding to quantiles and the points x at
-        which those CDF values are achieved
-    threshold: float, optional
-        optional minimum threshold for PDF
-    vb: boolean, optional
-        be careful and print progress to stdout?
+    dist : `scipy.stats.rv_continuous`
+        distribution
+    limits : (float, flaot) or `None`
+        The limits of integration, if `None` use the limits of support of the distribution
 
     Returns
     -------
-    out_data: tuple, ndarray, float
-        tuple of values x at which CDF is achieved, including extrema, and
-        normalized PDF values y at x
+    integral : float
     """
-    (iy, x) = in_data
-    (xs, ys) = evaluate_quantiles((iy, x), vb=vb)
-    # xs = xs[1:-1]
-    # ys = ys[1:-1]
-    x_min = xs[0] - 2 * iy[0] / ys[0]
-    x_max = xs[-1] + 2 * (1. - iy[-1]) / ys[-1]
-    xs = sandwich(xs, (x_min, x_max))
-    ys = sandwich(ys, (threshold, threshold))
-    out_data = (xs, ys)
-    return out_data
+    if limits is None:
+        limits = dist.get_support()
+    cdf = dist.cdf(limits)
+    return cdf[1] - cdf[0]
 
-def make_kludge_interpolator(in_data, threshold=epsilon):
-    """
-    Linear interpolation by hand for debugging
+
+def approximate_dist(dist, points):
+    """Approximate a distribution by taking values at a set of points
 
     Parameters
     ----------
-    in_data: tuple, numpy.ndarray, float
-        values x and PDF values y at which interpolator is fit
-    threshold: float, optional
-        minimum value to use outside interpolation range
+    dist : `scipy.stats.rv_continuous`
+        distribution
+    points : `np.array`
+        points at which to evaluate the PDF of the distribution
 
     Returns
     -------
-    kludge_interpolator: function
-        evaluates linear interpolant based on input points
+    values : `np.array`
+       The PDF as evaluated at the points requested
     """
-    (x, y) = in_data
-    dx = x[1:] - x[:-1]
-    dy = y[1:] - y[:-1]
-    def kludge_interpolator(xf):
-        yf = np.ones(np.shape(xf)) * threshold
-        for i in range(len(x)):
-            inside = ((xf >= x[i]) & (xf <= x[i+1])).nonzero()[0]
-            yf[inside] = y[i] + (y[i+1] - y[i]) * (xf[inside] - x[i]) / dx[i]
-        return yf
-    return kludge_interpolator
+    points.sort()
+    interpolated = dist.pdf(points)
+    interpolated = normalize_gridded((points, interpolated))
+    return interpolated
+
+
+def mix_mod_fit_dist_grid(grid, n_components):
+    """Fit a set of gridded values to a Gaussian mixture
+
+    Parameters
+    ----------
+    grip : `np.array`
+        Values to fit
+    n_components : `int`
+        Number of components to fit
+
+    Returns
+    -------
+    out_dict : `qp.sum_dist`
+        The fitted output distribution
+    """
+    # FIXME
+    raise NotImplementedError('mix_mod_fit_dist_grid')
+
+
+def mix_mod_fit_dist_samples(samples, n_components):
+    """Fit a set of samples to a Gaussian mixture
+
+    Parameters
+    ----------
+    samples : `np.array`
+        Samples to fit
+    n_components : `int`
+        Number of components to fit
+
+    Returns
+    -------
+    weights, dists : The wieghts and distribtuions.
+    """
+
+
+    estimator = mixture.GaussianMixture(n_components=n_components)
+    estimator.fit(samples)
+
+    weights = estimator.weights_
+    means = estimator.means_[:, 0]
+    stdevs = np.sqrt(estimator.covariances_[:, 0, 0])
+
+    dists = [sps.norm(loc=mean, scale=stdev) for  mean, stdev in zip(means, stdevs)]
+    return weights, dists

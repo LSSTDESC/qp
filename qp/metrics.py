@@ -1,8 +1,11 @@
+"""This module implements some performance metrics for distribution parameterization"""
+
 import numpy as np
 
-import qp
+from qp import utils
 
-def calculate_moment(p, N, using=None, limits=None, dx=0.01, vb=False):
+
+def calculate_moment(p, N, limits=None, dx=0.01):
     """
     Calculates a moment of a qp.PDF object
 
@@ -25,15 +28,13 @@ def calculate_moment(p, N, using=None, limits=None, dx=0.01, vb=False):
         value of the moment
     """
     if limits is None:
-        limits = p.limits
-    if using is None:
-        using = p.first
+        limits = p.get_support()
     # Make a grid from the limits and resolution
     d = int((limits[-1] - limits[0]) / dx)
     grid = np.linspace(limits[0], limits[1], d)
     dx = (limits[-1] - limits[0]) / (d - 1)
     # Evaluate the functions on the grid
-    pe = p.evaluate(grid, using=using, vb=vb)[1]
+    pe = p.pdf(grid)
     # pe = normalize_gridded(pe)[1]
     # calculate the moment
     grid_to_N = grid ** N
@@ -63,7 +64,7 @@ def quick_moment(p_eval, grid_to_N, dx):
     M = np.dot(grid_to_N, p_eval) * dx
     return M
 
-def calculate_kld(p, q, limits=qp.utils.lims, dx=0.01, vb=False):
+def calculate_kld(p, q, limits=utils.lims, dx=0.01):
     """
     Calculates the Kullback-Leibler Divergence between two qp.PDF objects.
 
@@ -95,10 +96,8 @@ def calculate_kld(p, q, limits=qp.utils.lims, dx=0.01, vb=False):
     grid = np.linspace(limits[0], limits[1], N)
     dx = (limits[-1] - limits[0]) / (N - 1)
     # Evaluate the functions on the grid and normalize
-    pe = p.evaluate(grid, vb=vb, norm=True)
-    pn = pe[1]
-    qe = q.evaluate(grid, vb=vb, norm=True)
-    qn = qe[1]
+    pn = p.pdf(grid)
+    qn = q.pdf(grid)
     # Normalize the evaluations, so that the integrals can be done
     # (very approximately!) by simple summation:
     # pn = pe / np.sum(pe)
@@ -111,8 +110,8 @@ def calculate_kld(p, q, limits=qp.utils.lims, dx=0.01, vb=False):
     # Calculate the KLD from q to p
     Dpq = quick_kld(pn, qn, dx=dx)# np.dot(pn * logquotient, np.ones(len(grid)) * dx)
     if Dpq < 0.:
-        print(('broken KLD: '+str((Dpq, pn, qn, dx))))
-        Dpq = qp.utils.epsilon
+        #print(('broken KLD: '+str((Dpq, pn, qn, dx))))
+        Dpq = utils.epsilon
     return Dpq
 
 def quick_kld(p_eval, q_eval, dx=0.01):
@@ -137,14 +136,14 @@ def quick_kld(p_eval, q_eval, dx=0.01):
     -----
     TO DO: change this to quick_kld
     """
-    logquotient = qp.utils.safelog(p_eval) - qp.utils.safelog(q_eval)
+    logquotient = utils.safelog(p_eval) - utils.safelog(q_eval)
     # logp = safelog(pn)
     # logq = safelog(qn)
     # Calculate the KLD from q to p
     Dpq = dx * np.sum(p_eval * logquotient)
     return Dpq
 
-def calculate_rmse(p, q, limits=qp.utils.lims, dx=0.01, vb=False):
+def calculate_rmse(p, q, limits=utils.lims, dx=0.01):
     """
     Calculates the Root Mean Square Error between two qp.PDF objects.
 
@@ -175,8 +174,8 @@ def calculate_rmse(p, q, limits=qp.utils.lims, dx=0.01, vb=False):
     grid = np.linspace(limits[0], limits[1], N)
     dx = (limits[-1] - limits[0]) / (N - 1)
     # Evaluate the functions on the grid
-    pe = p.evaluate(grid, vb=vb)[1]
-    qe = q.evaluate(grid, vb=vb)[1]
+    pe = p.pdf(grid)
+    qe = q.pdf(grid)
     # Calculate the RMS between p and q
     rms = quick_rmse(pe, qe, N)# np.sqrt(dx * np.sum((pe - qe) ** 2))
     return rms
