@@ -12,14 +12,16 @@ from qp.conversion_funcs import extract_quantiles
 from qp.plotting import get_axes_and_xlims, plot_pdf_quantiles_on_axes
 from qp.utils import evaluate_hist_multi_x_multi_y, evaluate_unfactored_hist_multi_x_multi_y,\
      interpolate_unfactored_multi_x_y, interpolate_unfactored_x_multi_y,\
-     interpolate_multi_x_y, interpolate_x_multi_y, reshape_to_pdf_size
+     interpolate_multi_x_y, interpolate_x_multi_y,\
+     interpolate_unfactored_multi_x_multi_y, interpolate_multi_x_multi_y,\
+     reshape_to_pdf_size
 from qp.test_data import QUANTS, QLOCS, TEST_XVALS
 from qp.factory import add_class
 
 
 epsilon = sys.float_info.epsilon
 
-def pad_quantiles(quants, locs):#, bounds=(np.isnan, np.isnan))):
+def pad_quantiles(quants, locs):
     """Pad the quantiles and locations used to build a quantile representation
 
     Paramters
@@ -28,9 +30,6 @@ def pad_quantiles(quants, locs):#, bounds=(np.isnan, np.isnan))):
         The quantiles used to build the CDF, 0. <= q_i <= 1.
     locs : array_like
         The locations at which those quantiles are reached
-    bounds : tuple, optional
-        Physical limits on locs, if known.
-        e.g. for cosmological redshifts, we do not expect z < 0.
 
     Returns
     -------
@@ -60,13 +59,12 @@ def pad_quantiles(quants, locs):#, bounds=(np.isnan, np.isnan))):
     quants_out[offset_lo:n_vals+offset_lo] = quants
     locs_out[:,offset_lo:n_vals+offset_lo] = locs
     if pad_lo:
-        delta = -1. * (ratio * quants[0] - locs[:, 0])
-        locs_out[:, 0] = locs[:, 0] - delta[:, ]
-
+        delta = locs[:, 0] - ratio * quants[0]
+        locs_out[:, 0] = locs[:, 0] + delta
     if pad_hi:
         quants_out[-1] = 1.
         delta = ratio * (1. - quants[-1]) + locs[:, -1]
-        locs_out[:, -1] = locs[:, -1] + delta[:, ]
+        locs_out[:, -1] = locs[:, -1] + delta
     return quants_out, locs_out
 
 
@@ -121,8 +119,12 @@ class quant_gen(Pdf_rows_gen):
 
 
     def _compute_valatloc(self):
-        self._valatloc = (self._quants[1:] - self._quants[0:-1])/(self._locs[:,1:] - self._locs[:,0:-1])
-
+        # self._valatloc = np.zeros_like(self._locs)
+        # self._valatloc[:, 0] = self.quants[1] /
+        # print(np.shape(self._valatloc))
+        # print(np.shape(self._quants[1:] - self._quants[:-1]))
+        # print(np.shape(self._locs[:, 2:] - self._locs[:, 1:-1]))
+        self._valatloc = (self._quants[1:] - self._quants[:-1]) / (self._locs[:, 1:] - self._locs[:, :-1])
 
     @property
     def quants(self):
@@ -139,9 +141,11 @@ class quant_gen(Pdf_rows_gen):
         if self._valatloc is None:  # pragma: no cover
             self._compute_valatloc()
         factored, xr, rr, _ = self._sliceargs(x, row)
+        midlocs = (self._locs[:, 1:] + self._locs[:, :-1]) / 2.
+        # must run through normalize_interp1d(xvals, yvals)
         if factored:
-            return evaluate_hist_multi_x_multi_y(xr, rr, self._locs, self._valatloc)
-        return evaluate_unfactored_hist_multi_x_multi_y(xr, rr, self._locs, self._valatloc)
+            return interpolate_multi_x_multi_y(xr, midlocs[rr], self._valatloc[rr], kind='linear', bounds_error=False, fill_value=sys.float_info.epsilon)
+        return interpolate_unfactored_multi_x_multi_y(xr, rr, midlocs, self._valatloc, kind='linear', bounds_error=False, fill_value=sys.float_info.epsilon)
 
 
     def _cdf(self, x, row):
