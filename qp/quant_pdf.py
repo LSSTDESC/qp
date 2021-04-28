@@ -119,10 +119,21 @@ class quant_gen(Pdf_rows_gen):
 
 
     def _compute_valatloc(self):
-        # self._valatloc = np.zeros_like(self._locs)
-        ybar = (self._quants[1:] - self._quants[0:-1]) / (self._locs[:, 1:] - self._locs[:, :-1])
-        # self._valatloc[:, 1:-1] = (ybar[:, 1:] + ybar[:, :-1]) / 2.
-        self._valatloc = ybar
+        self._valatloc = np.zeros_like(self._locs)
+        dq = self._quants[1:] - self._quants[:-1]
+        dx = self._locs[:, 1:] - self._locs[:, :-1]
+        ybar = dq / dx
+        # print(ybar)
+        # print((dq, ybar * dx))
+        # self._valatloc[:, 1] =
+        # print(dq[0] / dx[:, 0] / 2.)
+        # # self._valatloc[:, -2] =
+        # print(dq[-1] / dx[:, -1] / 2.)
+        self._valatloc[:, 1:-1] = (ybar[:, 1:] + ybar[:, :-1]) / 2.#dq / dx / 2.
+        # dy = self._valatloc[:, 1:] - self._valatloc[:, :-1]
+        # print((dq, dy * dx))
+        # self._valatloc = ybar
+
 
     @property
     def quants(self):
@@ -140,7 +151,7 @@ class quant_gen(Pdf_rows_gen):
             self._compute_valatloc()
         factored, xr, rr, _ = self._sliceargs(x, row)
         # Note: if kind != 'linear', would need to run through
-        midlocs = (self.locs[:, 1:] + self.locs[:, :-1]) / 2.# self._valatloc
+        midlocs = self._locs#(self.locs[:, 1:] + self.locs[:, :-1]) / 2.
          # normalize_interp1d(xvals, yvals)
         if factored:
             return interpolate_multi_x_multi_y(xr, midlocs[rr], self._valatloc[rr], kind='linear', bounds_error=False, fill_value=sys.float_info.epsilon)
