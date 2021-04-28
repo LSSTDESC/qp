@@ -2,6 +2,27 @@
 
 import numpy as np
 
+class SingleMetrics(object):
+    """
+    class of metrics of a single ensemble
+    """
+    def __init__(self, pdfs):
+        pass
+
+class PairMetrics(object):
+    """
+    class of metrics of an ensemble and a reference ensemble
+    """
+    def __init__(self, pdfs, refpdfs):
+        pass
+
+class SummaryStats(SingleMetric):
+    """
+    class of metrics
+    """
+    def __init__(self, pdfs):
+        pass
+
 from qp.utils import safelog, epsilon
 
 def calculate_moment(p, N, limits, dx=0.01):
