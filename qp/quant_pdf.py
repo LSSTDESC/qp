@@ -119,9 +119,10 @@ class quant_gen(Pdf_rows_gen):
 
 
     def _compute_valatloc(self):
-        self._valatloc = np.zeros_like(self._locs)
+        # self._valatloc = np.zeros_like(self._locs)
         ybar = (self._quants[1:] - self._quants[0:-1]) / (self._locs[:, 1:] - self._locs[:, :-1])
-        self._valatloc[:, 1:-1] = (ybar[:, 1:] + ybar[:, :-1]) / 2.
+        # self._valatloc[:, 1:-1] = (ybar[:, 1:] + ybar[:, :-1]) / 2.
+        self._valatloc = ybar
 
     @property
     def quants(self):
@@ -138,10 +139,12 @@ class quant_gen(Pdf_rows_gen):
         if self._valatloc is None:  # pragma: no cover
             self._compute_valatloc()
         factored, xr, rr, _ = self._sliceargs(x, row)
-        # Note: if kind != 'linear', would need to run through normalize_interp1d(xvals, yvals)
+        # Note: if kind != 'linear', would need to run through
+        midlocs = (self.locs[:, 1:] + self.locs[:, :-1]) / 2.# self._valatloc
+         # normalize_interp1d(xvals, yvals)
         if factored:
-            return interpolate_multi_x_multi_y(xr, self._locs[rr], self._valatloc[rr], kind='linear', bounds_error=False, fill_value=sys.float_info.epsilon)
-        return interpolate_unfactored_multi_x_multi_y(xr, rr, self._locs, self._valatloc, kind='linear', bounds_error=False, fill_value=sys.float_info.epsilon)
+            return interpolate_multi_x_multi_y(xr, midlocs[rr], self._valatloc[rr], kind='linear', bounds_error=False, fill_value=sys.float_info.epsilon)
+        return interpolate_unfactored_multi_x_multi_y(xr, rr, midlocs, self._valatloc, kind='linear', bounds_error=False, fill_value=sys.float_info.epsilon)
 
 
     def _cdf(self, x, row):
