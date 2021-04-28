@@ -19,15 +19,18 @@ from qp.factory import add_class
 
 epsilon = sys.float_info.epsilon
 
-def pad_quantiles(quants, locs):
+def pad_quantiles(quants, locs):#, bounds=(np.isnan, np.isnan))):
     """Pad the quantiles and locations used to build a quantile representation
 
     Paramters
     ---------
     quants : array_like
-        The quantiles used to build the CDF
+        The quantiles used to build the CDF, 0. <= q_i <= 1.
     locs : array_like
         The locations at which those quantiles are reached
+    bounds : tuple, optional
+        Physical limits on locs, if known.
+        e.g. for cosmological redshifts, we do not expect z < 0.
 
     Returns
     -------
@@ -44,23 +47,26 @@ def pad_quantiles(quants, locs):
     else:
         offset_lo = 0
         pad_lo = False
-    if quants[-1] < 1.:
+    if quants[-1] < 1. - sys.float_info.epsilon:
         pad_hi = True
         n_out += 1
     else:
         pad_hi = False
     if n_out == n_vals:
         return quants, locs
+    ratio = (locs[:, -1] - locs[:, 0]) / (quants[-1] - quants[0])
     quants_out = np.zeros((n_out), quants.dtype)
     locs_out = np.zeros((locs.shape[0], n_out), quants.dtype)
     quants_out[offset_lo:n_vals+offset_lo] = quants
     locs_out[:,offset_lo:n_vals+offset_lo] = locs
     if pad_lo:
-        locs_out[:, 0] = locs[:, 0] - 0.1
+        delta = -1. * (ratio * quants[0] - locs[:, 0])
+        locs_out[:, 0] = locs[:, 0] - delta[:, ]
 
     if pad_hi:
         quants_out[-1] = 1.
-        locs_out[:,-1] = locs[:, -1] + 0.1
+        delta = ratio * (1. - quants[-1]) + locs[:, -1]
+        locs_out[:, -1] = locs[:, -1] + delta[:, ]
     return quants_out, locs_out
 
 
