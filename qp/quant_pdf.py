@@ -54,8 +54,8 @@ def pad_quantiles(quants, locs):
     if n_out == n_vals:
         return quants, locs
     ratio = (locs[:, -1] - locs[:, 0]) / (quants[-1] - quants[0])
-    quants_out = np.zeros((n_out), quants.dtype)
-    locs_out = np.zeros((locs.shape[0], n_out), quants.dtype)
+    quants_out = np.ones((n_out), quants.dtype) * sys.float_info.epsilon
+    locs_out = np.ones((locs.shape[0], n_out), quants.dtype) * sys.float_info.epsilon
     quants_out[offset_lo:n_vals+offset_lo] = quants
     locs_out[:,offset_lo:n_vals+offset_lo] = locs
     if pad_lo:
