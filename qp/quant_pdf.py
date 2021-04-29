@@ -122,17 +122,8 @@ class quant_gen(Pdf_rows_gen):
         self._valatloc = np.zeros_like(self._locs)
         dq = self._quants[1:] - self._quants[:-1]
         dx = self._locs[:, 1:] - self._locs[:, :-1]
-        ybar = dq / dx
-        # print(ybar)
-        # print((dq, ybar * dx))
-        # self._valatloc[:, 1] =
-        # print(dq[0] / dx[:, 0] / 2.)
-        # # self._valatloc[:, -2] =
-        # print(dq[-1] / dx[:, -1] / 2.)
-        self._valatloc[:, 1:-1] = (ybar[:, 1:] + ybar[:, :-1]) / 2.#dq / dx / 2.
-        # dy = self._valatloc[:, 1:] - self._valatloc[:, :-1]
-        # print((dq, dy * dx))
-        # self._valatloc = ybar
+        for i in range(self._nquants - 1):
+            self._valatloc[:, i+1] = 2. * dq[i] / dx[:, i] - self._valatloc[:, i]
 
 
     @property
