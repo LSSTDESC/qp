@@ -166,7 +166,7 @@ def evaluate_hist_x_multi_y(x, row, bins, vals):
     bins : array_like (N)
         X-values used for the interpolation
     vals : array_like (N, M)
-        Y-avlues used for the interpolation
+        Y-values used for the interpolation
 
     Returns
     -------
@@ -191,7 +191,7 @@ def evaluate_unfactored_hist_x_multi_y(x, row, bins, vals):
     bins : array_like (N)
         X-values used for the interpolation
     vals : array_like (N, M)
-        Y-avlues used for the interpolation
+        Y-values used for the interpolation
 
     Returns
     -------
@@ -217,8 +217,8 @@ def evaluate_hist_multi_x_multi_y(x, row, bins, vals):
         Which rows to interpolate at
     bins : array_like (N, M)
         X-values used for the interpolation
-    vals : array_like (N, M)
-        Y-avlues used for the interpolation
+    vals : array_like (N*M)
+        flattened Y-values used for the interpolation
 
     Returns
     -------
@@ -246,7 +246,7 @@ def evaluate_unfactored_hist_multi_x_multi_y(x, row, bins, vals):
     bins : array_like (N, M)
         X-values used for the interpolation
     vals : array_like (N, M)
-        Y-avlues used for the interpolation
+        Y-values used for the interpolation
 
     Returns
     -------
@@ -274,7 +274,7 @@ def interpolate_unfactored_x_multi_y(x, row, xvals, yvals, **kwargs):
     xvals : array_like (N)
         X-values used for the interpolation
     yvals : array_like (N, M)
-        Y-avlues used for the interpolation
+        Y-values used for the interpolation
 
     Returns
     -------
@@ -299,7 +299,7 @@ def interpolate_unfactored_multi_x_y(x, row, xvals, yvals, **kwargs):
     xvals : array_like (N, M)
         X-values used for the interpolation
     yvals : array_like (N)
-        Y-avlues used for the interpolation
+        Y-values used for the interpolation
 
     Returns
     -------
@@ -326,7 +326,7 @@ def interpolate_unfactored_multi_x_multi_y(x, row, xvals, yvals, **kwargs):
     xvals : array_like (N, M)
         X-values used for the interpolation
     yvals : array_like (N, M)
-        Y-avlues used for the interpolation
+        Y-values used for the interpolation
 
     Returns
     -------
@@ -351,8 +351,8 @@ def interpolate_multi_x_multi_y(x, xvals, yvals, **kwargs):
         X values to interpolate at:
     xvals : array_like (M, N)
         X-values used for the interpolation
-    yvals : array_like (M, N)
-        Y-avlues used for the interpolation
+    yvals : array_like (M*N)
+        flattened Y-values used for the interpolation
 
     Returns
     -------
@@ -364,7 +364,7 @@ def interpolate_multi_x_multi_y(x, xvals, yvals, **kwargs):
     def single_row(xy_vals_):
         return interp1d(xy_vals_[0:nx], xy_vals_[nx:], **kwargs)(x)
     vv = np.vectorize(single_row, signature="(%i)->(%i)" % (xvals.shape[-1]+yvals.shape[-1], x.size))
-    return vv(xy_vals)
+    return vv(xy_vals).flatten()
 
 
 def interpolate_x_multi_y(x, xvals, yvals, **kwargs):
@@ -378,7 +378,7 @@ def interpolate_x_multi_y(x, xvals, yvals, **kwargs):
     xvals : array_like (N)
         X-values used for the interpolation
     yvals : array_like (M, N)
-        Y-avlues used for the interpolation
+        Y-values used for the interpolation
 
     Returns
     -------
@@ -400,7 +400,7 @@ def interpolate_multi_x_y(x, xvals, yvals, **kwargs):
     xvals : array_like (M, N)
         X-values used for the interpolation
     yvals : array_like (N)
-        Y-avlues used for the interpolation
+        Y-values used for the interpolation
 
     Returns
     -------
