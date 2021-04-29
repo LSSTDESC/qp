@@ -362,7 +362,6 @@ def interpolate_multi_x_multi_y(x, xvals, yvals, **kwargs):
     xy_vals = np.hstack([xvals, yvals])
     nx = xvals.shape[-1]
     def single_row(xy_vals_):
-        print(xy_vals_[0:nx].shape,xy_vals_[nx:].shape)
         return interp1d(xy_vals_[0:nx], xy_vals_[nx:], **kwargs)(x)
     vv = np.vectorize(single_row, signature="(%i)->(%i)" % (xvals.shape[-1]+yvals.shape[-1], x.size))
     return  vv(xy_vals).flatten()
