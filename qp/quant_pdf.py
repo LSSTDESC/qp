@@ -39,14 +39,14 @@ def pad_quantiles(quants, locs):
         The locations at which those quantiles are reached
     """
     n_out = n_vals = quants.size
-    if quants[0] > sys.float_info.epsilon:
+    if quants[0] > epsilon:
         offset_lo = 1
         pad_lo = True
         n_out += 1
     else:
         offset_lo = 0
         pad_lo = False
-    if quants[-1] < 1. - sys.float_info.epsilon:
+    if quants[-1] < 1. - epsilon:
         pad_hi = True
         n_out += 1
     else:
@@ -54,8 +54,8 @@ def pad_quantiles(quants, locs):
     if n_out == n_vals:
         return quants, locs
     ratio = (locs[:, -1] - locs[:, 0]) / (quants[-1] - quants[0])
-    quants_out = np.ones((n_out), quants.dtype) * sys.float_info.epsilon
-    locs_out = np.ones((locs.shape[0], n_out), quants.dtype) * sys.float_info.epsilon
+    quants_out = np.ones((n_out), quants.dtype) * epsilon
+    locs_out = np.ones((locs.shape[0], n_out), quants.dtype) * epsilon
     quants_out[offset_lo:n_vals+offset_lo] = quants
     locs_out[:,offset_lo:n_vals+offset_lo] = locs
     if pad_lo:
@@ -113,6 +113,8 @@ class quant_gen(Pdf_rows_gen):
         if locs_2d.shape[-1] != self._nquants:  # pragma: no cover
             raise ValueError("Number of locations (%i) != number of quantile values (%i)" % (self._nquants, locs_2d.shape[-1]))
         self._locs = locs_2d
+        kwargs['a'] = self.a = np.min(self._locs)
+        kwargs['b'] = self.b = np.max(self._locs)
         self._valatloc = None
         self._addmetadata('quants', self._quants)
         self._addobjdata('locs', self._locs)
@@ -122,7 +124,7 @@ class quant_gen(Pdf_rows_gen):
         """
         Calculates y-values knowing quantiles are area defined by adgacent (x, y) pairs and y=0
         """
-        self._valatloc = np.ones_like(self._locs) * sys.float_info.epsilon
+        self._valatloc = np.ones_like(self._locs) * epsilon
         dq = self._quants[1:] - self._quants[:-1]
         dx = self._locs[:, 1:] - self._locs[:, :-1]
         for i in range(self._nquants - 1):
@@ -146,16 +148,16 @@ class quant_gen(Pdf_rows_gen):
         factored, xr, rr, _ = self._sliceargs(x, row)
         # Note: if kind != 'linear', would need to run through normalize_interp1d(xvals, yvals)
         if factored:
-            return interpolate_multi_x_multi_y(xr, self._locs[rr], self._valatloc[rr], kind='linear', bounds_error=False, fill_value=sys.float_info.epsilon)
-        return interpolate_unfactored_multi_x_multi_y(xr, rr, self._locs, self._valatloc, kind='linear', bounds_error=False, fill_value=sys.float_info.epsilon)
+            return interpolate_multi_x_multi_y(xr, self._locs[rr], self._valatloc[rr], kind='linear', bounds_error=False, fill_value=epsilon)
+        return interpolate_unfactored_multi_x_multi_y(xr, rr, self._locs, self._valatloc, kind='linear', bounds_error=False, fill_value=epsilon)
 
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
         factored, xr, rr, _ = self._sliceargs(x, row)
         if factored:
-            return interpolate_multi_x_y(xr, self._locs[rr], self._quants, bounds_error=False, fill_value=(0., 1)).reshape(x.shape)
-        return interpolate_unfactored_multi_x_y(xr, rr, self._locs, self._quants, bounds_error=False, fill_value=(0., 1))
+            return interpolate_multi_x_y(xr, self._locs[rr], self._quants, bounds_error=False, fill_value=(epsilon, 1. - epsilon), kind='linear').reshape(x.shape)
+        return interpolate_unfactored_multi_x_y(xr, rr, self._locs, self._quants, bounds_error=False, fill_value=(epsilon, 1. - epsilon), kind='linear')
 
     def _ppf(self, x, row):
         # pylint: disable=arguments-differ
