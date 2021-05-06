@@ -54,17 +54,22 @@ def pad_quantiles(quants, locs):
     if n_out == n_vals:
         return quants, locs
     ratio = (locs[:, -1] - locs[:, 0]) / (quants[-1] - quants[0])
-    quants_out = np.ones((n_out), quants.dtype) * epsilon
-    locs_out = np.ones((locs.shape[0], n_out), quants.dtype) * epsilon
+    quants_out = np.empty((n_out), quants.dtype)# * epsilon
+    locs_out = np.empty((locs.shape[0], n_out), quants.dtype)# * epsilon
     quants_out[offset_lo:n_vals+offset_lo] = quants
     locs_out[:,offset_lo:n_vals+offset_lo] = locs
     if pad_lo:
+        quants_out[0] = epsilon
         delta = locs[:, 0] - ratio * quants[0]
         locs_out[:, 0] = locs[:, 0] + delta
+        # ratio = (locs[:, 1] - locs[:, 0]) / (quants[1] - quants[0])
+        # locs_out[:, 0] = locs[:, 0] - quants[0] * ratio
     if pad_hi:
-        quants_out[-1] = 1.
+        quants_out[-1] = 1. - epsilon
         delta = ratio * (1. - quants[-1]) + locs[:, -1]
         locs_out[:, -1] = locs[:, -1] + delta
+        # ratio = (locs[:, -1] - locs[:, -2]) / (quants[-1] - quants[-2])
+        # locs_out[:, -1] = locs[:, -1] + (1. - quants[-1]) * ratio
     return quants_out, locs_out
 
 
@@ -129,6 +134,8 @@ class quant_gen(Pdf_rows_gen):
         dx = self._locs[:, 1:] - self._locs[:, :-1]
         for i in range(self._nquants - 1):
             self._valatloc[:, i+1] = 2. * dq[i] / dx[:, i] - self._valatloc[:, i]
+        # ybar = np.diff(self._quants) / np.diff(self._locs, axis=1)
+        # self._valatloc[:, 1:-1] = (ybar[:, 1:] + ybar[:, :-1]) / 2.
 
 
     @property
