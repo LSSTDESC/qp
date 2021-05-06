@@ -174,7 +174,7 @@ def plot_pdf_quantiles_on_axes(axes, xvals, yvals, quantiles, **kwargs):
     axes : The axes the data are plotted on
     """
     kwargs.setdefault('label', 'Quantiles')
-    axes.scatter(quantiles[1], np.zeros(np.shape(quantiles[1])), color=COLORS['quantiles'], marker='|', s=100, alpha=0.75, **kwargs)
+    axes.scatter(quantiles[1][1:-1], np.zeros(np.shape(quantiles[1]))[1:-1], color=COLORS['quantiles'], marker='|', s=100, alpha=0.75, **kwargs)
     kwargs.setdefault('label', 'Quantile Interpolated PDF')
     axes.plot(xvals, yvals, color=COLORS['quantiles'], lw=2.0, alpha=1.0, linestyle=STYLES['quantiles'], **kwargs)
     return axes
