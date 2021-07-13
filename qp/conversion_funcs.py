@@ -287,11 +287,11 @@ def extract_voigt_xy_sparse(in_dist, **kwargs): #pragma: no cover
     """
 
     yvals = in_dist.objdata()['yvals']
-    
+
     default = in_dist.metadata()['xvals'][0]
     z = kwargs.pop('xvals', default)
     nz = kwargs.pop('nz', 300)
-    
+
     minz = np.min(z)
     _, j = np.where(yvals > 0)
     maxz = np.max(z[j])
@@ -318,7 +318,7 @@ def extract_sparse_from_xy(in_dist, **kwargs): #pragma: no cover
     sparse_indices, metadata, _ = build_sparse_representation(newx, newpdf)
     metadata['xvals'] = newx
     metadata['sparse_indices'] = sparse_indices
-    metadata.pop('Ntot')    
+    metadata.pop('Ntot')
     return metadata
 
 def extract_xy_sparse(in_dist, **kwargs): #pragma: no cover
