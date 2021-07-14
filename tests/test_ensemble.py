@@ -102,10 +102,8 @@ class EnsembleTestCase(unittest.TestCase):
 
         pdf_cat = ens_cat.pdf(xpts)
 
-        import pdb
-        pdb.set_trace()
-
         modes = np.array([xpts[idx] for idx in np.squeeze(np.argmax(pdf_cat, axis=1))])
+
         ens_cat.set_ancil({"mode":modes})                        
         pdf_app = ens.pdf(xpts)
 
@@ -115,7 +113,7 @@ class EnsembleTestCase(unittest.TestCase):
 
         assert_all_close(pdf_cat, pdf_app, atol=5e-8, test_name="merge_1")
         assert_all_close(pdf_orig, pdf_check, atol=5e-8, test_name="merge_2")
-        assert_all_close(ens_cat.ancil[mask], ens_check, atol=5e-8, test_name="mode")
+        assert_all_close(ens_cat.ancil['mode'][mask], modes[mask], atol=5e-8, test_name="mode")
         
         
     def test_norm(self):
