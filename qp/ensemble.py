@@ -264,7 +264,7 @@ class Ensemble:
             full_ancil = concatenate_dicts([self.ancil, other_ens.ancil])
         else:
             full_ancil = None
-        self.update(full_objdata, full_ancil)
+        self.update_objdata(full_objdata, full_ancil)
 
 
     def build_tables(self):

@@ -197,7 +197,7 @@ class Factory(OrderedDict):
             cl.print_method_maps(stream)
 
     @staticmethod
-    def concatanate(ensembles):
+    def concatenate(ensembles):
         """Concatanate a list of ensembles
 
         Parameters
@@ -252,4 +252,4 @@ add_class = _FACTORY.add_class
 create = _FACTORY.create
 read = _FACTORY.read
 convert = _FACTORY.convert
-concatanate = _FACTORY.concatanate
+concatenate = _FACTORY.concatenate
