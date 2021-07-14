@@ -116,6 +116,18 @@ class interp_gen(Pdf_rows_gen):
         return interpolate_unfactored_multi_x_y(xr, rr, self._ycumul, self._xvals,
                                                 bounds_error=False, fill_value=(0.,1.))
 
+    def _munp(self, m, *args):
+        """ compute moments """
+        # Silence floating point warnings from integration.
+        with np.errstate(all='ignore'):
+            vals = self.custom_generic_moment(m)
+        return vals
+
+    def custom_generic_moment(self, m):
+        m = np.asarray(m)
+        dx = self._xvals[1] - self._xvals[0]
+        return np.sum(self._xvals**m * self._yvals, axis=1) * dx
+
     def _updated_ctor_param(self):
         """
         Set the bins as additional constructor argument
