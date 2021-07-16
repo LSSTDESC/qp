@@ -3,8 +3,8 @@
 import os
 
 try:
-    from .version import get_git_version
-    __version__ = get_git_version()
+    from setuptools_scm import get_version
+    __version__ = get_version()
 except Exception as message: #pragma: no cover
     print(message)
 
