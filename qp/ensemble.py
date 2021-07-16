@@ -224,6 +224,22 @@ class Ensemble:
             raise ValueError from exep
         return dict(meta=meta, data=data)
 
+
+    def mode(self, grid):
+        """return the mode of each ensemble PDF, evaluated on grid
+        Parameters
+        ----------
+        new_grid: array-like
+            Grid on which to evaluate PDF
+
+        Returns
+        -------
+        mode: array-like
+            The modes of the PDFs evaluated on new_grid
+        """
+        new_grid, griddata = self.gridded(grid)
+        return new_grid[np.argmax(griddata,axis=1)]
+
     def gridded(self, grid):
         """Build, cache are return the PDF values at grid points
 
