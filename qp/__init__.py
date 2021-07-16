@@ -1,12 +1,7 @@
 """qp is a library for manaing and converting between different representations of distributions"""
 
 import os
-
-try:
-    from setuptools_scm import get_version
-    __version__ = get_version()
-except Exception as message: #pragma: no cover
-    print(message)
+from .version import __version__
 
 from .spline_pdf import *
 from .hist_pdf import *
