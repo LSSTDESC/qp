@@ -34,5 +34,4 @@ def find_version(): # pragma: no cover
         v = "unknown"
     return v
 
-
 __version__ = find_version()
