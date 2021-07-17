@@ -176,6 +176,8 @@ def check_array_shapes(in_dict, npdf):
     if in_dict is None:
         return
     for key, val in in_dict.items():
+        if np.size(val) == 1 and npdf == 1:
+            continue
         if val.shape[0] != npdf:  #pragma: no cover
             raise ValueError("First dimension of array %s does not match npdf: %i != %i" %
                                  (key, val.shape[0], npdf))
