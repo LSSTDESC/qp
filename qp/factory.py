@@ -210,7 +210,7 @@ class Factory(OrderedDict):
         ens : `qp.Ensemble`
             The output
         """
-        if not ensembles:
+        if not ensembles:  #pragma: no cover
             return None
         metadata_list = []
         objdata_list = []
@@ -224,13 +224,13 @@ class Factory(OrderedDict):
             if ancil_list is not None:
                 if ensemble.ancil is None:
                     ancil_list = None
-                else:
+                else:  #pragma: no cover
                     ancil_list.append(ensemble.ancil)
-        if not compare_dicts(metadata_list):
+        if not compare_dicts(metadata_list):  #pragma: no cover
             raise ValueError("Metadata does not match")
         metadata = metadata_list[0]
         data = concatenate_dicts(objdata_list)
-        if ancil_list is not None:
+        if ancil_list is not None:  #pragma: no cover
             ancil = concatenate_dicts(ancil_list)
         else:
             ancil = None

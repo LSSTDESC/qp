@@ -230,7 +230,7 @@ class Ensemble:
         check_array_shapes(ancil, self.npdf)
         self._ancil = ancil
 
-    def add_to_ancil(self, to_add):
+    def add_to_ancil(self, to_add):  # pragma: no cover
         """ Add additionaly columns to the ancillary data dict
 
         Parameters
@@ -257,10 +257,10 @@ class Ensemble:
         other_ens : `qp.Ensemble`
             The other Ensemble
         """
-        if not compare_dicts([self.metadata(), other_ens.metadata()]):
+        if not compare_dicts([self.metadata(), other_ens.metadata()]):  # pragma: no cover
             raise KeyError("Metadata does not match, can not append")
         full_objdata = concatenate_dicts([self.objdata(), other_ens.objdata()])
-        if self._ancil is not None and other_ens.ancil is not None:
+        if self._ancil is not None and other_ens.ancil is not None:  # pragma: no cover
             full_ancil = concatenate_dicts([self.ancil, other_ens.ancil])
         else:
             full_ancil = None

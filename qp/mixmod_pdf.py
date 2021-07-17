@@ -69,7 +69,7 @@ class mixmod_gen(Pdf_rows_gen):
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
         factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:
+        if factored:  #pragma: no cover
             return (np.expand_dims(self.weights[rr], -1) *\
                         sps.norm(loc=np.expand_dims(self._means[rr], -1),\
                                      scale=np.expand_dims(self._stds[rr], -1)).pdf(np.expand_dims(xr, 0))).sum(axis=1).reshape(x.shape)
@@ -82,7 +82,7 @@ class mixmod_gen(Pdf_rows_gen):
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
         factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:
+        if factored:  #pragma: no cover
             return (np.expand_dims(self.weights[rr], -1) *\
                         sps.norm(loc=np.expand_dims(self._means[rr], -1),\
                                     scale=np.expand_dims(self._stds[rr], -1)).cdf(np.expand_dims(xr, 0))).sum(axis=1).reshape(x.shape)
@@ -99,7 +99,7 @@ class mixmod_gen(Pdf_rows_gen):
         grid = np.linspace(min_val, max_val, 201)
         cdf_vals = self.cdf(grid, row)
         factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:
+        if factored:  #pragma: no cover
             return interpolate_multi_x_y(xr, cdf_vals, grid, bounds_error=False,
                                          fill_value=(0.,1.)).reshape(x.shape)
         return interpolate_unfactored_multi_x_y(xr, rr, cdf_vals, grid,

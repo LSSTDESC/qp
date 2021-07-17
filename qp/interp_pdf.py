@@ -107,7 +107,7 @@ class interp_gen(Pdf_rows_gen):
                                          bounds_error=False, fill_value=(0.,1.)).reshape(x.shape)
         if xr.shape[:-1] == rr.shape[:-1]:
             return interpolate_unfactored_x_multi_y(xr, rr, self._xvals, self._ycumul, bounds_error=False, fill_value=(0.,1.))            
-        return interp1d(self._xvals, self._ycumul[np.squeeze(rr)], bounds_error=False, fill_value=(0.,1.))(xr)
+        return interp1d(self._xvals, self._ycumul[np.squeeze(rr)], bounds_error=False, fill_value=(0.,1.))(xr)  # pragma: no cover
 
 
     def _ppf(self, x, row):
@@ -115,7 +115,7 @@ class interp_gen(Pdf_rows_gen):
         factored, xr, rr, _ = self._sliceargs(x, row)
         if self._ycumul is None:  # pragma: no cover
             self._compute_ycumul()
-        if factored:
+        if factored:  # pragma: no cover
             return interpolate_multi_x_y(xr, self._ycumul[rr], self._xvals, bounds_error=False,
                                          fill_value=(0.,1.)).reshape(x.shape)        
         return interpolate_unfactored_multi_x_y(xr, rr, self._ycumul, self._xvals,
@@ -228,7 +228,7 @@ class interp_irregular_gen(Pdf_rows_gen):
         factored, xr, rr, _ = self._sliceargs(x, row)
         if factored:
             return interpolate_multi_x_multi_y(xr, self._xvals[rr], self._ycumul[rr], bounds_error=False, fill_value=(0., 1.)).reshape(x.shape)
-        return interpolate_unfactored_multi_x_multi_y(xr, rr, self._xvals, self._ycumul, bounds_error=False, fill_value=(0., 1.))
+        return interpolate_unfactored_multi_x_multi_y(xr, rr, self._xvals, self._ycumul, bounds_error=False, fill_value=(0., 1.))  #pragma: no cover
 
 
     def _ppf(self, x, row):
@@ -236,7 +236,7 @@ class interp_irregular_gen(Pdf_rows_gen):
         if self._ycumul is None:  # pragma: no cover
             self._compute_ycumul()
         factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:
+        if factored:  #pragma: no cover
             return interpolate_multi_x_multi_y(xr, self._ycumul[rr], self._xvals[rr], bounds_error=False,
                                                    fill_value=(self.a, self.b)).reshape(x.shape)
         return interpolate_unfactored_multi_x_multi_y(xr, rr, self._ycumul, self._xvals, bounds_error=False,

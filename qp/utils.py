@@ -153,7 +153,7 @@ def evaluate_kdes(xvals, kdes):
     return np.vstack([kde(xvals) for kde in kdes])
 
 
-def evaluate_hist_x_multi_y(x, row, bins, vals):
+def evaluate_hist_x_multi_y(x, row, bins, vals):  #pragma: no cover
     """
     Evaluate a set of values from histograms
 
@@ -205,7 +205,7 @@ def evaluate_unfactored_hist_x_multi_y(x, row, bins, vals):
     return vv(idx, mask, row)
 
 
-def evaluate_hist_multi_x_multi_y(x, row, bins, vals):
+def evaluate_hist_multi_x_multi_y(x, row, bins, vals):  #pragma: no cover
     """
     Evaluate a set of values from histograms
 
@@ -389,7 +389,7 @@ def interpolate_x_multi_y(x, xvals, yvals, **kwargs):
 
 
 
-def interpolate_multi_x_y(x, xvals, yvals, **kwargs):
+def interpolate_multi_x_y(x, xvals, yvals, **kwargs):  #pragma: no cover
     """
     Interpolate a set of values
 

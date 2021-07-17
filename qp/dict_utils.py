@@ -138,11 +138,11 @@ def check_keys(in_dicts):
 
     Raises KeyError if one does not match.
     """
-    if not in_dicts:
+    if not in_dicts:  #pragma: no cover
         return
     master_keys = in_dicts[0].keys()
     for in_dict in in_dicts[1:]:
-        if in_dict.keys() != master_keys:
+        if in_dict.keys() != master_keys:  #pragma: no cover
             raise ValueError("Keys to not match: %s != %s" % (in_dict.keys(), master_keys))
 
 
@@ -159,7 +159,7 @@ def concatenate_dicts(in_dicts):
     out_dict : `dict`
         The stacked dicionary
     """
-    if not in_dicts:
+    if not in_dicts:  #pragma: no cover
         return {}
     check_keys(in_dicts)
     out_dict = { key : None for key in in_dicts[0].keys() }
@@ -176,7 +176,7 @@ def check_array_shapes(in_dict, npdf):
     if in_dict is None:
         return
     for key, val in in_dict.items():
-        if val.shape[0] != npdf:
+        if val.shape[0] != npdf:  #pragma: no cover
             raise ValueError("First dimension of array %s does not match npdf: %i != %i" %
                                  (key, val.shape[0], npdf))
 
@@ -189,10 +189,10 @@ def compare_dicts(in_dicts):
     match : `bool`
         True if they all match, False otherwise
     """
-    if not in_dicts:
+    if not in_dicts:  #pragma: no cover
         return True
     first_dict = in_dicts[0]
     for in_dict in in_dicts[1:]:
-        if first_dict != in_dict:
+        if first_dict != in_dict:  #pragma: no cover
             return False
     return True

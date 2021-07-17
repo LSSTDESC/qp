@@ -136,7 +136,7 @@ class quant_gen(Pdf_rows_gen):
         if self._valatloc is None:  # pragma: no cover
             self._compute_valatloc()
         factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:
+        if factored:  #pragma: no cover
             return evaluate_hist_multi_x_multi_y(xr, rr, self._locs, self._valatloc)
         return evaluate_unfactored_hist_multi_x_multi_y(xr, rr, self._locs, self._valatloc)
 
@@ -144,14 +144,14 @@ class quant_gen(Pdf_rows_gen):
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
         factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:
+        if factored:  #pragma: no cover
             return interpolate_multi_x_y(xr, self._locs[rr], self._quants, bounds_error=False, fill_value=(0., 1)).reshape(x.shape)
         return interpolate_unfactored_multi_x_y(xr, rr, self._locs, self._quants, bounds_error=False, fill_value=(0., 1))
 
     def _ppf(self, x, row):
         # pylint: disable=arguments-differ
         factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:
+        if factored:  #pragma: no cover
             #return interp1d(self._quants, self._locs[np.squeeze(rr)], bounds_error=False, fill_value=(self.a, self.b))(xr)
             return interpolate_x_multi_y(xr, self._quants, self._locs[rr], bounds_error=False, fill_value=(self.a, self.b)).reshape(x.shape)
         if xr.shape[-1] == 1:
@@ -268,7 +268,7 @@ class quant_piecewise_gen(Pdf_rows_gen):
         if self._valatloc is None:  # pragma: no cover
             self._compute_valatloc()
         factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:
+        if factored:  #pragma: no cover
             return evaluate_hist_multi_x_multi_y(xr, rr, self._locs, self._valatloc)
         return evaluate_unfactored_hist_multi_x_multi_y(xr, rr, self._locs, self._valatloc)
 
@@ -276,16 +276,15 @@ class quant_piecewise_gen(Pdf_rows_gen):
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
         factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:
+        if factored:  #pragma: no cover
             return interpolate_multi_x_y(xr, self._locs[rr], self._quants, bounds_error=False, fill_value=(0., 1)).reshape(x.shape)
         return interpolate_unfactored_multi_x_y(xr, rr, self._locs, self._quants, bounds_error=False, fill_value=(0., 1))
 
     def _ppf(self, x, row):
         # pylint: disable=arguments-differ
         factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:
+        if factored:  #pragma: no cover
             return interpolate_x_multi_y(xr, self._quants, self._locs[np.squeeze(rr)], bounds_error=False, fill_value=(self.a, self.b)).reshape(x.shape)
-            #return interp1d(self._quants, self._locs[np.squeeze(rr)], bounds_error=False, fill_value=(self.a, self.b))(xr)
         if xr.shape[-1] == 1:
             return interpolate_unfactored_x_multi_y(xr, np.squeeze(rr), self._quants, self._locs, bounds_error=False, fill_value=(self.a, self.b))
         return interp1d(self._quants, self._locs[rr], bounds_error=False, fill_value=(self.a, self.b))(xr)
