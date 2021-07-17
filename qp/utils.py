@@ -282,7 +282,7 @@ def interpolate_unfactored_x_multi_y(x, row, xvals, yvals, **kwargs):
         The interpoalted values
     """
     # This is kinda stupid, computes a lot of extra values, but it is vectorized
-    return interp1d(xvals, yvals[row], **kwargs)(x).diagonal()
+    return interp1d(xvals, np.squeeze(yvals[row]), **kwargs)(x).diagonal().T
 
 
 

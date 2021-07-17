@@ -5,6 +5,7 @@ import sys
 import numpy as np
 
 from scipy.stats import rv_continuous
+from scipy.interpolate import interp1d
 
 from qp.pdf_gen import Pdf_rows_gen
 
@@ -151,8 +152,11 @@ class quant_gen(Pdf_rows_gen):
         # pylint: disable=arguments-differ
         factored, xr, rr, _ = self._sliceargs(x, row)
         if factored:
+            #return interp1d(self._quants, self._locs[np.squeeze(rr)], bounds_error=False, fill_value=(self.a, self.b))(xr)
             return interpolate_x_multi_y(xr, self._quants, self._locs[rr], bounds_error=False, fill_value=(self.a, self.b)).reshape(x.shape)
-        return interpolate_unfactored_x_multi_y(xr, rr, self._quants, self._locs, bounds_error=False, fill_value=(self.a, self.b))
+        if xr.shape[-1] == 1:
+            return interpolate_unfactored_x_multi_y(xr, np.squeeze(rr), self._quants, self._locs, bounds_error=False, fill_value=(self.a, self.b))
+        return interp1d(self._quants, self._locs[rr], bounds_error=False, fill_value=(self.a, self.b))(xr)
 
     def _updated_ctor_param(self):
         """
@@ -280,8 +284,11 @@ class quant_piecewise_gen(Pdf_rows_gen):
         # pylint: disable=arguments-differ
         factored, xr, rr, _ = self._sliceargs(x, row)
         if factored:
-            return interpolate_x_multi_y(xr, self._quants, self._locs[rr], bounds_error=False, fill_value=(self.a, self.b)).reshape(x.shape)
-        return interpolate_unfactored_x_multi_y(xr, rr, self._quants, self._locs, bounds_error=False, fill_value=(self.a, self.b))
+            return interpolate_x_multi_y(xr, self._quants, self._locs[np.squeeze(rr)], bounds_error=False, fill_value=(self.a, self.b)).reshape(x.shape)
+            #return interp1d(self._quants, self._locs[np.squeeze(rr)], bounds_error=False, fill_value=(self.a, self.b))(xr)
+        if xr.shape[-1] == 1:
+            return interpolate_unfactored_x_multi_y(xr, np.squeeze(rr), self._quants, self._locs, bounds_error=False, fill_value=(self.a, self.b))
+        return interp1d(self._quants, self._locs[rr], bounds_error=False, fill_value=(self.a, self.b))(xr)
 
     def _updated_ctor_param(self):
         """
