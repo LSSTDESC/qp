@@ -217,7 +217,7 @@ class interp_irregular_gen(Pdf_rows_gen):
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
         factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:
+        if factored:  # pragma: no cover
             return interpolate_multi_x_multi_y(xr, self._xvals[rr], self._yvals[rr], bounds_error=False, fill_value=0.).reshape(x.shape)
         return interpolate_unfactored_multi_x_multi_y(xr, rr, self._xvals, self._yvals, bounds_error=False, fill_value=0.)
 
