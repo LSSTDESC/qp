@@ -22,5 +22,5 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         ],
-    install_requires=["matplotlib", "numpy", "scipy>=1.7.0", "sklearn", "astropy", "h5py"]
+    install_requires=["matplotlib", "numpy>=1.21.0", "scipy>=1.7.0", "sklearn", "astropy", "h5py"]
 )
