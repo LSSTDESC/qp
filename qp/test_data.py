@@ -7,7 +7,7 @@ import scipy.stats as sps
 np.random.seed(1234)
 
 NPDF = 11
-NBIN = 21
+NBIN = 61
 NSAMPLES = 100
 XMIN = 0.
 XMAX = 5.

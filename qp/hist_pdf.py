@@ -83,7 +83,7 @@ class hist_gen(Pdf_rows_gen):
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
         factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:
+        if factored:  #pragma: no cover
             # x values and row values factorize
             return evaluate_hist_x_multi_y(xr, rr, self._hbins, self._hpdfs)
         return evaluate_unfactored_hist_x_multi_y(xr, rr, self._hbins, self._hpdfs)
@@ -102,7 +102,7 @@ class hist_gen(Pdf_rows_gen):
         if self._hcdfs is None: #pragma: no cover
             self._compute_cdfs()
         factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:
+        if factored:  #pragma: no cover
             return interpolate_multi_x_y(xr, self._hcdfs[rr], self._hbins).reshape(x.shape)
         return interpolate_unfactored_multi_x_y(xr, rr, self._hcdfs, self._hbins)
 

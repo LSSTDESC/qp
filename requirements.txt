@@ -1,6 +1,6 @@
 matplotlib
-numpy
-scipy>=1.5.2
+numpy>=1.21.0
+scipy>=1.7.0
 astropy
 sklearn
 h5py

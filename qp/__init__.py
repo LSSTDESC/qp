@@ -11,7 +11,7 @@ from .mixmod_pdf import *
 from .sparse_pdf import *
 from .scipy_pdfs import *
 from .ensemble import Ensemble
-from .factory import instance, add_class, create, read, convert
+from .factory import instance, add_class, create, read, convert, concatenate
 
 from . import utils
 from . import test_funcs

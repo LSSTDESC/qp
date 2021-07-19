@@ -8,7 +8,7 @@ import numpy as np
 from astropy.table import Table
 
 
-from qp.dict_utils import slice_dict, print_dict_shape
+from qp.dict_utils import slice_dict, print_dict_shape, check_array_shapes, compare_dicts, concatenate_dicts
 
 from qp.metrics import quick_kld, quick_rmse, quick_moment
 
@@ -16,7 +16,7 @@ from qp.metrics import quick_kld, quick_rmse, quick_moment
 
 class Ensemble:
     """An object comprised of many qp.PDF objects to efficiently perform operations on all of them"""
-    def __init__(self, gen_func, data):
+    def __init__(self, gen_func, data, ancil=None):
         """Class constructor
 
         Parameters
@@ -32,6 +32,9 @@ class Ensemble:
         self._frozen = self._gen_func(**data)
         self._gen_obj = self._frozen.dist
         self._gen_class = type(self._gen_obj)
+
+        self._ancil = None
+        self.set_ancil(ancil)
 
         self._gridded = None
         self._samples = None
@@ -61,7 +64,11 @@ class Ensemble:
                 red_data[k] = np.expand_dims(v, 0)
             else:
                 red_data[k] = v
-        return Ensemble(self._gen_obj.create, data=red_data)
+        if self._ancil is not None:
+            ancil = slice_dict(self._ancil, key)
+        else:
+            ancil = None
+        return Ensemble(self._gen_obj.create, data=red_data, ancil=ancil)
 
     @property
     def gen_func(self):
@@ -103,6 +110,11 @@ class Ensemble:
         """Return the number of PDFs in this ensemble"""
         return self._frozen.npdf
 
+    @property
+    def ancil(self):
+        """Return the ancillary data dictionary"""
+        return self._ancil
+
     def convert_to(self, to_class, **kwargs):
         """Convert a distribution or ensemble
 
@@ -134,7 +146,7 @@ class Ensemble:
         data = extract_func(self, **kwds)
         return Ensemble(ctor_func, data=data)
 
-    def update(self, data):
+    def update(self, data, ancil=None):
         """Update the frozen object
 
         Parameters
@@ -144,10 +156,11 @@ class Ensemble:
         """
         self._frozen = self._gen_func(**data)
         self._gen_obj = self._frozen.dist
+        self.set_ancil(ancil)
         self._gridded = None
         self._samples = None
 
-    def update_objdata(self, data):
+    def update_objdata(self, data, ancil=None):
         """Update the object data in the distribution
 
         Parameters
@@ -162,7 +175,7 @@ class Ensemble:
             new_data[k] = np.squeeze(v)
         new_data.update(self.objdata())
         new_data.update(data)
-        self.update(new_data)
+        self.update(new_data, ancil)
 
     def metadata(self):
         """Return the metadata for this ensemble
@@ -200,6 +213,59 @@ class Ensemble:
         dd.pop('row', None)
         dd.update(self._gen_obj.objdata)
         return dd
+
+    def set_ancil(self, ancil):
+        """Set the ancillary data dict
+
+        Parameters
+        ----------
+        ancil : `dict`
+            The ancillary data dictionary
+
+        Notes
+        -----
+        Raises IndexError if the length of the arrays in ancil does not match
+        the number of PDFs in the Ensemble
+        """
+        check_array_shapes(ancil, self.npdf)
+        self._ancil = ancil
+
+    def add_to_ancil(self, to_add):  # pragma: no cover
+        """ Add additionaly columns to the ancillary data dict
+
+        Parameters
+        ----------
+        to_add : `dict`
+            The columns to add to the ancillary data dict
+
+        Notes
+        -----
+        Raises IndexError if the length of the arrays in to_add does not match
+        the number of PDFs in the Ensemble
+
+        This calls dict.update() so it will overwrite existing columns
+        """
+        check_array_shapes(to_add, self.npdf)
+        self._ancil.update(to_add)
+
+
+    def append(self, other_ens):
+        """ Append another other_ens to this one
+
+        Parameters
+        ----------
+        other_ens : `qp.Ensemble`
+            The other Ensemble
+        """
+        if not compare_dicts([self.metadata(), other_ens.metadata()]):  # pragma: no cover
+            raise KeyError("Metadata does not match, can not append")
+        full_objdata = concatenate_dicts([self.objdata(), other_ens.objdata()])
+        if self._ancil is not None and other_ens.ancil is not None:  # pragma: no cover
+            full_ancil = concatenate_dicts([self.ancil, other_ens.ancil])
+        else:
+            full_ancil = None
+        self.update_objdata(full_objdata, full_ancil)
+
 
     def build_tables(self):
         """Build and return `astropy.Table` objects for the meta data and object data
