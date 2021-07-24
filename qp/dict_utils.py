@@ -182,6 +182,26 @@ def check_array_shapes(in_dict, npdf):
             raise ValueError("First dimension of array %s does not match npdf: %i != %i" %
                                  (key, val.shape[0], npdf))
 
+def compare_two_dicts(d1, d2):
+    """Check that all the items in d1 and d2 match
+
+    Returns
+    -------
+    match : `bool`
+        True if they all match, False otherwise
+    """    
+    if d1.keys() != d2.keys():  #pragma: no cover
+        return False
+    for k, v in d1.items():
+        vv = d2[k]        
+        try:
+            if v != vv:  #pragma: no cover
+                return False
+        except ValueError:
+            if not np.allclose(v, vv): #pragma: no cover
+                return False
+    return True
+
 
 def compare_dicts(in_dicts):
     """Check that all the dicts in in_dicts match
@@ -195,6 +215,6 @@ def compare_dicts(in_dicts):
         return True
     first_dict = in_dicts[0]
     for in_dict in in_dicts[1:]:
-        if first_dict != in_dict:  #pragma: no cover
+        if not compare_two_dicts(first_dict, in_dict): #pragma: no cover
             return False
     return True
