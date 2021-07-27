@@ -238,7 +238,7 @@ class Ensemble:
             The modes of the PDFs evaluated on new_grid
         """
         new_grid, griddata = self.gridded(grid)
-        return new_grid[np.argmax(griddata,axis=1)]
+        return new_grid[np.argmax(griddata, axis=1)]
 
     def gridded(self, grid):
         """Build, cache are return the PDF values at grid points
