@@ -126,7 +126,7 @@ class interp_gen(Pdf_rows_gen):
     def custom_generic_moment(self, m):
         m = np.asarray(m)
         dx = self._xvals[1] - self._xvals[0]
-        return np.atleast_2d(np.sum(self._xvals**m * self._yvals, axis=1) * dx).T
+        return np.expand_dims(np.sum(self._xvals**m * self._yvals, axis=1) * dx, -1)
 
     def _updated_ctor_param(self):
         """
