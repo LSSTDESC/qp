@@ -69,6 +69,8 @@ class EnsembleTestCase(unittest.TestCase):
         entropy = ens.entropy()
         stats = ens.stats()
 
+        modes = ens.mode(xpts)
+
         integral = ens.integrate(limits=(ens.gen_obj.a, ens.gen_obj.a))
         interval = ens.interval(0.05)
 
@@ -138,7 +140,13 @@ class EnsembleTestCase(unittest.TestCase):
         pdfs_mod = copy.copy(self.ens_h.dist.pdfs)
         pdfs_mod[:,7] = 0.5*pdfs_mod[:,7]
         self.ens_h.update_objdata(dict(pdfs=pdfs_mod))
-        
+
+    def test_interp(self):
+        key = 'interp'
+        test_data = qp.interp_gen.test_data[key]
+        self.ens_i = build_ensemble(test_data)
+        assert isinstance(self.ens_i.gen_obj, qp.interp_gen)
+        self._run_ensemble_funcs(self.ens_i, test_data['test_xvals'])        
 
 
 if __name__ == '__main__':
