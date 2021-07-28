@@ -226,7 +226,7 @@ class spline_gen(Pdf_rows_gen):
         # pylint: disable=arguments-differ
         factored, xr, rr, _ = self._sliceargs(x, row)
         ns = self._splx.shape[-1]
-        if factored:
+        if factored:  #pragma: no cover
             def pdf_row_fact(spl_):
                 return splev(xr, (spl_[0:ns], spl_[ns:2*ns], spl_[-1].astype(int)))
 

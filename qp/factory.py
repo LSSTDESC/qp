@@ -13,6 +13,8 @@ from astropy.table import Table
 
 from qp.ensemble import Ensemble
 
+from qp.dict_utils import compare_dicts, concatenate_dicts
+
 from qp.pdf_gen import Pdf_gen_wrap
 
 
@@ -194,6 +196,50 @@ class Factory(OrderedDict):
             stream.write("%s: %s\n" % (class_name, cl))
             cl.print_method_maps(stream)
 
+    @staticmethod
+    def concatenate(ensembles):
+        """Concatanate a list of ensembles
+
+        Parameters
+        ----------
+        ensembles : `list`
+            The ensembles we are concatanating
+
+        Returns
+        -------
+        ens : `qp.Ensemble`
+            The output
+        """
+        if not ensembles:  #pragma: no cover
+            return None
+        metadata_list = []
+        objdata_list = []
+        ancil_list = []
+        gen_func = None
+        for ensemble in ensembles:
+            metadata_list.append(ensemble.metadata())
+            objdata_list.append(ensemble.objdata())
+            if gen_func is None:
+                gen_func = ensemble.gen_func
+            if ancil_list is not None:
+                if ensemble.ancil is None:
+                    ancil_list = None
+                else:  #pragma: no cover
+                    ancil_list.append(ensemble.ancil)
+        if not compare_dicts(metadata_list):  #pragma: no cover
+            raise ValueError("Metadata does not match")
+        metadata = metadata_list[0]
+        data = concatenate_dicts(objdata_list)
+        if ancil_list is not None:  #pragma: no cover
+            ancil = concatenate_dicts(ancil_list)
+        else:
+            ancil = None
+        for k, v in metadata.items():
+            if k in ['pdf_name', 'pdf_version']:
+                continue
+            data[k] = np.squeeze(v)
+        return Ensemble(gen_func, data, ancil)
+
 
 _FACTORY = Factory()
 
@@ -206,3 +252,4 @@ add_class = _FACTORY.add_class
 create = _FACTORY.create
 read = _FACTORY.read
 convert = _FACTORY.convert
+concatenate = _FACTORY.concatenate

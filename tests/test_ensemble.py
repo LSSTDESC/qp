@@ -91,6 +91,29 @@ class EnsembleTestCase(unittest.TestCase):
 
         check_red = red_pdf - pdfs[0:5]
         assert_all_small(check_red, atol=1e-5, test_name="red")
+
+
+    def _run_merge_tests(self, ens, xpts):
+        npdf = ens.npdf
+        pdf_orig = ens.pdf(xpts)
+ 
+        ens_cat = qp.concatenate([ens, ens])
+        ens.append(ens)
+
+        pdf_cat = ens_cat.pdf(xpts)
+
+        modes = np.array([xpts[idx] for idx in np.squeeze(np.argmax(pdf_cat, axis=1))])
+
+        ens_cat.set_ancil({"mode":modes})                        
+        pdf_app = ens.pdf(xpts)
+
+        mask = np.concatenate([np.ones((npdf), 'bool'), np.zeros((npdf), 'bool')])
+        ens_check = ens_cat[mask]
+        pdf_check = ens_check.pdf(xpts)
+
+        assert_all_close(pdf_cat, pdf_app, atol=5e-8, test_name="merge_1")
+        assert_all_close(pdf_orig, pdf_check, atol=5e-8, test_name="merge_2")
+        assert_all_close(ens_cat.ancil['mode'][mask], modes[mask], atol=5e-8, test_name="mode")
         
         
     def test_norm(self):
@@ -101,13 +124,16 @@ class EnsembleTestCase(unittest.TestCase):
         assert isinstance(self.ens_norm.gen_obj, qp.stats.norm_gen)
         assert 'loc' in self.ens_norm.frozen.kwds
         self._run_ensemble_funcs(self.ens_norm, test_data['test_xvals'])
+        self._run_merge_tests(self.ens_norm, test_data['test_xvals'])
 
+        
     def test_hist(self):
         key = 'hist'
         test_data = qp.hist_gen.test_data[key]
         self.ens_h = build_ensemble(test_data)
         assert isinstance(self.ens_h.gen_obj, qp.hist_gen)
         self._run_ensemble_funcs(self.ens_h, test_data['test_xvals'])
+        self._run_merge_tests(self.ens_h, test_data['test_xvals'])
 
         pdfs_mod = copy.copy(self.ens_h.dist.pdfs)
         pdfs_mod[:,7] = 0.5*pdfs_mod[:,7]

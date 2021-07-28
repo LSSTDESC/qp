@@ -2,6 +2,8 @@
 
 import sys
 
+import numpy as np
+
 
 def get_val_or_default(in_dict, key):
     """Helper functions to return either an item in a dictionary or the default value of the dictionary
@@ -129,3 +131,90 @@ def slice_dict(in_dict, subslice):
         except (KeyError, TypeError):
             out_dict[key] = val
     return out_dict
+
+
+def check_keys(in_dicts):
+    """Check that the keys in all the in_dicts match
+
+    Raises KeyError if one does not match.
+    """
+    if not in_dicts:  #pragma: no cover
+        return
+    master_keys = in_dicts[0].keys()
+    for in_dict in in_dicts[1:]:
+        if in_dict.keys() != master_keys:  #pragma: no cover
+            raise ValueError("Keys to not match: %s != %s" % (in_dict.keys(), master_keys))
+
+
+def concatenate_dicts(in_dicts):
+    """Create a new `dict` by concatenate each array in `in_dicts`
+
+    Parameters
+    ----------
+    in_dicts : `list`
+        The dictionaries to stack
+
+    Returns
+    -------
+    out_dict : `dict`
+        The stacked dicionary
+    """
+    if not in_dicts:  #pragma: no cover
+        return {}
+    check_keys(in_dicts)
+    out_dict = { key : None for key in in_dicts[0].keys() }
+    for key in out_dict.keys():
+        out_dict[key] = np.concatenate([in_dict[key] for in_dict in in_dicts])
+    return out_dict
+
+
+def check_array_shapes(in_dict, npdf):
+    """Check that all the arrays in in_dict match the number of pdfs
+
+    Raises ValueError if one does not match.
+    """
+    if in_dict is None:
+        return
+    for key, val in in_dict.items():
+        if np.size(val) == 1 and npdf == 1:  #pragma: no cover
+            continue
+        if val.shape[0] != npdf:  #pragma: no cover
+            raise ValueError("First dimension of array %s does not match npdf: %i != %i" %
+                                 (key, val.shape[0], npdf))
+
+def compare_two_dicts(d1, d2):
+    """Check that all the items in d1 and d2 match
+
+    Returns
+    -------
+    match : `bool`
+        True if they all match, False otherwise
+    """    
+    if d1.keys() != d2.keys():  #pragma: no cover
+        return False
+    for k, v in d1.items():
+        vv = d2[k]        
+        try:
+            if v != vv:  #pragma: no cover
+                return False
+        except ValueError:
+            if not np.allclose(v, vv): #pragma: no cover
+                return False
+    return True
+
+
+def compare_dicts(in_dicts):
+    """Check that all the dicts in in_dicts match
+
+    Returns
+    -------
+    match : `bool`
+        True if they all match, False otherwise
+    """
+    if not in_dicts:  #pragma: no cover
+        return True
+    first_dict = in_dicts[0]
+    for in_dict in in_dicts[1:]:
+        if not compare_two_dicts(first_dict, in_dict): #pragma: no cover
+            return False
+    return True
