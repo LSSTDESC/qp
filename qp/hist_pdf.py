@@ -5,6 +5,7 @@
 import numpy as np
 
 from scipy.stats import rv_continuous
+from scipy.interpolate import interp1d
 
 from qp.pdf_gen import Pdf_rows_gen
 from qp.conversion_funcs import extract_hist_values, extract_hist_samples
@@ -43,6 +44,8 @@ class hist_gen(Pdf_rows_gen):
         self._hbins = np.asarray(bins)
         self._nbins = self._hbins.size - 1
         self._hbin_widths = self._hbins[1:] - self._hbins[:-1]
+        self._xmin = self._hbins[0]
+        self._xmax = self._hbins[-1]
         if pdfs.shape[-1] != self._nbins: # pragma: no cover
             raise ValueError("Number of bins (%i) != number of values (%i)" % (self._nbins, pdfs.shape[-1]))
 
@@ -55,8 +58,6 @@ class hist_gen(Pdf_rows_gen):
             self._hpdfs = reshape_to_pdf_size(pdfs, -1)
         self._hcdfs = None
         # Set support
-        kwargs['a'] = self.a = self._hbins[0]
-        kwargs['b'] = self.b = self._hbins[-1]
         kwargs['shape'] = pdfs.shape[:-1]
         super(hist_gen, self).__init__(*args, **kwargs)
         self._addmetadata('bins', self._hbins)
@@ -82,29 +83,22 @@ class hist_gen(Pdf_rows_gen):
 
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
-        factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:  #pragma: no cover
-            # x values and row values factorize
-            return evaluate_hist_x_multi_y(xr, rr, self._hbins, self._hpdfs)
-        return evaluate_unfactored_hist_x_multi_y(xr, rr, self._hbins, self._hpdfs)
+        return evaluate_unfactored_hist_x_multi_y(x, row, self._hbins, self._hpdfs)
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
         if self._hcdfs is None: #pragma: no cover
             self._compute_cdfs()
-        factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:
-            return interpolate_x_multi_y(xr, self._hbins, self._hcdfs[rr]).reshape(x.shape)
-        return interpolate_unfactored_x_multi_y(xr, rr, self._hbins, self._hcdfs)
+        if np.shape(x)[:-1] == np.shape(row)[:-1]:
+            return interpolate_unfactored_x_multi_y(x, row, self._hbins, self._hcdfs, bounds_error=False, fill_value=(0.,1.))
+        return interp1d(self._hbins, self._hcdfs[np.squeeze(row)], bounds_error=False, fill_value=(0.,1.))(x)  # pragma: no cover
 
     def _ppf(self, x, row):
         # pylint: disable=arguments-differ
         if self._hcdfs is None: #pragma: no cover
             self._compute_cdfs()
-        factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:  #pragma: no cover
-            return interpolate_multi_x_y(xr, self._hcdfs[rr], self._hbins).reshape(x.shape)
-        return interpolate_unfactored_multi_x_y(xr, rr, self._hcdfs, self._hbins)
+        return interpolate_unfactored_multi_x_y(x, row, self._hcdfs, self._hbins,
+                                                bounds_error=False, fill_value=(self._xmin, self._xmax))
 
     def _updated_ctor_param(self):
         """
@@ -136,13 +130,16 @@ class hist_gen(Pdf_rows_gen):
         cls._add_extraction_method(extract_hist_samples, "samples")
 
 
-hist = hist_gen.create
+    @classmethod
+    def make_test_data(cls):
+        cls.test_data = dict(hist=dict(gen_func=hist, ctor_data=dict(bins=XBINS, pdfs=HIST_DATA),\
+                                       convert_data=dict(bins=XBINS), atol_diff=1e-1, atol_diff2=1e-1, test_xvals=TEST_XVALS),
+                             hist_samples=dict(gen_func=hist, ctor_data=dict(bins=XBINS, pdfs=HIST_DATA),\
+                                               convert_data=dict(bins=XBINS, method='samples',\
+                                                                 size=NSAMPLES),\
+                                               atol_diff=1e-1, atol_diff2=1e-1,\
+                                               test_xvals=TEST_XVALS, do_samples=True))
 
-hist_gen.test_data = dict(hist=dict(gen_func=hist, ctor_data=dict(bins=XBINS, pdfs=HIST_DATA),\
-                                             convert_data=dict(bins=XBINS), atol_diff=1e-1, atol_diff2=1e-1, test_xvals=TEST_XVALS),
-                               hist_samples=dict(gen_func=hist, ctor_data=dict(bins=XBINS, pdfs=HIST_DATA),\
-                                                     convert_data=dict(bins=XBINS, method='samples',\
-                                                                           size=NSAMPLES),\
-                                                     atol_diff=1e-1, atol_diff2=1e-1,\
-                                                     test_xvals=TEST_XVALS, do_samples=True))
+
+hist = hist_gen.create
 add_class(hist_gen)

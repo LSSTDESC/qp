@@ -97,8 +97,8 @@ class quant_gen(Pdf_rows_gen):
         print(locs.shape)
         kwargs['shape'] = locs.shape[:-1]
 
-        kwargs['a'] = self.a = np.min(locs)
-        kwargs['b'] = self.b = np.max(locs)
+        self._xmin = np.min(locs)
+        self._xmax = np.max(locs)
 
         super(quant_gen, self).__init__(*args, **kwargs)
 
@@ -135,28 +135,21 @@ class quant_gen(Pdf_rows_gen):
         # pylint: disable=arguments-differ
         if self._valatloc is None:  # pragma: no cover
             self._compute_valatloc()
-        factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:  #pragma: no cover
-            return evaluate_hist_multi_x_multi_y(xr, rr, self._locs, self._valatloc)
-        return evaluate_unfactored_hist_multi_x_multi_y(xr, rr, self._locs, self._valatloc)
+        return evaluate_unfactored_hist_multi_x_multi_y(x, row, self._locs, self._valatloc)
 
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
-        factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:  #pragma: no cover
-            return interpolate_multi_x_y(xr, self._locs[rr], self._quants, bounds_error=False, fill_value=(0., 1)).reshape(x.shape)
-        return interpolate_unfactored_multi_x_y(xr, rr, self._locs, self._quants, bounds_error=False, fill_value=(0., 1))
+        return interpolate_unfactored_multi_x_y(x, row, self._locs, self._quants,
+                                                bounds_error=False, fill_value=(0., 1))
 
     def _ppf(self, x, row):
         # pylint: disable=arguments-differ
-        factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:  #pragma: no cover
-            #return interp1d(self._quants, self._locs[np.squeeze(rr)], bounds_error=False, fill_value=(self.a, self.b))(xr)
-            return interpolate_x_multi_y(xr, self._quants, self._locs[rr], bounds_error=False, fill_value=(self.a, self.b)).reshape(x.shape)
-        if xr.shape[-1] == 1:
-            return interpolate_unfactored_x_multi_y(xr, np.squeeze(rr), self._quants, self._locs, bounds_error=False, fill_value=(self.a, self.b))
-        return interp1d(self._quants, self._locs[rr], bounds_error=False, fill_value=(self.a, self.b))(xr)
+        if np.shape(x)[-1] == 1:
+            return interpolate_unfactored_x_multi_y(x, np.squeeze(row), self._quants, self._locs,
+                                                    bounds_error=False, fill_value=(self._xmin, self._xmax))
+        return interp1d(self._quants, self._locs[row], bounds_error=False,
+                        fill_value=(self._xmin, self._xmax))(x)
 
     def _updated_ctor_param(self):
         """
@@ -228,9 +221,8 @@ class quant_piecewise_gen(Pdf_rows_gen):
            The locations at which those quantiles are reached
         """
         kwargs['shape'] = locs.shape[:-1]
-
-        kwargs['a'] = self.a = np.min(locs)
-        kwargs['b'] = self.b = np.max(locs)
+        self._xmin = np.min(locs)
+        self._xmax = np.max(locs)
 
         super(quant_piecewise_gen, self).__init__(*args, **kwargs)
 
@@ -267,27 +259,19 @@ class quant_piecewise_gen(Pdf_rows_gen):
         # pylint: disable=arguments-differ
         if self._valatloc is None:  # pragma: no cover
             self._compute_valatloc()
-        factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:  #pragma: no cover
-            return evaluate_hist_multi_x_multi_y(xr, rr, self._locs, self._valatloc)
-        return evaluate_unfactored_hist_multi_x_multi_y(xr, rr, self._locs, self._valatloc)
+        return evaluate_unfactored_hist_multi_x_multi_y(x, row, self._locs, self._valatloc)
 
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
-        factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:  #pragma: no cover
-            return interpolate_multi_x_y(xr, self._locs[rr], self._quants, bounds_error=False, fill_value=(0., 1)).reshape(x.shape)
-        return interpolate_unfactored_multi_x_y(xr, rr, self._locs, self._quants, bounds_error=False, fill_value=(0., 1))
+        return interpolate_unfactored_multi_x_y(x, row, self._locs, self._quants, bounds_error=False, fill_value=(0., 1))
 
     def _ppf(self, x, row):
         # pylint: disable=arguments-differ
-        factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:  #pragma: no cover
-            return interpolate_x_multi_y(xr, self._quants, self._locs[np.squeeze(rr)], bounds_error=False, fill_value=(self.a, self.b)).reshape(x.shape)
-        if xr.shape[-1] == 1:
-            return interpolate_unfactored_x_multi_y(xr, np.squeeze(rr), self._quants, self._locs, bounds_error=False, fill_value=(self.a, self.b))
-        return interp1d(self._quants, self._locs[rr], bounds_error=False, fill_value=(self.a, self.b))(xr)
+        if np.shape(x)[-1] == 1:
+            return interpolate_unfactored_x_multi_y(x, np.squeeze(row), self._quants, self._locs,
+                                                    bounds_error=False, fill_value=(self._xmin, self._xmax))
+        return interp1d(self._quants, self._locs[row], bounds_error=False, fill_value=(self._xmin, self._xmax))(x)
 
     def _updated_ctor_param(self):
         """
@@ -319,10 +303,12 @@ class quant_piecewise_gen(Pdf_rows_gen):
         cls._add_creation_method(cls.create, None)
         cls._add_extraction_method(extract_quantiles, None)
 
+    @classmethod
+    def make_test_data(cls):
+        cls.test_data = dict(quant_piecewise=dict(gen_func=quant_piecewise, ctor_data=dict(quants=QUANTS, locs=QLOCS),\
+                                                  convert_data=dict(quants=QUANTS), test_xvals=TEST_XVALS))
+
 
 quant_piecewise = quant_piecewise_gen.create
-
-quant_piecewise_gen.test_data = dict(quant_piecewise=dict(gen_func=quant_piecewise, ctor_data=dict(quants=QUANTS, locs=QLOCS),\
-                                                              convert_data=dict(quants=QUANTS), test_xvals=TEST_XVALS))
 
 add_class(quant_piecewise_gen)

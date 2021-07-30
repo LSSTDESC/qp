@@ -312,7 +312,7 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
         return self._npdf
 
     @staticmethod
-    def _sliceargs(x, row, *args):
+    def _sliceargs(x, row, *args):  #pragma: no cover
         if np.size(x) == 1 or np.size(row) == 1:
             return False, x, row, args
         xx = np.unique(x)

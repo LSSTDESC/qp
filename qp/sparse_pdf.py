@@ -80,33 +80,38 @@ class sparse_gen(interp_gen):
         cls._add_extraction_method(extract_sparse_from_xy, None)
 
 
+    @staticmethod
+    def build_test_data():
+        """build a test case out of real pdfs"""
+        qproot = sys.modules['qp'].__path__[0]
+        filein = os.path.join(qproot, '../docs/notebooks/CFHTLens_sample.P.npy')
+        #FORMAT FILE, EACH ROW IS THE PDF FOR EACH GALAXY, LAST ROW IS THE REDSHIFT POSITION
+        P = np.load(filein)
+        z = P[-1]
+        P = P[:NPDF]
+        P = P / sciint.trapz(P, z).reshape(-1, 1)
+        minz = np.min(z)
+        nz = 301
+        _, j = np.where(P > 0)
+        maxz = np.max(z[j+1])
+        newz = np.linspace(minz, maxz, nz)
+        interp = sciinterp.interp1d(z, P, assume_sorted=True)
+        newpdf = interp(newz)
+        newpdf = newpdf / sciint.trapz(newpdf, newz).reshape(-1, 1)
+        sparse_idx, meta, _ = sparse_rep.build_sparse_representation(newz, newpdf, verbose=False)
+        return sparse_idx, meta
+
+
+    @classmethod
+    def make_test_data(cls):
+        SPARSE_IDX, META = cls.build_test_data()
+
+        cls.test_data = dict(sparse=dict(gen_func=sparse, \
+                                         ctor_data=dict(xvals=META['xvals'], mu=META['mu'], sig=META['sig'],\
+                                                        dims=META['dims'], sparse_indices=SPARSE_IDX),\
+                                         test_xvals=TEST_XVALS), )
+
+
 sparse = sparse_gen.create
 
 add_class(sparse_gen)
-
-def build_test_data():
-    """build a test case out of real pdfs"""
-    qproot = sys.modules['qp'].__path__[0]
-    filein = os.path.join(qproot, '../docs/notebooks/CFHTLens_sample.P.npy')
-    #FORMAT FILE, EACH ROW IS THE PDF FOR EACH GALAXY, LAST ROW IS THE REDSHIFT POSITION
-    P = np.load(filein)
-    z = P[-1]
-    P = P[:NPDF]
-    P = P / sciint.trapz(P, z).reshape(-1, 1)
-    minz = np.min(z)
-    nz = 301
-    _, j = np.where(P > 0)
-    maxz = np.max(z[j+1])
-    newz = np.linspace(minz, maxz, nz)
-    interp = sciinterp.interp1d(z, P, assume_sorted=True)
-    newpdf = interp(newz)
-    newpdf = newpdf / sciint.trapz(newpdf, newz).reshape(-1, 1)
-    sparse_idx, meta, _ = sparse_rep.build_sparse_representation(newz, newpdf, verbose=False)
-    return sparse_idx, meta
-
-SPARSE_IDX, META = build_test_data()
-
-sparse_gen.test_data = dict(sparse=dict(gen_func=sparse, \
-                                        ctor_data=dict(xvals=META['xvals'], mu=META['mu'], sig=META['sig'],\
-                                                       dims=META['dims'], sparse_indices=SPARSE_IDX),\
-                                        test_xvals=TEST_XVALS), )

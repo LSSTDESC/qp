@@ -68,29 +68,29 @@ class mixmod_gen(Pdf_rows_gen):
 
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
-        factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:  #pragma: no cover
-            return (np.expand_dims(self.weights[rr], -1) *\
-                        sps.norm(loc=np.expand_dims(self._means[rr], -1),\
-                                     scale=np.expand_dims(self._stds[rr], -1)).pdf(np.expand_dims(xr, 0))).sum(axis=1).reshape(x.shape)
-        if xr.ndim > 1:
-            xr = np.expand_dims(xr, -2)
-        return (self.weights[rr].swapaxes(-2,-1) * 
-                sps.norm(loc=self._means[rr].swapaxes(-2,-1),
-                         scale=self._stds[rr].swapaxes(-2,-1)).pdf(xr)).sum(axis=1)
+        #factored, xr, rr, _ = self._sliceargs(x, row)
+        #if factored:  #pragma: no cover
+        #    return (np.expand_dims(self.weights[rr], -1) *\
+        #                sps.norm(loc=np.expand_dims(self._means[rr], -1),\
+        #                             scale=np.expand_dims(self._stds[rr], -1)).pdf(np.expand_dims(xr, 0))).sum(axis=1).reshape(x.shape)
+        if np.ndim(x) > 1:
+            x = np.expand_dims(x, -2)
+        return (self.weights[row].swapaxes(-2,-1) * 
+                sps.norm(loc=self._means[row].swapaxes(-2,-1),
+                         scale=self._stds[row].swapaxes(-2,-1)).pdf(x)).sum(axis=1)
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
-        factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:  #pragma: no cover
-            return (np.expand_dims(self.weights[rr], -1) *\
-                        sps.norm(loc=np.expand_dims(self._means[rr], -1),\
-                                    scale=np.expand_dims(self._stds[rr], -1)).cdf(np.expand_dims(xr, 0))).sum(axis=1).reshape(x.shape)
-        if xr.ndim > 1:
-            xr = np.expand_dims(xr, -2)
-        return (self.weights[rr].swapaxes(-2,-1) * 
-                sps.norm(loc=self._means[rr].swapaxes(-2,-1),
-                         scale=self._stds[rr].swapaxes(-2,-1)).cdf(xr)).sum(axis=1)
+        #factored, xr, rr, _ = self._sliceargs(x, row)
+        #if factored:  #pragma: no cover
+        #    return (np.expand_dims(self.weights[rr], -1) *\
+        #                sps.norm(loc=np.expand_dims(self._means[rr], -1),\
+        #                            scale=np.expand_dims(self._stds[rr], -1)).cdf(np.expand_dims(xr, 0))).sum(axis=1).reshape(x.shape)
+        if np.ndim(x) > 1:
+            x = np.expand_dims(x, -2)
+        return (self.weights[row].swapaxes(-2,-1) * 
+                sps.norm(loc=self._means[row].swapaxes(-2,-1),
+                         scale=self._stds[row].swapaxes(-2,-1)).cdf(x)).sum(axis=1)
 
     def _ppf(self, x, row):
         # pylint: disable=arguments-differ
@@ -98,12 +98,12 @@ class mixmod_gen(Pdf_rows_gen):
         max_val = np.max(self._means + 6*self._stds)
         grid = np.linspace(min_val, max_val, 201)
         cdf_vals = self.cdf(grid, row)
-        factored, xr, rr, _ = self._sliceargs(x, row)
-        if factored:  #pragma: no cover
-            return interpolate_multi_x_y(xr, cdf_vals, grid, bounds_error=False,
-                                         fill_value=(0.,1.)).reshape(x.shape)
-        return interpolate_unfactored_multi_x_y(xr, rr, cdf_vals, grid,
-                                                bounds_error=False, fill_value=(0.,1.))
+        #factored, xr, rr, _ = self._sliceargs(x, row)
+        #if factored:  #pragma: no cover
+        #    return interpolate_multi_x_y(xr, cdf_vals, grid, bounds_error=False,
+        #                                 fill_value=(0.,1.)).reshape(x.shape)
+        return interpolate_unfactored_multi_x_y(x, row, cdf_vals, grid,
+                                                bounds_error=False, fill_value=(min_val, max_val))
 
 
 
@@ -125,13 +125,16 @@ class mixmod_gen(Pdf_rows_gen):
         cls._add_creation_method(cls.create, None)
         cls._add_extraction_method(extract_mixmod_fit_samples, None)
 
+    @classmethod
+    def make_test_data(cls):
+        cls.test_data = dict(mixmod=dict(gen_func=mixmod,\
+                                         ctor_data=dict(weights=WEIGHT_MIXMOD,\
+                                                        means=MEAN_MIXMOD,\
+                                                        stds=STD_MIXMOD),\
+                                         convert_data=dict(), test_xvals=TEST_XVALS,
+                                         atol_diff2=1.))
+
 
 mixmod = mixmod_gen.create
 
-mixmod_gen.test_data = dict(mixmod=dict(gen_func=mixmod,\
-                                                 ctor_data=dict(weights=WEIGHT_MIXMOD,\
-                                                                    means=MEAN_MIXMOD,\
-                                                                    stds=STD_MIXMOD),\
-                                                 convert_data=dict(), test_xvals=TEST_XVALS,
-                                                 atol_diff2=1.))
 add_class(mixmod_gen)

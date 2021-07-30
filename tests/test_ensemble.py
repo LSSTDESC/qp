@@ -131,6 +131,7 @@ class EnsembleTestCase(unittest.TestCase):
         
     def test_hist(self):
         key = 'hist'
+        qp.hist_gen.make_test_data()
         test_data = qp.hist_gen.test_data[key]
         self.ens_h = build_ensemble(test_data)
         assert isinstance(self.ens_h.gen_obj, qp.hist_gen)
@@ -143,6 +144,7 @@ class EnsembleTestCase(unittest.TestCase):
 
     def test_interp(self):
         key = 'interp'
+        qp.interp_gen.make_test_data()
         test_data = qp.interp_gen.test_data[key]
         self.ens_i = build_ensemble(test_data)
         assert isinstance(self.ens_i.gen_obj, qp.interp_gen)

@@ -53,6 +53,10 @@ class PDFTestCase(unittest.TestCase):
     def auto_add(cls, class_list, ens_orig):
         """Add tests as member functions to a class"""
         for test_class in class_list:
+            try:
+                test_class.make_test_data()
+            except AttributeError:
+                pass
             if hasattr(test_class, 'test_data'):
                 cls.auto_add_class(test_class, ens_orig)
         

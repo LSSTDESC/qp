@@ -121,8 +121,10 @@ class spline_gen(Pdf_rows_gen):
             raise ValueError("Either splx must be provided")
         if splx.shape != sply.shape:  # pragma: no cover
             raise ValueError("Shape of xvals (%s) != shape of yvals (%s)" % (splx.shape, sply.shape))
-        kwargs['a'] = self.a = np.min(splx)
-        kwargs['b'] = self.b = np.max(splx)
+        #kwargs['a'] = self.a = np.min(splx)
+        #kwargs['b'] = self.b = np.max(splx)
+        self._xmin = np.min(splx)
+        self._xmax = np.max(splx)
         kwargs['shape'] = splx.shape[:-1]
         self._splx = reshape_to_pdf_size(splx, -1)
         self._sply = reshape_to_pdf_size(sply, -1)
@@ -224,27 +226,27 @@ class spline_gen(Pdf_rows_gen):
 
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
-        factored, xr, rr, _ = self._sliceargs(x, row)
+        #factored, xr, rr, _ = self._sliceargs(x, row)
         ns = self._splx.shape[-1]
-        if factored:  #pragma: no cover
-            def pdf_row_fact(spl_):
-                return splev(xr, (spl_[0:ns], spl_[ns:2*ns], spl_[-1].astype(int)))
+        #if factored:  #pragma: no cover
+        #    def pdf_row_fact(spl_):
+        #        return splev(xr, (spl_[0:ns], spl_[ns:2*ns], spl_[-1].astype(int)))
 
-            vv = np.vectorize(pdf_row_fact, signature="(%i)->(%i)" % (2*ns+1, xr.size))
-            spl = np.hstack([self._splx[rr], self._sply[rr], self._spln[rr]])
-            return vv(spl).flat
+        #    vv = np.vectorize(pdf_row_fact, signature="(%i)->(%i)" % (2*ns+1, xr.size))
+        #    spl = np.hstack([self._splx[rr], self._sply[rr], self._spln[rr]])
+        #    return vv(spl).flat
 
         def pdf_row(xv, irow):
             return splev(xv, (self._splx[irow], self._sply[irow], self._spln[irow].item()))
 
         vv = np.vectorize(pdf_row)
-        return vv(xr, rr)
+        return vv(x, row)
 
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
         def cdf_row(xv, irow):
-            return splint(self.a, xv, (self._splx[irow], self._sply[irow], self._spln[irow].item()))
+            return splint(self._xmin, xv, (self._splx[irow], self._sply[irow], self._spln[irow].item()))
 
         vv = np.vectorize(cdf_row)
         return vv(x, row)
@@ -281,25 +283,24 @@ class spline_gen(Pdf_rows_gen):
         cls._add_extraction_method(extract_samples, "samples")
 
 
+    @classmethod
+    def make_test_data(cls):
+        SPLX, SPLY, SPLN = cls.build_normed_splines(XARRAY, YARRAY)
+        cls.test_data = dict(spline=dict(gen_func=spline, ctor_data=dict(splx=SPLX, sply=SPLY, spln=SPLN),\
+                                         test_xvals=TEST_XVALS[::10]),
+                             spline_kde=dict(gen_func=spline_from_samples,\
+                                             ctor_data=dict(samples=SAMPLES, xvals=np.linspace(0, 5, 51)),\
+                                             convert_data=dict(xvals=np.linspace(0, 5, 51), method='samples'),\
+                                             test_xvals=TEST_XVALS, atol_diff2=1., test_pdf=False),\
+                             spline_xy=dict(gen_func=spline_from_xy,\
+                                            ctor_data=dict(xvals=XARRAY, yvals=YARRAY),\
+                                            convert_data=dict(xvals=np.linspace(0, 5, 51), method='xy'),\
+                                            test_xvals=TEST_XVALS, test_pdf=False))
+
+
+
 spline = spline_gen.create
 spline_from_xy = spline_gen.create_from_xy_vals
 spline_from_samples = spline_gen.create_from_samples
 
-SPLX, SPLY, SPLN = spline_gen.build_normed_splines(XARRAY, YARRAY)
-#try:
-#    SPLX, SPLY, SPLN = spline_gen.build_normed_splines(XARRAY, YARRAY)
-#except: #pragma: no cover # pylint: disable=bare-except
-#    SPLX, SPLY, SPN = (None, None, None)
-
 add_class(spline_gen)
-
-spline_gen.test_data = dict(spline=dict(gen_func=spline, ctor_data=dict(splx=SPLX, sply=SPLY, spln=SPLN),\
-                                            test_xvals=TEST_XVALS[::10]),
-                                spline_kde=dict(gen_func=spline_from_samples,\
-                                                    ctor_data=dict(samples=SAMPLES, xvals=np.linspace(0, 5, 51)),\
-                                                    convert_data=dict(xvals=np.linspace(0, 5, 51), method='samples'),\
-                                                    test_xvals=TEST_XVALS, atol_diff2=1., test_pdf=False),\
-                                spline_xy=dict(gen_func=spline_from_xy,\
-                                                   ctor_data=dict(xvals=XARRAY, yvals=YARRAY),\
-                                                   convert_data=dict(xvals=np.linspace(0, 5, 51), method='xy'),\
-                                                   test_xvals=TEST_XVALS, test_pdf=False))

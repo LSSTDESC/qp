@@ -343,7 +343,7 @@ def interpolate_unfactored_multi_x_multi_y(x, row, xvals, yvals, **kwargs):
 
 
 
-def interpolate_multi_x_multi_y(x, xvals, yvals, **kwargs):
+def interpolate_multi_x_multi_y(x, xvals, yvals, **kwargs):  #pragma: no cover
     """
     Interpolate a set of values
 
@@ -369,7 +369,7 @@ def interpolate_multi_x_multi_y(x, xvals, yvals, **kwargs):
     return vv(xy_vals)
 
 
-def interpolate_x_multi_y(x, xvals, yvals, **kwargs):
+def interpolate_x_multi_y(x, xvals, yvals, **kwargs):  #pragma: no cover
     """
     Interpolate a set of values
 
