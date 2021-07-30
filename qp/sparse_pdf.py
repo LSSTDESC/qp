@@ -84,7 +84,7 @@ class sparse_gen(interp_gen):
     def build_test_data():
         """build a test case out of real pdfs"""
         qproot = sys.modules['qp'].__path__[0]
-        filein = os.path.join(qproot, '../docs/notebooks/CFHTLens_sample.P.npy')
+        filein = os.path.join(qproot, '../data/CFHTLens_sample.P.npy')
         #FORMAT FILE, EACH ROW IS THE PDF FOR EACH GALAXY, LAST ROW IS THE REDSHIFT POSITION
         P = np.load(filein)
         z = P[-1]
