@@ -21,18 +21,18 @@ To make sure you are running the latest version, you can rebuild the Binder `qp`
 
 You can also browse the (un-executed) notebooks here in this repo:
 
-* **[Basic Demo](http://htmlpreview.github.io/?https://github.com/LSSTDESC/qp/blob/master/docs/demo.html)** [(raw notebook)](https://github.com/LSSTDESC/qp/blob/master/nb/demo.ipynb)
+* **[Basic Demo](http://htmlpreview.github.io/?https://github.com/LSSTDESC/qp/blob/main/docs/demo.html)** [(raw notebook)](https://github.com/LSSTDESC/qp/blob/main/nb/demo.ipynb)
 
-* **[Practical Example](http://htmlpreview.github.io/?https://github.com/LSSTDESC/qp/blob/master/docs/demo.html)** [(raw notebook)](https://github.com/LSSTDESC/qp/blob/master/nb/demo.ipynb)
+* **[Practical Example](http://htmlpreview.github.io/?https://github.com/LSSTDESC/qp/blob/main/docs/demo.html)** [(raw notebook)](https://github.com/LSSTDESC/qp/blob/main/nb/demo.ipynb)
 
 Also: [Read the Docs](http://qp.readthedocs.io/)
 
 
 ## People
 
-* [Alex Malz](https://github.com/aimalz/qp/issues/new?body=@aimalz) (NYU)
-* [Phil Marshall](https://github.com/aimalz/qp/issues/new?body=@drphilmarshall) (SLAC)
-* [Eric Charles](https://github.com/aimalz/qp/issues/new?body=@eacharles) (SLAC)
+* [Alex Malz](https://github.com/LSSTDESC/qp/issues/new?body=@aimalz) (NYU)
+* [Phil Marshall](https://github.com/LSSTDESC/qp/issues/new?body=@drphilmarshall) (SLAC)
+* [Eric Charles](https://github.com/LSSTDESC/qp/issues/new?body=@eacharles) (SLAC)
 
 ## License, Contributing etc
 
