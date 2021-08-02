@@ -15,13 +15,15 @@ This repository exists for two reasons.
 
 You can run the `qp` IPython notebooks live over the web at [Binder](http://mybinder.org):
 
-[![Binder](http://mybinder.org/badge.svg)](http://mybinder.org/repo/aimalz/qp)
+[![Binder](http://mybinder.org/badge.svg)](http://mybinder.org/repo/LSSTDESC/qp)
 
-To make sure you are running the latest version, you can rebuild the Binder `qp` installation [here](http://mybinder.org/status/aimalz/qp).
+To make sure you are running the latest version, you can rebuild the Binder `qp` installation [here](http://mybinder.org/status/LSSTDESC/qp).
 
 You can also browse the (un-executed) notebooks here in this repo:
 
-* **[Basic  Demo](http://htmlpreview.github.io/?https://github.com/LSSTDESC/qp/blob/html/demo.html)** [(raw notebook)](https://github.com/LSSTDESC/qp/blob/master/docs/notebooks/demo.ipynb)
+* **[Basic Demo](http://htmlpreview.github.io/?https://github.com/LSSTDESC/qp/blob/docs/demo.html)** [(raw notebook)](https://github.com/LSSTDESC/qp/blob/master/nb/demo.ipynb)
+
+* **[Practical Example](http://htmlpreview.github.io/?https://github.com/LSSTDESC/qp/blob/docs/demo.html)** [(raw notebook)](https://github.com/LSSTDESC/qp/blob/master/nb/demo.ipynb)
 
 Also: [Read the Docs](http://qp.readthedocs.io/)
 
