@@ -57,11 +57,12 @@ def pad_quantiles(quants, locs):
     quants_out[offset_lo:n_vals+offset_lo] = quants
     locs_out[:,offset_lo:n_vals+offset_lo] = locs
     if pad_lo:
-        locs_out[:, 0] = locs[:, 0] - 0.1
+        locs_out[:, 0] = locs[:, 0] - quants[0] * (locs[:, 1] - locs[:, 0]) / (quants[1] - quants[0])
 
     if pad_hi:
         quants_out[-1] = 1.
-        locs_out[:,-1] = locs[:, -1] + 0.1
+        locs_out[:, -1] = locs[:, -1] - (1. - quants[-1]) * (locs[:, -2] - locs[:, -1]) / (quants[-1] - quants[-2])
+
     return quants_out, locs_out
 
 
@@ -305,7 +306,6 @@ class quant_piecewise_gen(Pdf_rows_gen):
     def make_test_data(cls):
         cls.test_data = dict(quant_piecewise=dict(gen_func=quant_piecewise, ctor_data=dict(quants=QUANTS, locs=QLOCS),\
                                                   convert_data=dict(quants=QUANTS), test_xvals=TEST_XVALS))
-
 
 quant_piecewise = quant_piecewise_gen.create
 
