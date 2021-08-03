@@ -27,6 +27,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install pylint pytest pytest-cov
+        python -m pip install jupyter
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
       run: |
@@ -47,3 +48,7 @@ jobs:
         env_vars: OS,PYTHON
         name: codecov-umbrella
         fail_ci_if_error: true
+    - name: Render notebooks
+      run: |
+        jupyter nbconvert --ExecutePreprocessor.kernel_name=python --ExecutePreprocessor.timeout=600 --to html --execute nb/demo.ipynb
+        jupyter nbconvert --ExecutePreprocessor.kernel_name=python --ExecutePreprocessor.timeout=800 --to html --execute nb/practical_example.ipynb
