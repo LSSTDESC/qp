@@ -48,8 +48,3 @@ jobs:
         env_vars: OS,PYTHON
         name: codecov-umbrella
         fail_ci_if_error: true
-    - name: Render notebooks
-      run: |
-        python setup.py install
-        python -m jupyter nbconvert --ExecutePreprocessor.kernel_name=python --ExecutePreprocessor.timeout=600 --to html --execute nb/demo.ipynb
-        python -m jupyter nbconvert --ExecutePreprocessor.kernel_name=python --ExecutePreprocessor.timeout=800 --to html --execute nb/practical_example.ipynb
