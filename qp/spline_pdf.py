@@ -226,16 +226,6 @@ class spline_gen(Pdf_rows_gen):
 
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
-        #factored, xr, rr, _ = self._sliceargs(x, row)
-        ns = self._splx.shape[-1]
-        #if factored:  #pragma: no cover
-        #    def pdf_row_fact(spl_):
-        #        return splev(xr, (spl_[0:ns], spl_[ns:2*ns], spl_[-1].astype(int)))
-
-        #    vv = np.vectorize(pdf_row_fact, signature="(%i)->(%i)" % (2*ns+1, xr.size))
-        #    spl = np.hstack([self._splx[rr], self._sply[rr], self._spln[rr]])
-        #    return vv(spl).flat
-
         def pdf_row(xv, irow):
             return splev(xv, (self._splx[irow], self._sply[irow], self._spln[irow].item()))
 
@@ -285,6 +275,7 @@ class spline_gen(Pdf_rows_gen):
 
     @classmethod
     def make_test_data(cls):
+        """ Make data for unit tests """
         SPLX, SPLY, SPLN = cls.build_normed_splines(XARRAY, YARRAY)
         cls.test_data = dict(spline=dict(gen_func=spline, ctor_data=dict(splx=SPLX, sply=SPLY, spln=SPLN),\
                                          test_xvals=TEST_XVALS[::10]),

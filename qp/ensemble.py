@@ -346,15 +346,13 @@ class Ensemble:
         tables = self.build_tables()
         if ext in ['.fits', '.fit']:
             io_layer.writeTablesToFits(tables, filename, overwrite=True)
-            return
         elif ext in ['.hdf5']:
             io_layer.writeTablesToHdf5(tables, filename, overwrite=True)
-            return
         elif ext in ['.pq', '.parquet']:
             dataframes = io_layer.tablesToDataframes(tables)
             io_layer.writeDataframesToPq(dataframes, basename)
-            return
-        raise ValueError("Can not write to format %s.  Only fits, hdf5 and parquet are supported" % ext)
+        else:
+            raise ValueError("Can not write to format %s.  Only fits, hdf5 and parquet are supported" % ext)
 
 
     def pdf(self, x):

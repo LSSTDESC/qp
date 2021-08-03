@@ -11,7 +11,7 @@ from qp.conversion_funcs import extract_vals_at_x, extract_xy_vals, extract_xy_s
 from qp.plotting import get_axes_and_xlims, plot_pdf_on_axes
 from qp.utils import normalize_interp1d,\
      interpolate_unfactored_multi_x_multi_y, interpolate_unfactored_multi_x_y, interpolate_unfactored_x_multi_y,\
-     interpolate_multi_x_multi_y, interpolate_multi_x_y, interpolate_x_multi_y, reshape_to_pdf_size
+     reshape_to_pdf_size
 from qp.test_data import XBINS, XARRAY, YARRAY, TEST_XVALS
 from qp.factory import add_class
 
@@ -98,7 +98,7 @@ class interp_gen(Pdf_rows_gen):
         if self._ycumul is None:  # pragma: no cover
             self._compute_ycumul()
         if np.shape(x)[:-1] == np.shape(row)[:-1]:
-            return interpolate_unfactored_x_multi_y(x, row, self._xvals, self._ycumul, bounds_error=False, fill_value=(0.,1.))            
+            return interpolate_unfactored_x_multi_y(x, row, self._xvals, self._ycumul, bounds_error=False, fill_value=(0.,1.))
         return interp1d(self._xvals, self._ycumul[np.squeeze(row)], bounds_error=False, fill_value=(0.,1.))(x)
 
 
@@ -111,12 +111,14 @@ class interp_gen(Pdf_rows_gen):
 
     def _munp(self, m, *args):
         """ compute moments """
+        # pylint: disable=arguments-differ
         # Silence floating point warnings from integration.
         with np.errstate(all='ignore'):
             vals = self.custom_generic_moment(m)
         return vals
 
     def custom_generic_moment(self, m):
+        """ Compute the mth moment """
         m = np.asarray(m)
         dx = self._xvals[1] - self._xvals[0]
         return np.expand_dims(np.sum(self._xvals**m * self._yvals, axis=1) * dx, -1)
@@ -150,6 +152,7 @@ class interp_gen(Pdf_rows_gen):
 
     @classmethod
     def make_test_data(cls):
+        """ Make data for unit tests """
         cls.test_data = dict(interp=dict(gen_func=interp, ctor_data=dict(xvals=XBINS, yvals=YARRAY),\
                                          convert_data=dict(xvals=XBINS), test_xvals=TEST_XVALS))
 
@@ -271,6 +274,7 @@ class interp_irregular_gen(Pdf_rows_gen):
 
     @classmethod
     def make_test_data(cls):
+        """ Make data for unit tests """
         cls.test_data = dict(interp_irregular=dict(gen_func=interp_irregular, ctor_data=dict(xvals=XARRAY, yvals=YARRAY),\
                                                    convert_data=dict(xvals=XBINS), test_xvals=TEST_XVALS))
 

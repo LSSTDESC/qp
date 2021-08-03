@@ -1,7 +1,5 @@
 """IO Functions for qp"""
 
-import os
-
 from collections import OrderedDict
 
 import numpy as np
@@ -19,10 +17,10 @@ try:
 except ImportError:
     HAS_HDF5 = False
 
-try:   
+try:
     import pandas as pd
     HAS_PANDAS = True
-except:
+except ImportError:
     HAS_PANDAS = False
 
 try:
@@ -64,7 +62,7 @@ def forceToPandables(arr, check_nrow=None):
 
 
 def tableToDataframe(tab):
-    """ 
+    """
     Convert an `astropy.table.Table` to a `pandas.DataFrame`
 
     Parameters
@@ -78,7 +76,7 @@ def tableToDataframe(tab):
         The dataframe
     """
     if not HAS_PANDAS:
-        raise ImportError("pandas is not available, can't make DataFrame") 
+        raise ImportError("pandas is not available, can't make DataFrame")
 
     o_dict = OrderedDict()
     for colname in tab.columns:
@@ -91,7 +89,7 @@ def tableToDataframe(tab):
 
 
 def arraysToDataframe(array_dict, meta=None):
-    """ 
+    """
     Convert a `dict` of  `numpy.array` to a `pandas.DataFrame`
 
     Parameters
@@ -108,20 +106,20 @@ def arraysToDataframe(array_dict, meta=None):
         The dataframe
     """
     if not HAS_PANDAS:
-        raise ImportError("pandas is not available, can't make DataFrame") 
+        raise ImportError("pandas is not available, can't make DataFrame")
 
     o_dict = OrderedDict()
     for k, v in array_dict:
-        o_dict[k] = force_to_pandable(v)
+        o_dict[k] = forceToPandables(v)
     df =  pd.DataFrame(o_dict)
-    if meta is not None:        
+    if meta is not None:
         for k, v in meta.items():
             df.attrs[k] = v
     return df
 
 
 def dataframeToTable(df):
-    """ 
+    """
     Convert a `pandas.DataFrame` to an `astropy.table.Table`
 
     Parameters
@@ -151,7 +149,7 @@ def dataframeToTable(df):
 
 
 def tablesToDataframes(tables):
-    """ 
+    """
     Convert several `astropy.table.Table` to `pandas.DataFrame`
 
     Parameters
@@ -186,11 +184,11 @@ def dataframesToTables(dataframes):
 
 def writeTablesToFits(tables, filepath, **kwargs):
     """
-    Writes a dictionary of `astropy.table.Table` to a single FITS file 
+    Writes a dictionary of `astropy.table.Table` to a single FITS file
 
     Parameters
     ----------
-    tables : `dict` of `astropy.table.Table` 
+    tables : `dict` of `astropy.table.Table`
         Keys will be HDU names, values will be tables
 
     filepath: `str`
@@ -200,7 +198,7 @@ def writeTablesToFits(tables, filepath, **kwargs):
     """
     if not HAS_ASTROPY:
         raise ImportError("Astropy is not available, can't save to FITS")
-    out_list = [fits.PrimaryHDU()]    
+    out_list = [fits.PrimaryHDU()]
     for k, v in tables.items():
         hdu = fits.table_to_hdu(v)
         hdu.name = k
@@ -211,7 +209,7 @@ def writeTablesToFits(tables, filepath, **kwargs):
 
 def readFitsToTables(filepath):
     """
-    Reads `astropy.table.Table` objects from a FITS file. 
+    Reads `astropy.table.Table` objects from a FITS file.
 
     Parameters
     ----------
@@ -220,7 +218,7 @@ def readFitsToTables(filepath):
 
     Returns
     -------
-    tables : `OrderedDict` of `astropy.table.Table` 
+    tables : `OrderedDict` of `astropy.table.Table`
         Keys will be HDU names, values will be tables
     """
     if not HAS_ASTROPY:
@@ -234,11 +232,11 @@ def readFitsToTables(filepath):
 
 def writeTablesToHdf5(tables, filepath, **kwargs):
     """
-    Writes a dictionary of `astropy.table.Table` to a single hdf5 file 
+    Writes a dictionary of `astropy.table.Table` to a single hdf5 file
 
     Parameters
     ----------
-    tables : `dict` of `astropy.table.Table` 
+    tables : `dict` of `astropy.table.Table`
         Keys will be passed to 'path' parameter
 
     filepath: `str`
@@ -255,7 +253,7 @@ def writeTablesToHdf5(tables, filepath, **kwargs):
 
 def readHdf5ToTables(filepath):
     """
-    Reads `astropy.table.Table` objects from an hdf5 file. 
+    Reads `astropy.table.Table` objects from an hdf5 file.
 
     Parameters
     ----------
@@ -264,7 +262,7 @@ def readHdf5ToTables(filepath):
 
     Returns
     -------
-    tables : `OrderedDict` of `astropy.table.Table` 
+    tables : `OrderedDict` of `astropy.table.Table`
         Keys will be 'paths', values will be tables
     """
     if not HAS_HDF5:
@@ -276,20 +274,20 @@ def readHdf5ToTables(filepath):
     return tables
 
 
-
 def writeArraysToHdf5(arrays, filepath, **kwargs):
     """
-    Writes a dictionary of `numpy.array` to a single hdf5 file 
+    Writes a dictionary of `numpy.array` to a single hdf5 file
 
     Parameters
     ----------
-    tables : `dict` of `numpy.array` 
+    tables : `dict` of `numpy.array`
         Keys will be passed to 'path' parameter
 
     filepath: `str`
         Path to output file
 
     """
+    # pylint: disable=unused-argument
     if not HAS_HDF5:
         raise ImportError("h5py is not available, can't save to hdf5")
     raise NotImplementedError("writeArraysToHdf5")
@@ -297,7 +295,7 @@ def writeArraysToHdf5(arrays, filepath, **kwargs):
 
 def readHdf5ToArrays(filepath):
     """
-    Reads `numpy.array` objects from an hdf5 file. 
+    Reads `numpy.array` objects from an hdf5 file.
 
     Parameters
     ----------
@@ -306,9 +304,10 @@ def readHdf5ToArrays(filepath):
 
     Returns
     -------
-    tables : `OrderedDict` of `numpy.array` 
+    tables : `OrderedDict` of `numpy.array`
         Keys will be 'paths', values will be tables
     """
+    # pylint: disable=unused-argument
     if not HAS_HDF5:
         raise ImportError("h5py is not available, can't read hdf5")
     raise NotImplementedError("writeArraysToHdf5")
@@ -326,14 +325,14 @@ def writeDataframesToPq(dataFrames, filepath, **kwargs):
     filepath: `str`
         Path to output file
 
-    """    
+    """
     for k, v in dataFrames.items():
-        pq = v.to_parquet("%s%s.pq" % (filepath, k), **kwargs)
+        _ = v.to_parquet("%s%s.pq" % (filepath, k), **kwargs)
 
 
 def readPqToDataframes(basepath, keys=None, **kwargs):
     """
-    Reads `pandas.DataFrame` objects from an parquet file. 
+    Reads `pandas.DataFrame` objects from an parquet file.
 
     Parameters
     ----------
@@ -345,18 +344,17 @@ def readPqToDataframes(basepath, keys=None, **kwargs):
 
     Returns
     -------
-    tables : `OrderedDict` of `pandas.DataFrame` 
+    tables : `OrderedDict` of `pandas.DataFrame`
         Keys will be taken from keys
     """
 
     if keys is None:
-        keys = [""]        
+        keys = [""]
     dataframes = OrderedDict()
     for key in keys:
         try:
             pqtab = pq.read_table("%s%s.pq" % (basepath, key), **kwargs)
-            dataframes[key] = pqtab.to_pandas()                    
-        except Exception as msg:
-            pass            
+            dataframes[key] = pqtab.to_pandas()
+        except Exception:
+            pass
     return dataframes
-

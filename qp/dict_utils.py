@@ -189,11 +189,11 @@ def compare_two_dicts(d1, d2):
     -------
     match : `bool`
         True if they all match, False otherwise
-    """    
+    """
     if d1.keys() != d2.keys():  #pragma: no cover
         return False
     for k, v in d1.items():
-        vv = d2[k]        
+        vv = d2[k]
         try:
             if v != vv:  #pragma: no cover
                 return False

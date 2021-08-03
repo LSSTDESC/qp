@@ -11,8 +11,8 @@ from qp.pdf_gen import Pdf_rows_gen
 from qp.conversion_funcs import extract_mixmod_fit_samples
 from qp.test_data import WEIGHT_MIXMOD, MEAN_MIXMOD, STD_MIXMOD, TEST_XVALS
 from qp.factory import add_class
-from qp.utils import reshape_to_pdf_size, interpolate_unfactored_multi_x_y,\
-    interpolate_multi_x_y
+from qp.utils import reshape_to_pdf_size, interpolate_unfactored_multi_x_y
+
 
 class mixmod_gen(Pdf_rows_gen):
     """Mixture model based distribution
@@ -75,7 +75,7 @@ class mixmod_gen(Pdf_rows_gen):
         #                             scale=np.expand_dims(self._stds[rr], -1)).pdf(np.expand_dims(xr, 0))).sum(axis=1).reshape(x.shape)
         if np.ndim(x) > 1:
             x = np.expand_dims(x, -2)
-        return (self.weights[row].swapaxes(-2,-1) * 
+        return (self.weights[row].swapaxes(-2,-1) *
                 sps.norm(loc=self._means[row].swapaxes(-2,-1),
                          scale=self._stds[row].swapaxes(-2,-1)).pdf(x)).sum(axis=1)
 
@@ -88,7 +88,7 @@ class mixmod_gen(Pdf_rows_gen):
         #                            scale=np.expand_dims(self._stds[rr], -1)).cdf(np.expand_dims(xr, 0))).sum(axis=1).reshape(x.shape)
         if np.ndim(x) > 1:
             x = np.expand_dims(x, -2)
-        return (self.weights[row].swapaxes(-2,-1) * 
+        return (self.weights[row].swapaxes(-2,-1) *
                 sps.norm(loc=self._means[row].swapaxes(-2,-1),
                          scale=self._stds[row].swapaxes(-2,-1)).cdf(x)).sum(axis=1)
 
@@ -127,6 +127,7 @@ class mixmod_gen(Pdf_rows_gen):
 
     @classmethod
     def make_test_data(cls):
+        """ Make data for unit tests """
         cls.test_data = dict(mixmod=dict(gen_func=mixmod,\
                                          ctor_data=dict(weights=WEIGHT_MIXMOD,\
                                                         means=MEAN_MIXMOD,\

@@ -11,9 +11,9 @@ from qp.pdf_gen import Pdf_rows_gen
 
 from qp.conversion_funcs import extract_quantiles
 from qp.plotting import get_axes_and_xlims, plot_pdf_quantiles_on_axes
-from qp.utils import evaluate_hist_multi_x_multi_y, evaluate_unfactored_hist_multi_x_multi_y,\
+from qp.utils import evaluate_unfactored_hist_multi_x_multi_y,\
      interpolate_unfactored_multi_x_y, interpolate_unfactored_x_multi_y,\
-     interpolate_multi_x_y, interpolate_x_multi_y, reshape_to_pdf_size
+     reshape_to_pdf_size
 from qp.test_data import QUANTS, QLOCS, TEST_XVALS
 from qp.factory import add_class
 
@@ -304,6 +304,7 @@ class quant_piecewise_gen(Pdf_rows_gen):
 
     @classmethod
     def make_test_data(cls):
+        """ Make data for unit tests """
         cls.test_data = dict(quant_piecewise=dict(gen_func=quant_piecewise, ctor_data=dict(quants=QUANTS, locs=QLOCS),\
                                                   convert_data=dict(quants=QUANTS), test_xvals=TEST_XVALS))
 

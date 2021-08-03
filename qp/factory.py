@@ -9,8 +9,6 @@ import numpy as np
 
 from scipy import stats as sps
 
-from astropy.table import Table
-
 from qp.ensemble import Ensemble
 
 from qp.dict_utils import compare_dicts, concatenate_dicts
@@ -143,7 +141,7 @@ class Factory(OrderedDict):
             tables = io_layer.readFitsToTables(filename)
         elif ext in ['.hdf5']:
             tables = io_layer.readHdf5ToTables(filename)
-        elif ext in ['.pq', '.parquet']:            
+        elif ext in ['.pq', '.parquet']:
             dataframes = io_layer.readPqToDataframes(basename, keys)
             tables = io_layer.dataframesToTables(dataframes)
         else:

@@ -10,9 +10,9 @@ from scipy.interpolate import interp1d
 from qp.pdf_gen import Pdf_rows_gen
 from qp.conversion_funcs import extract_hist_values, extract_hist_samples
 from qp.plotting import get_axes_and_xlims, plot_pdf_histogram_on_axes
-from qp.utils import evaluate_hist_x_multi_y, evaluate_unfactored_hist_x_multi_y,\
+from qp.utils import evaluate_unfactored_hist_x_multi_y,\
      interpolate_unfactored_multi_x_y, interpolate_unfactored_x_multi_y,\
-     interpolate_multi_x_y, interpolate_x_multi_y, reshape_to_pdf_size
+     reshape_to_pdf_size
 from qp.test_data import XBINS, HIST_DATA, TEST_XVALS, NSAMPLES
 from qp.factory import add_class
 
@@ -132,6 +132,7 @@ class hist_gen(Pdf_rows_gen):
 
     @classmethod
     def make_test_data(cls):
+        """ Make data for unit tests """
         cls.test_data = dict(hist=dict(gen_func=hist, ctor_data=dict(bins=XBINS, pdfs=HIST_DATA),\
                                        convert_data=dict(bins=XBINS), atol_diff=1e-1, atol_diff2=1e-1, test_xvals=TEST_XVALS),
                              hist_samples=dict(gen_func=hist, ctor_data=dict(bins=XBINS, pdfs=HIST_DATA),\
