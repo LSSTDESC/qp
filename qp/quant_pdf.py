@@ -307,7 +307,6 @@ class quant_piecewise_gen(Pdf_rows_gen):
         cls.test_data = dict(quant_piecewise=dict(gen_func=quant_piecewise, ctor_data=dict(quants=QUANTS, locs=QLOCS),\
                                                   convert_data=dict(quants=QUANTS), test_xvals=TEST_XVALS))
 
-
 quant_piecewise = quant_piecewise_gen.create
 
 add_class(quant_piecewise_gen)
