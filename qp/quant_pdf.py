@@ -93,8 +93,6 @@ class quant_gen(Pdf_rows_gen):
         locs : array_like
            The locations at which those quantiles are reached
         """
-        print(quants.shape)
-        print(locs.shape)
         kwargs['shape'] = locs.shape[:-1]
 
         self._xmin = np.min(locs)
