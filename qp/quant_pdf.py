@@ -57,11 +57,12 @@ def pad_quantiles(quants, locs):
     quants_out[offset_lo:n_vals+offset_lo] = quants
     locs_out[:,offset_lo:n_vals+offset_lo] = locs
     if pad_lo:
-        locs_out[:, 0] = locs[:, 0] - 0.1
+        locs_out[:, 0] = locs[:, 0] - quants[0] * (quants[1] - quants[0]) / (locs[:, 1] - locs[:, 0])
 
     if pad_hi:
         quants_out[-1] = 1.
-        locs_out[:,-1] = locs[:, -1] + 0.1
+        locs_out[:,-1] = locs[:, -1] - quants[-1] * (quants[-1] - quants[-2]) / (locs[:, -2] - locs[:, -1])
+
     return quants_out, locs_out
 
 
