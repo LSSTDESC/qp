@@ -29,7 +29,6 @@ jobs:
         python -m pip install pylint pytest pytest-cov
         python -m pip install jupyter
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        python -m pip install .
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -51,5 +50,5 @@ jobs:
         fail_ci_if_error: true
     - name: Render notebooks
       run: |
-        jupyter nbconvert --ExecutePreprocessor.kernel_name=python --ExecutePreprocessor.timeout=600 --to html --execute nb/demo.ipynb
-        jupyter nbconvert --ExecutePreprocessor.kernel_name=python --ExecutePreprocessor.timeout=800 --to html --execute nb/practical_example.ipynb
+        python -m jupyter nbconvert --ExecutePreprocessor.kernel_name=python --ExecutePreprocessor.timeout=600 --to html --execute nb/demo.ipynb
+        python -m jupyter nbconvert --ExecutePreprocessor.kernel_name=python --ExecutePreprocessor.timeout=800 --to html --execute nb/practical_example.ipynb
