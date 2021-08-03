@@ -5,3 +5,5 @@ astropy
 sklearn
 h5py
 setuptools_scm
+pandas
+pyarrow

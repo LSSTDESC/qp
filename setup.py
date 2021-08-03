@@ -4,13 +4,12 @@ setup(
     name="qp",
     author="Alex Malz, Phil Marshall, Eric Charles",
     author_email="aimalz@nyu.edu, pjm@slac.stanford.edu, echarles@slac.stanford.edu",
-    url = "https://github.com/aimalz/qp",
+    url = "https://github.com/LSSTDESC/qp",
     packages=["qp"],
     description="Quantile parametrization of probability distribution functions",
     setup_requires=['setuptools_scm'],
     long_description=open("README.md").read(),
-    package_data={"": ["README.md", "LICENSE", "*.npy"],
-                      "docs/notebooks": ["*.npy"]},
+    package_data={"": ["README.md", "LICENSE", "*.npy"]},
     use_scm_version={"write_to":"qp/_version.py"},
     include_package_data=True,
     classifiers=[
@@ -21,5 +20,13 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         ],
-    install_requires=["matplotlib", "numpy>=1.21.0", "scipy>=1.7.0", "sklearn", "astropy", "h5py", "setuptools_scm"]
+    install_requires=["matplotlib",
+                      "numpy>=1.21.0",
+                      "scipy>=1.7.0",
+                      "sklearn",
+                      "astropy",
+                      "h5py",
+                      "pandas",
+                      "pyarrow",
+                      "setuptools_scm"]
 )

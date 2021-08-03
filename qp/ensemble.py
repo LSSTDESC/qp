@@ -12,6 +12,7 @@ from qp.dict_utils import slice_dict, print_dict_shape, check_array_shapes, comp
 
 from qp.metrics import quick_kld, quick_rmse, quick_moment
 
+from qp import io_layer
 
 
 class Ensemble:
@@ -342,12 +343,18 @@ class Ensemble:
         `astropy.Table.write` will work here.
         """
         basename, ext = os.path.splitext(filename)
-        meta_ext = "_meta%s" % ext
-        meta_filename = basename + meta_ext
-
         tables = self.build_tables()
-        tables['meta'].write(meta_filename, overwrite=True)
-        tables['data'].write(filename, overwrite=True)
+        if ext in ['.fits', '.fit']:
+            io_layer.writeTablesToFits(tables, filename, overwrite=True)
+            return
+        elif ext in ['.hdf5']:
+            io_layer.writeTablesToHdf5(tables, filename, overwrite=True)
+            return
+        elif ext in ['.pq', '.parquet']:
+            dataframes = io_layer.tablesToDataframes(tables)
+            io_layer.writeDataframesToPq(dataframes, basename)
+            return
+        raise ValueError("Can not write to format %s.  Only fits, hdf5 and parquet are supported" % ext)
 
 
     def pdf(self, x):

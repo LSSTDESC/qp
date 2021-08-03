@@ -14,4 +14,6 @@ from .ensemble import Ensemble
 from .factory import instance, add_class, create, read, convert, concatenate
 
 from . import utils
+from . import io_layer
+
 from . import test_funcs

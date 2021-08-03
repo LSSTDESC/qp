@@ -17,6 +17,8 @@ from qp.dict_utils import compare_dicts, concatenate_dicts
 
 from qp.pdf_gen import Pdf_gen_wrap
 
+from qp import io_layer
+
 
 class Factory(OrderedDict):
     """Factory that creates and mangages PDFs
@@ -33,16 +35,18 @@ class Factory(OrderedDict):
         data_dict = {}
         for col in md_table.columns:
             col_data = md_table[col].data
-            if len(col_data.shape) > 1:
+            ndim = np.ndim(col_data)
+            if ndim > 1:
                 col_data = np.squeeze(col_data)
-
-            if col_data.size == 1:
+                if np.ndim(col_data) == 0:
+                    col_data = col_data.item()
+            elif ndim == 1:
                 col_data = col_data[0]
 
             if isinstance(col_data, bytes):
                 col_data = col_data.decode()
-            data_dict[col] = col_data
 
+            data_dict[col] = col_data
 
         for col in data_table.columns:
             col_data = data_table[col].data
@@ -133,12 +137,20 @@ class Factory(OrderedDict):
         need to build the ensemble.
         """
         basename, ext = os.path.splitext(filename)
-        meta_ext = "_meta%s" % ext
-        meta_filename = basename + meta_ext
+        keys = ['data', 'meta', 'ancil']
 
-        md_table = Table.read(meta_filename)
-        data_table = Table.read(filename)
+        if ext in ['.fits', '.fit']:
+            tables = io_layer.readFitsToTables(filename)
+        elif ext in ['.hdf5']:
+            tables = io_layer.readHdf5ToTables(filename)
+        elif ext in ['.pq', '.parquet']:            
+            dataframes = io_layer.readPqToDataframes(basename, keys)
+            tables = io_layer.dataframesToTables(dataframes)
+        else:
+            raise ValueError("Can not read format %s.  Only fits, hdf5 and parquet are supported" % ext)
 
+        md_table = tables['meta']
+        data_table = tables['data']
         data = self._build_data_dict(md_table, data_table)
 
         pdf_name = data.pop('pdf_name')
