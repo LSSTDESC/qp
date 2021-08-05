@@ -25,6 +25,21 @@ class hist_gen(Pdf_rows_gen):
     -----
     This implements a PDF using a set of histogramed values.
 
+    The relevant data members are:
+
+    bins:  n+1 bin edges (shared for all PDFs)
+    
+    pdfs:  (npdf, n) bin values 
+
+    Inside a given bin the pdf() will return the pdf value.
+    Outside the range bins[0], bins[-1] the pdf() will return 0.
+
+    Inside a given bin the cdf() will use a linear interpolation accross the bin
+    Outside the range bins[0], bins[-1] the cdf() will return (0 or 1), respectively
+
+    The ppf() is computed by inverting the cdf(). 
+    ppf(0) will return bins[0]
+    ppf(1) will return bins[-1]
     """
     # pylint: disable=protected-access
 
@@ -36,18 +51,23 @@ class hist_gen(Pdf_rows_gen):
     def __init__(self, bins, pdfs, *args, **kwargs):
         """
         Create a new distribution using the given histogram
+
         Parameters
         ----------
         bins : array_like
-          The second containing the (n+1) bin boundaries
+          The array containing the (n+1) bin boundaries
+
+        pdfs : array_like
+          The array containing the (npdf, n) bin values
         """
         self._hbins = np.asarray(bins)
         self._nbins = self._hbins.size - 1
         self._hbin_widths = self._hbins[1:] - self._hbins[:-1]
         self._xmin = self._hbins[0]
         self._xmax = self._hbins[-1]
-        if pdfs.shape[-1] != self._nbins: # pragma: no cover
-            raise ValueError("Number of bins (%i) != number of values (%i)" % (self._nbins, pdfs.shape[-1]))
+        if np.shape(pdfs)[-1] != self._nbins: # pragma: no cover
+            raise ValueError("Number of bins (%i) != number of values (%i)" %
+                             (self._nbins, np.shape(pdfs)[-1]))
 
         check_input = kwargs.pop('check_input', True)
         if check_input:

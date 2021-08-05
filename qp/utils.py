@@ -308,6 +308,15 @@ def interpolate_unfactored_multi_x_y(x, row, xvals, yvals, **kwargs):
     vals : array_like (M, n)
         The interpoalted values
     """
+    #def single_row(rv, xv):
+    #    return interp1d(xvals[rv], yvals, **kwargs)(xv)
+    #vv = np.vectorize(single_row, signature="(),(%i)->(%i)" %
+    #                  (x.shape[-1], x.shape[-1]))    
+    #rr = np.squeeze(row)
+    #print("adfa", row.shape, x.shape, xvals.shape, yvals.shape)
+    #return vv(np.squeeze(row), x)
+    #vo = np.vstack([interp1d(xvals[rv], yvals, **kwargs)(xv) for rv, xv in zip(np.squeeze(row), x)])
+    #return vo
     def single_row(xv, rv):
         return interp1d(xvals[rv], yvals, **kwargs)(xv)
     vv = np.vectorize(single_row)
@@ -475,7 +484,7 @@ def reshape_to_pdf_size(vals, split_dim):
     out : array
         The reshaped array
     """
-    in_shape = vals.shape
+    in_shape = np.shape(vals)
     npdf = np.product(in_shape[:split_dim])
     per_pdf = in_shape[split_dim:]
     out_shape = np.hstack([npdf, per_pdf])

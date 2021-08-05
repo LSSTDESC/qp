@@ -20,6 +20,18 @@ class mixmod_gen(Pdf_rows_gen):
     Notes
     -----
     This implements a PDF using a Gaussian Mixture model
+
+    The relevant data members are:
+
+    means:  (npdf, ncomp) means of the Gaussians
+    stds:  (npdf, ncomp) standard deviations of the Gaussians
+    weights: (npdf, ncomp) weights for the Gaussians
+
+    The pdf() and cdf() are exact, and are computed as a weighted sum of
+    the pdf() and cdf() of the component Gaussians.
+
+    The ppf() is computed by computing the cdf() values on a fixed
+    grid and interpolating the inverse function.  
     """
     # pylint: disable=protected-access
 
@@ -68,11 +80,6 @@ class mixmod_gen(Pdf_rows_gen):
 
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
-        #factored, xr, rr, _ = self._sliceargs(x, row)
-        #if factored:  #pragma: no cover
-        #    return (np.expand_dims(self.weights[rr], -1) *\
-        #                sps.norm(loc=np.expand_dims(self._means[rr], -1),\
-        #                             scale=np.expand_dims(self._stds[rr], -1)).pdf(np.expand_dims(xr, 0))).sum(axis=1).reshape(x.shape)
         if np.ndim(x) > 1:
             x = np.expand_dims(x, -2)
         return (self.weights[row].swapaxes(-2,-1) *
@@ -81,11 +88,6 @@ class mixmod_gen(Pdf_rows_gen):
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
-        #factored, xr, rr, _ = self._sliceargs(x, row)
-        #if factored:  #pragma: no cover
-        #    return (np.expand_dims(self.weights[rr], -1) *\
-        #                sps.norm(loc=np.expand_dims(self._means[rr], -1),\
-        #                            scale=np.expand_dims(self._stds[rr], -1)).cdf(np.expand_dims(xr, 0))).sum(axis=1).reshape(x.shape)
         if np.ndim(x) > 1:
             x = np.expand_dims(x, -2)
         return (self.weights[row].swapaxes(-2,-1) *

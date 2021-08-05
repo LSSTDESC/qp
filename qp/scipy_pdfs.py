@@ -1,4 +1,21 @@
-"""Module to define qp distributions that inherit from scipy distributions"""
+"""Module to define qp distributions that inherit from scipy distributions
+
+Notes
+-----
+
+In the qp distribtuions the last axis in the
+input array shapes is reserved for pdf parameters.  
+
+This is because qp deals with numerical representations 
+of distributions, where some of the input parameters consist 
+of arrays of values for each pdf.
+
+`scipy.stats` assumes that all input parameters scalars for each pdf.
+
+To ensure that `scipy.stats` based distributions behave the same
+as `qp` distributions we are going to insure that the all input 
+variables have shape either (npdf, 1) or (1) 
+"""
 
 from qp.test_data import LOC, SCALE, TEST_XVALS
 from qp.factory import stats

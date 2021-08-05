@@ -12,7 +12,7 @@ the user values give correct normalization.  We should think about this more.
 
 2) At this time for most of the distributions, only the _pdf function is overridden.  This is all that
 is required to inherit from `scipy.stats.rv_continuous`; however, providing implementations of some of
-_logpdf, _cdf, _logcdf, _ppf, _rvs, _isf, _sf, _logsf could speed the code up a lot is some cases.
+_logpdf, _cdf, _logcdf, _ppf, _rvs, _isf, _sf, _logsf could speed the code up a lot in some cases.
 
 """
 import sys
@@ -377,8 +377,8 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
 
 
 class Pdf_gen_wrap(Pdf_gen):
-    """Mixing class to extend `scipy.stats.rv_continuous` with
-    information needed for `qp` for simple distributions.
+    """Mixin class to extend `scipy.stats.rv_continuous` with
+    information needed for `qp` for analytic distributions.
 
     """
     def __init__(self, *args, **kwargs):

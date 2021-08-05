@@ -44,8 +44,8 @@ Here is a checklist of things that you will need to include in a class that impl
     self._hbins = np.asarray(bins)
     self._nbins = self._hbins.size - 1
     self._hbin_widths = self._hbins[1:] - self._hbins[:-1]
-    if pdfs.shape[-1] != self._nbins: # pragma: no cover
-	raise ValueError("Number of bins (%i) != number of values (%i)" % (self._nbins, pdfs.shape[-1]))
+    if np.shape(pdfs)[-1] != self._nbins: # pragma: no cover
+	raise ValueError("Number of bins (%i) != number of values (%i)" % (self._nbins, np.shape(pdfs)[-1]))
     check_input = kwargs.pop('check_input', True)
     if check_input:
         sums = np.sum(pdfs*self._hbin_widths, axis=1)
@@ -53,16 +53,14 @@ Here is a checklist of things that you will need to include in a class that impl
     else: #pragma: no cover
 	self._hpdfs = pdfs
 
-4.  In the constructor of the class you should extract the support and number of PDF and pass them to the base class constructor.
+4.  In the constructor of the class you should extract the number of PDF and pass them to the base class constructor.
    
 .. code-block:: python
 
-    kwargs['a'] = self.a = self._hbins[0]
-    kwargs['b'] = self.b = self._hbins[-1]
     kwargs['npdf'] = pdfs.shape[0]
     super(hist_rows_gen, self).__init__(*args, **kwargs)
 
-5.  In the constructor you should define which data members of the class are "data" and "metadata".   In this context, "data" means quantites that are defined for each PDF, and "metadata" means quantites that are shared between all the PDFs.   This should be the minimal set of data need to reconstruct the class instance. 
+5.  In the constructor you should define which data members of the class are "data" and "metadata".   In this context, "data" means quantites that are defined for each PDF, and "metadata" means quantities that are shared between all the PDFs.   This should be the minimal set of data need to reconstruct the class instance. 
     
 .. code-block:: python
 
@@ -89,16 +87,15 @@ Here is a checklist of things that you will need to include in a class that impl
 
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
-        factored, xr, rr, _ = self._sliceargs(x, row)
-        idx = np.searchsorted(self._hbins, xr, side='left').clip(0, self._hbins.size-2)
-        if factored:
-	    # x values and row values factorize
-	    return self._hpdfs[:,idx][rr].flat
-        # x values and row values do not factorize, vectorize the call to histogram lookup
-        def pdf_row(idxv, rv):
-	    return self._hpdfs[rv, idxv]
-        vv = np.vectorize(pdf_row)
-        return vv(idx, rr)
+        return evaluate_unfactored_hist_x_multi_y(x, row, self._hbins, self._hpdfs)
+
+    def _cdf(self, x, row):
+        # pylint: disable=arguments-differ
+        if self._hcdfs is None: #pragma: no cover
+            self._compute_cdfs()
+        if np.shape(x)[:-1] == np.shape(row)[:-1]:
+            return interpolate_unfactored_x_multi_y(x, row, self._hbins, self._hcdfs, bounds_error=False, fill_value=(0.,1.))
+        return interp1d(self._hbins, self._hcdfs[np.squeeze(row)], bounds_error=False, fill_value=(0.,1.))(x)  # pragma: no cover
 
 8.  You should implement the `_updated_ctor_param` function that scipy needs in order to copy distributions.   This should make a dictionary of all the constructor parameters.
 
@@ -151,10 +148,11 @@ Here is a checklist of things that you will need to include in a class that impl
         return plot_pdf_histogram_on_axes(axes, hist=(pdf.dist.bins, vals), **kw)
      
 11.  After the class definiton, you need to register the class with
-     the factory.
+     the factory, and make the creation function available.
 
 .. code-block:: python
 
+    hist = hist_gen.create
     add_class(hist_gen)
 
 
@@ -174,13 +172,17 @@ Here is a checklist of things that you will need to include in a class that impl
      
 .. code-block:: python
 		
-    hist_gen.test_data = dict(hist=dict(gen_func=hist, ctor_data=dict(bins=XBINS, pdfs=HIST_DATA),\
-                                                 convert_data=dict(bins=XBINS), test_xvals=TEST_XVALS),
-                                   hist_samples=dict(gen_func=hist, ctor_data=dict(bins=XBINS, pdfs=HIST_DATA),\
-                                                         convert_data=dict(bins=XBINS, method='samples',\
-                                                                               size=NSAMPLES),\
-                                                         atol_diff2=1,\
-                                                         test_xvals=TEST_XVALS, do_samples=True))
+    @classmethod
+    def make_test_data(cls):
+        """ Make data for unit tests """
+        hist_gen.test_data = dict(hist=dict(gen_func=hist, ctor_data=dict(bins=XBINS, pdfs=HIST_DATA),\
+                                            convert_data=dict(bins=XBINS), test_xvals=TEST_XVALS),
+                                  hist_samples=dict(gen_func=hist, ctor_data=dict(bins=XBINS, pdfs=HIST_DATA),\
+                                                    convert_data=dict(bins=XBINS, method='samples',\
+                                                                                  size=NSAMPLES),\
+                                                    atol_diff=1e-1, atol_diff2=1e-1,\
+                                                    test_xvals=TEST_XVALS, do_samples=True))
+
 
 
 	
@@ -211,27 +213,39 @@ To the function in question.
 Adding unit tests for your class
 --------------------------------
 
+If you have implemented the `make_test_data` classmethod, then up to four sets unit tests will be automatcially 
+generated for your class.  These are built by the `PDFTestCase.auto_add_class` function in `qp/tests/test_auto.py`.
+The actual functions are in `qp/test_funcs.py`; they are:
+
+1.  pdf functionality tests, which runs a set of consistency checks to make sure that the pdf is well defined and to test
+    that the relationships between `pdf()`, `cdf()`, `sf()`, `ppf()`, etc.. are consistent.
+
+2.  persistence tests, which runs a loopback test that write the class to disk in various formats and reads it back
+    and verifies that the result is identical to the original.
+
+3.  conversion tests, which verifies that converting to the class works by comparing the `pdf()` values computed on a grid
+    from an input ensemble in a different representation to values in your classes representation.
+
+4.  plotting tets, which verifies that the plotting function doesn't crash.  Making sure the output is sensible is up to you. 
+
 
 Running unit tests
 ------------------
 
-You can use the `tests/do_cover.sh` to run the unit test and check their coverage.  We will require 100\% coverage, but it is ok to use `#pragma: no cover` statements to skip error blocks.
+You can use the `do_cover.sh` script to run the unit test and check their coverage.  We will require 100\% coverage, but it is ok to use `#pragma: no cover` statements to skip error blocks.
 
 .. code-block:: python
 
-    cd tests
     ./do_cover.sh
 
 
 #### Running demo notebooks
 
-There are a number of demo and tutorial notebooks.  One of the checks
-in travis is that they all work.  You can check any individual
-notebook like so:
+There are some demo notebooks in `qp` you can verify that they all work by rendering them to html.
 
 .. code-block:: bash
 
-   jupyter nbconvert --ExecutePreprocessor.kernel_name=python --ExecutePreprocessor.timeout=600 --to html --execute docs/notebooks/demo.ipynb
+    ./render_nb.sh
 
 
 

@@ -35,8 +35,10 @@ class EnsembleTestCase(unittest.TestCase):
 
         if hasattr(ens.gen_obj, 'npdf'):
             assert ens.npdf == ens.gen_obj.npdf
-        assert np.allclose(np.log(pdfs), logpdfs, atol=1e-9)
-        assert np.allclose(np.log(cdfs), logcdfs, atol=1e-9)
+
+        with np.errstate(all='ignore'):
+            assert np.allclose(np.log(pdfs), logpdfs, atol=1e-9)
+            assert np.allclose(np.log(cdfs), logcdfs, atol=1e-9)
 
         binw = xpts[1:] - xpts[0:-1]
         check_cdf = ((pdfs[:,0:-1] + pdfs[:,1:]) * binw /2).cumsum(axis=1) - cdfs[:,1:]
