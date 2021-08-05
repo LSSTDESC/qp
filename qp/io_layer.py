@@ -8,19 +8,19 @@ try:
     from astropy.table import Table as apTable
     from astropy.io import fits
     HAS_ASTROPY = True
-except ImportError:
+except ImportError:  #pragma: no cover
     HAS_ASTROPY = False
 
 try:
     import h5py
     HAS_HDF5 = True
-except ImportError:
+except ImportError:  #pragma: no cover
     HAS_HDF5 = False
 
 try:
     import pandas as pd
     HAS_PANDAS = True
-except ImportError:
+except ImportError:  #pragma: no cover
     HAS_PANDAS = False
 
 try:
@@ -105,7 +105,7 @@ def arraysToDataframe(array_dict, meta=None):
     df :  `pandas.DataFrame`
         The dataframe
     """
-    if not HAS_PANDAS:
+    if not HAS_PANDAS:  #pragma: no cover
         raise ImportError("pandas is not available, can't make DataFrame")
 
     o_dict = OrderedDict()
@@ -132,7 +132,7 @@ def dataframeToTable(df):
     tab : `astropy.table.Table`
         The table
     """
-    if not HAS_ASTROPY:
+    if not HAS_ASTROPY:  #pragma: no cover
         raise ImportError("Astropy is not available, can't make astropy tables")
 
     o_dict = OrderedDict()
@@ -196,7 +196,7 @@ def writeTablesToFits(tables, filepath, **kwargs):
 
     kwargs are passed to `astropy.io.fits.writeto` call.
     """
-    if not HAS_ASTROPY:
+    if not HAS_ASTROPY:  #pragma: no cover
         raise ImportError("Astropy is not available, can't save to FITS")
     out_list = [fits.PrimaryHDU()]
     for k, v in tables.items():
@@ -221,7 +221,7 @@ def readFitsToTables(filepath):
     tables : `OrderedDict` of `astropy.table.Table`
         Keys will be HDU names, values will be tables
     """
-    if not HAS_ASTROPY:
+    if not HAS_ASTROPY:  #pragma: no cover
         raise ImportError("Astropy is not available, can't read FITS")
     fin = fits.open(filepath)
     tables = OrderedDict()
@@ -244,7 +244,7 @@ def writeTablesToHdf5(tables, filepath, **kwargs):
 
     kwargs are passed to `astropy.table.Table` call.
     """
-    if not HAS_HDF5:
+    if not HAS_HDF5:  #pragma: no cover
         raise ImportError("h5py is not available, can't save to hdf5")
 
     for k, v in tables.items():
@@ -265,7 +265,7 @@ def readHdf5ToTables(filepath):
     tables : `OrderedDict` of `astropy.table.Table`
         Keys will be 'paths', values will be tables
     """
-    if not HAS_HDF5:
+    if not HAS_HDF5:  #pragma: no cover
         raise ImportError("h5py is not available, can't read hdf5")
     fin = h5py.File(filepath)
     tables = OrderedDict()
@@ -288,7 +288,7 @@ def writeArraysToHdf5(arrays, filepath, **kwargs):
 
     """
     # pylint: disable=unused-argument
-    if not HAS_HDF5:
+    if not HAS_HDF5:  #pragma: no cover
         raise ImportError("h5py is not available, can't save to hdf5")
     raise NotImplementedError("writeArraysToHdf5")
 
@@ -308,7 +308,7 @@ def readHdf5ToArrays(filepath):
         Keys will be 'paths', values will be tables
     """
     # pylint: disable=unused-argument
-    if not HAS_HDF5:
+    if not HAS_HDF5:  #pragma: no cover
         raise ImportError("h5py is not available, can't read hdf5")
     raise NotImplementedError("writeArraysToHdf5")
 
@@ -348,7 +348,7 @@ def readPqToDataframes(basepath, keys=None, **kwargs):
         Keys will be taken from keys
     """
 
-    if keys is None:
+    if keys is None:  #pragma: no cover
         keys = [""]
     dataframes = OrderedDict()
     for key in keys:

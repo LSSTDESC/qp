@@ -351,7 +351,7 @@ class Ensemble:
         elif ext in ['.pq', '.parquet']:
             dataframes = io_layer.tablesToDataframes(tables)
             io_layer.writeDataframesToPq(dataframes, basename)
-        else:
+        else:  #pragma: no cover
             raise ValueError("Can not write to format %s.  Only fits, hdf5 and parquet are supported" % ext)
 
 
