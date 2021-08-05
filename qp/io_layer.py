@@ -50,7 +50,7 @@ def forceToPandables(arr, check_nrow=None):
     ndim = np.ndim(arr)
     shape = np.shape(arr)
     nrow = shape[0]
-    if check_nrow is not None and check_nrow != nrow:
+    if check_nrow is not None and check_nrow != nrow:  # pragma: no cover
         raise ValueError("Number of rows does not match: %i != %i" % (nrow, check_nrow))
     if ndim == 1:
         return arr
@@ -290,7 +290,7 @@ def writeArraysToHdf5(arrays, filepath, **kwargs):
     # pylint: disable=unused-argument
     if not HAS_HDF5:  #pragma: no cover
         raise ImportError("h5py is not available, can't save to hdf5")
-    raise NotImplementedError("writeArraysToHdf5")
+    raise NotImplementedError("writeArraysToHdf5")  #pragma: no cover
 
 
 def readHdf5ToArrays(filepath):
@@ -310,7 +310,7 @@ def readHdf5ToArrays(filepath):
     # pylint: disable=unused-argument
     if not HAS_HDF5:  #pragma: no cover
         raise ImportError("h5py is not available, can't read hdf5")
-    raise NotImplementedError("writeArraysToHdf5")
+    raise NotImplementedError("writeArraysToHdf5")  #pragma: no cover
 
 
 def writeDataframesToPq(dataFrames, filepath, **kwargs):

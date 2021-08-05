@@ -144,7 +144,7 @@ class Factory(OrderedDict):
         elif ext in ['.pq', '.parquet']:
             dataframes = io_layer.readPqToDataframes(basename, keys)
             tables = io_layer.dataframesToTables(dataframes)
-        else:
+        else:  #pragma: no cover
             raise ValueError("Can not read format %s.  Only fits, hdf5 and parquet are supported" % ext)
 
         md_table = tables['meta']

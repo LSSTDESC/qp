@@ -128,8 +128,7 @@ class interp_gen(Pdf_rows_gen):
         if self._ycumul is None:  # pragma: no cover
             self._compute_ycumul()
         factored, xx, rr, _ = self._sliceargs(x, row)
-        print(factored, xx.shape, rr.shape, x.shape, row.shape)
-        if factored:
+        if factored: # pragma: no cover
             return interpolate_multi_x_y(xx, self._ycumul[rr], self._xvals,
                                          bounds_error=False, fill_value=(self._xmin, self._xmax))
         return interpolate_unfactored_multi_x_y(x, row, self._ycumul, self._xvals,
