@@ -88,7 +88,7 @@ def tableToDataframe(tab):
     return df
 
 
-def arraysToDataframe(array_dict, meta=None):
+def arraysToDataframe(array_dict, meta=None):  #pragma: no cover
     """
     Convert a `dict` of  `numpy.array` to a `pandas.DataFrame`
 
@@ -105,7 +105,7 @@ def arraysToDataframe(array_dict, meta=None):
     df :  `pandas.DataFrame`
         The dataframe
     """
-    if not HAS_PANDAS:  #pragma: no cover
+    if not HAS_PANDAS:
         raise ImportError("pandas is not available, can't make DataFrame")
 
     o_dict = OrderedDict()
@@ -114,7 +114,7 @@ def arraysToDataframe(array_dict, meta=None):
     df =  pd.DataFrame(o_dict)
     if meta is not None:
         for k, v in meta.items():
-            df.attrs[k] = v  #pragma: no cover
+            df.attrs[k] = v
     return df
 
 
