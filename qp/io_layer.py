@@ -26,7 +26,7 @@ except ImportError:  #pragma: no cover
 try:
     import pyarrow.parquet as pq
     HAS_PQ = True
-except ImportError:
+except ImportError:  #pragma: no cover
     HAS_PQ = False
 
 
@@ -56,9 +56,9 @@ def forceToPandables(arr, check_nrow=None):
         return arr
     if ndim == 2:
         return list(arr)
-    shape = np.shape(arr)
-    ncol = np.product(shape[1:])
-    return list(arr.reshape(nrow, ncol))
+    shape = np.shape(arr)  #pragma: no cover
+    ncol = np.product(shape[1:])  #pragma: no cover
+    return list(arr.reshape(nrow, ncol))  #pragma: no cover
 
 
 def tableToDataframe(tab):
@@ -75,7 +75,7 @@ def tableToDataframe(tab):
     df :  `pandas.DataFrame`
         The dataframe
     """
-    if not HAS_PANDAS:
+    if not HAS_PANDAS:  #pragma: no cover
         raise ImportError("pandas is not available, can't make DataFrame")
 
     o_dict = OrderedDict()
@@ -84,7 +84,7 @@ def tableToDataframe(tab):
         o_dict[colname] = forceToPandables(col.data)
     df = pd.DataFrame(o_dict)
     for k, v in tab.meta.items():
-        df.attrs[k] = v
+        df.attrs[k] = v  #pragma: no cover
     return df
 
 
@@ -114,7 +114,7 @@ def arraysToDataframe(array_dict, meta=None):
     df =  pd.DataFrame(o_dict)
     if meta is not None:
         for k, v in meta.items():
-            df.attrs[k] = v
+            df.attrs[k] = v  #pragma: no cover
     return df
 
 
@@ -144,7 +144,7 @@ def dataframeToTable(df):
             o_dict[colname] = col.to_numpy()
     tab = apTable(o_dict)
     for k, v in df.attrs.items():
-        tab.meta[k] = v
+        tab.meta[k] = v  #pragma: no cover
     return tab
 
 
