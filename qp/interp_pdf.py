@@ -9,9 +9,9 @@ from scipy.interpolate import interp1d
 from qp.pdf_gen import Pdf_rows_gen
 from qp.conversion_funcs import extract_vals_at_x, extract_xy_vals, extract_xy_sparse
 from qp.plotting import get_axes_and_xlims, plot_pdf_on_axes
-from qp.utils import normalize_interp1d,\
-     interpolate_unfactored_multi_x_multi_y, interpolate_unfactored_multi_x_y, interpolate_unfactored_x_multi_y,\
-     reshape_to_pdf_size, interpolate_multi_x_y
+from qp.utils import normalize_interp1d, interpolate_multi_x_y,\
+    interpolate_multi_x_multi_y, interpolate_x_multi_y,\
+    reshape_to_pdf_size
 from qp.test_data import XBINS, XARRAY, YARRAY, TEST_XVALS
 from qp.factory import add_class
 
@@ -109,30 +109,23 @@ class interp_gen(Pdf_rows_gen):
 
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
-        if np.shape(x)[:-1] == np.shape(row)[:-1]:
-            return interpolate_unfactored_x_multi_y(x, row, self._xvals, self._yvals,
-                                                    bounds_error=False, fill_value=0.)
-        return interp1d(self._xvals, self._yvals[np.squeeze(row)], bounds_error=False, fill_value=0.)(x)
+        return interpolate_x_multi_y(x, row, self._xvals, self._yvals,
+                                     bounds_error=False, fill_value=0.)
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
         if self._ycumul is None:  # pragma: no cover
-            self._compute_ycumul()
-        if np.shape(x)[:-1] == np.shape(row)[:-1]:
-            return interpolate_unfactored_x_multi_y(x, row, self._xvals, self._ycumul, bounds_error=False, fill_value=(0.,1.))
-        return interp1d(self._xvals, self._ycumul[np.squeeze(row)], bounds_error=False, fill_value=(0.,1.))(x)
-
+            self._compute_ycumul()            
+        return interpolate_x_multi_y(x, row, self._xvals, self._ycumul,
+                                     bounds_error=False, fill_value=(0.,1.))
 
     def _ppf(self, x, row):
         # pylint: disable=arguments-differ
         if self._ycumul is None:  # pragma: no cover
             self._compute_ycumul()
-        factored, xx, rr, _ = self._sliceargs(x, row)
-        if factored: # pragma: no cover
-            return interpolate_multi_x_y(xx, self._ycumul[rr], self._xvals,
-                                         bounds_error=False, fill_value=(self._xmin, self._xmax))
-        return interpolate_unfactored_multi_x_y(x, row, self._ycumul, self._xvals,
-                                                bounds_error=False, fill_value=(self._xmin, self._xmax))
+        
+        return interpolate_multi_x_y(x, row, self._ycumul, self._xvals,
+                                     bounds_error=False, fill_value=(self._xmin, self._xmax))
 
     def _munp(self, m, *args):
         """ compute moments """
@@ -269,24 +262,23 @@ class interp_irregular_gen(Pdf_rows_gen):
 
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
-        return interpolate_unfactored_multi_x_multi_y(x, row, self._xvals, self._yvals,
-                                                      bounds_error=False, fill_value=0.)
+        return interpolate_multi_x_multi_y(x, row, self._xvals, self._yvals,
+                                           bounds_error=False, fill_value=0.)
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
         if self._ycumul is None:  # pragma: no cover
             self._compute_ycumul()
-        return interpolate_unfactored_multi_x_multi_y(x, row, self._xvals, self._ycumul,
-                                                      bounds_error=False, fill_value=(0., 1.))
+        return interpolate_multi_x_multi_y(x, row, self._xvals, self._ycumul,
+                                           bounds_error=False, fill_value=(0., 1.))
 
 
     def _ppf(self, x, row):
         # pylint: disable=arguments-differ
         if self._ycumul is None:  # pragma: no cover
             self._compute_ycumul()
-        return interpolate_unfactored_multi_x_multi_y(x, row, self._ycumul, self._xvals, bounds_error=False,
-                                                      fill_value=(self._xmin, self._xmax))
-
+        return interpolate_multi_x_multi_y(x, row, self._ycumul, self._xvals,
+                                           bounds_error=False, fill_value=(self._xmin, self._xmax))
 
 
     def _updated_ctor_param(self):

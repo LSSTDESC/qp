@@ -11,7 +11,7 @@ from qp.pdf_gen import Pdf_rows_gen
 from qp.conversion_funcs import extract_mixmod_fit_samples
 from qp.test_data import WEIGHT_MIXMOD, MEAN_MIXMOD, STD_MIXMOD, TEST_XVALS
 from qp.factory import add_class
-from qp.utils import reshape_to_pdf_size, interpolate_unfactored_multi_x_y
+from qp.utils import reshape_to_pdf_size, interpolate_multi_x_y
 
 
 class mixmod_gen(Pdf_rows_gen):
@@ -100,12 +100,8 @@ class mixmod_gen(Pdf_rows_gen):
         max_val = np.max(self._means + 6*self._stds)
         grid = np.linspace(min_val, max_val, 201)
         cdf_vals = self.cdf(grid, row)
-        #factored, xr, rr, _ = self._sliceargs(x, row)
-        #if factored:  #pragma: no cover
-        #    return interpolate_multi_x_y(xr, cdf_vals, grid, bounds_error=False,
-        #                                 fill_value=(0.,1.)).reshape(x.shape)
-        return interpolate_unfactored_multi_x_y(x, row, cdf_vals, grid,
-                                                bounds_error=False, fill_value=(min_val, max_val))
+        return interpolate_multi_x_y(x, row, cdf_vals, grid,
+                                     bounds_error=False, fill_value=(min_val, max_val))
 
 
 

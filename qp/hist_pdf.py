@@ -10,8 +10,8 @@ from scipy.interpolate import interp1d
 from qp.pdf_gen import Pdf_rows_gen
 from qp.conversion_funcs import extract_hist_values, extract_hist_samples
 from qp.plotting import get_axes_and_xlims, plot_pdf_histogram_on_axes
-from qp.utils import evaluate_unfactored_hist_x_multi_y,\
-     interpolate_unfactored_multi_x_y, interpolate_unfactored_x_multi_y,\
+from qp.utils import evaluate_hist_x_multi_y,\
+     interpolate_multi_x_y, interpolate_x_multi_y,\
      reshape_to_pdf_size
 from qp.test_data import XBINS, HIST_DATA, TEST_XVALS, NSAMPLES
 from qp.factory import add_class
@@ -103,22 +103,36 @@ class hist_gen(Pdf_rows_gen):
 
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
-        return evaluate_unfactored_hist_x_multi_y(x, row, self._hbins, self._hpdfs)
+        return evaluate_hist_x_multi_y(x, row, self._hbins, self._hpdfs)
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
         if self._hcdfs is None: #pragma: no cover
             self._compute_cdfs()
-        if np.shape(x)[:-1] == np.shape(row)[:-1]:
-            return interpolate_unfactored_x_multi_y(x, row, self._hbins, self._hcdfs, bounds_error=False, fill_value=(0.,1.))
-        return interp1d(self._hbins, self._hcdfs[np.squeeze(row)], bounds_error=False, fill_value=(0.,1.))(x)  # pragma: no cover
+        return interpolate_x_multi_y(x, row, self._hbins, self._hcdfs,
+                                     bounds_error=False, fill_value=(0.,1.))
 
     def _ppf(self, x, row):
         # pylint: disable=arguments-differ
         if self._hcdfs is None: #pragma: no cover
             self._compute_cdfs()
-        return interpolate_unfactored_multi_x_y(x, row, self._hcdfs, self._hbins,
-                                                bounds_error=False, fill_value=(self._xmin, self._xmax))
+        return interpolate_multi_x_y(x, row, self._hcdfs, self._hbins,
+                                     bounds_error=False, fill_value=(self._xmin, self._xmax))
+
+    def _munp(self, m, *args):
+        """ compute moments """
+        # pylint: disable=arguments-differ
+        # Silence floating point warnings from integration.
+        with np.errstate(all='ignore'):
+            vals = self.custom_generic_moment(m)
+        return vals
+
+    def custom_generic_moment(self, m):
+        """ Compute the mth moment """
+        m = np.asarray(m)
+        dx = self._hbins[1] - self._hbins[0]
+        xv = 0.5*(self._hbins[1:] + self._hbins[:-1])
+        return np.expand_dims(np.sum(xv**m * self._hpdfs, axis=1) * dx, -1)
 
     def _updated_ctor_param(self):
         """

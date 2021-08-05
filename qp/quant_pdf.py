@@ -11,8 +11,8 @@ from qp.pdf_gen import Pdf_rows_gen
 
 from qp.conversion_funcs import extract_quantiles
 from qp.plotting import get_axes_and_xlims, plot_pdf_quantiles_on_axes
-from qp.utils import evaluate_unfactored_hist_multi_x_multi_y,\
-     interpolate_unfactored_multi_x_y, interpolate_unfactored_x_multi_y,\
+from qp.utils import evaluate_hist_multi_x_multi_y,\
+     interpolate_multi_x_y, interpolate_x_multi_y,\
      reshape_to_pdf_size
 from qp.test_data import QUANTS, QLOCS, TEST_XVALS
 from qp.factory import add_class
@@ -134,21 +134,18 @@ class quant_gen(Pdf_rows_gen):
         # pylint: disable=arguments-differ
         if self._valatloc is None:  # pragma: no cover
             self._compute_valatloc()
-        return evaluate_unfactored_hist_multi_x_multi_y(x, row, self._locs, self._valatloc)
+        return evaluate_hist_multi_x_multi_y(x, row, self._locs, self._valatloc)
 
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
-        return interpolate_unfactored_multi_x_y(x, row, self._locs, self._quants,
-                                                bounds_error=False, fill_value=(0., 1))
+        return interpolate_multi_x_y(x, row, self._locs, self._quants,
+                                     bounds_error=False, fill_value=(0., 1))
 
     def _ppf(self, x, row):
         # pylint: disable=arguments-differ
-        if np.shape(x)[-1] == 1:
-            return interpolate_unfactored_x_multi_y(x, np.squeeze(row), self._quants, self._locs,
-                                                    bounds_error=False, fill_value=(self._xmin, self._xmax))
-        return interp1d(self._quants, self._locs[row], bounds_error=False,
-                        fill_value=(self._xmin, self._xmax))(x)
+        return interpolate_x_multi_y(x, row, self._quants, self._locs,
+                                     bounds_error=False, fill_value=(self._xmin, self._xmax))
 
     def _updated_ctor_param(self):
         """
@@ -258,19 +255,19 @@ class quant_piecewise_gen(Pdf_rows_gen):
         # pylint: disable=arguments-differ
         if self._valatloc is None:  # pragma: no cover
             self._compute_valatloc()
-        return evaluate_unfactored_hist_multi_x_multi_y(x, row, self._locs, self._valatloc)
+        return evaluate_hist_multi_x_multi_y(x, row, self._locs, self._valatloc)
 
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
-        return interpolate_unfactored_multi_x_y(x, row, self._locs, self._quants, bounds_error=False, fill_value=(0., 1))
+        return interpolate_multi_x_y(x, row, self._locs, self._quants,
+                                     bounds_error=False, fill_value=(0., 1))
 
     def _ppf(self, x, row):
         # pylint: disable=arguments-differ
-        if np.shape(x)[-1] == 1:
-            return interpolate_unfactored_x_multi_y(x, np.squeeze(row), self._quants, self._locs,
-                                                    bounds_error=False, fill_value=(self._xmin, self._xmax))
-        return interp1d(self._quants, self._locs[row], bounds_error=False, fill_value=(self._xmin, self._xmax))(x)
+        return interpolate_x_multi_y(x, row, self._quants, self._locs,
+                                     bounds_error=False, fill_value=(self._xmin, self._xmax))
+    
 
     def _updated_ctor_param(self):
         """

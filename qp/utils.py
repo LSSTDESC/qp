@@ -10,6 +10,10 @@ epsilon = sys.float_info.epsilon
 infty = sys.float_info.max * epsilon
 lims = (epsilon, 1.)
 
+CASE_PRODUCT = 0
+CASE_FACTOR = 1
+CASE_2D = 2
+CASE_FLAT = 3
 
 def safelog(arr, threshold=epsilon):
     """
@@ -153,7 +157,31 @@ def evaluate_kdes(xvals, kdes):
     return np.vstack([kde(xvals) for kde in kdes])
 
 
-def evaluate_hist_x_multi_y(x, row, bins, vals):  #pragma: no cover
+def get_eval_case(x, row):
+    nd_x = np.ndim(x)
+    nd_row = np.ndim(row)
+    if nd_x > 2 or nd_row > 2:  #pragma: no cover
+        raise ValueError("Too many dimensions: x(%s), row(%s)" % (np.shape(x), np.shape(row)))
+    if nd_x == 2 and nd_row in [0, 2]:
+        return CASE_2D, x, row
+    if nd_x == 2 and nd_row == 1:  #pragma: no cover
+        raise ValueError("Dimension mismatch: x(%s), row(%s)" % (np.shape(x), np.shape(row)))
+    if nd_x < 2 and nd_row == 2:
+        return CASE_PRODUCT, x, row
+    if np.size(x) == 1 or np.size(row) == 1:
+        return CASE_FLAT, x, row
+    xx = np.unique(x)
+    rr = np.unique(row)
+    if np.size(xx) == np.size(x):
+        xx = x
+    if np.size(rr) == np.size(row):
+        rr = row
+    if np.size(xx) * np.size(rr) != np.size(x):
+        return CASE_FLAT, x, row
+    return CASE_FACTOR, xx, np.expand_dims(rr, -1)
+
+
+def evaluate_hist_x_multi_y_flat(x, row, bins, vals):  #pragma: no cover
     """
     Evaluate a set of values from histograms
 
@@ -163,41 +191,17 @@ def evaluate_hist_x_multi_y(x, row, bins, vals):  #pragma: no cover
         X values to interpolate at
     row : array_like (n)
         Which rows to interpolate at
-    bins : array_like (N)
-        X-values used for the interpolation
-    vals : array_like (N, M)
-        Y-avlues used for the inteolation
+    bins : array_like (N+1)
+        'x' bin edges
+    vals : array_like (npdf, N)
+        'y' bin contents
 
     Returns
     -------
-    out : array_like (M, n)
+    out : array_like (n)
         The histogram values
     """
-    idx, mask = get_bin_indices(bins, x)
-    mask = np.ones((row.size, 1)) * mask
-    return np.where(mask.flatten(), vals[:,idx][row].flatten(), 0)
-
-
-def evaluate_unfactored_hist_x_multi_y(x, row, bins, vals):
-    """
-    Evaluate a set of values from histograms
-
-    Parameters
-    ----------
-    x : array_like (n)
-        X values to interpolate at
-    row : array_like (n)
-        Which rows to interpolate at
-    bins : array_like (N)
-        X-values used for the interpolation
-    vals : array_like (N, M)
-        Y-avlues used for the inteolation
-
-    Returns
-    -------
-    out : array_like (M, n)
-        The histogram values
-    """
+    assert np.ndim(x) < 2 and np.ndim(row) < 2
     idx, mask = get_bin_indices(bins, x)
     def evaluate_row(idxv, maskv, rv):
         return np.where(maskv, vals[rv, idxv], 0)
@@ -205,35 +209,94 @@ def evaluate_unfactored_hist_x_multi_y(x, row, bins, vals):
     return vv(idx, mask, row)
 
 
-def evaluate_hist_multi_x_multi_y(x, row, bins, vals):  #pragma: no cover
+def evaluate_hist_x_multi_y_product(x, row, bins, vals):  #pragma: no cover
     """
     Evaluate a set of values from histograms
 
     Parameters
     ----------
-    x : array_like (n)
+    x : array_like (npts)
         X values to interpolate at
-    row : array_like (n)
+    row : array_like (npdf, 1)
         Which rows to interpolate at
-    bins : array_like (N, M)
-        X-values used for the interpolation
-    vals : array_like (N, M)
-        Y-avlues used for the inteolation
+    bins : array_like (N+1)
+        'x' bin edges
+    vals : array_like (npdf, N)
+        'y' bin contents
 
     Returns
     -------
-    out : array_like (M, n)
+    out : array_like (npdf, npts)
         The histogram values
     """
-    n_vals = bins.shape[-1] - 1
-    def evaluate_row(rv):
-        idx, mask = get_bin_indices(bins[rv].flatten(), x)
-        return np.where(mask, np.squeeze(vals[rv])[idx.clip(0, n_vals-1)], 0).flatten()
-    vv = np.vectorize(evaluate_row, signature="(1)->(%i)" % (x.size))
-    return vv(np.expand_dims(row, -1)).flatten()
+    assert np.ndim(x) < 2 and np.ndim(row) == 2
+    idx, mask = get_bin_indices(bins, x)
+    mask = np.ones((row.size, 1)) * mask
+    return np.where(mask, vals[:,idx][np.squeeze(row)], 0)
 
 
-def evaluate_unfactored_hist_multi_x_multi_y(x, row, bins, vals):
+def evaluate_hist_x_multi_y_2d(x, row, bins, vals):  #pragma: no cover
+    """
+    Evaluate a set of values from histograms
+
+    Parameters
+    ----------
+    x : array_like (npdf, npts)
+        X values to interpolate at
+    row : array_like (npdf, 1)
+        Which rows to interpolate at
+    bins : array_like (N+1)
+        'x' bin edges
+    vals : array_like (npdf, N)
+        'y' bin contents
+
+    Returns
+    -------
+    out : array_like (npdf, npts)
+        The histogram values
+    """
+    assert np.ndim(x) == 2 and np.ndim(row) == 2
+    idx, mask = get_bin_indices(bins, x)
+    def evaluate_row(idxv, maskv, rv):
+        return np.where(maskv, vals[rv, idxv], 0)
+    vv = np.vectorize(evaluate_row)
+    return vv(idx, mask, row)
+
+
+def evaluate_hist_x_multi_y(x, row, bins, vals):
+    """
+    Evaluate a set of values from histograms
+
+    Parameters
+    ----------
+    x : array_like
+        X values to interpolate at
+    row : array_like
+        Which rows to interpolate at
+    bins : array_like (N+1)
+        'x' bin edges
+    vals : array_like (npdf, N)
+        'y' bin contents
+
+    Returns
+    -------
+    out : array_like
+        The histogram values
+
+    Notes
+    -----
+    Depending on the shape of 'x' and 'row' this will
+    use one of the three specific implementations.
+    """
+    case_idx, xx, rr = get_eval_case(x, row)
+    if case_idx in [CASE_PRODUCT, CASE_FACTOR]:
+        return evaluate_hist_x_multi_y_product(xx, rr, bins, vals)
+    if case_idx == CASE_2D:
+        return evaluate_hist_x_multi_y_2d(xx, rr, bins, vals)
+    return evaluate_hist_x_multi_y_flat(xx, rr, bins, vals)
+
+
+def evaluate_hist_multi_x_multi_y_flat(x, row, bins, vals):  #pragma: no cover
     """
     Evaluate a set of values from histograms
 
@@ -243,14 +306,14 @@ def evaluate_unfactored_hist_multi_x_multi_y(x, row, bins, vals):
         X values to interpolate at
     row : array_like (n)
         Which rows to interpolate at
-    bins : array_like (N, M)
-        X-values used for the interpolation
-    vals : array_like (N, M)
-        Y-avlues used for the inteolation
+    bins : array_like (npdf, N+1)
+        'x' bin edges
+    vals : array_like (npdf, N)
+        'y' bin contents
 
     Returns
     -------
-    out : array_like (M, n)
+    out : array_like (n)
         The histogram values
     """
     n_vals = bins.shape[-1] - 1
@@ -261,7 +324,92 @@ def evaluate_unfactored_hist_multi_x_multi_y(x, row, bins, vals):
     return vv(x, row)
 
 
-def interpolate_unfactored_x_multi_y(x, row, xvals, yvals, **kwargs):
+def evaluate_hist_multi_x_multi_y_product(x, row, bins, vals):  #pragma: no cover
+    """
+    Evaluate a set of values from histograms
+
+    Parameters
+    ----------
+    x : array_like (npts)
+        X values to interpolate at
+    row : array_like (npdf, 1)
+        Which rows to interpolate at
+    bins : array_like (npdf, N+1)
+        'x' bin edges
+    vals : array_like (npdf, N)
+        'y' bin contents
+
+    Returns
+    -------
+    out : array_like (npdf, npts)
+        The histogram values
+    """
+    n_vals = bins.shape[-1] - 1
+    def evaluate_row(rv):
+        idx, mask = get_bin_indices(bins[rv].flatten(), x)
+        return np.where(mask, np.squeeze(vals[rv])[idx.clip(0, n_vals-1)], 0).flatten()
+    vv = np.vectorize(evaluate_row, signature="(1)->(%i)" % (x.size))
+    return vv(row)
+
+
+def evaluate_hist_multi_x_multi_y_2d(x, row, bins, vals):  #pragma: no cover
+    """
+    Evaluate a set of values from histograms
+
+    Parameters
+    ----------
+    x : array_like (npdf, npts)
+        X values to interpolate at
+    row : array_like (npdf, 1)
+        Which rows to interpolate at
+    bins : array_like (npdf, N+1)
+        'x' bin edges
+    vals : array_like (npdf, N)
+        'y' bin contents
+
+    Returns
+    -------
+    out : array_like (npdf, npts)
+        The histogram values
+    """
+    n_vals = np.shape(bins)[-1] - 1
+    nx = np.shape(x)[-1]
+    def evaluate_row(rv, xv):
+        idx, mask = get_bin_indices(bins[rv].flatten(), xv)
+        return np.where(mask, np.squeeze(vals[rv])[idx.clip(0, n_vals-1)], 0).flatten()
+    vv = np.vectorize(evaluate_row, signature="(1),(%i)->(%i)" % (nx, nx))
+    return vv(row, x)
+
+
+def evaluate_hist_multi_x_multi_y(x, row, bins, vals):
+    """
+    Evaluate a set of values from histograms
+
+    Parameters
+    ----------
+    x : array_like 
+        X values to interpolate at
+    row : array_like 
+        Which rows to interpolate at
+    bins : array_like (npdf, N+1)
+        'x' bin edges
+    vals : array_like (npdf, N)
+        'y' bin contents
+
+    Returns
+    -------
+    out : array_like
+        The histogram values
+    """
+    case_idx, xx, rr = get_eval_case(x, row)
+    if case_idx in [CASE_PRODUCT, CASE_FACTOR]:
+        return evaluate_hist_multi_x_multi_y_product(xx, rr, bins, vals)
+    if case_idx == CASE_2D:
+        return evaluate_hist_multi_x_multi_y_2d(xx, rr, bins, vals)
+    return evaluate_hist_multi_x_multi_y_flat(xx, rr, bins, vals)
+
+
+def interpolate_x_multi_y_flat(x, row, xvals, yvals, **kwargs):
     """
     Interpolate a set of values
 
@@ -271,24 +419,102 @@ def interpolate_unfactored_x_multi_y(x, row, xvals, yvals, **kwargs):
         X values to interpolate at
     row : array_like (n)
         Which rows to interpolate at
-    xvals : array_like (N)
+    xvals : array_like (npts)
         X-values used for the interpolation
-    yvals : array_like (N, M)
+    yvals : array_like (npdf, npts)
         Y-avlues used for the inteolation
 
     Returns
     -------
-    vals : array_like (M, n)
+    vals : array_like (npdf, n)
         The interpoalted values
     """
-    # This is kinda stupid, computes a lot of extra values, but it is vectorized
-    vals = interp1d(xvals, np.squeeze(yvals[row]), **kwargs)(x)
-    if vals.ndim < 2:
-        return vals
-    return vals.diagonal().T
+    def single_row(xv, rv):
+        return interp1d(xvals, yvals[rv], **kwargs)(xv)
+    vv = np.vectorize(single_row)
+    return vv(x, row)
 
 
-def interpolate_unfactored_multi_x_y(x, row, xvals, yvals, **kwargs):
+def interpolate_x_multi_y_product(x, row, xvals, yvals, **kwargs):
+    """
+    Interpolate a set of values
+
+    Parameters
+    ----------
+    x : array_like (n)
+        X values to interpolate at
+    row : array_like (npdf, 1)
+        Which rows to interpolate at
+    xvals : array_like (npts)
+        X-values used for the interpolation
+    yvals : array_like (npdf, npts)
+        Y-avlues used for the inteolation
+
+    Returns
+    -------
+    vals : array_like (npdf, n)
+        The interpoalted values
+    """
+    rr = np.squeeze(row)
+    return interp1d(xvals, yvals[rr], **kwargs)(x)
+   
+
+def interpolate_x_multi_y_2d(x, row, xvals, yvals, **kwargs):
+    """
+    Interpolate a set of values
+
+    Parameters
+    ----------
+    x : array_like (npdf, n)
+        X values to interpolate at
+    row : array_like (npdf, 1)
+        Which rows to interpolate at
+    xvals : array_like (npts)
+        X-values used for the interpolation
+    yvals : array_like (npdf, npts)
+        Y-avlues used for the inteolation
+
+    Returns
+    -------
+    vals : array_like (npdf, n)
+        The interpoalted values
+    """
+    nx = np.shape(x)[-1]
+    def evaluate_row(rv, xv):
+        return interp1d(xvals, yvals[rv], **kwargs)(xv)
+    vv = np.vectorize(evaluate_row, signature="(1),(%i)->(%i)" % (nx, nx))
+    return vv(row, x)
+   
+
+def interpolate_x_multi_y(x, row, xvals, yvals, **kwargs):
+    """
+    Interpolate a set of values
+
+    Parameters
+    ----------
+    x : array_like (npdf, n)
+        X values to interpolate at
+    row : array_like (npdf, 1)
+        Which rows to interpolate at
+    xvals : array_like (npts)
+        X-values used for the interpolation
+    yvals : array_like (npdf, npts)
+        Y-avlues used for the inteolation
+
+    Returns
+    -------
+    vals : array_like
+        The interpoalted values
+    """    
+    case_idx, xx, rr = get_eval_case(x, row)
+    if case_idx in [CASE_PRODUCT, CASE_FACTOR]:
+        return interpolate_x_multi_y_product(xx, rr, xvals, yvals, **kwargs)
+    if case_idx == CASE_2D:
+        return interpolate_x_multi_y_2d(xx, rr, xvals, yvals, **kwargs)
+    return interpolate_x_multi_y_flat(xx, rr, xvals, yvals, **kwargs)
+
+
+def interpolate_multi_x_multi_y_flat(x, row, xvals, yvals, **kwargs):
     """
     Interpolate a set of values
 
@@ -298,33 +524,132 @@ def interpolate_unfactored_multi_x_y(x, row, xvals, yvals, **kwargs):
         X values to interpolate at
     row : array_like (n)
         Which rows to interpolate at
-    xvals : array_like (N, M)
+    xvals : array_like (npdf, npts)
         X-values used for the interpolation
-    yvals : array_like (N)
+    yvals : array_like (npdf, npts)
         Y-avlues used for the inteolation
 
     Returns
     -------
-    vals : array_like (M, n)
+    vals : array_like (npdf, n)
         The interpoalted values
     """
-    #def single_row(rv, xv):
-    #    return interp1d(xvals[rv], yvals, **kwargs)(xv)
-    #vv = np.vectorize(single_row, signature="(),(%i)->(%i)" %
-    #                  (x.shape[-1], x.shape[-1]))    
-    #rr = np.squeeze(row)
-    #print("adfa", row.shape, x.shape, xvals.shape, yvals.shape)
-    #return vv(np.squeeze(row), x)
-    #vo = np.vstack([interp1d(xvals[rv], yvals, **kwargs)(xv) for rv, xv in zip(np.squeeze(row), x)])
-    #return vo
+    def single_row(xv, rv):
+        return interp1d(xvals[rv], yvals[rv], **kwargs)(xv)
+    vv = np.vectorize(single_row)
+    return vv(x, row)
+
+
+def interpolate_multi_x_multi_y_product(x, row, xvals, yvals, **kwargs):
+    """
+    Interpolate a set of values
+
+    Parameters
+    ----------
+    x : array_like (n)
+        X values to interpolate at
+    row : array_like (npdf, 1)
+        Which rows to interpolate at
+    xvals : array_like (npdf, npts)
+        X-values used for the interpolation
+    yvals : array_like (npdf, npts)
+        Y-avlues used for the inteolation
+
+    Returns
+    -------
+    vals : array_like (npdf, n)
+        The interpoalted values
+    """
+    rr = np.squeeze(row)
+    nx = np.shape(x)[-1]
+    def single_row(rv):
+        return interp1d(xvals[rv], yvals[rv], **kwargs)(x)
+    vv = np.vectorize(single_row, signature="()->(%i)" % (nx))
+    return vv(rr)
+
+
+def interpolate_multi_x_multi_y_2d(x, row, xvals, yvals, **kwargs):
+    """
+    Interpolate a set of values
+
+    Parameters
+    ----------
+    x : array_like (npdf, n)
+        X values to interpolate at
+    row : array_like (npdf, 1)
+        Which rows to interpolate at
+    xvals : array_like (npdf, npts)
+        X-values used for the interpolation
+    yvals : array_like (npdf, npts)
+        Y-avlues used for the inteolation
+
+    Returns
+    -------
+    vals : array_like (npdf, n)
+        The interpoalted values
+    """
+    nx = np.shape(x)[-1]
+    def evaluate_row(rv, xv):
+        return interp1d(xvals[rv], yvals[rv], **kwargs)(xv)
+    vv = np.vectorize(evaluate_row, signature="(),(%i)->(%i)" % (nx, nx))
+    return vv(np.squeeze(row), x)
+
+
+def interpolate_multi_x_multi_y(x, row, xvals, yvals, **kwargs):
+    """
+    Interpolate a set of values
+
+    Parameters
+    ----------
+    x : array_like (npdf, n)
+        X values to interpolate at
+    row : array_like (npdf, 1)
+        Which rows to interpolate at
+    xvals : array_like (npdf, npts)
+        X-values used for the interpolation
+    yvals : array_like (npdf, npts)
+        Y-avlues used for the inteolation
+
+    Returns
+    -------
+    vals : array_like
+        The interpoalted values
+    """    
+    case_idx, xx, rr = get_eval_case(x, row)
+    if case_idx in [CASE_PRODUCT, CASE_FACTOR]:
+        return interpolate_multi_x_multi_y_product(xx, rr, xvals, yvals, **kwargs)
+    if case_idx == CASE_2D:
+        return interpolate_multi_x_multi_y_2d(xx, rr, xvals, yvals, **kwargs)
+    return interpolate_multi_x_multi_y_flat(xx, rr, xvals, yvals, **kwargs)
+
+
+def interpolate_multi_x_y_flat(x, row, xvals, yvals, **kwargs):
+    """
+    Interpolate a set of values
+
+    Parameters
+    ----------
+    x : array_like (n)
+        X values to interpolate at
+    row : array_like (n)
+        Which rows to interpolate at
+    xvals : array_like (npdf, npts)
+        X-values used for the interpolation
+    yvals : array_like (npdf)
+        Y-avlues used for the inteolation
+
+    Returns
+    -------
+    vals : array_like (npdf, n)
+        The interpoalted values
+    """
     def single_row(xv, rv):
         return interp1d(xvals[rv], yvals, **kwargs)(xv)
     vv = np.vectorize(single_row)
     return vv(x, row)
 
 
-
-def interpolate_unfactored_multi_x_multi_y(x, row, xvals, yvals, **kwargs):
+def interpolate_multi_x_y_product(x, row, xvals, yvals, **kwargs):
     """
     Interpolate a set of values
 
@@ -332,104 +657,79 @@ def interpolate_unfactored_multi_x_multi_y(x, row, xvals, yvals, **kwargs):
     ----------
     x : array_like (n)
         X values to interpolate at
-    row : array_like (n)
+    row : array_like (npdf, 1)
         Which rows to interpolate at
-    xvals : array_like (N, M)
+    xvals : array_like (npdf, npts)
         X-values used for the interpolation
-    yvals : array_like (N, M)
+    yvals : array_like (npdf)
         Y-avlues used for the inteolation
 
     Returns
     -------
-    vals : array_like (M, n)
+    vals : array_like (npdf, n)
         The interpoalted values
     """
-    def single_row(xv, rv):
-        return interp1d(xvals[rv], yvals[rv], **kwargs)(xv)
+    rr = np.squeeze(row)
+    nx = np.shape(x)[-1]
+    def single_row(rv):
+        return interp1d(xvals[rv], yvals, **kwargs)(x)
+    vv = np.vectorize(single_row, signature="()->(%i)" % (nx))
+    return vv(rr)
 
-    vv = np.vectorize(single_row)
-    return vv(x, row)
 
-
-
-def interpolate_multi_x_multi_y(x, xvals, yvals, **kwargs):  #pragma: no cover
+def interpolate_multi_x_y_2d(x, row, xvals, yvals, **kwargs):
     """
     Interpolate a set of values
 
     Parameters
     ----------
-    x : array_line (n)
-        X values to interpolate at:
-    xvals : array_like (M, N)
+    x : array_like (npdf, n)
+        X values to interpolate at
+    row : array_like (npdf, 1)
+        Which rows to interpolate at
+    xvals : array_like (npdf, npts)
         X-values used for the interpolation
-    yvals : array_like (M, N)
+    yvals : array_like (npdf)
         Y-avlues used for the inteolation
 
     Returns
     -------
-    vals : array_like (M, n)
+    vals : array_like (npdf, n)
         The interpoalted values
     """
-    xy_vals = np.hstack([xvals, yvals])
-    nx = xvals.shape[-1]
-    def single_row(xy_vals_):
-        return interp1d(xy_vals_[0:nx], xy_vals_[nx:], **kwargs)(x)
-    vv = np.vectorize(single_row, signature="(%i)->(%i)" % (xvals.shape[-1]+yvals.shape[-1], x.size))
-    return vv(xy_vals)
+    nx = np.shape(x)[-1]
+    def evaluate_row(rv, xv):
+        return interp1d(xvals[rv], yvals, **kwargs)(xv)
+    vv = np.vectorize(evaluate_row, signature="(),(%i)->(%i)" % (nx, nx))
+    return vv(np.squeeze(row), x)
 
 
-def interpolate_x_multi_y(x, xvals, yvals, **kwargs):  #pragma: no cover
+def interpolate_multi_x_y(x, row, xvals, yvals, **kwargs):
     """
     Interpolate a set of values
 
     Parameters
     ----------
-    x : array_line (n)
-        X values to interpolate at:
-    xvals : array_like (N)
+    x : array_like (npdf, n)
+        X values to interpolate at
+    row : array_like (npdf, 1)
+        Which rows to interpolate at
+    xvals : array_like (npdf, npts)
         X-values used for the interpolation
-    yvals : array_like (M, N)
+    yvals : array_like (npdf)
         Y-avlues used for the inteolation
 
     Returns
     -------
-    vals : array_like (M, n)
+    vals : array_like
         The interpoalted values
-    """
-    return interp1d(xvals, yvals, **kwargs)(x)
-
-
-
-def interpolate_multi_x_y(x, xvals, yvals, **kwargs):  #pragma: no cover
-    """
-    Interpolate a set of values
-
-    Parameters
-    ----------
-    x : array_line (n)
-        X values to interpolate at:
-    xvals : array_like (M, N)
-        X-values used for the interpolation
-    yvals : array_like (N)
-        Y-avlues used for the inteolation
-
-    Returns
-    -------
-    vals : array_like (M, n)
-        The interpoalted values
-    """
-    #def single_row(xrow):
-    #    idx = np.searchsorted(xrow, x, side='left').clip(1, xrow.size-1)
-    #    x0 = xrow[idx-1]
-    #    x1 = xrow[idx]
-    #    f = (x1 - x)/(x1 - x0)
-    #    y0 = yvals[idx-1]
-    #    y1 = yvals[idx]
-    #    return f*y1 + (1 - f)*y0
-    def single_row(xrow):
-        return interp1d(xrow, yvals, **kwargs)(x)
-    vv = np.vectorize(single_row, signature="(%i)->(%i)" % (yvals.size, x.size))
-    return vv(xvals)
+    """    
+    case_idx, xx, rr = get_eval_case(x, row)
+    if case_idx in [CASE_PRODUCT, CASE_FACTOR]:
+        return interpolate_multi_x_y_product(xx, rr, xvals, yvals, **kwargs)
+    if case_idx == CASE_2D:
+        return interpolate_multi_x_y_2d(xx, rr, xvals, yvals, **kwargs)
+    return interpolate_multi_x_y_flat(xx, rr, xvals, yvals, **kwargs)
 
 
 def profile(x_data, y_data, x_bins, std=True):
