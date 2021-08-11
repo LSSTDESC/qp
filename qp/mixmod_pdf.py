@@ -31,7 +31,7 @@ class mixmod_gen(Pdf_rows_gen):
     the pdf() and cdf() of the component Gaussians.
 
     The ppf() is computed by computing the cdf() values on a fixed
-    grid and interpolating the inverse function.  
+    grid and interpolating the inverse function.
     """
     # pylint: disable=protected-access
 

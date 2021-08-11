@@ -10,7 +10,7 @@ from astropy.table import Table
 
 from qp.dict_utils import slice_dict, print_dict_shape, check_array_shapes, compare_dicts, concatenate_dicts
 
-from qp.metrics import quick_kld, quick_rmse, quick_moment
+from qp.metrics import quick_moment
 
 from qp import io_layer
 
@@ -593,68 +593,6 @@ class Ensemble:
         P_eval = self.gridded(grid)[1]
         grid_to_n = grid**n
         return quick_moment(P_eval, grid_to_n, dx)
-
-
-    def kld(self, other, limits, dx=0.01):
-        """
-        Calculates the KLD for each PDF in the ensemble
-        Parameters
-        ----------
-        other: `qp.ensemble`
-            Other ensemble
-        limits: tuple of floats, optional
-            endpoints of integration interval in which to calculate KLD
-        dx: float
-            resolution of integration grid
-
-        Returns
-        -------
-        klds: numpy.ndarray, float
-            KLD values of each PDF under the using approximation relative to the truth
-        """
-        D = int((limits[-1] - limits[0]) / dx)
-        grid = np.linspace(limits[0], limits[1], D)
-        # dx = (limits[-1] - limits[0]) / (D - 1)
-
-        P_eval = other.gridded(grid)[1]
-        Q_eval = self.gridded(grid)[1]
-        def kld_helper(p_row, q_row):
-            return quick_kld(p_row, q_row, dx)
-        vv = np.vectorize(kld_helper)
-        klds = vv(P_eval, Q_eval)
-        return klds
-
-
-
-    def rmse(self, other, limits, dx=0.01):
-        """
-        Calculates the RMSE for each PDF in the ensemble
-        Parameters
-        ----------
-        other: `qp.ensemble`
-            Other ensemble
-        limits: tuple of floats, optional
-            endpoints of integration interval in which to calculate KLD
-        dx: float
-            resolution of integration grid
-
-        Returns
-        -------
-        rmses: numpy.ndarray, float
-            KLD values of each PDF under the using approximation relative to the truth
-        """
-        D = int((limits[-1] - limits[0]) / dx)
-        grid = np.linspace(limits[0], limits[1], D)
-        # dx = (limits[-1] - limits[0]) / (D - 1)
-
-        P_eval = other.gridded(grid)[1]
-        Q_eval = self.gridded(grid)[1]
-        def rmse_helper(p_row, q_row):
-            return quick_rmse(p_row, q_row, D)
-        vv = np.vectorize(rmse_helper)
-        rmses = vv(P_eval, Q_eval)
-        return rmses
-
 
     def plot(self, key=0, **kwargs):
         """Plot the pdf as a curve

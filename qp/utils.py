@@ -387,9 +387,9 @@ def evaluate_hist_multi_x_multi_y(x, row, bins, vals):
 
     Parameters
     ----------
-    x : array_like 
+    x : array_like
         X values to interpolate at
-    row : array_like 
+    row : array_like
         Which rows to interpolate at
     bins : array_like (npdf, N+1)
         'x' bin edges
@@ -457,7 +457,7 @@ def interpolate_x_multi_y_product(x, row, xvals, yvals, **kwargs):
     """
     rr = np.squeeze(row)
     return interp1d(xvals, yvals[rr], **kwargs)(x)
-   
+
 
 def interpolate_x_multi_y_2d(x, row, xvals, yvals, **kwargs):
     """
@@ -484,7 +484,7 @@ def interpolate_x_multi_y_2d(x, row, xvals, yvals, **kwargs):
         return interp1d(xvals, yvals[rv], **kwargs)(xv)
     vv = np.vectorize(evaluate_row, signature="(1),(%i)->(%i)" % (nx, nx))
     return vv(row, x)
-   
+
 
 def interpolate_x_multi_y(x, row, xvals, yvals, **kwargs):
     """
@@ -505,7 +505,7 @@ def interpolate_x_multi_y(x, row, xvals, yvals, **kwargs):
     -------
     vals : array_like
         The interpoalted values
-    """    
+    """
     case_idx, xx, rr = get_eval_case(x, row)
     if case_idx in [CASE_PRODUCT, CASE_FACTOR]:
         return interpolate_x_multi_y_product(xx, rr, xvals, yvals, **kwargs)
@@ -614,7 +614,7 @@ def interpolate_multi_x_multi_y(x, row, xvals, yvals, **kwargs):
     -------
     vals : array_like
         The interpoalted values
-    """    
+    """
     case_idx, xx, rr = get_eval_case(x, row)
     if case_idx in [CASE_PRODUCT, CASE_FACTOR]:
         return interpolate_multi_x_multi_y_product(xx, rr, xvals, yvals, **kwargs)
@@ -723,7 +723,7 @@ def interpolate_multi_x_y(x, row, xvals, yvals, **kwargs):
     -------
     vals : array_like
         The interpoalted values
-    """    
+    """
     case_idx, xx, rr = get_eval_case(x, row)
     if case_idx in [CASE_PRODUCT, CASE_FACTOR]:
         return interpolate_multi_x_y_product(xx, rr, xvals, yvals, **kwargs)

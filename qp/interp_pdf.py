@@ -4,7 +4,6 @@
 import numpy as np
 
 from scipy.stats import rv_continuous
-from scipy.interpolate import interp1d
 
 from qp.pdf_gen import Pdf_rows_gen
 from qp.conversion_funcs import extract_vals_at_x, extract_xy_vals, extract_xy_sparse
@@ -21,29 +20,29 @@ class interp_gen(Pdf_rows_gen):
 
     Notes
     -----
-    This implements a PDF using a set of interpolated values.  
+    This implements a PDF using a set of interpolated values.
 
-    This version use the same xvals for all the the PDFs, which 
-    allows for much faster evaluation, and reduces the memory 
+    This version use the same xvals for all the the PDFs, which
+    allows for much faster evaluation, and reduces the memory
     usage by a factor of 2.
 
     The relevant data members are:
 
     xvals:  (n) x values
-    
+
     yvals:  (npdf, n) y values
 
-    Inside the range xvals[0], xvals[-1] tt simply takes a set of x and y values 
+    Inside the range xvals[0], xvals[-1] tt simply takes a set of x and y values
     and uses `scipy.interpolate.interp1d` to build the PDF.
     Outside the range xvals[0], xvals[-1] the pdf() will return 0.
 
-    The cdf() is constructed by integrating analytically computing the cumulative 
-    sum at the xvals grid points and interpolating between them.  
-    This will give a slight discrepency with the true integral of the pdf(), 
+    The cdf() is constructed by integrating analytically computing the cumulative
+    sum at the xvals grid points and interpolating between them.
+    This will give a slight discrepency with the true integral of the pdf(),
     bit is much, much faster to evaluate.
     Outside the range xvals[0], xvals[-1] the cdf() will return (0 or 1), respectively
 
-    The ppf() is computed by inverting the cdf(). 
+    The ppf() is computed by inverting the cdf().
     ppf(0) will return xvals[0]
     ppf(1) will return xvals[-1]
     """
@@ -66,7 +65,7 @@ class interp_gen(Pdf_rows_gen):
           The y-values used to do the interpolation
         """
         if np.size(xvals) != np.sum(np.shape(yvals)[1:]): # pragma: no cover
-            raise ValueError("Shape of xbins in xvals (%s) != shape of xbins in yvals (%s)" % 
+            raise ValueError("Shape of xbins in xvals (%s) != shape of xbins in yvals (%s)" %
                              (np.size(xvals), np.sum(np.shape(yvals)[1:])))
         self._xvals = np.asarray(xvals)
 
@@ -115,7 +114,7 @@ class interp_gen(Pdf_rows_gen):
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
         if self._ycumul is None:  # pragma: no cover
-            self._compute_ycumul()            
+            self._compute_ycumul()
         return interpolate_x_multi_y(x, row, self._xvals, self._ycumul,
                                      bounds_error=False, fill_value=(0.,1.))
 
@@ -123,7 +122,7 @@ class interp_gen(Pdf_rows_gen):
         # pylint: disable=arguments-differ
         if self._ycumul is None:  # pragma: no cover
             self._compute_ycumul()
-        
+
         return interpolate_multi_x_y(x, row, self._ycumul, self._xvals,
                                      bounds_error=False, fill_value=(self._xmin, self._xmax))
 
@@ -182,28 +181,28 @@ class interp_irregular_gen(Pdf_rows_gen):
 
     Notes
     -----
-    This implements a PDF using a set of interpolated values.  
+    This implements a PDF using a set of interpolated values.
 
-    This version use the different xvals for each the the PDFs, which 
+    This version use the different xvals for each the the PDFs, which
     allows for more precision.
 
     The relevant data members are:
 
     xvals:  (npdf, n) x values
-    
+
     yvals:  (npdf, n) y values
 
-    Inside the range xvals[:,0], xvals[:,-1] tt simply takes a set of x and y values 
+    Inside the range xvals[:,0], xvals[:,-1] tt simply takes a set of x and y values
     and uses `scipy.interpolate.interp1d` to build the PDF.
     Outside the range xvals[:,0], xvals[:,-1] the pdf() will return 0.
 
-    The cdf() is constructed by integrating analytically computing the cumulative 
-    sum at the xvals grid points and interpolating between them.  
-    This will give a slight discrepency with the true integral of the pdf(), 
+    The cdf() is constructed by integrating analytically computing the cumulative
+    sum at the xvals grid points and interpolating between them.
+    This will give a slight discrepency with the true integral of the pdf(),
     bit is much, much faster to evaluate.
     Outside the range xvals[:,0], xvals[:,-1] the cdf() will return (0 or 1), respectively
 
-    The ppf() is computed by inverting the cdf(). 
+    The ppf() is computed by inverting the cdf().
     ppf(0) will return min(xvals)
     ppf(1) will return max(xvals)
     """
@@ -226,7 +225,7 @@ class interp_irregular_gen(Pdf_rows_gen):
           The y-values used to do the interpolation
         """
         if np.shape(xvals) != np.shape(yvals): # pragma: no cover
-            raise ValueError("Shape of xvals (%s) != shape of yvals (%s)" % 
+            raise ValueError("Shape of xvals (%s) != shape of yvals (%s)" %
                              (np.shape(xvals), np.shape(yvals)))
         self._xvals = reshape_to_pdf_size(xvals, -1)
 

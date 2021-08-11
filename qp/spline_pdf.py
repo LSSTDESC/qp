@@ -90,18 +90,18 @@ class spline_gen(Pdf_rows_gen):
     The relevant data members are:
 
     splx:  (npdf, n) spline-knot x-values
-    
+
     sply:  (npdf, n) spline-knot y-values
 
     spln:  (npdf) spline-knot order paramters
 
-    The pdf() for the ith pdf will return the result of 
+    The pdf() for the ith pdf will return the result of
     scipy.interpolate.splev(x, splx[i], sply[i], spln[i))
-    
-    The cdf() for the ith pdf will return the result of 
+
+    The cdf() for the ith pdf will return the result of
     scipy.interpolate.splint(x, splx[i], sply[i], spln[i))
 
-    The ppf() will use the default scipy implementation, which 
+    The ppf() will use the default scipy implementation, which
     inverts the cdf() as evaluated on an adaptive grid.
     """
     # pylint: disable=protected-access

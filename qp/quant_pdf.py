@@ -5,7 +5,6 @@ import sys
 import numpy as np
 
 from scipy.stats import rv_continuous
-from scipy.interpolate import interp1d
 
 from qp.pdf_gen import Pdf_rows_gen
 
@@ -267,7 +266,7 @@ class quant_piecewise_gen(Pdf_rows_gen):
         # pylint: disable=arguments-differ
         return interpolate_x_multi_y(x, row, self._quants, self._locs,
                                      bounds_error=False, fill_value=(self._xmin, self._xmax))
-    
+
 
     def _updated_ctor_param(self):
         """

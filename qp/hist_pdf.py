@@ -5,7 +5,6 @@
 import numpy as np
 
 from scipy.stats import rv_continuous
-from scipy.interpolate import interp1d
 
 from qp.pdf_gen import Pdf_rows_gen
 from qp.conversion_funcs import extract_hist_values, extract_hist_samples
@@ -28,8 +27,8 @@ class hist_gen(Pdf_rows_gen):
     The relevant data members are:
 
     bins:  n+1 bin edges (shared for all PDFs)
-    
-    pdfs:  (npdf, n) bin values 
+
+    pdfs:  (npdf, n) bin values
 
     Inside a given bin the pdf() will return the pdf value.
     Outside the range bins[0], bins[-1] the pdf() will return 0.
@@ -37,7 +36,7 @@ class hist_gen(Pdf_rows_gen):
     Inside a given bin the cdf() will use a linear interpolation accross the bin
     Outside the range bins[0], bins[-1] the cdf() will return (0 or 1), respectively
 
-    The ppf() is computed by inverting the cdf(). 
+    The ppf() is computed by inverting the cdf().
     ppf(0) will return bins[0]
     ppf(1) will return bins[-1]
     """
