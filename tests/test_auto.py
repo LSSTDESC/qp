@@ -1,27 +1,24 @@
 """
 Unit tests for PDF class
 """
-import sys
-import os
 import unittest
 from functools import partial
 import qp
 
-from qp import test_data
 from qp import test_funcs
 
 
 class PDFTestCase(unittest.TestCase):
-    
+    """ Class to manage automatically generated tests for qp distributions """
+
     def setUp(self):
         """
         Make any objects that are used in multiple tests.
         """
-        pass
-        
+
     def tearDown(self):
         "Clean up any mock data files created by the tests."
-        pass
+
 
     @classmethod
     def auto_add_class(cls, test_class, ens_orig):
@@ -48,7 +45,7 @@ class PDFTestCase(unittest.TestCase):
                 kw_test_plot = dict(do_samples=val.pop('do_samples', False))
                 the_plot_func = partial(test_funcs.run_plotting_func_tests, val, **kw_test_plot)
                 setattr(cls, 'test_plotting_%s' % key, the_plot_func)
-            
+
     @classmethod
     def auto_add(cls, class_list, ens_orig):
         """Add tests as member functions to a class"""
@@ -59,13 +56,13 @@ class PDFTestCase(unittest.TestCase):
                 pass
             if hasattr(test_class, 'test_data'):
                 cls.auto_add_class(test_class, ens_orig)
-        
 
-ENS_ORIG = test_funcs.build_ensemble(qp.stats.norm_gen.test_data['norm'])
+
+ENS_ORIG = test_funcs.build_ensemble(qp.stats.norm_gen.test_data['norm'])  #pylint: disable=no-member
 TEST_CLASSES = qp.instance().values()
 
 PDFTestCase.auto_add(TEST_CLASSES, ENS_ORIG)
 
-    
+
 if __name__ == '__main__':
     unittest.main()

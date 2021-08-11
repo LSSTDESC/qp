@@ -8,26 +8,25 @@ import qp
 from qp import test_data
 
 class UtilsTestCase(unittest.TestCase):
+    """ Test the utility functions """
 
     def setUp(self):
         """
         Make any objects that are used in multiple tests.
         """
-        self.files = []
-        
-    def tearDown(self):
-        "Clean up any mock data files created by the tests."
-        for ff in self.files:
-            os.unlink(ff)
-        
-    def test_profile(self):
 
+    def tearDown(self):
+        """ Clean up any mock data files created by the tests. """
+
+    @staticmethod
+    def test_profile():
+        """ Test the utils.profile function """
         npdf = 100
         x_bins = test_data.XBINS
         x_cents = qp.utils.edge_to_center(x_bins)
         nbin = x_cents.size
         x_data = (np.ones((npdf, 1))*x_cents).T
-        c_vals = np.linspace(0.5, 2.5, nbin)        
+        c_vals = np.linspace(0.5, 2.5, nbin)
         y_data = np.expand_dims(c_vals, -1)*(0.95 + 0.1*np.random.uniform(size=(nbin, npdf)))
         pf_1 = qp.utils.profile(x_data.flatten(), y_data.flatten(), x_bins, std=False)
         pf_2 = qp.utils.profile(x_data.flatten(), y_data.flatten(), x_bins, std=True)
@@ -37,6 +36,8 @@ class UtilsTestCase(unittest.TestCase):
         qp.test_funcs.assert_all_close(pf_1[1], 0.1*pf_2[1], test_name="profile_err")
 
     def test_sparse(self):
+        """ Test the sparse representation """
+
         xvals = np.linspace(0,1,101)
         #assert basic construction
         A = qp.sparse_rep.create_voigt_basis(xvals, (0, 1), 11, (0.01, 0.5), 10, 10)
@@ -59,6 +60,7 @@ class UtilsTestCase(unittest.TestCase):
         self.assertEqual(bigD['dims'][0], len(xvals))
         pdf_rec = qp.sparse_rep.pdf_from_sparse(ALL, A, xvals)
         self.assertTrue(np.allclose(pdf_rec[:, 0], pdf0, atol=1.5e-2))
-        
+
+
 if __name__ == '__main__':
     unittest.main()
