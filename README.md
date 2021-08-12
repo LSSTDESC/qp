@@ -30,3 +30,8 @@ Also: [Read the Docs](http://qp.readthedocs.io/)
 ## License, Contributing etc
 
 The code in this repo is available for re-use under the MIT license, which means that you can do whatever you like with it, just don't blame us. If you end up using any of the code or ideas you find here in your academic research, please cite us as `Malz et al, ApJ 156 1 35`. If you are interested in this project, please do drop us a line via the hyperlinked contact names above, or by [writing us an issue](https://github.com/aimalz/qp/issues/new). To get started contributing to the `qp` project, just fork the repo - pull requests are always welcome!
+
+
+
+
+
