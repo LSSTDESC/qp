@@ -9,13 +9,13 @@ import numpy as np
 
 from scipy import stats as sps
 
+from tables_io import io_layer
+
 from qp.ensemble import Ensemble
 
 from qp.dict_utils import compare_dicts, concatenate_dicts
 
 from qp.pdf_gen import Pdf_gen_wrap
-
-from qp import io_layer
 
 
 class Factory(OrderedDict):

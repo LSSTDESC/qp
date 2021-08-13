@@ -7,12 +7,11 @@ import numpy as np
 
 from astropy.table import Table
 
+from tables_io import io_layer
 
 from qp.dict_utils import slice_dict, print_dict_shape, check_array_shapes, compare_dicts, concatenate_dicts
 
 from qp.metrics import quick_moment
-
-from qp import io_layer
 
 
 class Ensemble:
