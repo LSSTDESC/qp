@@ -27,5 +27,4 @@ setup(
                       "sklearn",
                       "tables_io",
                       "setuptools_scm"],
-    dependency_links=['http://github.com/LSSTDESC/tables_io.git#egg=tables_io-0.0'],
 )
