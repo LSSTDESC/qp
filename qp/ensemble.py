@@ -344,16 +344,6 @@ class Ensemble:
         basename, ext = os.path.splitext(filename)
         tables = self.build_tables()
         io.write(tables, basename, ext[1:])
-        #if ext in ['.fits', '.fit']:
-        #    io_layer.writeTablesToFits(tables, filename, overwrite=True)
-        #elif ext in ['.hdf5']:
-        #    io_layer.writeTablesToHdf5(tables, filename, overwrite=True)
-        #elif ext in ['.pq', '.parquet']:
-        #    dataframes = io_layer.tablesToDataframes(tables)
-        #    io_layer.writeDataframesToPq(dataframes, basename)
-        #else:  #pragma: no cover
-        #    raise ValueError("Can not write to format %s.  Only fits, hdf5 and parquet are supported" % ext)
-
 
     def pdf(self, x):
         """

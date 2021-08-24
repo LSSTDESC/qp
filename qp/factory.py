@@ -9,7 +9,8 @@ import numpy as np
 
 from scipy import stats as sps
 
-from tables_io import io, types
+from tables_io import io
+from tables_io.types import AP_TABLE
 
 from qp.ensemble import Ensemble
 
@@ -140,17 +141,7 @@ class Factory(OrderedDict):
         else:
             keys = None
 
-        tables = io.read(filename, types.AP_TABLE, keys=keys) #pylint: disable=no-member
-
-        #if ext in ['.fits', '.fit']:
-        #    tables = io_layer.readFitsToTables(filename)
-        #elif ext in ['.hdf5']:
-        #    tables = io_layer.readHdf5ToTables(filename)
-        #elif ext in ['.pq', '.parquet']:
-        #    dataframes = io_layer.readPqToDataframes(basename, keys)
-        #    tables = io_layer.dataframesToTables(dataframes)
-        #else:  #pragma: no cover
-        #    raise ValueError("Can not read format %s.  Only fits, hdf5 and parquet are supported" % ext)
+        tables = io.read(filename, AP_TABLE, keys=keys) #pylint: disable=no-member
 
         md_table = tables['meta']
         data_table = tables['data']
