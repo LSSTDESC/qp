@@ -140,7 +140,7 @@ class Factory(OrderedDict):
         else:
             keys = None
 
-        tables = io.read(filename, types.AP_TABLE, keys=keys)
+        tables = io.read(filename, types.AP_TABLE, keys=keys) #pylint: disable=no-member
 
         #if ext in ['.fits', '.fit']:
         #    tables = io_layer.readFitsToTables(filename)
