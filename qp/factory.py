@@ -9,7 +9,7 @@ import numpy as np
 
 from scipy import stats as sps
 
-from tables_io import io_layer
+from tables_io import io, types
 
 from qp.ensemble import Ensemble
 
@@ -135,17 +135,22 @@ class Factory(OrderedDict):
         need to build the ensemble.
         """
         basename, ext = os.path.splitext(filename)
-        keys = ['data', 'meta', 'ancil']
+        if ext in ['.pq']:
+            keys = ['data', 'meta']
+        else:
+            keys = None
 
-        if ext in ['.fits', '.fit']:
-            tables = io_layer.readFitsToTables(filename)
-        elif ext in ['.hdf5']:
-            tables = io_layer.readHdf5ToTables(filename)
-        elif ext in ['.pq', '.parquet']:
-            dataframes = io_layer.readPqToDataframes(basename, keys)
-            tables = io_layer.dataframesToTables(dataframes)
-        else:  #pragma: no cover
-            raise ValueError("Can not read format %s.  Only fits, hdf5 and parquet are supported" % ext)
+        tables = io.read(filename, types.AP_TABLE, keys=keys)
+
+        #if ext in ['.fits', '.fit']:
+        #    tables = io_layer.readFitsToTables(filename)
+        #elif ext in ['.hdf5']:
+        #    tables = io_layer.readHdf5ToTables(filename)
+        #elif ext in ['.pq', '.parquet']:
+        #    dataframes = io_layer.readPqToDataframes(basename, keys)
+        #    tables = io_layer.dataframesToTables(dataframes)
+        #else:  #pragma: no cover
+        #    raise ValueError("Can not read format %s.  Only fits, hdf5 and parquet are supported" % ext)
 
         md_table = tables['meta']
         data_table = tables['data']

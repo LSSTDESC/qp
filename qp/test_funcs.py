@@ -115,7 +115,8 @@ def run_pdf_func_tests(test_class, test_data, short=False, check_props=True):
 
 def persist_func_test(ensemble, test_data):
     """Run loopback persistence tests on an ensemble"""
-    ftypes = ['fits', 'hdf5', 'pq']
+    #ftypes = ['fits', 'hdf5', 'pq']
+    ftypes = ['fits', 'hf5', 'h5', 'pq']
     for ftype in ftypes:
         filename = "test_%s.%s" % ( ensemble.gen_class.name, ftype )
         ensemble.write_to(filename)
@@ -129,7 +130,6 @@ def persist_func_test(ensemble, test_data):
         try:
             os.unlink(filename.replace(".%s" % ftype, "data.%s" % ftype))
             os.unlink(filename.replace(".%s" % ftype, "meta.%s" % ftype))
-            os.unlink(filename.replace(".%s" % ftype, "ancil.%s" % ftype))
         except FileNotFoundError:
             pass
 
