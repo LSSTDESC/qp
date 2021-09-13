@@ -5,11 +5,9 @@ import numpy as np
 # import psutil
 #import timeit
 
-from astropy.table import Table
-
 from tables_io import io
 
-from qp.dict_utils import slice_dict, print_dict_shape, check_array_shapes, compare_dicts, concatenate_dicts
+from qp.dict_utils import slice_dict, check_array_shapes, compare_dicts, concatenate_dicts
 
 from qp.metrics import quick_moment
 
@@ -278,17 +276,7 @@ class Ensemble:
         data : `astropy.Table`
             Table with the object data
         """
-        try:
-            meta = Table(self.metadata())
-        except ValueError as exep: #pragma: no cover
-            print_dict_shape(self.metadata())
-            raise ValueError from exep
-        try:
-            data = Table(self.objdata())
-        except ValueError as exep: #pragma: no cover
-            print_dict_shape(self.objdata())
-            raise ValueError from exep
-        return dict(meta=meta, data=data)
+        return dict(meta=self.metadata(), data=self.objdata())
 
 
     def mode(self, grid):

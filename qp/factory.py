@@ -8,6 +8,7 @@ from collections import OrderedDict
 import numpy as np
 
 from scipy import stats as sps
+from astropy.table import Column
 
 from tables_io import io
 from tables_io.types import AP_TABLE
@@ -32,9 +33,13 @@ class Factory(OrderedDict):
     def _build_data_dict(md_table, data_table):
         """Convert the tables to a dictionary that can be used to build an Ensemble"""
         data_dict = {}
-        for col in md_table.columns:
-            col_data = md_table[col].data
+
+        for col, col_data in md_table.items():
+
+            if isinstance(col_data, Column):
+                col_data = col_data.data
             ndim = np.ndim(col_data)
+
             if ndim > 1:
                 col_data = np.squeeze(col_data)
                 if np.ndim(col_data) == 0:
@@ -47,10 +52,9 @@ class Factory(OrderedDict):
 
             data_dict[col] = col_data
 
-        for col in data_table.columns:
-            col_data = data_table[col].data
+        for col, col_data in data_table.items():
             if len(col_data.shape) < 2: #pragma: no cover
-                data_dict[col] = np.expand_dims(data_table[col].data, -1)
+                data_dict[col] = np.expand_dims(col_data, -1)
             else:
                 data_dict[col] = col_data
         return data_dict
@@ -135,7 +139,7 @@ class Factory(OrderedDict):
         This will use information in the meta data to figure out how to construct the data
         need to build the ensemble.
         """
-        basename, ext = os.path.splitext(filename)
+        _, ext = os.path.splitext(filename)
         if ext in ['.pq']:
             keys = ['data', 'meta']
         else:
