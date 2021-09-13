@@ -11,7 +11,7 @@ from scipy import stats as sps
 from astropy.table import Column
 
 from tables_io import io
-from tables_io.types import AP_TABLE
+from tables_io.types import NUMPY_DICT
 
 from qp.ensemble import Ensemble
 
@@ -145,7 +145,7 @@ class Factory(OrderedDict):
         else:
             keys = None
 
-        tables = io.read(filename, AP_TABLE, keys=keys) #pylint: disable=no-member
+        tables = io.read(filename, NUMPY_DICT, keys=keys) #pylint: disable=no-member
 
         md_table = tables['meta']
         data_table = tables['data']
