@@ -36,8 +36,6 @@ class Factory(OrderedDict):
 
         for col, col_data in md_table.items():
 
-            if isinstance(col_data, Column):
-                col_data = col_data.data
             ndim = np.ndim(col_data)
 
             if ndim > 1:
