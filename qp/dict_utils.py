@@ -97,7 +97,7 @@ def pretty_print(in_dict, prefixes, idx=0, stream=sys.stdout):
 
 def print_dict_shape(in_dict):
     """Print the shape of arrays in a dictionary.
-    This is useful for debugging `astropy.Table` creation.
+    This is useful for debugging table creation.
 
     Parameters
     ----------

@@ -1,6 +1,5 @@
 matplotlib
-numpy>=1.21.0
+numpy
 scipy>=1.7.0
 sklearn
-astropy
 setuptools_scm

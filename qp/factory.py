@@ -8,7 +8,6 @@ from collections import OrderedDict
 import numpy as np
 
 from scipy import stats as sps
-from astropy.table import Column
 
 from tables_io import io
 from tables_io.types import NUMPY_DICT

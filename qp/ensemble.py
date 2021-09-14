@@ -266,14 +266,14 @@ class Ensemble:
 
 
     def build_tables(self):
-        """Build and return `astropy.Table` objects for the meta data and object data
+        """ Return dicts of numpy arrays for the meta data and object data
         for this ensemble
 
         Returns
         -------
-        meta : `astropy.Table`
+        meta : `dict`
             Table with the meta data
-        data : `astropy.Table`
+        data : `dict`
             Table with the object data
         """
         return dict(meta=self.metadata(), data=self.objdata())
@@ -326,8 +326,8 @@ class Ensemble:
         -----
         This will actually write two files, one for the metadata and one for the object data
 
-        This uses `astropy.Table` to write the data, so any filesuffix that works for
-        `astropy.Table.write` will work here.
+        This uses `tables_io` to write the data, so any filesuffix that works for
+        `tables_io` will work here.
         """
         basename, ext = os.path.splitext(filename)
         tables = self.build_tables()
