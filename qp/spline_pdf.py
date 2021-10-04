@@ -282,7 +282,7 @@ class spline_gen(Pdf_rows_gen):
         if 'splx' not in kwargs: #pragma: no cover
             raise ValueError("required argument splx not included in kwargs")
 
-        shape = np.shape(kwargs['splx'])        
+        shape = np.shape(kwargs['splx'])
         return dict(splx=(shape, 'f4'), sply=(shape, 'f4'), spln=((shape[0],1), 'i4'))
 
 

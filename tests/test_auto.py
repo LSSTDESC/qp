@@ -21,7 +21,7 @@ class PDFTestCase(unittest.TestCase):
 
 
     @classmethod
-    def auto_add_class(cls, test_class, ens_orig):
+    def auto_add_class(cls, test_class, ens_list):
         """Add tests as member functions to a class"""
         for key, val in test_class.test_data.items():
             test_pdf = val.pop('test_pdf', True)
@@ -38,8 +38,9 @@ class PDFTestCase(unittest.TestCase):
                 test_convert = False
             if test_convert:
                 kw_test_convert = dict(atol_diff=val.pop('atol_diff', 1e-2), atol_diff2=val.pop('atol_diff2', 1e-2))
-                the_convert_func = partial(test_funcs.run_convert_tests, ens_orig=ens_orig, gen_class=test_class, test_data=val, **kw_test_convert)
-                setattr(cls, 'test_convert_%s' % key, the_convert_func)
+                for i, ens in enumerate(ens_list):
+                    the_convert_func = partial(test_funcs.run_convert_tests, ens_orig=ens, gen_class=test_class, test_data=val, **kw_test_convert)
+                    setattr(cls, 'test_convert_%s_%i' % (key, i), the_convert_func)
             test_plot = val.pop('test_plot', True)
             if test_plot:
                 kw_test_plot = dict(do_samples=val.pop('do_samples', False))
@@ -59,9 +60,10 @@ class PDFTestCase(unittest.TestCase):
 
 
 ENS_ORIG = test_funcs.build_ensemble(qp.stats.norm_gen.test_data['norm'])  #pylint: disable=no-member
+ENS_MULTI = test_funcs.build_ensemble(qp.stats.norm_gen.test_data['norm'])  #pylint: disable=no-member
 TEST_CLASSES = qp.instance().values()
 
-PDFTestCase.auto_add(TEST_CLASSES, ENS_ORIG)
+PDFTestCase.auto_add(TEST_CLASSES, [ENS_ORIG, ENS_MULTI])
 
 
 if __name__ == '__main__':

@@ -110,13 +110,18 @@ class quant_gen(Pdf_rows_gen):
         if locs_2d.shape[-1] != self._nquants:  # pragma: no cover
             raise ValueError("Number of locations (%i) != number of quantile values (%i)" % (self._nquants, locs_2d.shape[-1]))
         self._locs = locs_2d
-        self._valatloc = None
+        self._cdf_derivs = None
+        self._cdf_2nd_derivs = None
         self._addmetadata('quants', self._quants)
         self._addobjdata('locs', self._locs)
 
 
-    def _compute_valatloc(self):
-        self._valatloc = (self._quants[1:] - self._quants[0:-1])/(self._locs[:,1:] - self._locs[:,0:-1])
+    def _compute_derivs(self):
+        self._cdf_derivs = np.zeros(self.locs.shape)
+        self._cdf_2nd_derivs = np.zeros(self.locs.shape)
+
+        self._cdf_derivs[:,0:-1] = (self._quants[1:] - self._quants[0:-1])/(self._locs[:,1:] - self._locs[:,0:-1])
+        self._cdf_2nd_derivs[:,0:-1] = self._cdf_derivs[:,1:]  - self._cdf_derivs[:,0:-1]
 
 
     @property
@@ -131,20 +136,19 @@ class quant_gen(Pdf_rows_gen):
 
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
-        if self._valatloc is None:  # pragma: no cover
-            self._compute_valatloc()
-        return evaluate_hist_multi_x_multi_y(x, row, self._locs, self._valatloc)
-
+        if self._cdf_derivs is None:  # pragma: no cover
+            self._compute_derivs()
+        return evaluate_hist_multi_x_multi_y(x, row, self._locs, self._cdf_derivs, self._cdf_2nd_derivs)
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
         return interpolate_multi_x_y(x, row, self._locs, self._quants,
-                                     bounds_error=False, fill_value=(0., 1))
+                                     bounds_error=False, fill_value=(0., 1), kind="quadratic")
 
     def _ppf(self, x, row):
         # pylint: disable=arguments-differ
         return interpolate_x_multi_y(x, row, self._quants, self._locs,
-                                     bounds_error=False, fill_value=(self._xmin, self._xmax))
+                                     bounds_error=False, fill_value=(self._xmin, self._xmax), kind="quadratic")
 
     def _updated_ctor_param(self):
         """

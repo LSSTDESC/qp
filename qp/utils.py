@@ -82,6 +82,7 @@ def get_bin_indices(bins, x):
     If the bins are not equal width this will use a binary search
     """
     widths = bin_widths(bins)
+    n_bins = np.size(bins) - 1
     if np.allclose(widths, widths[0]):
         idx = np.atleast_1d(np.floor((x-bins[0])/widths[0]).astype(int))
     else:
@@ -89,7 +90,7 @@ def get_bin_indices(bins, x):
     mask = (idx >= 0) * (idx < bins.size-1)
     np.putmask(idx, 1-mask, 0)
     xshape = np.shape(x)
-    return idx.reshape(xshape), mask.reshape(xshape)
+    return idx.reshape(xshape).clip(0, n_bins-1), mask.reshape(xshape)
 
 
 def normalize_interp1d(xvals, yvals):
@@ -187,13 +188,13 @@ def get_eval_case(x, row):
     """
     nd_x = np.ndim(x)
     nd_row = np.ndim(row)
-    if nd_x > 2 or nd_row > 2:  #pragma: no cover
-        raise ValueError("Too many dimensions: x(%s), row(%s)" % (np.shape(x), np.shape(row)))
-    if nd_x == 2 and nd_row in [0, 2]:
+    #if nd_x > 2 or nd_row > 2:  #pragma: no cover
+    #    raise ValueError("Too many dimensions: x(%s), row(%s)" % (np.shape(x), np.shape(row)))
+    if nd_x >= 2 and nd_row != 1:
         return CASE_2D, x, row
-    if nd_x == 2 and nd_row == 1:  #pragma: no cover
+    if nd_x >= 2 and nd_row == 1:  #pragma: no cover
         raise ValueError("Dimension mismatch: x(%s), row(%s)" % (np.shape(x), np.shape(row)))
-    if nd_x < 2 and nd_row == 2:
+    if nd_row >= 2:
         return CASE_PRODUCT, x, row
     if np.size(x) == 1 or np.size(row) == 1:
         return CASE_FLAT, x, row
@@ -208,7 +209,7 @@ def get_eval_case(x, row):
     return CASE_FACTOR, xx, np.expand_dims(rr, -1)
 
 
-def evaluate_hist_x_multi_y_flat(x, row, bins, vals):  #pragma: no cover
+def evaluate_hist_x_multi_y_flat(x, row, bins, vals, derivs=None):  #pragma: no cover
     """
     Evaluate a set of values from histograms
 
@@ -230,13 +231,19 @@ def evaluate_hist_x_multi_y_flat(x, row, bins, vals):  #pragma: no cover
     """
     assert np.ndim(x) < 2 and np.ndim(row) < 2
     idx, mask = get_bin_indices(bins, x)
-    def evaluate_row(idxv, maskv, rv):
-        return np.where(maskv, vals[rv, idxv], 0)
+    if derivs is None:
+        deltas = np.zeros(idx.shape)
+    else:
+        deltas = x - bins[idx]
+    def evaluate_row(idxv, maskv, rv, delta):
+        if derivs is None:
+            return np.where(maskv, vals[rv, idxv], 0)
+        return np.where(maskv, vals[rv, idxv] + delta*derivs[rv, idxv], 0)
     vv = np.vectorize(evaluate_row)
-    return vv(idx, mask, row)
+    return vv(idx, mask, row, deltas)
 
 
-def evaluate_hist_x_multi_y_product(x, row, bins, vals):  #pragma: no cover
+def evaluate_hist_x_multi_y_product(x, row, bins, vals, derivs=None):  #pragma: no cover
     """
     Evaluate a set of values from histograms
 
@@ -256,13 +263,16 @@ def evaluate_hist_x_multi_y_product(x, row, bins, vals):  #pragma: no cover
     out : array_like (npdf, npts)
         The histogram values
     """
-    assert np.ndim(x) < 2 and np.ndim(row) == 2
-    idx, mask = get_bin_indices(bins, x)
-    mask = np.ones((row.size, 1)) * mask
-    return np.where(mask, vals[:,idx][np.squeeze(row)], 0)
+    #assert np.ndim(x) < 2 and np.ndim(row) == 2
+    idx, mask0 = get_bin_indices(bins, x)
+    mask = np.ones(row.shape) * mask0
+    if derivs is None:
+        return np.where(mask, vals[:,idx][np.squeeze(row)], 0)
+    deltas = x - bins[idx]
+    return np.where(mask, vals[:,idx][np.squeeze(row)] + deltas*derivs[:,idx][np.squeeze(row)] , 0)
 
 
-def evaluate_hist_x_multi_y_2d(x, row, bins, vals):  #pragma: no cover
+def evaluate_hist_x_multi_y_2d(x, row, bins, vals, derivs=None):  #pragma: no cover
     """
     Evaluate a set of values from histograms
 
@@ -282,15 +292,22 @@ def evaluate_hist_x_multi_y_2d(x, row, bins, vals):  #pragma: no cover
     out : array_like (npdf, npts)
         The histogram values
     """
-    assert np.ndim(x) == 2 and np.ndim(row) == 2
+    assert np.ndim(x) >= 2 and np.ndim(row) >= 2
     idx, mask = get_bin_indices(bins, x)
-    def evaluate_row(idxv, maskv, rv):
-        return np.where(maskv, vals[rv, idxv], 0)
+    if derivs is None:
+        deltas = np.zeros(idx.shape)
+    else:
+        deltas = x - bins[idx]
+
+    def evaluate_row(idxv, maskv, rv, delta):
+        if derivs is None:
+            return np.where(maskv, vals[rv, idxv], 0)
+        return np.where(maskv, vals[rv, idxv] + delta*derivs[rv, idxv], 0)
     vv = np.vectorize(evaluate_row)
-    return vv(idx, mask, row)
+    return vv(idx, mask, row, deltas)
 
 
-def evaluate_hist_x_multi_y(x, row, bins, vals):
+def evaluate_hist_x_multi_y(x, row, bins, vals, derivs=None):
     """
     Evaluate a set of values from histograms
 
@@ -317,13 +334,13 @@ def evaluate_hist_x_multi_y(x, row, bins, vals):
     """
     case_idx, xx, rr = get_eval_case(x, row)
     if case_idx in [CASE_PRODUCT, CASE_FACTOR]:
-        return evaluate_hist_x_multi_y_product(xx, rr, bins, vals)
+        return evaluate_hist_x_multi_y_product(xx, rr, bins, vals, derivs)
     if case_idx == CASE_2D:
-        return evaluate_hist_x_multi_y_2d(xx, rr, bins, vals)
-    return evaluate_hist_x_multi_y_flat(xx, rr, bins, vals)
+        return evaluate_hist_x_multi_y_2d(xx, rr, bins, vals, derivs)
+    return evaluate_hist_x_multi_y_flat(xx, rr, bins, vals, derivs)
 
 
-def evaluate_hist_multi_x_multi_y_flat(x, row, bins, vals):  #pragma: no cover
+def evaluate_hist_multi_x_multi_y_flat(x, row, bins, vals, derivs=None):  #pragma: no cover
     """
     Evaluate a set of values from histograms
 
@@ -343,15 +360,18 @@ def evaluate_hist_multi_x_multi_y_flat(x, row, bins, vals):  #pragma: no cover
     out : array_like (n)
         The histogram values
     """
-    n_vals = bins.shape[-1] - 1
     def evaluate_row(xv, rv):
-        idx, mask = get_bin_indices(bins[rv], xv)
-        return np.where(mask, vals[rv,idx.clip(0, n_vals-1)], 0)
+        bins_row = bins[rv]
+        idx, mask = get_bin_indices(bins_row, xv)
+        delta = xv - bins_row[idx]
+        if derivs is None:
+            return np.where(mask, vals[rv, idx], 0)
+        return np.where(mask, vals[rv, idx] + delta*derivs[rv, idx], 0)
     vv = np.vectorize(evaluate_row)
     return vv(x, row)
 
 
-def evaluate_hist_multi_x_multi_y_product(x, row, bins, vals):  #pragma: no cover
+def evaluate_hist_multi_x_multi_y_product(x, row, bins, vals, derivs=None):  #pragma: no cover
     """
     Evaluate a set of values from histograms
 
@@ -371,15 +391,18 @@ def evaluate_hist_multi_x_multi_y_product(x, row, bins, vals):  #pragma: no cove
     out : array_like (npdf, npts)
         The histogram values
     """
-    n_vals = bins.shape[-1] - 1
     def evaluate_row(rv):
-        idx, mask = get_bin_indices(bins[rv].flatten(), x)
-        return np.where(mask, np.squeeze(vals[rv])[idx.clip(0, n_vals-1)], 0).flatten()
+        bins_flat = bins[rv].flatten()
+        idx, mask = get_bin_indices(bins_flat, x)
+        delta = x - bins_flat[idx]
+        if derivs is None:
+            return np.where(mask, np.squeeze(vals[rv])[idx], 0).flatten()
+        return np.where(mask, np.squeeze(vals[rv])[idx] + delta* np.squeeze(derivs[rv])[idx], 0)
     vv = np.vectorize(evaluate_row, signature="(1)->(%i)" % (x.size))
     return vv(row)
 
 
-def evaluate_hist_multi_x_multi_y_2d(x, row, bins, vals):  #pragma: no cover
+def evaluate_hist_multi_x_multi_y_2d(x, row, bins, vals, derivs=None):  #pragma: no cover
     """
     Evaluate a set of values from histograms
 
@@ -399,16 +422,18 @@ def evaluate_hist_multi_x_multi_y_2d(x, row, bins, vals):  #pragma: no cover
     out : array_like (npdf, npts)
         The histogram values
     """
-    n_vals = np.shape(bins)[-1] - 1
     nx = np.shape(x)[-1]
     def evaluate_row(rv, xv):
-        idx, mask = get_bin_indices(bins[rv].flatten(), xv)
-        return np.where(mask, np.squeeze(vals[rv])[idx.clip(0, n_vals-1)], 0).flatten()
+        flat_bins = bins[rv].flatten()
+        idx, mask = get_bin_indices(flat_bins, xv)
+        delta = xv - flat_bins[idx]
+        if derivs is None:
+            return np.where(mask, np.squeeze(vals[rv])[idx], 0).flatten()
+        return np.where(mask, np.squeeze(vals[rv])[idx] + delta*np.squeeze(derivs[rv])[idx], 0).flatten()
     vv = np.vectorize(evaluate_row, signature="(1),(%i)->(%i)" % (nx, nx))
     return vv(row, x)
 
-
-def evaluate_hist_multi_x_multi_y(x, row, bins, vals):
+def evaluate_hist_multi_x_multi_y(x, row, bins, vals, derivs=None):
     """
     Evaluate a set of values from histograms
 
@@ -430,10 +455,10 @@ def evaluate_hist_multi_x_multi_y(x, row, bins, vals):
     """
     case_idx, xx, rr = get_eval_case(x, row)
     if case_idx in [CASE_PRODUCT, CASE_FACTOR]:
-        return evaluate_hist_multi_x_multi_y_product(xx, rr, bins, vals)
+        return evaluate_hist_multi_x_multi_y_product(xx, rr, bins, vals, derivs)
     if case_idx == CASE_2D:
-        return evaluate_hist_multi_x_multi_y_2d(xx, rr, bins, vals)
-    return evaluate_hist_multi_x_multi_y_flat(xx, rr, bins, vals)
+        return evaluate_hist_multi_x_multi_y_2d(xx, rr, bins, vals, derivs)
+    return evaluate_hist_multi_x_multi_y_flat(xx, rr, bins, vals, derivs)
 
 
 def interpolate_x_multi_y_flat(x, row, xvals, yvals, **kwargs):

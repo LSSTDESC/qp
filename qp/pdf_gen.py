@@ -220,7 +220,13 @@ class rv_frozen_func(rv_frozen):
         """
         self._shape = shape
         self._npdf = np.product(shape).astype(int)
+        self._ndim = np.size(shape)
         super(rv_frozen_func, self).__init__(dist, *args, **kwds)
+
+    @property
+    def ndim(self):
+        """Return the number of dimensions of PDFs in this ensemble"""
+        return self._ndim
 
     @property
     def shape(self):
@@ -263,9 +269,15 @@ class rv_frozen_rows(rv_frozen):
         """C'tor"""
         self._shape = shape
         self._npdf = np.product(shape).astype(int)
+        self._ndim = np.size(shape)
         if self._npdf is not None:
             kwds.setdefault('row', np.expand_dims(np.arange(self._npdf).reshape(self._shape), -1))
         super(rv_frozen_rows, self).__init__(dist, *args, **kwds)
+
+    @property
+    def ndim(self):
+        """Return the number of dimensions of PDFs in this ensemble"""
+        return self._ndim
 
     @property
     def shape(self):

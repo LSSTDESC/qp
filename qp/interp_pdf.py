@@ -64,9 +64,9 @@ class interp_gen(Pdf_rows_gen):
         yvals : array_like
           The y-values used to do the interpolation
         """
-        if np.size(xvals) != np.sum(np.shape(yvals)[1:]): # pragma: no cover
+        if np.size(xvals) != np.shape(yvals)[-1]: # pragma: no cover
             raise ValueError("Shape of xbins in xvals (%s) != shape of xbins in yvals (%s)" %
-                             (np.size(xvals), np.sum(np.shape(yvals)[1:])))
+                             (np.size(xvals), np.shape(yvals)[-1]))
         self._xvals = np.asarray(xvals)
 
         # Set support

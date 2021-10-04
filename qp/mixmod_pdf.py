@@ -130,7 +130,7 @@ class mixmod_gen(Pdf_rows_gen):
         if 'means' not in kwargs: #pragma: no cover
             raise ValueError("required argument means not included in kwargs")
 
-        ncomp = np.shape(kwargs['means'])[-1]        
+        ncomp = np.shape(kwargs['means'])[-1]
         return dict(means=((npdf, ncomp), 'f4'), stds=((npdf, ncomp), 'f4'), weights=((npdf, ncomp), 'f4'))
 
 

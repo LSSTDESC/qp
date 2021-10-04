@@ -99,6 +99,11 @@ class Ensemble:
         return self._frozen
 
     @property
+    def ndim(self):
+        """Return the number of dimensions of PDFs in this ensemble"""
+        return self._frozen.ndim
+
+    @property
     def shape(self):
         """Return the number of PDFs in this ensemble"""
         return self._frozen.shape
@@ -615,6 +620,11 @@ class Ensemble:
         io.writeDictToHdf5Chunk(fname, self.objdata(), start, end)
 
     def finalizeHdf5Write(self, filename):
+        """write ensemble metadata to the output file
+        Parameters
+        ----------
+        filename : h5py `File object` file or group
+        """
         mdata = self.metadata()
         io.finalizeHdf5Write(filename, 'meta', **mdata)
 

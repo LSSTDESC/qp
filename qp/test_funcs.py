@@ -51,20 +51,21 @@ def pdf_func_tests(pdf, test_data, short=False, check_props=True):
 
     if hasattr(pdf.dist, 'npdf'):
         assert pdf.dist.npdf == pdf.npdf
-    assert pdf.npdf == NPDF
+
+    assert pdf.shape[-1] == NPDF
 
     pdfs = pdf.pdf(xpts)
+    if pdf.ndim == 1:
+        xslice = xpts[5]
+        pdfs_slice = pdf.pdf(xslice)
+        check_pdf = pdfs[:,5].flatten() - pdfs_slice.flatten()
+        assert_all_small(check_pdf, atol=2e-2, test_name="pdf")
 
-    xslice = xpts[5]
-    pdfs_slice = pdf.pdf(xslice)
-    check_pdf = pdfs[:,5].flatten() - pdfs_slice.flatten()
-    assert_all_small(check_pdf, atol=2e-2, test_name="pdf")
-
-    xslice = np.expand_dims(xpts[np.arange(pdf.npdf)], -1)
-    pdfs_slice = pdf.pdf(xslice)
-    pdf_check = np.array([pdfs[i,i] for i in range(pdf.npdf)])
-    check_pdfs_slice = pdf_check.flatten()  - pdfs_slice.flatten()
-    assert_all_small(check_pdfs_slice, atol=2e-2, test_name="pdf_slice")
+        xslice = np.expand_dims(xpts[np.arange(pdf.npdf)], -1)
+        pdfs_slice = pdf.pdf(xslice)
+        pdf_check = np.array([pdfs[i,i] for i in range(pdf.npdf)])
+        check_pdfs_slice = pdf_check.flatten()  - pdfs_slice.flatten()
+        assert_all_small(check_pdfs_slice, atol=2e-2, test_name="pdf_slice")
 
 
     if short: #pragma: no cover
@@ -74,19 +75,24 @@ def pdf_func_tests(pdf, test_data, short=False, check_props=True):
     quants = np.linspace(0.01, 0.99, 50)
 
     binw = xpts[1:] - xpts[0:-1]
-    check_cdf = ((pdfs[:,0:-1] + pdfs[:,1:]) * binw /2).cumsum(axis=1) - cdfs[:,1:]
+    if pdf.ndim == 1:
+        check_cdf = ((pdfs[:,0:-1] + pdfs[:,1:]) * binw /2).cumsum(axis=-1) - cdfs[:,1:]
+    else:
+        check_cdf = ((pdfs[:,:,0:-1] + pdfs[:,:,1:]) * binw /2).cumsum(axis=-1) - cdfs[:,:,1:]
+
     assert_all_small(check_cdf, atol=2e-1, test_name="cdf")
 
     ppfs = pdf.ppf(quants)
     check_ppf = pdf.cdf(ppfs) - quants
     assert_all_small(check_ppf, atol=2e-2, test_name="ppf")
 
-    quants_slice = np.expand_dims(quants[np.arange(pdf.npdf)], -1)
-    ppfs_slice = pdf.ppf(quants_slice)
-    _ = np.array([ppfs[i,i] for i in range(pdf.npdf)])
+    if pdf.ndim == 1:
+        quants_slice = np.expand_dims(quants[np.arange(pdf.npdf)], -1)
+        ppfs_slice = pdf.ppf(quants_slice)
+        _ = np.array([ppfs[i,i] for i in range(pdf.npdf)])
 
-    check_ppfs_slice = pdf.cdf(ppfs_slice) - quants_slice
-    assert_all_small(check_ppfs_slice, atol=2e-2, test_name="ppf_slice")
+        check_ppfs_slice = pdf.cdf(ppfs_slice) - quants_slice
+        assert_all_small(check_ppfs_slice, atol=2e-2, test_name="ppf_slice")
 
     sfs = pdf.sf(xpts)
     check_sf = sfs + cdfs
@@ -113,7 +119,7 @@ def run_pdf_func_tests(test_class, test_data, short=False, check_props=True):
 
     alloc_kwds = pdf.dist.get_allocation_kwds(pdf.npdf, **test_data['ctor_data'])
     for key, val in alloc_kwds.items():
-        assert val[0] == np.shape(test_data['ctor_data'][key])
+        assert np.product(val[0]) == np.size(test_data['ctor_data'][key])
 
     return pdf_func_tests(pdf, test_data, short=short, check_props=check_props)
 
@@ -121,7 +127,11 @@ def run_pdf_func_tests(test_class, test_data, short=False, check_props=True):
 def persist_func_test(ensemble, test_data):
     """Run loopback persistence tests on an ensemble"""
     #ftypes = ['fits', 'hdf5', 'pq']
-    ftypes = ['fits', 'hf5', 'h5', 'pq']
+    if ensemble.ndim == 1:
+        ftypes = ['fits', 'hf5', 'h5', 'pq']
+    else:
+        ftypes = ['fits', 'hf5']
+
     for ftype in ftypes:
         filename = "test_%s.%s" % ( ensemble.gen_class.name, ftype )
         ensemble.write_to(filename)
@@ -192,4 +202,6 @@ def plotting_func_tests(ensemble, do_samples=False):
 def run_plotting_func_tests(test_data, do_samples=False):
     """Run the test for a practicular class"""
     ens = build_ensemble(test_data)
+    if ens.ndim != 1:
+        return
     plotting_func_tests(ens, do_samples=do_samples)
