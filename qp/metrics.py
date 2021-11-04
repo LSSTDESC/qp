@@ -105,9 +105,9 @@ def calculate_kld(p, q, limits, dx=0.01):
     # logq = safelog(qn)
     # Calculate the KLD from q to p
     Dpq = quick_kld(pn, qn, dx=dx)# np.dot(pn * logquotient, np.ones(len(grid)) * dx)
-    if Dpq < 0.: #pragma: no cover
+    if Dpq.any() < 0.: #pragma: no cover
         print('broken KLD: '+str((Dpq, pn, qn, dx)))
-        Dpq = epsilon
+        Dpq = epsilon*np.ones(Dpq.shape)
     return Dpq
 
 def quick_kld(p_eval, q_eval, dx=0.01):
@@ -136,7 +136,7 @@ def quick_kld(p_eval, q_eval, dx=0.01):
     # logp = safelog(pn)
     # logq = safelog(qn)
     # Calculate the KLD from q to p
-    Dpq = dx * np.sum(p_eval * logquotient)
+    Dpq = dx * np.sum(p_eval * logquotient, axis=-1)
     return Dpq
 
 def calculate_rmse(p, q, limits, dx=0.01):
@@ -195,5 +195,5 @@ def quick_rmse(p_eval, q_eval, N):
         the value of the RMS error between `q` and `p`
     """
     # Calculate the RMS between p and q
-    rms = np.sqrt(np.sum((p_eval - q_eval) ** 2) / N)
+    rms = np.sqrt(np.sum((p_eval - q_eval) ** 2, axis=-1) / N)
     return rms
