@@ -452,7 +452,6 @@ class Ensemble:
         """
         return self._frozen.rvs(size=(self._frozen.npdf, size), random_state=random_state)
 
-
     def stats(self, moments='mv'):
         """
         Retrun the stats for this ensemble

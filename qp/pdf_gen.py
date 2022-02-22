@@ -348,6 +348,13 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
         outargs = [arg[0:np.size(xx)] for arg in args]
         return True, xx, rr, outargs
 
+    def _rvs(self, *args, size=None, random_state=None):
+        # Use basic inverse cdf algorithm for RV generation as default.
+        U = random_state.uniform(size=size)
+        Y = self._ppf(U, *args)
+        if size is None:
+            return Y
+        return Y.reshape(size)
 
     def _argcheck(self, *args):
         """Default check for correct values on args and keywords.
@@ -379,7 +386,7 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
     def create_gen(cls, **kwds):
         """Create and return a `scipy.stats.rv_continuous` object using the
         keyword arguemntets provided"""
-        return (cls(**kwds), dict())
+        return (cls(**kwds), {})
 
     def moment(self, n, *args, **kwds):
         """Returns the moments request moments for all the PDFs.

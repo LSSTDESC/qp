@@ -84,7 +84,7 @@ class mixmod_gen(Pdf_rows_gen):
             x = np.expand_dims(x, -2)
         return (self.weights[row].swapaxes(-2,-1) *
                 sps.norm(loc=self._means[row].swapaxes(-2,-1),
-                         scale=self._stds[row].swapaxes(-2,-1)).pdf(x)).sum(axis=1)
+                         scale=self._stds[row].swapaxes(-2,-1)).pdf(x)).sum(axis=0)
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
@@ -101,7 +101,7 @@ class mixmod_gen(Pdf_rows_gen):
         grid = np.linspace(min_val, max_val, 201)
         cdf_vals = self.cdf(grid, row)
         return interpolate_multi_x_y(x, row, cdf_vals, grid,
-                                     bounds_error=False, fill_value=(min_val, max_val))
+                                     bounds_error=False, fill_value=(min_val, max_val)).ravel()
 
 
 
@@ -149,7 +149,7 @@ class mixmod_gen(Pdf_rows_gen):
                                          ctor_data=dict(weights=WEIGHT_MIXMOD,\
                                                         means=MEAN_MIXMOD,\
                                                         stds=STD_MIXMOD),\
-                                         convert_data=dict(), test_xvals=TEST_XVALS,
+                                         convert_data={}, test_xvals=TEST_XVALS,
                                          atol_diff2=1.))
 
 

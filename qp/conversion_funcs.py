@@ -247,7 +247,7 @@ def extract_voigt_mixmod(in_dist, **kwargs): #pragma: no cover
     stds = objdata['stds']
     weights = objdata['weights']
     gammas = np.zeros_like(means)
-    return dict(means=means, stds=stds, weights=weights, gammas=gammas)
+    return dict(means=means, stds=stds, weights=weights, gammas=gammas, **kwargs)
 
 
 def extract_voigt_xy(in_dist, **kwargs): #pragma: no cover

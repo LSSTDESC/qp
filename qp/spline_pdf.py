@@ -246,7 +246,7 @@ class spline_gen(Pdf_rows_gen):
 
         with errstate(all='ignore'):
             vv = np.vectorize(pdf_row)
-        return vv(x, row)
+        return vv(x, row).ravel()
 
 
     def _cdf(self, x, row):
@@ -256,7 +256,7 @@ class spline_gen(Pdf_rows_gen):
 
         with errstate(all='ignore'):
             vv = np.vectorize(cdf_row)
-        return vv(x, row)
+        return vv(x, row).ravel()
 
     def _updated_ctor_param(self):
         """

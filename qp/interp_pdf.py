@@ -109,14 +109,14 @@ class interp_gen(Pdf_rows_gen):
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
         return interpolate_x_multi_y(x, row, self._xvals, self._yvals,
-                                     bounds_error=False, fill_value=0.)
+                                     bounds_error=False, fill_value=0.).ravel()
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
         if self._ycumul is None:  # pragma: no cover
             self._compute_ycumul()
         return interpolate_x_multi_y(x, row, self._xvals, self._ycumul,
-                                     bounds_error=False, fill_value=(0.,1.))
+                                     bounds_error=False, fill_value=(0.,1.)).ravel()
 
     def _ppf(self, x, row):
         # pylint: disable=arguments-differ
@@ -124,7 +124,7 @@ class interp_gen(Pdf_rows_gen):
             self._compute_ycumul()
 
         return interpolate_multi_x_y(x, row, self._ycumul, self._xvals,
-                                     bounds_error=False, fill_value=(self._xmin, self._xmax))
+                                     bounds_error=False, fill_value=(self._xmin, self._xmax)).ravel()
 
     def _munp(self, m, *args):
         """ compute moments """
@@ -278,14 +278,14 @@ class interp_irregular_gen(Pdf_rows_gen):
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
         return interpolate_multi_x_multi_y(x, row, self._xvals, self._yvals,
-                                           bounds_error=False, fill_value=0.)
+                                           bounds_error=False, fill_value=0.).ravel()
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
         if self._ycumul is None:  # pragma: no cover
             self._compute_ycumul()
         return interpolate_multi_x_multi_y(x, row, self._xvals, self._ycumul,
-                                           bounds_error=False, fill_value=(0., 1.))
+                                           bounds_error=False, fill_value=(0., 1.)).ravel()
 
 
     def _ppf(self, x, row):
@@ -293,7 +293,7 @@ class interp_irregular_gen(Pdf_rows_gen):
         if self._ycumul is None:  # pragma: no cover
             self._compute_ycumul()
         return interpolate_multi_x_multi_y(x, row, self._ycumul, self._xvals,
-                                           bounds_error=False, fill_value=(self._xmin, self._xmax))
+                                           bounds_error=False, fill_value=(self._xmin, self._xmax)).ravel()
 
 
     def _updated_ctor_param(self):
