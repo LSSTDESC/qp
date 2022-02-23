@@ -146,6 +146,8 @@ class Factory(OrderedDict):
 
         md_table = tables['meta']
         data_table = tables['data']
+        ancil_table = tables.get('ancil')
+            
         data = self._build_data_dict(md_table, data_table)
 
         pdf_name = data.pop('pdf_name')
@@ -158,7 +160,7 @@ class Factory(OrderedDict):
         ctor_func = the_class.creation_method(None)
         if reader_convert is not None: #pragma: no cover
             data = reader_convert(data)
-        return Ensemble(ctor_func, data=data)
+        return Ensemble(ctor_func, data=data, ancil=ancil_table)
 
 
     def convert(self, in_dist, class_name, **kwds):

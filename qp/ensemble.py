@@ -281,8 +281,10 @@ class Ensemble:
         data : `dict`
             Table with the object data
         """
-        return dict(meta=self.metadata(), data=self.objdata())
-
+        dd = dict(meta=self.metadata(), data=self.objdata())
+        if self.ancil is not None:
+            dd['ancil'] = self.ancil
+        return dd
 
     def mode(self, grid):
         """return the mode of each ensemble PDF, evaluated on grid
