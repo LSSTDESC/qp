@@ -352,7 +352,7 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
         # Use basic inverse cdf algorithm for RV generation as default.
         U = random_state.uniform(size=size)
         Y = self._ppf(U, *args)
-        if size is None:
+        if size is None:  #pragma: no cover
             return Y
         return Y.reshape(size)
 

@@ -28,7 +28,11 @@ def build_ensemble(test_data):
     gen_func = test_data['gen_func']
     ctor_data = test_data['ctor_data']
     try:
-        return Ensemble(gen_func, data=ctor_data)
+        ens = Ensemble(gen_func, data=ctor_data)
+        ancil = test_data.get('ancil')
+        if ancil is not None:
+            ens.set_ancil(ancil)
+        return ens
     except Exception as exep: #pragma: no cover
         print("Failed to make %s %s %s" % (gen_func, ctor_data, exep))
         raise ValueError from exep
@@ -134,10 +138,19 @@ def persist_func_test(ensemble, test_data):
 
     for ftype in ftypes:
         filename = "test_%s.%s" % ( ensemble.gen_class.name, ftype )
+        try:
+            os.remove(filename)
+        except FileNotFoundError:
+            pass
         ensemble.write_to(filename)
         ens_r = read(filename)
         diff = ensemble.pdf(test_data['test_xvals']) - ens_r.pdf(test_data['test_xvals'])
         assert_all_small(diff, atol=1e-5, test_name="persist")
+        if ensemble.ancil is not None:
+            if ftype in ['pq']:
+                continue
+            diff2 = ensemble.ancil['zmode'] - ens_r.ancil['zmode']
+            assert_all_small(diff2, atol=1e-5, test_name="persist_ancil")
         try:
             os.unlink(filename)
         except FileNotFoundError:

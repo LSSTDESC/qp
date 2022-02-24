@@ -11,7 +11,7 @@ from qp.pdf_gen import Pdf_rows_gen
 from qp.conversion_funcs import extract_mixmod_fit_samples
 from qp.test_data import WEIGHT_MIXMOD, MEAN_MIXMOD, STD_MIXMOD, TEST_XVALS
 from qp.factory import add_class
-from qp.utils import reshape_to_pdf_size, interpolate_multi_x_y
+from qp.utils import reshape_to_pdf_size, interpolate_multi_x_y, get_eval_case
 
 
 class mixmod_gen(Pdf_rows_gen):
@@ -80,7 +80,7 @@ class mixmod_gen(Pdf_rows_gen):
 
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
-        if np.ndim(x) > 1:
+        if np.ndim(x) > 1:  #pragma: no cover
             x = np.expand_dims(x, -2)
         return (self.weights[row].swapaxes(-2,-1) *
                 sps.norm(loc=self._means[row].swapaxes(-2,-1),
@@ -88,18 +88,24 @@ class mixmod_gen(Pdf_rows_gen):
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
-        if np.ndim(x) > 1:
+        if np.ndim(x) > 1:  #pragma: no cover
             x = np.expand_dims(x, -2)
         return (self.weights[row].swapaxes(-2,-1) *
                 sps.norm(loc=self._means[row].swapaxes(-2,-1),
-                         scale=self._stds[row].swapaxes(-2,-1)).cdf(x)).sum(axis=1)
+                         scale=self._stds[row].swapaxes(-2,-1)).cdf(x)).sum(axis=0)
 
     def _ppf(self, x, row):
         # pylint: disable=arguments-differ
         min_val = np.min(self._means - 6*self._stds)
         max_val = np.max(self._means + 6*self._stds)
         grid = np.linspace(min_val, max_val, 201)
-        cdf_vals = self.cdf(grid, row)
+        case_idx, _, rr = get_eval_case(x, row)
+        if case_idx == 1:
+            cdf_vals = self.cdf(grid, rr)
+        elif case_idx == 3:
+            cdf_vals = self.cdf(grid, np.expand_dims(rr, -1))
+        else:  #pragma: no cover
+            raise ValueError(f"Opps, we handle this kind of input to mixmod._ppf {case_idx}")
         return interpolate_multi_x_y(x, row, cdf_vals, grid,
                                      bounds_error=False, fill_value=(min_val, max_val)).ravel()
 

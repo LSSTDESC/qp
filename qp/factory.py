@@ -147,7 +147,7 @@ class Factory(OrderedDict):
         md_table = tables['meta']
         data_table = tables['data']
         ancil_table = tables.get('ancil')
-            
+
         data = self._build_data_dict(md_table, data_table)
 
         pdf_name = data.pop('pdf_name')
