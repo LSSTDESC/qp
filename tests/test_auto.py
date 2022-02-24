@@ -1,6 +1,7 @@
 """
 Unit tests for PDF class
 """
+import sys
 import unittest
 from functools import partial
 import qp
@@ -24,6 +25,9 @@ class PDFTestCase(unittest.TestCase):
     def auto_add_class(cls, test_class, ens_list):
         """Add tests as member functions to a class"""
         for key, val in test_class.test_data.items():
+            # skip mixmod in python 3.7
+            if key == 'mixmod' and sys.version_info.minor == 7:
+                continue                
             test_pdf = val.pop('test_pdf', True)
             if test_pdf:
                 kw_test_pdf = dict(short=val.pop('short', False), check_props=val.pop('check_props', True))
