@@ -21,7 +21,6 @@ setup(
         "Programming Language :: Python",
         ],
     install_requires=["matplotlib",
-                      "astropy<5",
                       "numpy",
                       "scipy>=1.7.0",
                       "sklearn",
