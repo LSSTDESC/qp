@@ -138,11 +138,14 @@ class Factory(OrderedDict):
         """
         _, ext = os.path.splitext(filename)
         if ext in ['.pq']:
-            keys = ['data', 'meta']
+            keys = ['data', 'meta', 'ancil']
+            allow_missing_keys = True
         else:
             keys = None
+            allow_missing_keys = False
 
-        tables = io.read(filename, NUMPY_DICT, keys=keys) #pylint: disable=no-member
+        tables = io.read(filename, NUMPY_DICT, keys=keys,
+                         allow_missing_keys=allow_missing_keys) #pylint: disable=no-member
 
         md_table = tables['meta']
         data_table = tables['data']
