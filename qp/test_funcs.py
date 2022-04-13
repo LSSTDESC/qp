@@ -132,7 +132,7 @@ def persist_func_test(ensemble, test_data):
     """Run loopback persistence tests on an ensemble"""
     #ftypes = ['fits', 'hdf5', 'pq']
     if ensemble.ndim == 1:
-        ftypes = ['fits', 'hf5', 'h5', 'pq']
+        ftypes = ['fits', 'hf5', 'h5', 'pq', 'hdf5']
     else:
         ftypes = ['fits', 'hf5']
 

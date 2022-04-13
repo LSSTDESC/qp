@@ -54,8 +54,8 @@ class Pdf_gen:
         self._addclassmetadata(type(self))
 
     def _addclassmetadata(self, cls):
-        self._metadata['pdf_name'] = [cls.name]
-        self._metadata['pdf_version'] = [cls.version]
+        self._metadata['pdf_name'] = np.array([cls.name.encode()])
+        self._metadata['pdf_version'] = np.array([cls.version])
 
     def _addmetadata(self, key, val):
         self._metadata[key] = np.expand_dims(val, 0)
