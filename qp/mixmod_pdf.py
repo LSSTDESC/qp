@@ -68,7 +68,7 @@ class mixmod_gen(Pdf_rows_gen):
         import scipy
         scipy_version = scipy.__version__
         vtuple = scipy_version.split('.')
-        if int(vtuple[0]) > 1 or int(vtuple[1]) > 7:
+        if int(vtuple[0]) > 1 or int(vtuple[1]) > 7:  #pragma: no cover
             return
         raise DeprecationWarning(f"Mixmod_gen will not work correctly with scipy version < 1.8.0, you have {scipy_version}")         
         
