@@ -53,6 +53,7 @@ class mixmod_gen(Pdf_rows_gen):
         weights : array_like
             The weights to attach to the Gaussians
         """
+        self._scipy_version_warning()
         self._means = reshape_to_pdf_size(means, -1)
         self._stds = reshape_to_pdf_size(stds, -1)
         self._weights = reshape_to_pdf_size(weights, -1)
@@ -63,6 +64,14 @@ class mixmod_gen(Pdf_rows_gen):
         self._addobjdata('stds', self._stds)
         self._addobjdata('means', self._means)
 
+    def _scipy_version_warning(self):
+        import scipy
+        scipy_version = scipy.__version__
+        vtuple = scipy_version.split('.')
+        if int(vtuple[0]) > 1 or int(vtuple[1]) > 7:
+            return
+        raise DeprecationWarning(f"Mixmod_gen will not work correctly with scipy version < 1.8.0, you have {scipy_version}")         
+        
     @property
     def weights(self):
         """Return weights to attach to the Gaussians"""
