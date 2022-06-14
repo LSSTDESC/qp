@@ -612,12 +612,12 @@ class Ensemble:
                     keywords[group][key] = (shape, array.dtype)
         return keywords
 
-    def initializeHdf5Write(self, filename, npdf):
+    def initializeHdf5Write(self, filename, npdf, comm=None):
         """set up the output write for an ensemble, but set size to npdf rather than
         the size of the ensemble, as the "initial chunk" will not contain the full data
         """
         kwds = self._get_allocation_kwds(npdf)
-        group, fout = io.initializeHdf5Write(filename, **kwds)
+        group, fout = io.initializeHdf5Write(filename, comm=comm, **kwds)
         return group, fout
 
     def writeHdf5Chunk(self, fname, start, end):
