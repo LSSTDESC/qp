@@ -25,6 +25,5 @@ setup(
                       "scipy>=1.7.0",
                       "scikit-learn",
                       "tables_io>=0.7.7"],
-    tests_require=["h5py>=2.9=mpi*",
-                   "mpi4py"]                      
+    tests_require=["mpi4py"]                      
 )
