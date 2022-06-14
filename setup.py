@@ -24,6 +24,5 @@ setup(
                       "numpy",
                       "scipy>=1.7.0",
                       "scikit-learn",
-                      "tables_io>=0.7.7"],
-    tests_require=["mpi4py"]                      
+                      "tables_io>=0.7.7"]                     
 )

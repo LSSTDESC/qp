@@ -114,8 +114,12 @@ class EnsembleTestCase(unittest.TestCase):
         assert_all_small(check_red, atol=1e-5, test_name="red")
 
         if hasattr(ens.gen_obj, 'npdf'): # skip scipy norm
-            import mpi4py.MPI
-            commList = [None, mpi4py.MPI.COMM_WORLD]
+            commList = [None]
+            try:
+                import mpi4py.MPI
+                commList.append(mpi4py.MPI.COMM_WORLD)
+            except ImportError:
+                pass
             for comm in commList:
                 group, fout = ens.initializeHdf5Write("testwrite.hdf5", ens.npdf, comm)
                 ens.writeHdf5Chunk(group, 0, ens.npdf)
