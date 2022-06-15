@@ -3,3 +3,4 @@ numpy
 scipy>=1.7.0
 scikit-learn
 setuptools_scm
+tables_io

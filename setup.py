@@ -24,5 +24,5 @@ setup(
                       "numpy",
                       "scipy>=1.7.0",
                       "scikit-learn",
-                      "tables_io>=0.7.4"],
+                      "tables_io>=0.7.7"]                     
 )
