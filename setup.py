@@ -22,7 +22,7 @@ setup(
         ],
     install_requires=["matplotlib",
                       "numpy",
-                      "scipy>=1.7.0",
+                      "scipy>=1.9.0",
                       "scikit-learn",
                       "tables_io>=0.7.7"]                     
 )
