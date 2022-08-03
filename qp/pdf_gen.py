@@ -21,7 +21,7 @@ import numpy as np
 from numpy import asarray
 
 from scipy.stats import rv_continuous
-from scipy.stats._distn_infrastructure import rv_frozen
+from scipy.stats._distn_infrastructure import rv_continuous_frozen
 
 from qp.utils import reshape_to_pdf_size, reshape_to_pdf_shape
 from qp.dict_utils import get_val_or_default, set_val_or_default, pretty_print
@@ -157,7 +157,7 @@ class Pdf_gen:
         raise NotImplementedError()  #pragma: no cover
 
 
-class rv_frozen_func(rv_frozen):
+class rv_frozen_func(rv_continuous_frozen):
     """Trivial extention of `scipy.stats.rv_frozen`
     that includes the number of PDFs it represents
     """
@@ -212,7 +212,7 @@ class rv_frozen_func(rv_frozen):
         return (bins, reshape_to_pdf_shape(bin_vals, self._shape, bins.size-1))
 
 
-class rv_frozen_rows(rv_frozen):
+class rv_frozen_rows(rv_continuous_frozen):
     """Trivial extention of `scipy.stats.rv_frozen`
     that to use when we want to have a collection
     of distribution of objects such as histograms or splines,
