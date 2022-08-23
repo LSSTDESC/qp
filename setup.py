@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name="qp",
+    name="pz-qp-temp",
     author="Alex Malz, Phil Marshall, Eric Charles",
     author_email="aimalz@nyu.edu, pjm@slac.stanford.edu, echarles@slac.stanford.edu",
     url = "https://github.com/LSSTDESC/qp",
