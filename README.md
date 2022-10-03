@@ -2,7 +2,7 @@
 
 Quantile parametrization for probability distribution functions.
 
-[![Build Status](https://travis-ci.org/aimalz/qp.svg?branch=master)](https://travis-ci.org/aimalz/qp)[![Documentation Status](http://readthedocs.org/projects/qp/badge/?version=latest)](http://qp.readthedocs.io/en/latest/?badge=latest)
+[![Build Status](https://img.shields.io/github/workflow/status/LSSTDESC/qp/Python%20package?logo=Github)](https://github.com/LSSTDESC/qp/actions/workflows/python-package.yml)[![Documentation Status](https://img.shields.io/readthedocs/qp/main?logo=readthedocs&logoColor=white)](http://qp.readthedocs.io/en/latest/)
 
 
 ## Motivation
@@ -15,7 +15,7 @@ This repository exists for two reasons.
 
 * **[Basic Demo](http://htmlpreview.github.io/?https://github.com/LSSTDESC/qp/blob/master/docs/demo.html)** [(raw notebook)](https://github.com/LSSTDESC/qp/blob/master/nb/demo.ipynb)
 
-* **[Practical Example](http://htmlpreview.github.io/?https://github.com/LSSTDESC/qp/blob/master/docs/demo.html)** [(raw notebook)](https://github.com/LSSTDESC/qp/blob/master/nb/demo.ipynb)
+* **[Practical Example](http://htmlpreview.github.io/?https://github.com/LSSTDESC/qp/blob/master/docs/practical_example.html)** [(raw notebook)](https://github.com/LSSTDESC/qp/blob/master/nb/practical_example.ipynb)
 
 Also: [Read the Docs](http://qp.readthedocs.io/)
 
