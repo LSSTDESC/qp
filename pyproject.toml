@@ -68,6 +68,5 @@ branch = true
 [tool.pytest.ini_options]
 addopts = [
     "--cov=qp",
-    "--cov-branch",
     "--cov-report=html"
 ]
