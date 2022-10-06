@@ -57,6 +57,7 @@ dev = [
     "threadpoolctl",
     "h5py",
     "pylint",
+    "coverage",
 ]
 
 [tool.coverage.run]
