@@ -27,14 +27,11 @@ jobs:
       run: |
         sudo apt install -y libopenmpi-dev libhdf5-mpi-dev
         python -m pip install --upgrade pip
-        python -m pip install pylint pytest pytest-cov
-        python -m pip install jupyter
+        pip install .
+        pip install .[dev]
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         CC="mpicc" HDF5_MPI="ON" pip install --upgrade --force-reinstall --no-binary=h5py h5py
-    - name: Install QP
-      run: |
-        python setup.py install
-    - name: Lint with flake8
+    - name: Lint with pylint
       run: |
         # stop the build if there are Python syntax errors or undefined names
         pylint --reports=no --errors-only qp
@@ -44,7 +41,7 @@ jobs:
         pylint --exit-zero qp
     - name: Test with pytest
       run: |
-        python -m pytest --cov=./qp --cov-report=xml tests
+        python -m pytest --cov-report=xml
         mpiexec -np 2 python -m pytest tests/qp/test_parallel.py
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1

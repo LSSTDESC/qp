@@ -21,7 +21,7 @@ long_description = { file = "README.md" }
 url = "https://github.com/LSSTDESC/qp"
 
 [build-system]
-setup_requires = [
+requires = [
     "setuptools>=61",
     "wheel",
     "setuptools_scm[toml]>=7.0.0",
@@ -29,10 +29,8 @@ setup_requires = [
 ]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools.packages.find]
-where = ["src"]
-include = ["qp"]
-namespaces = false
+[tool.setuptools_scm]
+write_to = "src/qp/_version.py"
 
 [tool.setuptools.package-data]
 "qp.data" = ["*.npy"]
@@ -62,6 +60,7 @@ dev = [
     "threadpoolctl",
     "h5py",
     "hdf5",
+    "pylint",
 ]
 
 [tool.coverage.run]
