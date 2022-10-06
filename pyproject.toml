@@ -58,6 +58,7 @@ dev = [
     "h5py",
     "pylint",
     "mpi4py",
+    "coverage",
 ]
 
 [tool.coverage.run]
