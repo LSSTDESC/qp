@@ -29,9 +29,6 @@ requires = [
 ]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools_scm]
-write_to = "src/qp/_version.py"
-
 [tool.setuptools.package-data]
 "qp.data" = ["*.npy"]
 
