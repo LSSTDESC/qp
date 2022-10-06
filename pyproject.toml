@@ -29,10 +29,6 @@ requires = [
 ]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools]
-packages = ["qp"]
-package-dir = {"" = "src"}
-
 [tool.setuptools_scm]
 write_to = "src/qp/_version.py"
 
