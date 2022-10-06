@@ -21,7 +21,7 @@ long_description = { file = "README.md" }
 url = "https://github.com/LSSTDESC/qp"
 
 [build-system]
-setup_requires = [
+requires = [
     "setuptools>=61",
     "wheel",
     "setuptools_scm[toml]>=7.0.0",
