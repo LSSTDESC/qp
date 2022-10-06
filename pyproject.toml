@@ -1,5 +1,5 @@
 [project]
-name = "qp"
+name = "qp-prob"
 license = {file = "LICENSE"}
 readme = "README.md"
 
@@ -21,8 +21,17 @@ long_description = { file = "README.md" }
 url = "https://github.com/LSSTDESC/qp"
 
 [build-system]
-setup_requires = ["setuptools>=61", "wheel", "setuptools_scm[toml]>=7.0.0"]
+setup_requires = [
+    "setuptools>=61",
+    "wheel",
+    "setuptools_scm[toml]>=7.0.0",
+    "setuptools_scm_git_archive"
+]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["qp"]
+package-dir = {"" = "src"}
 
 [tool.setuptools_scm]
 write_to = "src/qp/_version.py"
