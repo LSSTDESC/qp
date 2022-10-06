@@ -56,7 +56,6 @@ dev = [
     "joblib",
     "threadpoolctl",
     "h5py",
-    "hdf5",
     "pylint",
 ]
 
