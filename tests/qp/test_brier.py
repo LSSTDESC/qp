@@ -6,6 +6,7 @@ from qp.metrics.brier import Brier
 LOGGER = logging.getLogger(__name__)
 
 class BrierTestCase(unittest.TestCase):
+    """ Test cases for the Brier metric. """
 
     def test_brier_base(self):
         """
@@ -70,7 +71,7 @@ class BrierTestCase(unittest.TestCase):
         pred = [[1,0,0], [0,1,0]]
         truth = [[1,0,0], [0,1,0], [0,0,0]]
         brier_obj = Brier(pred, truth)
-        with self.assertRaises(ValueError) as context:
+        with self.assertRaises(ValueError):
             _ = brier_obj.evaluate()
 
     def test_brier_with_garbage_prediction_input(self):
