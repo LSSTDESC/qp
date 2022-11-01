@@ -1,9 +1,10 @@
 """This module implements some performance metrics for distribution parameterization"""
-
+import logging
 from collections import namedtuple
 from functools import partial
 
 import numpy as np
+from scipy import stats
 
 import qp.metrics.array_metrics as array_metrics
 from qp.metrics.brier import Brier
@@ -240,3 +241,88 @@ def calculate_brier(p, truth, limits, dx=0.01):
 
     # return the results of evaluating the Brier metric
     return brier_metric_evaluation.evaluate()
+
+def calculate_outlier_rate(p, lower_limit=0.0001, upper_limit=0.9999):
+    """Fraction of outliers in each distribution
+
+    Args:
+        p qp.Ensemble of N distributions: This implementation expects that Ensembles are not nested.
+        lower_limit (float, optional): _description_. Defaults to 0.0001.
+        upper_limit (float, optional): _description_. Defaults to 0.9999.
+
+    Returns
+    -------
+    outlier_rates: 1xN array of floats
+        The percent of outliers for each distribution in the Ensemble.
+    """
+
+    # Validate that all the distributions in the Ensemble are single distributions - i.e. no nested Ensembles
+    for dist in p:
+        if dist.npdf != 1:
+            raise ValueError("The implementation of outlier rate expects each element in the Ensemble to be a single distribution")
+
+    outlier_rates = [(dist.cdf(lower_limit) + (1. - dist.cdf(upper_limit)))[0][0] for dist in p]
+    return outlier_rates
+
+def calculate_anderson_ksamp(cdf_at_truth_values, cdf_min=0., cdf_max=1.):
+    """ Use scipy.stats.anderson_ksamp to compute the Anderson-Darling statistic
+    for the cdf(truth) values by comparing with a uniform distribution between 0 and 1.
+    Up to the current version (1.6.2), scipy.stats.anderson does not support
+    uniform distributions as reference for 1-sample test, therefore we create a uniform
+    "distribution" and pass it as the second value in the list of parameters to the scipy 
+    implementation.
+
+    Parameters
+    ----------
+    cdf_at_truth_values: [float], A 1xN list, where each element is the result of evaluating cdf_n(truth_n)
+        for the nth distribution in a set of N distributions.
+    cdf_min: float, optional
+        cdf(x) values below this are discarded
+    cdf_max: float, optional
+        cdf(x) values greater than this are discarded
+
+    Returns
+    -------
+    Anderson_ksampResult: A namedtuple with the following values. 
+        statistic : float
+            Normalized k-sample Anderson-Darling test statistic.
+        critical_values : array
+            The critical values for significance levels 25%, 10%, 5%, 2.5%, 1%,
+            0.5%, 0.1%.
+        significance_level : float
+            An approximate significance level at which the null hypothesis for the
+            provided samples can be rejected. The value is floored / capped at
+            0.1% / 25%.
+    """
+
+    # Removed the CDF values that are outside the min/max range
+    cdf_at_truth_values_clean = _clean_cdf_values(cdf_at_truth_values, cdf_min, cdf_max)
+
+    # Create a uniform "distribution" of values in the range of [cdf_min, cdf_max]
+    uniform_yvals = np.linspace(cdf_min, cdf_max, len(cdf_at_truth_values_clean))
+
+    return stats.anderson_ksamp([cdf_at_truth_values_clean, uniform_yvals])
+
+def _clean_cdf_values(cdf_at_truth_values, cdf_min, cdf_max):
+    """Remove and report any cdf(x) that are outside the min/max range.
+
+    Args:
+        cdf_at_truth_values [float]: The array of PIT values 
+        cdf_min float: The minimum cdf(x) value to accept
+        cdf_max float: The maximum cdf(x) value to accept
+
+    Returns:
+        pits_clean [float]: The list of PIT values within the min/max range.
+    """
+    # Create truth mask for pit values between cdf_min and pit max
+    mask = (cdf_at_truth_values >= cdf_min) & (cdf_at_truth_values <= cdf_max)
+
+    # Keep pit values that are within the min/max range
+    pits_clean = cdf_at_truth_values[mask]
+
+    # Determine how many pit values were dropped and warn the user.
+    diff = len(cdf_at_truth_values) - len(pits_clean)
+    if diff > 0:
+        logging.warning("Removed %d PITs from the sample.", diff)
+
+    return pits_clean
