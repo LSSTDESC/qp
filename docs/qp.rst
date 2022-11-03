@@ -13,7 +13,7 @@ these approximations.
 Ensemble and Factory
 ====================
 
-.. automodule:: ensemble
+.. automodule:: qp.ensemble
     :members:
     :undoc-members:
 
@@ -98,11 +98,21 @@ Gaussian mixture model based
               
 Quantification Metrics
 ======================
-
-.. automodule:: qp.metrics
+.. automodule:: qp.metrics.metrics
     :members:
     :undoc-members:
 
+.. automodule:: qp.metrics.array_metrics
+    :members:
+    :undoc-members:
+
+.. automodule:: qp.metrics.brier
+.. autoclass:: Brier
+    :members:
+
+.. automodule:: qp.metrics.pit
+.. autoclass:: PIT
+    :members:
 
 Utility functions
 =================

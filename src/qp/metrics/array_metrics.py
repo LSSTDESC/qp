@@ -10,14 +10,19 @@ from qp.utils import safelog
 
 def quick_anderson_ksamp(p_cdf, q_cdf, **kwargs):
     """Calculate the k-sample Anderson-Darling statistic using scipy.stats.anderson_ksamp for two CDFs. 
-        For more details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.anderson_ksamp.html
+    For more details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.anderson_ksamp.html
 
-    Args:
-        p np.array of floats: A gridded array representing the CDF of a given distribution
-        q np.array of floats: A second gridded array representing the CDF of a given distribution
+    Parameters
+    ----------
+    p_cdf : np.array
+        A gridded array representing the CDF of a given distribution
+    q_cdf : np.array
+        A second gridded array representing the CDF of a given distribution
 
-    Returns:
-        output [Objects]: A array of objects with attributes `statistic`, `critical_values`, and `significance_level`.
+    Returns
+    -------
+    [Result objects]
+        A array of objects with attributes ``statistic``, ``critical_values``, and ``significance_level``.
         For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.anderson_ksamp.html
     """
 
@@ -25,17 +30,24 @@ def quick_anderson_ksamp(p_cdf, q_cdf, **kwargs):
 
 def quick_cramer_von_mises(p_cdf, q_cdf, **kwargs):
     """Calculate the Cramer von Mises statistic using scipy.stats.cramervonmises for each pair of distributions
-        in two input Ensembles. For more details see:
-        https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.cramervonmises.html
+    in two input Ensembles. For more details see:
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.cramervonmises.html
 
-        Args:
-            p np.array of floats: A gridded array representing the CDF of a given distribution
-            q, a cdf function: The CDF function for a given distribution. See scipy documentation for usage details.
 
-        Returns:
-            output [Objects]: A array of objects with attributes `statistic` and `pvalue`
-            For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.cramervonmises.html
-        """
+    Parameters
+    ----------
+    p_cdf : np.array
+        A gridded array representing the CDF of a given distribution
+    q_cdf : function
+        The ``cdf`` function for a given distribution. See scipy documentation for usage details.
+
+    Returns
+    -------
+    [Result objects]
+        A array of objects with attributes ``statistic`` and ``pvalue``
+        For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.cramervonmises.html
+    """
+
     return stats.cramervonmises(p_cdf, q_cdf, **kwargs)
 
 def quick_kld(p_eval, q_eval, dx=0.01):
@@ -66,15 +78,21 @@ def quick_kld(p_eval, q_eval, dx=0.01):
 
 def quick_kolmogorov_smirnov(p_cdf, q_cdf, **kwargs):
     """Calculate the Kolmogorov-Smirnov statistic using scipy.stats.kstest for each pair of distributions
-    in two input Ensembles. For more details see:
+    in two input Ensembles. For details see:
     https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kstest.html
 
-    Args:
-        p np.array of floats: A gridded array representing the CDF of a given distribution
-        q np.array of floats: A second gridded array representing the CDF of a given distribution
 
-    Returns:
-        output [KstestResult]: A array of named 2-tuples.
+    Parameters
+    ----------
+    p_cdf : np.array
+        A gridded array representing the CDF of a given distribution
+    q_cdf : np.array
+        A second gridded array representing the CDF of a given distribution
+
+    Returns
+    -------
+    [Return Object]
+        A array of objects with attributes ``statistic`` and ``pvalue``.
         For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kstest.html
     """
 

@@ -167,7 +167,7 @@ def calculate_rbpe(p, limits=(np.inf, np.inf)):
     ----------
     p: qp.Ensemble object
         Ensemble of PDFs to be evalutated
-    limits, tuple of floats
+    limits: tuple
         The limits at which to evaluate possible z_best estimates.
         If custom limits are not provided then all potential z value will be
         considered using the scipy.optimize.minimize_scalar function.
@@ -196,21 +196,26 @@ def calculate_rbpe(p, limits=(np.inf, np.inf)):
 
 def calculate_brier(p, truth, limits, dx=0.01):
     """This function will do the following:
-        1) Generate a Mx1 sized grid based on `limits` and `dx`.
-        2) Produce an NxM array by evaluating the pdf for each of the N distribution objects in the Ensemble p on the grid. 
-        3) Produce an NxM truth_array using the input truth and the generated grid. All values will be 0 or 1.
-        4) Create a Brier metric evaluation object
-        5) Return the result of the Brier metric calculation.
+    1) Generate a Mx1 sized grid based on `limits` and `dx`.
+    2) Produce an NxM array by evaluating the pdf for each of the N distribution objects in the Ensemble p on the grid. 
+    3) Produce an NxM truth_array using the input truth and the generated grid. All values will be 0 or 1.
+    4) Create a Brier metric evaluation object
+    5) Return the result of the Brier metric calculation.
 
-    Args:
-        p: qp.Ensemble object of N distributions
-            probability distribution functions that will be gridded and compared against truth.
-        truth: Nx1 sequence
-            the list of true values, 1 per distribution in p.
-        limits: 2-tuple of floats
-            endpoints grid to evaluate the PDFs for the distributions in p
-        dx: float
-            resolution of the grid Defaults to 0.01.
+    Parameters
+    ----------
+    p: qp.Ensemble object 
+        of N distributions probability distribution functions that will be gridded and compared against truth.
+    truth: Nx1 sequence
+        the list of true values, 1 per distribution in p.
+    limits: 2-tuple of floats
+        endpoints grid to evaluate the PDFs for the distributions in p
+    dx: float
+        resolution of the grid Defaults to 0.01.
+
+    Returns
+    -------
+    Brier_metric: float
     """
 
     # Ensure that the number of distributions objects in the Ensemble is equal to the length of the truth array
@@ -246,12 +251,17 @@ def calculate_anderson_ksamp(p, q, **kwargs):
     in two input Ensembles. For more details see:
     https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.anderson_ksamp.html
 
-    Args:
-        p qp.Ensemble: An Ensemble of distributions to be tested
-        q qp.Ensemble: A second Ensemble of distributions to be tested
+    Parameters
+    ----------
+    p : qp.Ensemble
+        An Ensemble of distributions to be tested
+    q : qp.Ensemble
+        A second Ensemble of distributions to be tested
 
-    Returns:
-        output [Objects]: A array of objects with attributes `statistic`, `critical_values`, and `significance_level`.
+    Returns
+    -------
+    [Result objects]
+        A array of objects with attributes ``statistic``, ``critical_values``, and ``significance_level``.
         For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.anderson_ksamp.html
     """
 
@@ -286,12 +296,17 @@ def calculate_cramer_von_mises(p, q, **kwargs):
     in two input Ensembles. For more details see:
     https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.cramervonmises.html
 
-    Args:
-        p qp.Ensemble: An Ensemble of distributions to be tested
-        q qp.Ensemble: A second Ensemble of distributions each with a defined `cdf` method, to be tested against
+    Parameters
+    ----------
+    p : qp.Ensemble
+        An Ensemble of distributions to be tested
+    q : qp.Ensemble
+        A second Ensemble of distributions each with a defined ``cdf`` method, to be tested against
 
-    Returns:
-        output [Objects]: A array of objects with attributes `statistic` and `pvalue`
+    Returns
+    -------
+    [Result objects]
+        A array of objects with attributes ``statistic`` and ``pvalue``
         For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.cramervonmises.html
     """
 
@@ -326,12 +341,17 @@ def calculate_kolmogorov_smirnov(p, q, **kwargs):
     in two input Ensembles. For more details see:
     https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kstest.html
 
-    Args:
-        p qp.Ensemble: An Ensemble of distributions to be tested
-        q qp.Ensemble: A second Ensemble of distributions to be tested
+    Parameters
+    ----------
+    p : qp.Ensemble
+        An Ensemble of distributions to be tested
+    q : qp.Ensemble
+        A second Ensemble of distributions to be tested
 
-    Returns:
-        output [KstestResult]: A array of named 2-tuples.
+    Returns
+    -------
+    [Return Object]
+        A array of objects with attributes ``statistic`` and ``pvalue``.
         For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kstest.html
     """
 
@@ -364,15 +384,19 @@ def calculate_kolmogorov_smirnov(p, q, **kwargs):
 def calculate_outlier_rate(p, lower_limit=0.0001, upper_limit=0.9999):
     """Fraction of outliers in each distribution
 
-    Args:
-        p qp.Ensemble of N distributions: This implementation expects that Ensembles are not nested.
-        lower_limit (float, optional): _description_. Defaults to 0.0001.
-        upper_limit (float, optional): _description_. Defaults to 0.9999.
+    Parameters
+    ----------
+    p : qp.Ensemble
+        A collection of N distributions. This implementation expects that Ensembles are not nested.
+    lower_limit : float, optional
+        Lower bound for outliers, by default 0.0001
+    upper_limit : float, optional
+        Upper bound for outliers, by default 0.9999
 
     Returns
     -------
-    outlier_rates: 1xN array of floats
-        The percent of outliers for each distribution in the Ensemble.
+    [float]
+        1xN array where each element is the percent of outliers for a distribution in the Ensemble.
     """
 
     # Validate that all the distributions in the Ensemble are single distributions - i.e. no nested Ensembles

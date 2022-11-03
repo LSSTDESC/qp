@@ -3,37 +3,33 @@ import numpy as np
 
 
 class Brier:
-    """Brier score"""
+    """Brier score based on https://en.wikipedia.org/wiki/Brier_score#Original_definition_by_Brier
+    
+    Parameters
+    ----------
+    prediction: NxM array, float
+        Predicted probability for N celestial objects to have a redshift in
+        one of M bins. The sum of values along each row N should be 1.
+    truth: NxM array, int
+        True redshift values for N celestial objects, where Mth bin for the
+        true redshift will have value 1, all other bins will have a value of
+        0.
+    """
 
     def __init__(self, prediction, truth):
-        """
-        Parameters
-        ----------
-        prediction: NxM array, float
-            Predicted probability for N celestial objects to have a redshift in
-            one of M bins. The sum of values along each row N should be 1.
-        truth: NxM array, int
-            True redshift values for N celestial objects, where Mth bin for the
-            true redshift will have value 1, all other bins will have a value of
-            0.
-
-        Notes
-        -----
-        Based on https://en.wikipedia.org/wiki/Brier_score#Original_definition_by_Brier
-        """
+        """Constructor"""
 
         self._prediction = prediction
         self._truth = truth
         self._axis_for_summation = None  # axis to sum for metric calculation
 
     def evaluate(self):
-        """
-        Evaluate the Brier score for N celestial objects.
+        """Evaluate the Brier score.
 
         Returns
         -------
-        Brier metric: float in the interval [0,2]
-            The result of calculating the Brier metric.
+        float
+            The result of calculating the Brier metric, a value in the interval [0,2]
         """
 
         self._manipulate_data()
