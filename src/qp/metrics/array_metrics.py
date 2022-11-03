@@ -1,34 +1,42 @@
 """This module implements metric calculations that are independent of qp.Ensembles"""
 
 import numpy as np
+from scipy import stats
 from scipy.integrate import quad
 from scipy.optimize import minimize_scalar
 
 from qp.utils import safelog
 
-def quick_moment(p_eval, grid_to_N, dx):
+
+def quick_anderson_ksamp(p_cdf, q_cdf, **kwargs):
+    """Calculate the k-sample Anderson-Darling statistic using scipy.stats.anderson_ksamp for two CDFs. 
+        For more details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.anderson_ksamp.html
+
+    Args:
+        p np.array of floats: A gridded array representing the CDF of a given distribution
+        q np.array of floats: A second gridded array representing the CDF of a given distribution
+
+    Returns:
+        output [Objects]: A array of objects with attributes `statistic`, `critical_values`, and `significance_level`.
+        For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.anderson_ksamp.html
     """
-    Calculates a moment of an evaluated PDF
 
-    Parameters
-    ----------
-    p_eval: numpy.ndarray, float
-        the values of a probability distribution
-    grid: numpy.ndarray, float
-        the grid upon which p_eval was evaluated
-    dx: float
-        the difference between regular grid points
-    N: int
-        order of the moment to be calculated
+    return stats.anderson_ksamp([p_cdf, q_cdf], **kwargs)
 
-    Returns
-    -------
-    M: float
-        value of the moment
-    """
-    M = np.dot(p_eval, grid_to_N) * dx
-    return M
+def quick_cramer_von_mises(p_cdf, q_cdf, **kwargs):
+    """Calculate the Cramer von Mises statistic using scipy.stats.cramervonmises for each pair of distributions
+        in two input Ensembles. For more details see:
+        https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.cramervonmises.html
 
+        Args:
+            p np.array of floats: A gridded array representing the CDF of a given distribution
+            q, a cdf function: The CDF function for a given distribution. See scipy documentation for usage details.
+
+        Returns:
+            output [Objects]: A array of objects with attributes `statistic` and `pvalue`
+            For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.cramervonmises.html
+        """
+    return stats.cramervonmises(p_cdf, q_cdf, **kwargs)
 
 def quick_kld(p_eval, q_eval, dx=0.01):
     """
@@ -56,6 +64,44 @@ def quick_kld(p_eval, q_eval, dx=0.01):
     Dpq = dx * np.sum(p_eval * logquotient, axis=-1)
     return Dpq
 
+def quick_kolmogorov_smirnov(p_cdf, q_cdf, **kwargs):
+    """Calculate the Kolmogorov-Smirnov statistic using scipy.stats.kstest for each pair of distributions
+    in two input Ensembles. For more details see:
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kstest.html
+
+    Args:
+        p np.array of floats: A gridded array representing the CDF of a given distribution
+        q np.array of floats: A second gridded array representing the CDF of a given distribution
+
+    Returns:
+        output [KstestResult]: A array of named 2-tuples.
+        For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kstest.html
+    """
+
+    return stats.kstest(p_cdf, q_cdf, **kwargs)
+
+def quick_moment(p_eval, grid_to_N, dx):
+    """
+    Calculates a moment of an evaluated PDF
+
+    Parameters
+    ----------
+    p_eval: numpy.ndarray, float
+        the values of a probability distribution
+    grid: numpy.ndarray, float
+        the grid upon which p_eval was evaluated
+    dx: float
+        the difference between regular grid points
+    N: int
+        order of the moment to be calculated
+
+    Returns
+    -------
+    M: float
+        value of the moment
+    """
+    M = np.dot(p_eval, grid_to_N) * dx
+    return M
 
 def quick_rmse(p_eval, q_eval, N):
     """
@@ -80,7 +126,6 @@ def quick_rmse(p_eval, q_eval, N):
     # Calculate the RMS between p and q
     rms = np.sqrt(np.sum((p_eval - q_eval) ** 2, axis=-1) / N)
     return rms
-
 
 def quick_rbpe(pdf_function, integration_bounds, limits=(np.inf, np.inf)):
     """

@@ -321,7 +321,7 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
         return np.atleast_1d(cond)
 
     def freeze(self, *args, **kwds):
-        """Freeze the distribution for the given arguments.9999999
+        """Freeze the distribution for the given arguments.
 
         Parameters
         ----------

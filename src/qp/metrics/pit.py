@@ -2,11 +2,10 @@ import logging
 import numpy as np
 from scipy import stats
 import qp
-from qp.metrics.metrics import calculate_outlier_rate, calculate_anderson_ksamp
-
+from qp.metrics.metrics import calculate_outlier_rate
+from qp.metrics.array_metrics import quick_anderson_ksamp
 
 DEFAULT_QUANTS = np.linspace(0, 1, 100)
-
 
 class PIT():
     """ Probability Integral Transform """
@@ -61,22 +60,37 @@ class PIT():
         return pit_meta_metrics
 
     def evaluate_PIT_anderson_ksamp(self, pit_min=0., pit_max=1.):
-        """_summary_
+        """Use scipy.stats.anderson_ksamp to compute the Anderson-Darling statistic
+            for the cdf(truth) values by comparing with a uniform distribution between 0 and 1.
+            Up to the current version (1.9.3), scipy.stats.anderson does not support
+            uniform distributions as reference for 1-sample test, therefore we create a uniform
+            "distribution" and pass it as the second value in the list of parameters to the scipy 
+            implementation of k-sample Anderson-Darling. 
+            For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.anderson_ksamp.html
 
         Args:
-            pit_min (float, optional): _description_. Defaults to 0..
-            pit_max (float, optional): _description_. Defaults to 1..
+            pit_min (float, optional): Minimum PIT value to accept. Defaults to 0..
+            pit_max (float, optional): Maximum PIT value to accept. Defaults to 1..
 
         Returns:
-            _type_: _description_
+        output [Objects]: A array of objects with attributes `statistic`, `critical_values`, and `significance_level`.
+        For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.anderson_ksamp.html
         """
-        return calculate_anderson_ksamp(self._pit_samps, pit_min, pit_max)
+        # Removed the CDF values that are outside the min/max range
+        trimmed_pit_values = self._trim_pit_values(pit_min, pit_max)
+
+        uniform_yvals = np.linspace(pit_min, pit_max, len(trimmed_pit_values))
+
+        return quick_anderson_ksamp(trimmed_pit_values, uniform_yvals)
 
     def evaluate_PIT_CvM(self):
-        """_summary_
+        """Calculate the Cramer von Mises statistic using scipy.stats.cramervonmises using self._pit_samps
+        compared to a uniform distribution. For more details see:
+        https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.cramervonmises.html
 
         Returns:
-            _type_: _description_
+            output [Objects]: A array of objects with attributes `statistic` and `pvalue`
+            For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.cramervonmises.html
         """
         return stats.cramervonmises(self._pit_samps, 'uniform')
 
@@ -89,16 +103,38 @@ class PIT():
         return stats.kstest(self._pit_samps, 'uniform')
 
     def evaluate_PIT_outlier_rate(self, pit_min=0.0001, pit_max=0.9999):
-        """Compute fraction of PIT outliers
+        """Compute fraction of PIT outliers by evaluating the CDF of the distribution in the PIT Ensemble
+            at `pit_min` and `pit_max`. 
 
         Args:
-            pit_min (float, optional): _description_. Defaults to 0.0001.
-            pit_max (float, optional): _description_. Defaults to 0.9999.
+            pit_min (float, optional): Lower bound for outliers. Defaults to 0.0001.
+            pit_max (float, optional): Upper bound for outliers. Defaults to 0.9999.
 
-        Raises:
-            NotImplementedError: _description_
 
         Returns:
-            _type_: _description_
+            float: The percentage of outliers in this distribution given the min and max bounds.
         """
         return calculate_outlier_rate(self._pit, pit_min, pit_max)
+
+    def _trim_pit_values(self, cdf_min, cdf_max):
+        """Remove and report any cdf(x) that are outside the min/max range.
+
+        Args:
+            cdf_min float: The minimum cdf(x) value to accept
+            cdf_max float: The maximum cdf(x) value to accept
+
+        Returns:
+            pits_clean [float]: The list of PIT values within the min/max range.
+        """
+        # Create truth mask for pit values between cdf_min and pit max
+        mask = (self._pit_samps >= cdf_min) & (self._pit_samps <= cdf_max)
+
+        # Keep pit values that are within the min/max range
+        pits_clean = self._pit_samps[mask]
+
+        # Determine how many pit values were dropped and warn the user.
+        diff = len(self._pit_samps) - len(pits_clean)
+        if diff > 0:
+            logging.warning("Removed %d PITs from the sample.", diff)
+
+        return pits_clean

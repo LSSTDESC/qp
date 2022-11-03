@@ -12,188 +12,45 @@ from qp.utils import epsilon
 
 Grid = namedtuple('Grid', ['grid_values', 'cardinality', 'resolution', 'hist_bin_edges', 'limits'])
 
-def _calculate_grid_parameters(limits, dx:float=0.01) -> Grid:
-    """
-    Create a grid of points and return parameters describing it.
+def calculate_anderson_ksamp(p, q, **kwargs):
+    """Calculate the k-sample Anderson-Darling statistic using scipy.stats.anderson_ksamp for each pair of distributions
+    in two input Ensembles. For more details see:
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.anderson_ksamp.html
 
     Args:
-        limits (Iterable) often a 2-tuple or numpy array with shape (2,)
-            the max and min values of the 1d grid
-        dx (float, optional):
-            the desired delta between points. Used to define the cardinality. Defaults to 0.01.
+        p qp.Ensemble: An Ensemble of distributions to be tested
+        q qp.Ensemble: A second Ensemble of distributions to be tested
 
     Returns:
-        Grid: a namedtuple containing a 1d grid's values and attributes.
-            grid_values: np.array with size = cardinality
-            cardinality: int, number of elements in grid_value
-            resolution: float, equal to grid_values[i] - grid_values[i-1]
-            hist_bin_edges: np.array with size = cardinality+1.
-                Equally spaced histogram bin edges starting at limit-resolution/2.
-                Assumes that grid_value[i] should be centered in the bin defined by
-                (hist_bin_edge[i], hist_bin_edge[i+1]).
-            limits: 2-tuple, the limits passed in and used in this function
+        output [Objects]: A array of objects with attributes `statistic`, `critical_values`, and `significance_level`.
+        For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.anderson_ksamp.html
     """
-    cardinality = int((limits[-1] - limits[0]) / dx)
-    grid_values = np.linspace(limits[0], limits[1], cardinality)
-    resolution = (limits[-1] - limits[0]) / (cardinality - 1)
-    hist_bin_edges = np.histogram_bin_edges((limits[0]-resolution/2, limits[1]+resolution/2), cardinality)
 
-    return Grid(grid_values, cardinality, resolution, hist_bin_edges, limits)
+    try:
+        _check_ensembles_are_same_size(p, q)
+    except ValueError:  #pragma: no cover - unittest coverage for _check_ensembles_are_same_size is complete
+        logging.warning("Input ensembles should have the same number of distributions")
 
-def calculate_moment(p, N, limits, dx=0.01):
-    """
-    Calculates a moment of a qp.Ensemble object
+    try:
+        _check_ensemble_is_not_nested(p)
+    except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
+        logging.warning("Each element in the ensemble `p` must be a single distribution.")
 
-    Parameters
-    ----------
-    p: qp.Ensemble object
-        the collection of PDFs whose moment will be calculated
-    N: int
-        order of the moment to be calculated
-    limits: tuple of floats
-        endpoints of integration interval over which to calculate moments
-    dx: float
-        resolution of integration grid
+    try:
+        _check_ensemble_is_not_nested(q)
+    except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
+        logging.warning("Each element in the ensemble `q` must be a single distribution.")
 
-    Returns
-    -------
-    M: float
-        value of the moment
-    """
-    # Make a grid from the limits and resolution
-    grid = _calculate_grid_parameters(limits, dx)
+    # Create the default grid in the range of [0,1]
+    grid = np.linspace(0,1,100)
 
-    # Evaluate the functions on the grid
-    pe = p.gridded(grid.grid_values)[1]
+    # Pass the ppf(grid) for each pair of distributions to the quick anderson ksamp function
+    output = [
+            array_metrics.quick_anderson_ksamp(p_dist.ppf(grid)[0], q_dist.ppf(grid)[0], **kwargs)
+            for p_dist, q_dist in zip(p, q)
+        ]
 
-    # calculate the moment
-    grid_to_N = grid.grid_values ** N
-    M = array_metrics.quick_moment(pe, grid_to_N, grid.resolution)
-
-    return M
-
-
-def calculate_kld(p, q, limits, dx=0.01):
-    """
-    Calculates the Kullback-Leibler Divergence between two qp.Ensemble objects.
-
-    Parameters
-    ----------
-    p: Ensemble object
-        probability distribution whose distance _from_ `q` will be calculated.
-    q: Ensemble object
-        probability distribution whose distance _to_ `p` will be calculated.
-    limits: tuple of floats
-        endpoints of integration interval in which to calculate KLD
-    dx: float
-        resolution of integration grid
-
-    Returns
-    -------
-    Dpq: float
-        the value of the Kullback-Leibler Divergence from `q` to `p`
-
-    Notes
-    -----
-    TO DO: have this take number of points not dx!
-    """
-    if p.shape != q.shape:
-        raise ValueError('Cannot calculate KLD between two ensembles with different shapes')
-
-    # Make a grid from the limits and resolution
-    grid = _calculate_grid_parameters(limits, dx)
-
-    # Evaluate the functions on the grid and normalize
-    pe = p.gridded(grid.grid_values)
-    pn = pe[1]
-    qe = q.gridded(grid.grid_values)
-    qn = qe[1]
-
-    # Calculate the KLD from q to p
-    Dpq = array_metrics.quick_kld(pn, qn, grid.resolution)# np.dot(pn * logquotient, np.ones(len(grid)) * dx)
-
-    if np.any(Dpq < 0.): #pragma: no cover
-        print('broken KLD: '+str((Dpq, pn, qn, grid.resolution)))
-        Dpq = epsilon*np.ones(Dpq.shape)
-    return Dpq
-
-
-def calculate_rmse(p, q, limits, dx=0.01):
-    """
-    Calculates the Root Mean Square Error between two qp.Ensemble objects.
-
-    Parameters
-    ----------
-    p: qp.Ensemble object
-        probability distribution function whose distance between its truth and the approximation of `q` will be calculated.
-    q: qp.Ensemble object
-        probability distribution function whose distance between its approximation and the truth of `p` will be calculated.
-    limits: tuple of floats
-        endpoints of integration interval in which to calculate RMS
-    dx: float
-        resolution of integration grid
-
-    Returns
-    -------
-    rms: float
-        the value of the RMS error between `q` and `p`
-
-    Notes
-    -----
-    TO DO: change dx to N
-    """
-    if p.shape != q.shape:
-        raise ValueError('Cannot calculate RMSE between two ensembles with different shapes')
-
-    # Make a grid from the limits and resolution
-    grid = _calculate_grid_parameters(limits, dx)
-
-    # Evaluate the functions on the grid
-    pe = p.gridded(grid.grid_values)[1]
-    qe = q.gridded(grid.grid_values)[1]
-
-    # Calculate the RMS between p and q
-    rms = array_metrics.quick_rmse(pe, qe, grid.cardinality)# np.sqrt(dx * np.sum((pe - qe) ** 2))
-
-    return rms
-
-
-def calculate_rbpe(p, limits=(np.inf, np.inf)):
-    """
-    Calculates the risk based point estimates of a qp.Ensemble object.
-    Algorithm as defined in 4.2 of 'Photometric redshifts for Hyper Suprime-Cam 
-    Subaru Strategic Program Data Release 1' (Tanaka et al. 2018).
-
-    Parameters
-    ----------
-    p: qp.Ensemble object
-        Ensemble of PDFs to be evalutated
-    limits, tuple of floats
-        The limits at which to evaluate possible z_best estimates.
-        If custom limits are not provided then all potential z value will be
-        considered using the scipy.optimize.minimize_scalar function.
-
-    Returns
-    -------
-    rbpes: array of floats
-        The risk based point estimates of the provided ensemble.
-    """
-    rbpes = []
-
-    def evaluate_pdf_at_z(z, dist):
-        return dist.pdf(z)[0][0]
-
-    for n in range(0, p.npdf):
-
-        if p[n].npdf != 1:
-            raise ValueError('quick_rbpe only handles Ensembles with a single PDF, for ensembles with more than one PDF, use the qp.metrics.risk_based_point_estimate function.')
-
-        this_dist_pdf_at_z = partial(evaluate_pdf_at_z, dist=p[n])
-        integration_bounds = (p[n].ppf(0.01)[0][0], p[n].ppf(0.99)[0][0])
-
-        rbpes.append(array_metrics.quick_rbpe(this_dist_pdf_at_z, integration_bounds, limits))
-
-    return np.array(rbpes)
+    return output
 
 def calculate_brier(p, truth, limits, dx=0.01):
     """This function will do the following:
@@ -242,6 +99,162 @@ def calculate_brier(p, truth, limits, dx=0.01):
     # return the results of evaluating the Brier metric
     return brier_metric_evaluation.evaluate()
 
+def calculate_cramer_von_mises(p, q, **kwargs):
+    """Calculate the Cramer von Mises statistic using scipy.stats.cramervonmises for each pair of distributions
+    in two input Ensembles. For more details see:
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.cramervonmises.html
+
+    Args:
+        p qp.Ensemble: An Ensemble of distributions to be tested
+        q qp.Ensemble: A second Ensemble of distributions each with a defined `cdf` method, to be tested against
+
+    Returns:
+        output [Objects]: A array of objects with attributes `statistic` and `pvalue`
+        For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.cramervonmises.html
+    """
+
+    try:
+        _check_ensembles_are_same_size(p, q)
+    except ValueError:  #pragma: no cover - unittest coverage for _check_ensembles_are_same_size is complete
+        logging.warning("Input ensembles should have the same number of distributions")
+
+    try:
+        _check_ensemble_is_not_nested(p)
+    except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
+        logging.warning("Each element in the ensemble `p` must be a single distribution.")
+
+    try:
+        _check_ensemble_is_not_nested(q)
+    except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
+        logging.warning("Each element in the ensemble `q` must be a single distribution.")
+
+    # Create the default grid in the range of [0,1]
+    grid = np.linspace(0,1,100)
+
+    # Pass the ppf(grid) for each pair of distributions to the quick cvm statistic function
+    output = [
+            array_metrics.quick_cramer_von_mises(p_dist.ppf(grid)[0], q_dist.cdf, **kwargs)
+            for p_dist, q_dist in zip(p, q)
+        ]
+
+    return output
+
+def calculate_kld(p, q, limits, dx=0.01):
+    """
+    Calculates the Kullback-Leibler Divergence between two qp.Ensemble objects.
+
+    Parameters
+    ----------
+    p: Ensemble object
+        probability distribution whose distance _from_ `q` will be calculated.
+    q: Ensemble object
+        probability distribution whose distance _to_ `p` will be calculated.
+    limits: tuple of floats
+        endpoints of integration interval in which to calculate KLD
+    dx: float
+        resolution of integration grid
+
+    Returns
+    -------
+    Dpq: float
+        the value of the Kullback-Leibler Divergence from `q` to `p`
+
+    Notes
+    -----
+    TO DO: have this take number of points not dx!
+    """
+    if p.shape != q.shape:
+        raise ValueError('Cannot calculate KLD between two ensembles with different shapes')
+
+    # Make a grid from the limits and resolution
+    grid = _calculate_grid_parameters(limits, dx)
+
+    # Evaluate the functions on the grid and normalize
+    pe = p.gridded(grid.grid_values)
+    pn = pe[1]
+    qe = q.gridded(grid.grid_values)
+    qn = qe[1]
+
+    # Calculate the KLD from q to p
+    Dpq = array_metrics.quick_kld(pn, qn, grid.resolution)# np.dot(pn * logquotient, np.ones(len(grid)) * dx)
+
+    if np.any(Dpq < 0.): #pragma: no cover
+        print('broken KLD: '+str((Dpq, pn, qn, grid.resolution)))
+        Dpq = epsilon*np.ones(Dpq.shape)
+    return Dpq
+
+def calculate_kolmogorov_smirnov(p, q, **kwargs):
+    """Calculate the Kolmogorov-Smirnov statistic using scipy.stats.kstest for each pair of distributions
+    in two input Ensembles. For more details see:
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kstest.html
+
+    Args:
+        p qp.Ensemble: An Ensemble of distributions to be tested
+        q qp.Ensemble: A second Ensemble of distributions to be tested
+
+    Returns:
+        output [KstestResult]: A array of named 2-tuples.
+        For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kstest.html
+    """
+
+    try:
+        _check_ensembles_are_same_size(p, q)
+    except ValueError:  #pragma: no cover - unittest coverage for _check_ensembles_are_same_size is complete
+        logging.warning("Input ensembles should have the same number of distributions")
+
+    try:
+        _check_ensemble_is_not_nested(p)
+    except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
+        logging.warning("Each element in the ensemble `p` must be a single distribution.")
+
+    try:
+        _check_ensemble_is_not_nested(q)
+    except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
+        logging.warning("Each element in the ensemble `q` must be a single distribution.")
+
+    # Create the default grid in the range of [0,1]
+    grid = np.linspace(0,1,100)
+
+    # Pass the ppf(grid) for each pair of distributions to the quick ks statistic function
+    output = [
+            array_metrics.quick_kolmogorov_smirnov(p_dist.ppf(grid)[0], q_dist.ppf(grid)[0], **kwargs)
+            for p_dist, q_dist in zip(p, q)
+        ]
+
+    return output
+
+def calculate_moment(p, N, limits, dx=0.01):
+    """
+    Calculates a moment of a qp.Ensemble object
+
+    Parameters
+    ----------
+    p: qp.Ensemble object
+        the collection of PDFs whose moment will be calculated
+    N: int
+        order of the moment to be calculated
+    limits: tuple of floats
+        endpoints of integration interval over which to calculate moments
+    dx: float
+        resolution of integration grid
+
+    Returns
+    -------
+    M: float
+        value of the moment
+    """
+    # Make a grid from the limits and resolution
+    grid = _calculate_grid_parameters(limits, dx)
+
+    # Evaluate the functions on the grid
+    pe = p.gridded(grid.grid_values)[1]
+
+    # calculate the moment
+    grid_to_N = grid.grid_values ** N
+    M = array_metrics.quick_moment(pe, grid_to_N, grid.resolution)
+
+    return M
+
 def calculate_outlier_rate(p, lower_limit=0.0001, upper_limit=0.9999):
     """Fraction of outliers in each distribution
 
@@ -257,72 +270,140 @@ def calculate_outlier_rate(p, lower_limit=0.0001, upper_limit=0.9999):
     """
 
     # Validate that all the distributions in the Ensemble are single distributions - i.e. no nested Ensembles
-    for dist in p:
-        if dist.npdf != 1:
-            raise ValueError("The implementation of outlier rate expects each element in the Ensemble to be a single distribution")
+    try:
+        _check_ensemble_is_not_nested(p)
+    except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
+        logging.warning("Each element in the ensemble `p` must be a single distribution.")
 
     outlier_rates = [(dist.cdf(lower_limit) + (1. - dist.cdf(upper_limit)))[0][0] for dist in p]
     return outlier_rates
 
-def calculate_anderson_ksamp(cdf_at_truth_values, cdf_min=0., cdf_max=1.):
-    """ Use scipy.stats.anderson_ksamp to compute the Anderson-Darling statistic
-    for the cdf(truth) values by comparing with a uniform distribution between 0 and 1.
-    Up to the current version (1.6.2), scipy.stats.anderson does not support
-    uniform distributions as reference for 1-sample test, therefore we create a uniform
-    "distribution" and pass it as the second value in the list of parameters to the scipy 
-    implementation.
+def calculate_rbpe(p, limits=(np.inf, np.inf)):
+    """
+    Calculates the risk based point estimates of a qp.Ensemble object.
+    Algorithm as defined in 4.2 of 'Photometric redshifts for Hyper Suprime-Cam 
+    Subaru Strategic Program Data Release 1' (Tanaka et al. 2018).
 
     Parameters
     ----------
-    cdf_at_truth_values: [float], A 1xN list, where each element is the result of evaluating cdf_n(truth_n)
-        for the nth distribution in a set of N distributions.
-    cdf_min: float, optional
-        cdf(x) values below this are discarded
-    cdf_max: float, optional
-        cdf(x) values greater than this are discarded
+    p: qp.Ensemble object
+        Ensemble of PDFs to be evalutated
+    limits, tuple of floats
+        The limits at which to evaluate possible z_best estimates.
+        If custom limits are not provided then all potential z value will be
+        considered using the scipy.optimize.minimize_scalar function.
 
     Returns
     -------
-    Anderson_ksampResult: A namedtuple with the following values. 
-        statistic : float
-            Normalized k-sample Anderson-Darling test statistic.
-        critical_values : array
-            The critical values for significance levels 25%, 10%, 5%, 2.5%, 1%,
-            0.5%, 0.1%.
-        significance_level : float
-            An approximate significance level at which the null hypothesis for the
-            provided samples can be rejected. The value is floored / capped at
-            0.1% / 25%.
+    rbpes: array of floats
+        The risk based point estimates of the provided ensemble.
     """
+    rbpes = []
 
-    # Removed the CDF values that are outside the min/max range
-    cdf_at_truth_values_clean = _clean_cdf_values(cdf_at_truth_values, cdf_min, cdf_max)
+    def evaluate_pdf_at_z(z, dist):
+        return dist.pdf(z)[0][0]
 
-    # Create a uniform "distribution" of values in the range of [cdf_min, cdf_max]
-    uniform_yvals = np.linspace(cdf_min, cdf_max, len(cdf_at_truth_values_clean))
+    for n in range(0, p.npdf):
 
-    return stats.anderson_ksamp([cdf_at_truth_values_clean, uniform_yvals])
+        if p[n].npdf != 1:
+            raise ValueError('quick_rbpe only handles Ensembles with a single PDF, for ensembles with more than one PDF, use the qp.metrics.risk_based_point_estimate function.')
 
-def _clean_cdf_values(cdf_at_truth_values, cdf_min, cdf_max):
-    """Remove and report any cdf(x) that are outside the min/max range.
+        this_dist_pdf_at_z = partial(evaluate_pdf_at_z, dist=p[n])
+        integration_bounds = (p[n].ppf(0.01)[0][0], p[n].ppf(0.99)[0][0])
+
+        rbpes.append(array_metrics.quick_rbpe(this_dist_pdf_at_z, integration_bounds, limits))
+
+    return np.array(rbpes)
+
+def calculate_rmse(p, q, limits, dx=0.01):
+    """
+    Calculates the Root Mean Square Error between two qp.Ensemble objects.
+
+    Parameters
+    ----------
+    p: qp.Ensemble object
+        probability distribution function whose distance between its truth and the approximation of `q` will be calculated.
+    q: qp.Ensemble object
+        probability distribution function whose distance between its approximation and the truth of `p` will be calculated.
+    limits: tuple of floats
+        endpoints of integration interval in which to calculate RMS
+    dx: float
+        resolution of integration grid
+
+    Returns
+    -------
+    rms: float
+        the value of the RMS error between `q` and `p`
+
+    Notes
+    -----
+    TO DO: change dx to N
+    """
+    if p.shape != q.shape:
+        raise ValueError('Cannot calculate RMSE between two ensembles with different shapes')
+
+    # Make a grid from the limits and resolution
+    grid = _calculate_grid_parameters(limits, dx)
+
+    # Evaluate the functions on the grid
+    pe = p.gridded(grid.grid_values)[1]
+    qe = q.gridded(grid.grid_values)[1]
+
+    # Calculate the RMS between p and q
+    rms = array_metrics.quick_rmse(pe, qe, grid.cardinality)# np.sqrt(dx * np.sum((pe - qe) ** 2))
+
+    return rms
+
+def _calculate_grid_parameters(limits, dx:float=0.01) -> Grid:
+    """
+    Create a grid of points and return parameters describing it.
 
     Args:
-        cdf_at_truth_values [float]: The array of PIT values 
-        cdf_min float: The minimum cdf(x) value to accept
-        cdf_max float: The maximum cdf(x) value to accept
+        limits (Iterable) often a 2-tuple or numpy array with shape (2,)
+            the max and min values of the 1d grid
+        dx (float, optional):
+            the desired delta between points. Used to define the cardinality. Defaults to 0.01.
 
     Returns:
-        pits_clean [float]: The list of PIT values within the min/max range.
+        Grid: a namedtuple containing a 1d grid's values and attributes.
+            grid_values: np.array with size = cardinality
+            cardinality: int, number of elements in grid_value
+            resolution: float, equal to grid_values[i] - grid_values[i-1]
+            hist_bin_edges: np.array with size = cardinality+1.
+                Equally spaced histogram bin edges starting at limit-resolution/2.
+                Assumes that grid_value[i] should be centered in the bin defined by
+                (hist_bin_edge[i], hist_bin_edge[i+1]).
+            limits: 2-tuple, the limits passed in and used in this function
     """
-    # Create truth mask for pit values between cdf_min and pit max
-    mask = (cdf_at_truth_values >= cdf_min) & (cdf_at_truth_values <= cdf_max)
+    cardinality = int((limits[-1] - limits[0]) / dx)
+    grid_values = np.linspace(limits[0], limits[1], cardinality)
+    resolution = (limits[-1] - limits[0]) / (cardinality - 1)
+    hist_bin_edges = np.histogram_bin_edges((limits[0]-resolution/2, limits[1]+resolution/2), cardinality)
 
-    # Keep pit values that are within the min/max range
-    pits_clean = cdf_at_truth_values[mask]
+    return Grid(grid_values, cardinality, resolution, hist_bin_edges, limits)
 
-    # Determine how many pit values were dropped and warn the user.
-    diff = len(cdf_at_truth_values) - len(pits_clean)
-    if diff > 0:
-        logging.warning("Removed %d PITs from the sample.", diff)
+def _check_ensembles_are_same_size(p, q):
+    """This utility function ensures checks that two Ensembles contain an equal number of distribution objects.
 
-    return pits_clean
+    Args:
+        p qp.Ensemble: An Ensemble containing 0 or more distributions
+        q qp.Ensemble: A second Ensemble containing 0 or more distributions
+
+    Raises:
+        ValueError: If the result of evaluating qp.Ensemble.npdf on each Ensemble is not the same, raise an error.
+    """
+    if p.npdf != q.npdf:
+        raise ValueError("Input ensembles should have the same number of distributions")
+
+def _check_ensemble_is_not_nested(p):
+    """This utility function ensures that each element in the Ensemble is a single distribution.
+
+    Args:
+        p qp.Ensemble: An Ensemble that could contain nested Ensembles with multiple distributions in each
+
+    Raises:
+        ValueError: If there are any elements of the input Ensemble that contain more than 1 PDF, raise an error.
+    """
+    for dist in p:
+        if dist.npdf != 1:
+            raise ValueError("Each element in the input Ensemble should be a single distribution.")

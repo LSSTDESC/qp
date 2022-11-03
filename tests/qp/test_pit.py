@@ -41,11 +41,17 @@ class PitTestCase(unittest.TestCase):
         quant_grid = np.linspace(0, 1, 101)
         pit_obj = PIT(self.grid_ens, self.true_zs, quant_grid)
 
+        pit_samples = pit_obj.pit_samps
+        self.assertTrue(len(pit_samples) == 399)
+
+        pit_ensemble = pit_obj.pit
+        self.assertTrue(pit_ensemble.npdf == 1)
+
         meta_metrics = pit_obj.calculate_pit_meta_metrics()
 
         ad_stat = meta_metrics['ad'].statistic
         assert np.isclose(ad_stat, ADVAL_ALL)
-        
+
         cut_ad_stat = pit_obj.evaluate_PIT_anderson_ksamp(pit_min=0.6, pit_max=0.9).statistic
         assert np.isclose(cut_ad_stat, ADVAL_CUT)
 
@@ -56,3 +62,10 @@ class PitTestCase(unittest.TestCase):
         assert np.isclose(ks_stat, KSVAL)
 
         assert np.isclose(meta_metrics['outlier_rate'], OUTRATE)
+
+    def test_pit_metric_small_eval_grid(self):
+        """Test PIT metric warning message when number of pit samples is smaller than the evaluation grid"""
+        with self.assertLogs(level='WARNING') as log:
+            quant_grid = np.linspace(0, 1, 1000)
+            _ = PIT(self.grid_ens, self.true_zs, quant_grid)
+            self.assertIn('Number of pit samples is smaller', log.output[0])

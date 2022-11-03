@@ -8,7 +8,7 @@ import qp.metrics
 import numpy as np
 
 from qp import test_funcs
-from qp.metrics.metrics import calculate_brier, calculate_moment
+from qp.metrics.metrics import * 
 from qp.utils import epsilon
 
 
@@ -252,6 +252,67 @@ class MetricTestCase(unittest.TestCase):
         error_msg = "Input truth values exceed the defined limits"
         self.assertTrue(error_msg in str(context.exception))
 
+    def test_calculate_outlier_rate(self):
+        """Base case test"""
+        output = qp.metrics.calculate_outlier_rate(self.ens_n[0])
+        self.assertTrue(len(output) == 1)
+        self.assertTrue(np.isclose(output[0], 0.012436869911068668))
+
+    def test_calculate_outlier_rate_with_bounds(self):
+        """Include min/max bounds for outlier rate"""
+        output = qp.metrics.calculate_outlier_rate(self.ens_n[0], -10, 10)
+        self.assertTrue(len(output) == 1)
+        self.assertTrue(np.isclose(output[0], 0))
+
+    def test_calculate_outlier_rate_many_distributions(self):
+        """Check that the outlier rate is correctly calculated for an Ensemble with many distributions"""
+        output = qp.metrics.calculate_outlier_rate(self.ens_n)
+        self.assertTrue(len(output) == 11)
+
+    def test_calculate_kolmogorov_smirnov(self):
+        """Bare minimum test to ensure that the data is flowing correctly"""
+        output = qp.metrics.calculate_kolmogorov_smirnov(self.ens_n, self.ens_n)
+        self.assertTrue(len(output) == self.ens_n.npdf)
+
+    def test_calculate_cramer_von_mises(self):
+        """Bare minimum test to ensure that the data is flowing correctly"""
+        output = qp.metrics.calculate_cramer_von_mises(self.ens_n, self.ens_n)
+        self.assertTrue(len(output) == self.ens_n.npdf)
+
+    def test_calculate_anderson_ksamp(self):
+        """Bare minimum test to ensure that the data is flowing correctly"""
+        output = qp.metrics.calculate_anderson_ksamp(self.ens_n, self.ens_n)
+        self.assertTrue(len(output) == self.ens_n.npdf)
+
+    def test_check_ensembles_are_same_size(self):
+        """Test that no Value Error is raised when the ensembles are the same size"""
+        try:
+            qp.metrics._check_ensembles_are_same_size(self.ens_n, self.ens_n_shift)  #pylint: disable=W0212
+        except ValueError:
+            self.fail("Unexpectedly raised ValueError")
+
+    def test_check_ensembles_are_same_size_asserts(self):
+        """Test that a Value Error is raised when the ensembles are not the same size"""
+        with self.assertRaises(ValueError) as context:
+            qp.metrics._check_ensembles_are_same_size(self.ens_n, self.ens_n_plus_one)  #pylint: disable=W0212
+
+        error_msg = "Input ensembles should have the same number of distributions"
+        self.assertTrue(error_msg in str(context.exception))
+
+    def test_check_ensemble_is_not_nested_with_flat_ensemble(self):
+        """Test that no ValueError is raised when a flat Ensemble is passed in"""
+        try:
+            qp.metrics._check_ensemble_is_not_nested(self.ens_n)  #pylint: disable=W0212
+        except ValueError:
+            self.fail("Unexpectedly raised ValueError")
+
+    def test_check_ensemble_is_not_nested_with_nested_ensemble(self):
+        """Test that a ValueError is raised when a nested Ensemble is passed in"""
+        with self.assertRaises(ValueError) as context:
+            qp.metrics._check_ensemble_is_not_nested(self.ens_n_multi)  #pylint: disable=W0212
+
+        error_msg = "Each element in the input Ensemble should be a single distribution."
+        self.assertTrue(error_msg in str(context.exception))
 
 if __name__ == '__main__':
     unittest.main()
