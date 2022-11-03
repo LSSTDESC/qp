@@ -95,10 +95,17 @@ class PIT():
         return stats.cramervonmises(self._pit_samps, 'uniform')
 
     def evaluate_PIT_KS(self):
-        """_summary_
+        """Calculate the Kolmogorov-Smirnov statistic using scipy.stats.kstest for each pair of distributions
+            in two input Ensembles. For more details see:
+            https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kstest.html
+
+        Args:
+            p np.array of floats: A gridded array representing the CDF of a given distribution
+            q np.array of floats: A second gridded array representing the CDF of a given distribution
 
         Returns:
-            _type_: _description_
+            output [KstestResult]: A array of named 2-tuples.
+            For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kstest.html
         """
         return stats.kstest(self._pit_samps, 'uniform')
 
