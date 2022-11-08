@@ -8,29 +8,42 @@ from qp.metrics.array_metrics import quick_anderson_ksamp, quick_cramer_von_mise
 DEFAULT_QUANTS = np.linspace(0, 1, 100)
 
 class PIT():
-    """PIT(qp_ens, ztrue, eval_grid=DEFAULT_QUANTS)
+    """PIT(qp_ens, true_vals, eval_grid=DEFAULT_QUANTS)
     Probability Integral Transform
 
-    Args:
-        qp_ens Ensemble: A collection of N distribution objects
-        ztrue [float]: An array-like sequence of N float values representing the known true value for each distribution
-        eval_grid ([float], optional): A strictly increasing array-like sequence in the range [0,1]. Defaults to DEFAULT_QUANTS.
+    Parameters
+    ----------
+    qp_ens : Ensemble
+        A collection of N distribution objects
+    true_vals : [float]
+        An array-like sequence of N float values representing the known true value for each distribution
+    eval_grid : [float], optional
+        A strictly increasing array-like sequence in the range [0,1], by default DEFAULT_QUANTS
+
+    Returns
+    -------
+    PIT object
+        An object with an Ensemble containing the PIT distribution, and a full set of PIT samples.
     """
 
-    def __init__(self, qp_ens, ztrue, eval_grid=DEFAULT_QUANTS):
+    def __init__(self, qp_ens, true_vals, eval_grid=DEFAULT_QUANTS):
         """We will create a quantile Ensemble to store the PIT distribution, but also store the
         full set of PIT samples as ancillary data of the (single PDF) ensemble.
 
-        Args:
-            qp_ens Ensemble: A collection of N distribution objects
-            ztrue [float]: An array-like sequence of N float values representing the known true value for each distribution
-            eval_grid ([float], optional): A strictly increasing array-like sequence in the range [0,1]. Defaults to DEFAULT_QUANTS.
+        Parameters
+        ----------
+        qp_ens : Ensemble
+            A collection of N distribution objects
+        true_vals : [float]
+            An array-like sequence of N float values representing the known true value for each distribution
+        eval_grid : [float], optional
+            A strictly increasing array-like sequence in the range [0,1], by default DEFAULT_QUANTS
         """
 
-        self._ztrue = ztrue
+        self._true_vals = true_vals
 
         # For each distribution in the Ensemble, calculate the CDF where x = known_true_value
-        self._pit_samps = np.array([qp_ens[i].cdf(self._ztrue[i])[0][0] for i in range(len(self._ztrue))])
+        self._pit_samps = np.array([qp_ens[i].cdf(self._true_vals[i])[0][0] for i in range(len(self._true_vals))])
 
         n_pit = np.min([len(self._pit_samps), len(eval_grid)])
         if n_pit < len(eval_grid):
@@ -42,7 +55,7 @@ class PIT():
 
     @property
     def pit_samps(self):
-        """Returns the PIT samples. i.e. ``CDF(ztrue)`` for each distribution in the Ensemble used to initialize the PIT object.
+        """Returns the PIT samples. i.e. ``CDF(true_vals)`` for each distribution in the Ensemble used to initialize the PIT object.
 
         Returns
         -------
