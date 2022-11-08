@@ -279,9 +279,9 @@ class MetricTestCase(unittest.TestCase):
         output = qp.metrics.calculate_cramer_von_mises(self.ens_n, self.ens_n)
         self.assertTrue(len(output) == self.ens_n.npdf)
 
-    def test_calculate_anderson_ksamp(self):
+    def test_calculate_anderson_darling(self):
         """Bare minimum test to ensure that the data is flowing correctly"""
-        output = qp.metrics.calculate_anderson_ksamp(self.ens_n, self.ens_n)
+        output = qp.metrics.calculate_anderson_darling(self.ens_n, 'norm')
         self.assertTrue(len(output) == self.ens_n.npdf)
 
     def test_check_ensembles_are_same_size(self):

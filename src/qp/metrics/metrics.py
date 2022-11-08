@@ -246,52 +246,45 @@ def calculate_brier(p, truth, limits, dx=0.01):
     # return the results of evaluating the Brier metric
     return brier_metric_evaluation.evaluate()
 
-def calculate_anderson_ksamp(p, q, **kwargs):
-    """Calculate the k-sample Anderson-Darling statistic using scipy.stats.anderson_ksamp for each pair of distributions
-    in two input Ensembles. For more details see:
-    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.anderson_ksamp.html
+def calculate_anderson_darling(p, scipy_distribution='norm', num_samples=100, _random_state=None):
+    """Calculate the Anderson-Darling statistic using scipy.stats.anderson for each distribution
+    in an Ensemble. For more details see:
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.anderson.html
 
     Parameters
     ----------
     p : qp.Ensemble
         An Ensemble of distributions to be tested
-    q : qp.Ensemble
-        A second Ensemble of distributions to be tested
+    scipy_distribution : {'norm', 'expon', 'logistic', 'gumbel', 'gumbel_l', 'gumbel_r', 'extreme1'}, optional
+        The type of distribution to test against.
+    num_samples : int, optional
+        Number of random variable samples to generate for each distribution in the calculation
+    _random_state : int, optional
+        For testing purposes only, this is used to specify a reproducible set of random variables.
 
     Returns
     -------
     [Result objects]
         A array of objects with attributes ``statistic``, ``critical_values``, and ``significance_level``.
-        For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.anderson_ksamp.html
     """
-
-    try:
-        _check_ensembles_are_same_size(p, q)
-    except ValueError:  #pragma: no cover - unittest coverage for _check_ensembles_are_same_size is complete
-        logging.warning("Input ensembles should have the same number of distributions")
 
     try:
         _check_ensemble_is_not_nested(p)
     except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
         logging.warning("Each element in the ensemble `p` must be a single distribution.")
 
-    try:
-        _check_ensemble_is_not_nested(q)
-    except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
-        logging.warning("Each element in the ensemble `q` must be a single distribution.")
-
-    # Create the default grid in the range of [0,1]
-    grid = np.linspace(0,1,100)
-
-    # Pass the ppf(grid) for each pair of distributions to the quick anderson ksamp function
+   # Pass an array of random variables and the name of a scipy distribution to the quick anderson darling function
     output = [
-            array_metrics.quick_anderson_ksamp(p_dist.ppf(grid)[0], q_dist.ppf(grid)[0], **kwargs)
-            for p_dist, q_dist in zip(p, q)
+            array_metrics.quick_anderson_darling(
+                np.squeeze(p_dist.rvs(size=num_samples, random_state=_random_state)),
+                scipy_distribution=scipy_distribution
+            )
+            for p_dist in p
         ]
 
     return output
 
-def calculate_cramer_von_mises(p, q, **kwargs):
+def calculate_cramer_von_mises(p, q, num_samples=100, _random_state=None, **kwargs):
     """Calculate the Cramer von Mises statistic using scipy.stats.cramervonmises for each pair of distributions
     in two input Ensembles. For more details see:
     https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.cramervonmises.html
@@ -302,12 +295,15 @@ def calculate_cramer_von_mises(p, q, **kwargs):
         An Ensemble of distributions to be tested
     q : qp.Ensemble
         A second Ensemble of distributions each with a defined ``cdf`` method, to be tested against
+    num_samples : int, optional
+        Number of random variable samples to generate for the calculation
+    _random_state : int, optional
+        For testing purposes only, this is used to specify a reproducible set of random variables.
 
     Returns
     -------
     [Result objects]
-        A array of objects with attributes ``statistic`` and ``pvalue``
-        For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.cramervonmises.html
+        A array of objects with attributes ``statistic`` and ``pvalue``.
     """
 
     try:
@@ -325,21 +321,22 @@ def calculate_cramer_von_mises(p, q, **kwargs):
     except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
         logging.warning("Each element in the ensemble `q` must be a single distribution.")
 
-    # Create the default grid in the range of [0,1]
-    grid = np.linspace(0,1,100)
-
-    # Pass the ppf(grid) for each pair of distributions to the quick cvm statistic function
+    # Pass an array of random variables and a cdf callable for each pair of distributions to the quick cvm statistic function
     output = [
-            array_metrics.quick_cramer_von_mises(p_dist.ppf(grid)[0], q_dist.cdf, **kwargs)
+            array_metrics.quick_cramer_von_mises(
+                np.squeeze(p_dist.rvs(size=num_samples, random_state=_random_state)),
+                q_dist.cdf,
+                **kwargs
+            )
             for p_dist, q_dist in zip(p, q)
         ]
 
     return output
 
-def calculate_kolmogorov_smirnov(p, q, **kwargs):
+def calculate_kolmogorov_smirnov(p, q, num_samples=100, **kwargs):
     """Calculate the Kolmogorov-Smirnov statistic using scipy.stats.kstest for each pair of distributions
     in two input Ensembles. For more details see:
-    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kstest.html
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kstest.html 
 
     Parameters
     ----------
@@ -347,12 +344,13 @@ def calculate_kolmogorov_smirnov(p, q, **kwargs):
         An Ensemble of distributions to be tested
     q : qp.Ensemble
         A second Ensemble of distributions to be tested
+    num_samples : int, optional
+        Number of samples to use in the calculation
 
     Returns
     -------
-    [Return Object]
-        A array of objects with attributes ``statistic`` and ``pvalue``.
-        For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kstest.html
+    [KstestResult]
+        A array of KstestResult objects with attributes ``statistic`` and ``pvalue``.
     """
 
     try:
@@ -370,12 +368,14 @@ def calculate_kolmogorov_smirnov(p, q, **kwargs):
     except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
         logging.warning("Each element in the ensemble `q` must be a single distribution.")
 
-    # Create the default grid in the range of [0,1]
-    grid = np.linspace(0,1,100)
-
-    # Pass the ppf(grid) for each pair of distributions to the quick ks statistic function
+    # Pass the rvs and cdf functions for each pair of distributions to the quick ks statistic function
     output = [
-            array_metrics.quick_kolmogorov_smirnov(p_dist.ppf(grid)[0], q_dist.ppf(grid)[0], **kwargs)
+            array_metrics.quick_kolmogorov_smirnov(
+                p_dist.rvs,
+                q_dist.cdf,
+                num_samples=num_samples,
+                **kwargs
+            )
             for p_dist, q_dist in zip(p, q)
         ]
 

@@ -3,7 +3,7 @@ import numpy as np
 from scipy import stats
 import qp
 from qp.metrics.metrics import calculate_outlier_rate
-from qp.metrics.array_metrics import quick_anderson_ksamp
+from qp.metrics.array_metrics import quick_anderson_ksamp, quick_cramer_von_mises, quick_kolmogorov_smirnov
 
 DEFAULT_QUANTS = np.linspace(0, 1, 100)
 
@@ -85,8 +85,8 @@ class PIT():
         for the cdf(truth) values by comparing with a uniform distribution between 0 and 1.
         Up to the current version (1.9.3), scipy.stats.anderson does not support
         uniform distributions as reference for 1-sample test, therefore we create a uniform
-        "distribution" and pass it as the second value in the list of parameters to the scipy 
-        implementation of k-sample Anderson-Darling. 
+        "distribution" and pass it as the second value in the list of parameters to the scipy
+        implementation of k-sample Anderson-Darling.
         For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.anderson_ksamp.html
 
         Parameters
@@ -120,7 +120,7 @@ class PIT():
             A array of objects with attributes `statistic` and `pvalue`
             For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.cramervonmises.html
         """
-        return stats.cramervonmises(self._pit_samps, 'uniform')
+        return quick_cramer_von_mises(self._pit_samps, stats.uniform.cdf)
 
     def evaluate_PIT_KS(self):
         """Calculate the Kolmogorov-Smirnov statistic using scipy.stats.kstest. For more details see:
@@ -132,7 +132,7 @@ class PIT():
             A array of objects with attributes `statistic` and `pvalue`.
             For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kstest.html
         """
-        return stats.kstest(self._pit_samps, 'uniform')
+        return quick_kolmogorov_smirnov(self._pit_samps, stats.uniform.cdf)
 
     def evaluate_PIT_outlier_rate(self, pit_min=0.0001, pit_max=0.9999):
         """Compute fraction of PIT outliers by evaluating the CDF of the distribution in the PIT Ensemble
