@@ -45,8 +45,6 @@ class ScipyVectorizationTests(unittest.TestCase):
         print('Anderson Darling comparison')
         t1 = time.perf_counter()
 
-        data = np.squeeze(self.ens_n.rvs(size=self.rvs_size, random_state=self.random_state))
-        fdist = self.ens_n
         gof_output = qp.metrics.calculate_goodness_of_fit(
             self.ens_n,
             self.ens_n,
@@ -185,9 +183,27 @@ class ScipyVectorizationTests(unittest.TestCase):
         for test, expected in zip(test_output, expected_output):
             assert np.isclose(test, expected)
 
+    @unittest.skip("The Scipy 1.9 implementation of Dplus and Dminus do not handle nested arrays of cdf values. See docstring for more info.")
     def test_copied_ks(self):
         """For Kolmogorov-Smirnov stat, test the parity between Scipy 1.9 code and
-        Scipy 1.10.0dev code that was copied over into qp"""
+        Scipy 1.10.0dev code that was copied over into qp. The implementation of _compute_dplus
+        and _compute_dminus do not handle nested arrays of cdf values - such as those returned
+        by Ensemble.cdf(x).
+
+        See the definitions here: https://github.com/scipy/scipy/blob/main/scipy/stats/_stats_py.py#L7565
+        Note that `n = len(cdfvals)` will return the length of the outer most array.
+        Thus, if cdfvals = ndarray([[1,2,3,4]]), n will equal 1. The vectorized
+        implementation in Scipy 1.10 handles this nesting correctly.
+
+        This test should not be run with automation, but can be used to check the correctness
+        of the vectorized Scipy 1.10 code **if** a temporary patch is applied to the
+        Ensemble.cdf method as follows:
+        -    return self._frozen.cdf(x)
+        +    return np.squeeze(self._frozen.cdf(x))
+
+        This is very hacky, but this comparison test should be considered temporary
+        until Scipy 1.10 is released. Afterward, we can remove this test and related code.
+        """
 
         # Specify these here, so that changes in setupClass don't affect the results
         rvs_size = 100
@@ -206,14 +222,14 @@ class ScipyVectorizationTests(unittest.TestCase):
         print(f"GOF run time: {gof_run_time}")
 
         t1 = time.perf_counter()
-        cvm_output = qp.metrics.calculate_kolmogorov_smirnov(self.ens_n, self.ens_n, num_samples=rvs_size, _random_state=random_state)
+        ks_output = qp.metrics.calculate_kolmogorov_smirnov(self.ens_n, self.ens_n, num_samples=rvs_size, _random_state=random_state)
         t2 = time.perf_counter()
         ks_run_time = t2 - t1
         print(f"Scipy 1.9 AD run time: {ks_run_time}")
         print(f"Speed increase: {ks_run_time/gof_run_time} x")
 
-        for gof, cvm in zip(gof_output, cvm_output):
-            self.assertEqual(gof, cvm.statistic)
+        for gof, ks in zip(gof_output, ks_output):
+            self.assertEqual(gof, ks.statistic)
 
     def test_ks_results(self):
         """This test compares the results of the Kolmogorov-Smirnov evaluation against a known output"""
