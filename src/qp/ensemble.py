@@ -428,6 +428,21 @@ class Ensemble:
         """
         return self._frozen.sf(q)
 
+    def logsf(self, q):
+        """Evaluates the log of the survival function of the distribution
+
+        Parameters
+        ----------
+        q: float or ndarray, float
+            location(s) at which to evaluate the pdfs
+
+        Returns
+        -------
+        float or ndarray
+            Log of the survival function
+        """
+        return self._frozen.logsf(q)
+
     def isf(self, q):
         """
         Evaluates the inverse of the survival fraction of the distribution

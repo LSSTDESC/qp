@@ -163,7 +163,7 @@ class PIT():
         float
             The percentage of outliers in this distribution given the min and max bounds.
         """
-        return calculate_outlier_rate(self._pit, pit_min, pit_max)
+        return calculate_outlier_rate(self._pit, pit_min, pit_max)[0]
 
     def _trim_pit_values(self, cdf_min, cdf_max):
         """Remove and report any cdf(x) that are outside the min/max range.

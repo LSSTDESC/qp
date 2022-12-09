@@ -1,11 +1,13 @@
 """This module implements some performance metrics for distribution parameterization"""
+from deprecated import deprecated
 import logging
 from collections import namedtuple
 from functools import partial
 
 import numpy as np
 
-import qp.metrics.array_metrics as array_metrics
+from qp.metrics import array_metrics
+from qp.metrics.goodness_of_fit import goodness_of_fit_metrics
 from qp.metrics.brier import Brier
 from qp.utils import epsilon
 
@@ -246,6 +248,12 @@ def calculate_brier(p, truth, limits, dx=0.01):
     # return the results of evaluating the Brier metric
     return brier_metric_evaluation.evaluate()
 
+@deprecated(
+    reason="""
+    This implementation is deprecated for performance reasons and does not accommodate N vs 1 comparisons.
+    Please use calculate_goodness_of_fit instead. This method is for testing purposes only.
+    """,
+    category=DeprecationWarning)
 def calculate_anderson_darling(p, scipy_distribution='norm', num_samples=100, _random_state=None):
     """Calculate the Anderson-Darling statistic using scipy.stats.anderson for each distribution
     in an Ensemble. For more details see:
@@ -274,16 +282,20 @@ def calculate_anderson_darling(p, scipy_distribution='norm', num_samples=100, _r
         logging.warning("Each element in the ensemble `p` must be a single distribution.")
 
    # Pass an array of random variables and the name of a scipy distribution to the quick anderson darling function
+    p_rvs = p.rvs(size=num_samples, random_state=_random_state)
     output = [
-            array_metrics.quick_anderson_darling(
-                np.squeeze(p_dist.rvs(size=num_samples, random_state=_random_state)),
-                scipy_distribution=scipy_distribution
-            )
-            for p_dist in p
+            array_metrics.quick_anderson_darling(np.squeeze(p_rvs_i), scipy_distribution=scipy_distribution)
+            for p_rvs_i in p_rvs
         ]
 
     return output
 
+@deprecated(
+    reason="""
+    This implementation is deprecated for performance reasons and does not accommodate N vs 1 comparisons.
+    Please use calculate_goodness_of_fit instead. This method is for testing purposes only.
+    """,
+    category=DeprecationWarning)
 def calculate_cramer_von_mises(p, q, num_samples=100, _random_state=None, **kwargs):
     """Calculate the Cramer von Mises statistic using scipy.stats.cramervonmises for each pair of distributions
     in two input Ensembles. For more details see:
@@ -322,18 +334,25 @@ def calculate_cramer_von_mises(p, q, num_samples=100, _random_state=None, **kwar
         logging.warning("Each element in the ensemble `q` must be a single distribution.")
 
     # Pass an array of random variables and a cdf callable for each pair of distributions to the quick cvm statistic function
+    p_rvs = p.rvs(size=num_samples, random_state=_random_state)
     output = [
             array_metrics.quick_cramer_von_mises(
-                np.squeeze(p_dist.rvs(size=num_samples, random_state=_random_state)),
+                np.squeeze(p_rvs_i),
                 q_dist.cdf,
                 **kwargs
             )
-            for p_dist, q_dist in zip(p, q)
+            for p_rvs_i, q_dist in zip(p_rvs, q)
         ]
 
     return output
 
-def calculate_kolmogorov_smirnov(p, q, num_samples=100, **kwargs):
+@deprecated(
+    reason="""
+    This implementation is deprecated for performance reasons and does not accommodate N vs 1 comparisons.
+    Please use calculate_goodness_of_fit instead. This method is for testing purposes only.
+    """,
+    category=DeprecationWarning)
+def calculate_kolmogorov_smirnov(p, q, num_samples=100, _random_state=None):
     """Calculate the Kolmogorov-Smirnov statistic using scipy.stats.kstest for each pair of distributions
     in two input Ensembles. For more details see:
     https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kstest.html 
@@ -369,14 +388,13 @@ def calculate_kolmogorov_smirnov(p, q, num_samples=100, **kwargs):
         logging.warning("Each element in the ensemble `q` must be a single distribution.")
 
     # Pass the rvs and cdf functions for each pair of distributions to the quick ks statistic function
+    p_rvs = p.rvs(size=num_samples, random_state=_random_state)
     output = [
             array_metrics.quick_kolmogorov_smirnov(
-                p_dist.rvs,
-                q_dist.cdf,
-                num_samples=num_samples,
-                **kwargs
+                np.squeeze(p_rvs_i),
+                q_dist.cdf
             )
-            for p_dist, q_dist in zip(p, q)
+            for p_rvs_i, q_dist in zip(p_rvs, q)
         ]
 
     return output
@@ -408,6 +426,73 @@ def calculate_outlier_rate(p, lower_limit=0.0001, upper_limit=0.9999):
     outlier_rates = [(dist.cdf(lower_limit) + (1. - dist.cdf(upper_limit)))[0][0] for dist in p]
     return outlier_rates
 
+def calculate_goodness_of_fit(estimate, reference, fit_metric='ad', num_samples=100, _random_state=None):
+    """This method calculates goodness of fit between the distributions in the
+    `estimate` and `reference` Ensembles using the specified fit_metric.
+
+    Parameters
+    ----------
+    estimate : Ensemble containing N distributions
+        Random variate samples will be drawn from this Ensemble
+    reference : Ensemble containing N or 1 distributions
+        The CDF of the distributions in this Ensemble are used in the goodness of fit
+        calculation.
+    fit_metric : string, optional
+        The goodness of fit metric to use. One of ['ad', 'cvm', 'ks']. For clarity,
+        'ad' = Anderson-Darling, 'cvm' = Cramer-von Mises, and 'ks' = Kolmogorov-Smirnov, by default 'ad'
+    num_samples : int, optional
+        Number of random variates to draw from each distribution in `estimate`, by default 100
+    _random_state : _type_, optional
+        Used for testing to create reproducible sets of random variates, by default None
+
+    Returns
+    -------
+    output: [float]
+        A array of floats where each element is the result of the statistic calculation.
+
+    Raises
+    ------
+    KeyError
+        If the requested `fit_metric` is not contained in `goodness_of_fit_metrics` dictionary,
+        raise a KeyError.
+
+    Notes
+    -----
+    The calculation of the goodness of fit metrics is not symmetric.
+    i.e. `calculate_goodness_of_fit(p, q, ...) != calculate_goodness_of_fit(q, p, ...)`
+
+    In the future, we should be able to do this directly from the PDFs without needing to
+    take random variates from the `estimate` Ensemble.
+
+    The vectorized implementations of fit metrics are copied over (unmodified) from
+    the developer branch of Scipy 1.10.0dev. When Scipy 1.10 is released, we can replace
+    the copied implementation with the ones in Scipy.
+    """
+
+    try:
+        _check_ensembles_contain_correct_number_of_distributions(estimate, reference)
+    except ValueError: #pragma: no cover - unittest coverage for _check_ensembles_contain_correct_number_of_distributions is complete
+        logging.warning("The ensemble `reference` should have 1 or N distributions. With N = number of distributions in the ensemble `estimate`.")
+
+    try:
+        _check_ensemble_is_not_nested(estimate)
+    except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
+        logging.warning("Each element in the ensemble `estimate` must be a single distribution.")
+
+    try:
+        _check_ensemble_is_not_nested(reference)
+    except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
+        logging.warning("Each element in the ensemble `reference` must be a single distribution.")
+
+    if fit_metric not in goodness_of_fit_metrics:
+        metrics = [k for k in goodness_of_fit_metrics.keys()]
+        raise KeyError(f"`fit_metric` should be one of {metrics}.")
+
+    return goodness_of_fit_metrics[fit_metric](
+        reference,
+        np.squeeze(estimate.rvs(size=num_samples, random_state=_random_state))
+    )
+
 def _check_ensembles_are_same_size(p, q):
     """This utility function ensures checks that two Ensembles contain an equal number of distribution objects.
 
@@ -433,3 +518,38 @@ def _check_ensemble_is_not_nested(p):
     for dist in p:
         if dist.npdf != 1:
             raise ValueError("Each element in the input Ensemble should be a single distribution.")
+
+def _check_ensembles_contain_correct_number_of_distributions(estimate, reference):
+    """This utility function ensures that the number of distributions in the ensembles matches
+    expectations. estimate can contain 1 to N distributions.
+    reference should contain either 1 or the same number of distributions
+    as estimate.
+
+    Example logic:
+    estimate=N, reference=N (1 <= N) -> Pass
+    estimate=N, reference=1 (1 <= N) -> Pass
+    estimate=1, reference=N (N != 1) -> Raise ValueError
+    estimate=N, reference=M (N != M) -> Raise ValueError
+
+    Parameters
+    ----------
+    estimate : Ensemble
+        Used to calculate goodness of fit metrics, random
+        variates will be produced from the distributions in this ensemble.
+    reference : Ensemble
+        The CDFs of the distributions in this ensemble will be used to calculate
+        goodness of fit metrics.
+
+    Raises
+    ------
+    ValueError
+        If the number of distributions in the reference ensemble does not meet the requirements,
+        raise a ValueError.
+    """
+
+    if estimate.npdf == reference.npdf:
+        pass
+    elif reference.npdf == 1:
+        pass
+    else:
+        raise ValueError("`reference` should contain either 1 distribution or the same number of distributions as `estimate`.")

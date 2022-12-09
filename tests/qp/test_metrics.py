@@ -10,7 +10,7 @@ import numpy as np
 from qp import test_funcs
 from qp.metrics.metrics import * 
 from qp.utils import epsilon
-
+from scipy import stats
 
 class MetricTestCase(unittest.TestCase):
     """ Tests for the metrics """
@@ -281,8 +281,13 @@ class MetricTestCase(unittest.TestCase):
 
     def test_calculate_anderson_darling(self):
         """Bare minimum test to ensure that the data is flowing correctly"""
-        output = qp.metrics.calculate_anderson_darling(self.ens_n, 'norm')
+        output = qp.metrics.calculate_anderson_darling(self.ens_n, 'norm', _random_state=9999)
         self.assertTrue(len(output) == self.ens_n.npdf)
+
+    def test_calculate_anderson_darling_1dist(self):
+        """Bare minimum test to ensure that the data is flowing correctly"""
+        output = qp.metrics.calculate_anderson_darling(self.ens_n[0], 'norm', _random_state=9999)
+        print(output)
 
     def test_check_ensembles_are_same_size(self):
         """Test that no Value Error is raised when the ensembles are the same size"""
@@ -312,6 +317,43 @@ class MetricTestCase(unittest.TestCase):
             qp.metrics._check_ensemble_is_not_nested(self.ens_n_multi)  #pylint: disable=W0212
 
         error_msg = "Each element in the input Ensemble should be a single distribution."
+        self.assertTrue(error_msg in str(context.exception))
+
+    def test_check_ensembles_contain_correct_number_of_distributions_base(self):
+        """Test base case of two ensembles the same size"""
+        try:
+            qp.metrics._check_ensembles_contain_correct_number_of_distributions(estimate=self.ens_n, reference=self.ens_n)
+        except ValueError:
+            self.fail("Unexpectedly raised ValueError")
+
+    def test_check_ensembles_contain_correct_number_of_distributions_both_size_1(self):
+        """Test base case of two ensembles with 1 distribution each"""
+        try:
+            qp.metrics._check_ensembles_contain_correct_number_of_distributions(estimate=self.ens_n[0], reference=self.ens_n[1])
+        except ValueError:
+            self.fail("Unexpected raised ValueError")
+
+    def test_check_ensembles_contain_correct_number_of_distributions_reference_has_1(self):
+        """Test case of reference ensemble has 1 distribution, estimate has N"""
+        try:
+            qp.metrics._check_ensembles_contain_correct_number_of_distributions(estimate=self.ens_n, reference=self.ens_n[1])
+        except ValueError:
+            self.fail("Unexpected raised ValueError")
+
+    def test_check_ensembles_contain_correct_number_of_distributions_with_different_sizes(self):
+        """Test the case of reference with M distributions, and estimate with N distributions"""
+        with self.assertRaises(ValueError) as context:
+            qp.metrics._check_ensembles_contain_correct_number_of_distributions(estimate=self.ens_n, reference=self.ens_n_plus_one)
+
+        error_msg = "`reference` should contain either"
+        self.assertTrue(error_msg in str(context.exception))
+
+    def test_calculate_goodness_of_fit_with_unsupported_fit_metric(self):
+        """Test that a KeyError is raised if an unsupported fit_metric is requested"""
+        with self.assertRaises(KeyError) as context:
+            qp.metrics.calculate_goodness_of_fit(self.ens_n, self.ens_n, 'xx')
+
+        error_msg = "`fit_metric` should be one of"
         self.assertTrue(error_msg in str(context.exception))
 
 if __name__ == '__main__':
