@@ -12,7 +12,7 @@ from qp.conversion_funcs import extract_quantiles
 from qp.plotting import get_axes_and_xlims, plot_pdf_quantiles_on_axes
 from qp.utils import evaluate_hist_multi_x_multi_y,\
      interpolate_multi_x_y, interpolate_x_multi_y,\
-     reshape_to_pdf_size
+     interpolate_multi_x_multi_y, reshape_to_pdf_size
 from qp.test_data import QUANTS, QLOCS, TEST_XVALS
 from qp.factory import add_class
 
@@ -111,17 +111,19 @@ class quant_gen(Pdf_rows_gen):
             raise ValueError("Number of locations (%i) != number of quantile values (%i)" % (self._nquants, locs_2d.shape[-1]))
         self._locs = locs_2d
         self._cdf_derivs = None
-        self._cdf_2nd_derivs = None
+        self._cdf_locs = None
         self._addmetadata('quants', self._quants)
         self._addobjdata('locs', self._locs)
 
 
     def _compute_derivs(self):
-        self._cdf_derivs = np.zeros(self.locs.shape)
-        self._cdf_2nd_derivs = np.zeros(self.locs.shape)
+        # calculate the first derivative using a forward difference.
+        self._cdf_derivs = (self._quants[1:] - self._quants[0:-1])/(self._locs[:,1:] - self._locs[:,0:-1])
 
-        self._cdf_derivs[:,0:-1] = (self._quants[1:] - self._quants[0:-1])/(self._locs[:,1:] - self._locs[:,0:-1])
-        self._cdf_2nd_derivs[:,0:-1] = self._cdf_derivs[:,1:]  - self._cdf_derivs[:,0:-1]
+        # Offset the locations by -(l_[i+1] - l_i) / 2. So that the cdf_deriv can be correctly located.
+        # This offset is necessary to correctly place the _cdf_derivs because we are using a
+        # forward difference to calculate the numerical derivative.
+        self._cdf_locs = self._locs[:,1:]-np.diff(self._locs)/2
 
 
     @property
@@ -138,7 +140,8 @@ class quant_gen(Pdf_rows_gen):
         # pylint: disable=arguments-differ
         if self._cdf_derivs is None:  # pragma: no cover
             self._compute_derivs()
-        return evaluate_hist_multi_x_multi_y(x, row, self._locs, self._cdf_derivs, self._cdf_2nd_derivs).ravel()
+        return interpolate_multi_x_multi_y(x, row, self._cdf_locs, self._cdf_derivs,
+            bounds_error=False, fill_value=(0.,0.), kind='linear').ravel()
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
