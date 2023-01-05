@@ -269,26 +269,6 @@ class MetricTestCase(unittest.TestCase):
         output = qp.metrics.calculate_outlier_rate(self.ens_n)
         self.assertTrue(len(output) == 11)
 
-    def test_calculate_kolmogorov_smirnov(self):
-        """Bare minimum test to ensure that the data is flowing correctly"""
-        output = qp.metrics.calculate_kolmogorov_smirnov(self.ens_n, self.ens_n)
-        self.assertTrue(len(output) == self.ens_n.npdf)
-
-    def test_calculate_cramer_von_mises(self):
-        """Bare minimum test to ensure that the data is flowing correctly"""
-        output = qp.metrics.calculate_cramer_von_mises(self.ens_n, self.ens_n)
-        self.assertTrue(len(output) == self.ens_n.npdf)
-
-    def test_calculate_anderson_darling(self):
-        """Bare minimum test to ensure that the data is flowing correctly"""
-        output = qp.metrics.calculate_anderson_darling(self.ens_n, 'norm', _random_state=9999)
-        self.assertTrue(len(output) == self.ens_n.npdf)
-
-    def test_calculate_anderson_darling_1dist(self):
-        """Bare minimum test to ensure that the data is flowing correctly"""
-        output = qp.metrics.calculate_anderson_darling(self.ens_n[0], 'norm', _random_state=9999)
-        print(output)
-
     def test_check_ensembles_are_same_size(self):
         """Test that no Value Error is raised when the ensembles are the same size"""
         try:

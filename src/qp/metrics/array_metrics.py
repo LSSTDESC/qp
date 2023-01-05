@@ -7,24 +7,6 @@ from scipy.optimize import minimize_scalar
 
 from qp.utils import safelog
 
-def quick_anderson_darling(p_random_variables, scipy_distribution='norm'):
-    """Calculate the Anderson-Darling statistic using scipy.stats.anderson for one CDF vs a scipy distribution.
-    For more details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.anderson.html
-
-    Parameters
-    ----------
-    p_random_variables : np.array
-        An array of random variables from the given distribution
-    scipy_distribution : {'norm', 'expon', 'logistic', 'gumbel', 'gumbel_l', 'gumbel_r', 'extreme1'}, optional
-        The type of distribution to test against.
-
-    Returns
-    -------
-    [Result objects]
-        A array of objects with attributes ``statistic``, ``critical_values``, and ``significance_level``.
-    """
-    return stats.anderson(p_random_variables, dist=scipy_distribution)
-
 def quick_anderson_ksamp(p_random_variables, q_random_variables, **kwargs):
     """Calculate the k-sample Anderson-Darling statistic using scipy.stats.anderson_ksamp for two CDFs. 
     For more details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.anderson_ksamp.html
@@ -42,27 +24,6 @@ def quick_anderson_ksamp(p_random_variables, q_random_variables, **kwargs):
         A array of objects with attributes ``statistic``, ``critical_values``, and ``significance_level``.
     """
     return stats.anderson_ksamp([p_random_variables, q_random_variables], **kwargs)
-
-def quick_cramer_von_mises(p_random_variables, q_cdf, **kwargs):
-    """Calculate the Cramer von Mises statistic using scipy.stats.cramervonmises for each pair of distributions
-    in two input Ensembles. For more details see:
-    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.cramervonmises.html
-
-
-    Parameters
-    ----------
-    p_random_variables : np.array
-        An array of random variables from the given distribution
-    q_cdf : callable
-        A function to calculate the CDF of a given distribution
-
-    Returns
-    -------
-    [Result objects]
-        A array of objects with attributes ``statistic`` and ``pvalue``.
-    """
-
-    return stats.cramervonmises(p_random_variables, q_cdf, **kwargs)
 
 def quick_kld(p_eval, q_eval, dx=0.01):
     """
@@ -89,28 +50,6 @@ def quick_kld(p_eval, q_eval, dx=0.01):
     # Calculate the KLD from q to p
     Dpq = dx * np.sum(p_eval * logquotient, axis=-1)
     return Dpq
-
-def quick_kolmogorov_smirnov(p_rvs, q_cdf, num_samples=100, **kwargs):
-    """Calculate the Kolmogorov-Smirnov statistic using scipy.stats.kstest for each pair of distributions
-    in two input Ensembles. For more details see:
-    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kstest.html 
-
-    Parameters
-    ----------
-    p_rvs : callable
-        A function to generate random variables for the given distribution
-    q_cdf : callable
-        A function to calculate the CDF of a given distribution
-    num_samples : int, optional
-        Number of samples to use in the calculation
-
-    Returns
-    -------
-    [KstestResult]
-        A array of KstestResult objects with attributes ``statistic`` and ``pvalue``.
-    """
-
-    return stats.kstest(p_rvs, q_cdf, N=num_samples, **kwargs)
 
 def quick_moment(p_eval, grid_to_N, dx):
     """
