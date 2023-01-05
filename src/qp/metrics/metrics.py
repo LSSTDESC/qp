@@ -262,7 +262,7 @@ def calculate_anderson_darling(p, scipy_distribution='norm', num_samples=100, _r
     -------
     logger.warning
     """
-    logging.warning("This function is deprecated, please use `calculate_goodness_of_fit`")
+    logging.warning("This function is deprecated, please use `calculate_goodness_of_fit`") # pragma: no cover
 
 @deprecated(
     reason="""
@@ -278,7 +278,7 @@ def calculate_cramer_von_mises(p, q, num_samples=100, _random_state=None, **kwar
     -------
     logger.warning
     """
-    logging.warning("This function is deprecated, please use `calculate_goodness_of_fit`")
+    logging.warning("This function is deprecated, please use `calculate_goodness_of_fit`") # pragma: no cover
 
 @deprecated(
     reason="""
@@ -294,7 +294,7 @@ def calculate_kolmogorov_smirnov(p, q, num_samples=100, _random_state=None):
     -------
     logger.warning
     """
-    logging.warning("This function is deprecated, please use `calculate_goodness_of_fit`")
+    logging.warning("This function is deprecated, please use `calculate_goodness_of_fit`") # pragma: no cover
 
 def calculate_outlier_rate(p, lower_limit=0.0001, upper_limit=0.9999):
     """Fraction of outliers in each distribution
