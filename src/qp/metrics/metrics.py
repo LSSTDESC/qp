@@ -255,40 +255,14 @@ def calculate_brier(p, truth, limits, dx=0.01):
     """,
     category=DeprecationWarning)
 def calculate_anderson_darling(p, scipy_distribution='norm', num_samples=100, _random_state=None):
-    """Calculate the Anderson-Darling statistic using scipy.stats.anderson for each distribution
-    in an Ensemble. For more details see:
-    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.anderson.html
-
-    Parameters
-    ----------
-    p : qp.Ensemble
-        An Ensemble of distributions to be tested
-    scipy_distribution : {'norm', 'expon', 'logistic', 'gumbel', 'gumbel_l', 'gumbel_r', 'extreme1'}, optional
-        The type of distribution to test against.
-    num_samples : int, optional
-        Number of random variable samples to generate for each distribution in the calculation
-    _random_state : int, optional
-        For testing purposes only, this is used to specify a reproducible set of random variables.
+    """This function is deprecated and will be completely removed in a later version.
+    Please use `calculate_goodness_of_fit` instead.
 
     Returns
     -------
-    [Result objects]
-        A array of objects with attributes ``statistic``, ``critical_values``, and ``significance_level``.
+    logger.warning
     """
-
-    try:
-        _check_ensemble_is_not_nested(p)
-    except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
-        logging.warning("Each element in the ensemble `p` must be a single distribution.")
-
-   # Pass an array of random variables and the name of a scipy distribution to the quick anderson darling function
-    p_rvs = p.rvs(size=num_samples, random_state=_random_state)
-    output = [
-            array_metrics.quick_anderson_darling(np.squeeze(p_rvs_i), scipy_distribution=scipy_distribution)
-            for p_rvs_i in p_rvs
-        ]
-
-    return output
+    logging.warning("This function is deprecated, please use `calculate_goodness_of_fit`") # pragma: no cover
 
 @deprecated(
     reason="""
@@ -297,54 +271,14 @@ def calculate_anderson_darling(p, scipy_distribution='norm', num_samples=100, _r
     """,
     category=DeprecationWarning)
 def calculate_cramer_von_mises(p, q, num_samples=100, _random_state=None, **kwargs):
-    """Calculate the Cramer von Mises statistic using scipy.stats.cramervonmises for each pair of distributions
-    in two input Ensembles. For more details see:
-    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.cramervonmises.html
-
-    Parameters
-    ----------
-    p : qp.Ensemble
-        An Ensemble of distributions to be tested
-    q : qp.Ensemble
-        A second Ensemble of distributions each with a defined ``cdf`` method, to be tested against
-    num_samples : int, optional
-        Number of random variable samples to generate for the calculation
-    _random_state : int, optional
-        For testing purposes only, this is used to specify a reproducible set of random variables.
+    """This function is deprecated and will be completely removed in a later version.
+    Please use `calculate_goodness_of_fit` instead.
 
     Returns
     -------
-    [Result objects]
-        A array of objects with attributes ``statistic`` and ``pvalue``.
+    logger.warning
     """
-
-    try:
-        _check_ensembles_are_same_size(p, q)
-    except ValueError:  #pragma: no cover - unittest coverage for _check_ensembles_are_same_size is complete
-        logging.warning("Input ensembles should have the same number of distributions")
-
-    try:
-        _check_ensemble_is_not_nested(p)
-    except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
-        logging.warning("Each element in the ensemble `p` must be a single distribution.")
-
-    try:
-        _check_ensemble_is_not_nested(q)
-    except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
-        logging.warning("Each element in the ensemble `q` must be a single distribution.")
-
-    # Pass an array of random variables and a cdf callable for each pair of distributions to the quick cvm statistic function
-    p_rvs = p.rvs(size=num_samples, random_state=_random_state)
-    output = [
-            array_metrics.quick_cramer_von_mises(
-                np.squeeze(p_rvs_i),
-                q_dist.cdf,
-                **kwargs
-            )
-            for p_rvs_i, q_dist in zip(p_rvs, q)
-        ]
-
-    return output
+    logging.warning("This function is deprecated, please use `calculate_goodness_of_fit`") # pragma: no cover
 
 @deprecated(
     reason="""
@@ -353,51 +287,14 @@ def calculate_cramer_von_mises(p, q, num_samples=100, _random_state=None, **kwar
     """,
     category=DeprecationWarning)
 def calculate_kolmogorov_smirnov(p, q, num_samples=100, _random_state=None):
-    """Calculate the Kolmogorov-Smirnov statistic using scipy.stats.kstest for each pair of distributions
-    in two input Ensembles. For more details see:
-    https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kstest.html 
-
-    Parameters
-    ----------
-    p : qp.Ensemble
-        An Ensemble of distributions to be tested
-    q : qp.Ensemble
-        A second Ensemble of distributions to be tested
-    num_samples : int, optional
-        Number of samples to use in the calculation
+    """This function is deprecated and will be completely removed in a later version.
+    Please use `calculate_goodness_of_fit` instead.
 
     Returns
     -------
-    [KstestResult]
-        A array of KstestResult objects with attributes ``statistic`` and ``pvalue``.
+    logger.warning
     """
-
-    try:
-        _check_ensembles_are_same_size(p, q)
-    except ValueError:  #pragma: no cover - unittest coverage for _check_ensembles_are_same_size is complete
-        logging.warning("Input ensembles should have the same number of distributions")
-
-    try:
-        _check_ensemble_is_not_nested(p)
-    except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
-        logging.warning("Each element in the ensemble `p` must be a single distribution.")
-
-    try:
-        _check_ensemble_is_not_nested(q)
-    except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
-        logging.warning("Each element in the ensemble `q` must be a single distribution.")
-
-    # Pass the rvs and cdf functions for each pair of distributions to the quick ks statistic function
-    p_rvs = p.rvs(size=num_samples, random_state=_random_state)
-    output = [
-            array_metrics.quick_kolmogorov_smirnov(
-                np.squeeze(p_rvs_i),
-                q_dist.cdf
-            )
-            for p_rvs_i, q_dist in zip(p_rvs, q)
-        ]
-
-    return output
+    logging.warning("This function is deprecated, please use `calculate_goodness_of_fit`") # pragma: no cover
 
 def calculate_outlier_rate(p, lower_limit=0.0001, upper_limit=0.9999):
     """Fraction of outliers in each distribution

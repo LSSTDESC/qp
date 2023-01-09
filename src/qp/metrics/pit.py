@@ -3,7 +3,7 @@ import numpy as np
 from scipy import stats
 import qp
 from qp.metrics.metrics import calculate_outlier_rate
-from qp.metrics.array_metrics import quick_anderson_ksamp, quick_cramer_von_mises, quick_kolmogorov_smirnov
+from qp.metrics.array_metrics import quick_anderson_ksamp
 
 DEFAULT_QUANTS = np.linspace(0, 1, 100)
 
@@ -133,7 +133,7 @@ class PIT():
             A array of objects with attributes `statistic` and `pvalue`
             For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.cramervonmises.html
         """
-        return quick_cramer_von_mises(self._pit_samps, stats.uniform.cdf)
+        return stats.cramervonmises(self._pit_samps, stats.uniform.cdf)
 
     def evaluate_PIT_KS(self):
         """Calculate the Kolmogorov-Smirnov statistic using scipy.stats.kstest. For more details see:
@@ -145,7 +145,7 @@ class PIT():
             A array of objects with attributes `statistic` and `pvalue`.
             For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kstest.html
         """
-        return quick_kolmogorov_smirnov(self._pit_samps, stats.uniform.cdf)
+        return stats.kstest(self._pit_samps, stats.uniform.cdf)
 
     def evaluate_PIT_outlier_rate(self, pit_min=0.0001, pit_max=0.9999):
         """Compute fraction of PIT outliers by evaluating the CDF of the distribution in the PIT Ensemble

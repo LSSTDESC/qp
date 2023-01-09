@@ -205,6 +205,8 @@ def extract_mixmod_fit_samples(in_dist, **kwargs):
         Number of components in mixture model to use
     nsamples : `int`
         Number of samples to generate
+    random_state : `int`
+        Used to reproducibly generate random variate from in_dist
 
     Returns
     -------
@@ -213,8 +215,8 @@ def extract_mixmod_fit_samples(in_dist, **kwargs):
     """
     n_comps = kwargs.pop('ncomps', 3)
     n_sample = kwargs.pop('nsamples', 1000)
-    #samples = in_dist.rvs(size=(in_dist.npdf, n_sample))
-    samples = in_dist.rvs(size=n_sample)
+    random_state = kwargs.pop('random_state', None)
+    samples = in_dist.rvs(size=n_sample, random_state=random_state)
     def mixmod_helper(samps):
         estimator = mixture.GaussianMixture(n_components=n_comps)
         estimator.fit(samps.reshape(-1, 1))
