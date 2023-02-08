@@ -217,6 +217,7 @@ class quant_gen(Pdf_rows_gen):
         dct = super(quant_gen, self)._updated_ctor_param()
         dct['quants'] = self._quants
         dct['locs'] = self._locs
+        dct['pdf_constructor_name'] = self._pdf_constructor_name
         return dct
 
     @classmethod
