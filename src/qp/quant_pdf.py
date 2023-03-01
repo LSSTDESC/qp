@@ -110,8 +110,8 @@ class quant_gen(Pdf_rows_gen):
         self._xmax = np.max(locs)
 
         locs_2d = reshape_to_pdf_size(locs, -1)
-        check_input = kwargs.pop('check_input', True)
-        if check_input:
+        self._check_input = kwargs.pop('check_input', True)
+        if self._check_input:
             quants, locs_2d = pad_quantiles(quants, locs_2d)
 
         self._quants = np.asarray(quants)
@@ -129,6 +129,7 @@ class quant_gen(Pdf_rows_gen):
 
         self._addmetadata('quants', self._quants)
         self._addmetadata('pdf_constructor_name', self._pdf_constructor_name)
+        self._addmetadata('check_input', self._check_input)
         self._addobjdata('locs', self._locs)
 
     @property
@@ -218,6 +219,7 @@ class quant_gen(Pdf_rows_gen):
         dct['quants'] = self._quants
         dct['locs'] = self._locs
         dct['pdf_constructor_name'] = self._pdf_constructor_name
+        dct['check_input'] = self._check_input
         return dct
 
     @classmethod
