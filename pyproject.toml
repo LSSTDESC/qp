@@ -70,3 +70,21 @@ addopts = [
     "--cov=qp",
     "--cov-report=html"
 ]
+
+[tool.pylint]
+disable = [
+    "abstract-method",
+    "invalid-name",
+    "too-many-statements",
+    "missing-module-docstring",
+    "missing-class-docstring",
+    "missing-function-docstring",
+    "too-few-public-methods",
+    "duplicate-code",
+    "use-dict-literal",
+    "consider-using-f-string",
+]
+max-line-length = 150
+max-locals = 50
+max-branches = 25
+max-public-methods = 50
