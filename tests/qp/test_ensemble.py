@@ -189,6 +189,16 @@ class EnsembleTestCase(unittest.TestCase):
         assert isinstance(ens_i.gen_obj, qp.interp_gen)
         self._run_ensemble_funcs(ens_i, cls_test_data['test_xvals'])
 
+    def test_packed_interp(self):
+        """ Run the ensemble tests on an ensemble of qp.packed_interp distributions """
+        key = 'lin_packed_interp'
+        qp.packed_interp_gen.make_test_data()
+        cls_test_data = qp.packed_interp_gen.test_data[key]
+        ens_i = build_ensemble(cls_test_data)
+        assert isinstance(ens_i.gen_obj, qp.packed_interp_gen)
+        self._run_ensemble_funcs(ens_i, cls_test_data['test_xvals'])
+        assert np.isfinite(ens_i.dist.yvals).all()
+
     def test_iterator(self):
         """ Test the iterated read """
         QP_DIR = os.path.abspath(os.path.dirname(qp.__file__))
