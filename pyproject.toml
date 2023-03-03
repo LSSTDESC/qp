@@ -72,6 +72,9 @@ addopts = [
 ]
 
 [tool.pylint]
+addopts = [
+    "ignored-modules = scipy.special"
+]
 disable = [
     "abstract-method",
     "invalid-name",
