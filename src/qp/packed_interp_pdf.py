@@ -254,7 +254,8 @@ class packed_interp_gen(Pdf_rows_gen):
                 convert_data=dict(xvals=XBINS, packing_type=PackingType.log_from_rowmax, log_floor=-3.), test_xvals=TEST_XVALS
             ),
         )
-                             
+
+
 packed_interp = packed_interp_gen.create
 
 add_class(packed_interp_gen)
