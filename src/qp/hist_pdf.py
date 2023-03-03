@@ -78,7 +78,7 @@ class hist_gen(Pdf_rows_gen):
         self._hcdfs = None
         # Set support
         kwargs['shape'] = pdfs.shape[:-1]
-        super(hist_gen, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._addmetadata('bins', self._hbins)
         self._addobjdata('pdfs', self._hpdfs)
 
@@ -137,7 +137,7 @@ class hist_gen(Pdf_rows_gen):
         """
         Set the bins as additional constructor argument
         """
-        dct = super(hist_gen, self)._updated_ctor_param()
+        dct = super()._updated_ctor_param()
         dct['bins'] = self._hbins
         dct['pdfs'] = self._hpdfs
         return dct

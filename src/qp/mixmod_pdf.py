@@ -59,7 +59,7 @@ class mixmod_gen(Pdf_rows_gen):
         self._weights = reshape_to_pdf_size(weights, -1)
         kwargs['shape'] = means.shape[:-1]
         self._ncomps = means.shape[-1]
-        super(mixmod_gen, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._addobjdata('weights', self._weights)
         self._addobjdata('stds', self._stds)
         self._addobjdata('means', self._means)
@@ -124,7 +124,7 @@ class mixmod_gen(Pdf_rows_gen):
         """
         Set the bins as additional constructor argument
         """
-        dct = super(mixmod_gen, self)._updated_ctor_param()
+        dct = super()._updated_ctor_param()
         dct['means'] = self._means
         dct['stds'] = self._stds
         dct['weights'] = self._weights

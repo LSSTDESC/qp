@@ -113,10 +113,9 @@ def pack_array(packing_type, input_array, **kwargs):
 
     if packing_type == PackingType.linear_from_rowmax:
         return linear_pack_from_rowmax(input_array)
-    elif packing_type == PackingType.log_from_rowmax:
+    if packing_type == PackingType.log_from_rowmax:
         return log_pack_from_rowmax(input_array, kwargs.get('log_floor', -3))
-    else:  #pragma: no cover
-        raise ValueError(f"Packing for packing type {packing_type} is not implemetned")
+    raise ValueError(f"Packing for packing type {packing_type} is not implemetned")  # pragma: no cover
 
 
 def unpack_array(packing_type, packed_array, **kwargs):
@@ -133,7 +132,6 @@ def unpack_array(packing_type, packed_array, **kwargs):
     """
     if packing_type == PackingType.linear_from_rowmax:
         return linear_unpack_from_rowmax(packed_array, row_max=kwargs.get('row_max'))
-    elif packing_type == PackingType.log_from_rowmax:
+    if packing_type == PackingType.log_from_rowmax:
         return log_unpack_from_rowmax(packed_array, row_max=kwargs.get('row_max'), log_floor=kwargs.get('log_floor', -3))
-    else:  #pragma: no cover
-        raise ValueError(f"Unpacking for packing type {packing_type} is not implemetned")
+    raise ValueError(f"Unpacking for packing type {packing_type} is not implemetned")  # pragma: no cover

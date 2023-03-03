@@ -1,10 +1,10 @@
 """Utility functions for the qp package"""
 
+import sys
 import numpy as np
 
 from scipy import stats as sps
 from scipy.interpolate import interp1d
-import sys
 
 epsilon = sys.float_info.epsilon
 infty = sys.float_info.max * epsilon

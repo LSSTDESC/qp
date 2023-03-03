@@ -84,7 +84,7 @@ class interp_gen(Pdf_rows_gen):
         else:  # pragma: no cover
             self._ycumul = None
 
-        super(interp_gen, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._addmetadata('xvals', self._xvals)
         self._addobjdata('yvals', self._yvals)
 
@@ -144,7 +144,7 @@ class interp_gen(Pdf_rows_gen):
         """
         Set the bins as additional constructor argument
         """
-        dct = super(interp_gen, self)._updated_ctor_param()
+        dct = super()._updated_ctor_param()
         dct['xvals'] = self._xvals
         dct['yvals'] = self._yvals
         return dct
@@ -254,7 +254,7 @@ class interp_irregular_gen(Pdf_rows_gen):
         if check_input:
             self._yvals = normalize_interp1d(self._xvals, self._yvals)
         self._ycumul = None
-        super(interp_irregular_gen, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._addobjdata('xvals', self._xvals)
         self._addobjdata('yvals', self._yvals)
 
@@ -300,7 +300,7 @@ class interp_irregular_gen(Pdf_rows_gen):
         """
         Set the bins as additional constructor argument
         """
-        dct = super(interp_irregular_gen, self)._updated_ctor_param()
+        dct = super()._updated_ctor_param()
         dct['xvals'] = self._xvals
         dct['yvals'] = self._yvals
         return dct

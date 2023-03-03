@@ -40,7 +40,8 @@ def normalize_spline(xvals, yvals, limits, **kwargs):
     """
 
     def row_integral(irow):
-        spl = lambda xv : splev(xv, splrep(xvals[irow], yvals[irow]))
+        def spl(xv):
+            return splev(xv, splrep(xvals[irow], yvals[irow]))
         return quad(spl, limits[0], limits[1], **kwargs)[0]
 
     vv = np.vectorize(row_integral)
@@ -144,7 +145,7 @@ class spline_gen(Pdf_rows_gen):
         self._splx = reshape_to_pdf_size(splx, -1)
         self._sply = reshape_to_pdf_size(sply, -1)
         self._spln = reshape_to_pdf_size(spln, -1)
-        super(spline_gen, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._addobjdata('splx', self._splx)
         self._addobjdata('sply', self._sply)
         self._addobjdata('spln', self._spln)
@@ -262,7 +263,7 @@ class spline_gen(Pdf_rows_gen):
         """
         Set the bins as additional constructor argument
         """
-        dct = super(spline_gen, self)._updated_ctor_param()
+        dct = super()._updated_ctor_param()
         dct['splx'] = self._splx
         dct['sply'] = self._sply
         dct['spln'] = self._spln

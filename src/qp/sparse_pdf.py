@@ -51,7 +51,7 @@ class sparse_gen(interp_gen):
         y /= norms
         kwargs.setdefault('xvals', x)
         kwargs.setdefault('yvals', y.T)
-        super(sparse_gen, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self._clearobjdata()
         self._addmetadata('xvals', self._xvals)
@@ -64,7 +64,7 @@ class sparse_gen(interp_gen):
         """
         Add the two constructor's arguments for the Factory
         """
-        dct = super(sparse_gen, self)._updated_ctor_param()
+        dct = super()._updated_ctor_param()
         dct['sparse_indices'] = self.sparse_indices
         dct['xvals'] = self._xvals
         dct['mu'] = self.mu
@@ -77,7 +77,7 @@ class sparse_gen(interp_gen):
         if 'dims' not in kwargs:
             raise ValueError("required argument dims not in kwargs") #pragma: no cover
         nsp = np.array(kwargs['dims']).flatten()[4]
-        nmu = np.array(kwargs['dims']).flatten()[0]
+        # nmu = np.array(kwargs['dims']).flatten()[0]
         return dict(sparse_indices=((npdf, nsp), 'i8'))
 
     @classmethod

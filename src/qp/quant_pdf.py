@@ -125,7 +125,7 @@ class quant_gen(Pdf_rows_gen):
         self._instantiate_pdf_constructor()
 
         kwargs['shape'] = locs.shape[:-1]
-        super(quant_gen, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self._addmetadata('quants', self._quants)
         self._addmetadata('pdf_constructor_name', self._pdf_constructor_name)
@@ -169,7 +169,7 @@ class quant_gen(Pdf_rows_gen):
             raise ValueError(f"Unknown interpolator provided: '{value}'. Allowed interpolators are {list(PDF_CONSTRUCTORS.keys())}")
 
         if value is self._pdf_constructor_name:
-            logging.warning(f"Already using interpolator: '{value}'.")
+            logging.warning("Already using interpolator: '%s'.", value)
             return
 
         self._pdf_constructor_name = value
@@ -193,12 +193,13 @@ class quant_gen(Pdf_rows_gen):
             self._quants, self._locs)
 
 
-    def _pdf(self, x, row):
+    def _pdf(self, x, *args):
         # We're not requiring that the output be normalized!
         # `util.normalize_interp1d` addresses _one_ of the ways that a reconstruction
         # can be bad, but not all. It should be replaced with a more comprehensive
         # normalization function.
         # See qp issue #147
+        row = args[0]
         return self._pdf_constructor.construct_pdf(x, row)
 
     def _cdf(self, x, row):
@@ -215,7 +216,7 @@ class quant_gen(Pdf_rows_gen):
         """
         Set the quants and locs as additional constructor arguments
         """
-        dct = super(quant_gen, self)._updated_ctor_param()
+        dct = super()._updated_ctor_param()
         dct['quants'] = self._quants
         dct['locs'] = self._locs
         dct['pdf_constructor_name'] = self._pdf_constructor_name

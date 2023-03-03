@@ -29,7 +29,7 @@ def _compute_dplus(cdfvals):  # adapted from _stats_py before gh-17062
 
 def _compute_dminus(cdfvals, axis=-1):
     n = cdfvals.shape[-1]
-    return (cdfvals - np.arange(0.0, n)/n).max(axis=-1)
+    return (cdfvals - np.arange(0.0, n)/n).max(axis=axis)
 
 def _cramer_von_mises(dist, data):
     x = np.sort(data, axis=-1)

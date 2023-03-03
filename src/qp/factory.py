@@ -25,7 +25,7 @@ class Factory(OrderedDict):
     """
     def __init__(self):
         """C'tor"""
-        super(Factory, self).__init__()
+        super().__init__()
         self._load_scipy_classes()
 
     @staticmethod
@@ -177,16 +177,16 @@ class Factory(OrderedDict):
         extension = os.path.splitext(filename)[1]
         if extension not in ['.hdf5']:  #pragma: no cover
             raise TypeError("Can only use qp.iterator on hdf5 files")
-        
+
         metadata = io.readHdf5ToDict(filename, 'meta')
         pdf_name = metadata.pop('pdf_name')[0].decode()
         pdf_version = metadata.pop('pdf_version')[0]
         if pdf_name not in self: #pragma: no cover
             raise KeyError("Class nameed %s is not in factory" % pdf_name)
         the_class = self[pdf_name]
-        reader_convert = the_class.reader_method(pdf_version)
+        # reader_convert = the_class.reader_method(pdf_version)
         ctor_func = the_class.creation_method(None)
-        
+
         f, infp = io.readHdf5Group(filename, 'data')
         try:
             ancil_f, ancil_infp = io.readHdf5Group(filename, 'data')
@@ -206,7 +206,7 @@ class Factory(OrderedDict):
         infp.close()
         if ancil_infp is not None:
             ancil_infp.close()
-        
+
     def convert(self, in_dist, class_name, **kwds):
         """Read an ensemble to a different repersenation
 

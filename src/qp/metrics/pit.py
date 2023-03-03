@@ -47,7 +47,8 @@ class PIT():
 
         n_pit = np.min([len(self._pit_samps), len(eval_grid)])
         if n_pit < len(eval_grid):
-            logging.warning('Number of pit samples is smaller than the evaluation grid size. Will create a new evaluation grid with size = number of pit samples')
+            logging.warning('Number of pit samples is smaller than the evaluation grid size. '
+                            'Will create a new evaluation grid with size = number of pit samples')
             eval_grid = np.linspace(0, 1, n_pit)
 
         data_quants = np.quantile(self._pit_samps, eval_grid)

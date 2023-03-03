@@ -6,12 +6,10 @@ import numpy as np
 from scipy.stats import rv_continuous
 
 from qp.pdf_gen import Pdf_rows_gen
-from qp.conversion_funcs import extract_vals_at_x, extract_xy_vals, extract_xy_sparse
 from qp.plotting import get_axes_and_xlims, plot_pdf_on_axes
-from qp.utils import normalize_interp1d, interpolate_multi_x_y,\
-    interpolate_multi_x_multi_y, interpolate_x_multi_y,\
-    reshape_to_pdf_size
-from qp.test_data import XBINS, XARRAY, YARRAY, TEST_XVALS
+from qp.utils import interpolate_multi_x_y,\
+    interpolate_x_multi_y, reshape_to_pdf_size
+from qp.test_data import XBINS, YARRAY, TEST_XVALS
 from qp.factory import add_class
 from qp.packing_utils import PackingType, pack_array, unpack_array
 
@@ -62,7 +60,7 @@ class packed_interp_gen(Pdf_rows_gen):
 
     _support_mask = rv_continuous._support_mask
 
-    def __init__(self, xvals, ypacked, ymax, packing_type=PackingType.linear_from_rowmax, log_floor=-3., *args, **kwargs):
+    def __init__(self, xvals, ypacked, ymax, *args, packing_type=PackingType.linear_from_rowmax, log_floor=-3., **kwargs):
         """
         Create a new distribution by interpolating the given values
 
@@ -102,13 +100,13 @@ class packed_interp_gen(Pdf_rows_gen):
         else:  # pragma: no cover
             self._ycumul = None
 
-        super(packed_interp_gen, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._addmetadata('xvals', self._xvals)
         self._addmetadata('packing_type', self._packing_type)
         self._addmetadata('log_floor', self._log_floor)
         self._addobjdata('ypacked', self._ypacked)
         self._addobjdata('ymax', self._ymax)
-        
+
     def _compute_ycumul(self):
         if self._yvals is None:
             self._unpack()
@@ -146,7 +144,7 @@ class packed_interp_gen(Pdf_rows_gen):
     def ymax(self):
         """Returns the max for each row"""
         return self._ymax
-    
+
     @property
     def yvals(self):
         """Return the y-valus used to do the interpolation"""
@@ -192,7 +190,7 @@ class packed_interp_gen(Pdf_rows_gen):
         """
         Set the bins as additional constructor argument
         """
-        dct = super(packed_interp_gen, self)._updated_ctor_param()
+        dct = super()._updated_ctor_param()
         dct['xvals'] = self._xvals
         dct['ypacked'] = self._ypacked
         dct['ymax'] = self._ymax
@@ -259,4 +257,3 @@ class packed_interp_gen(Pdf_rows_gen):
 packed_interp = packed_interp_gen.create
 
 add_class(packed_interp_gen)
-

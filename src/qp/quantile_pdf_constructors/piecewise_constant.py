@@ -73,7 +73,8 @@ class PiecewiseConstant(AbstractQuantilePdfConstructor):
         if row is None:
             row = np.asarray([0])
 
-        # ! The use of `.ravel` is legacy code. The original intent is unclear, since it breaks the paradigm of maintaining the output as a List[List[float]].
+        # ! The use of `.ravel` is legacy code. The original intent is unclear,
+        # since it breaks the paradigm of maintaining the output as a List[List[float]].
         return evaluate_hist_multi_x_multi_y(grid, row, self._adjusted_locations,
             self._cdf_derivatives, self._cdf_2nd_derivatives).ravel()
 

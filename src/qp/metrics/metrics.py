@@ -1,8 +1,8 @@
 """This module implements some performance metrics for distribution parameterization"""
-from deprecated import deprecated
 import logging
 from collections import namedtuple
 from functools import partial
+from deprecated import deprecated
 
 import numpy as np
 
@@ -187,7 +187,8 @@ def calculate_rbpe(p, limits=(np.inf, np.inf)):
     for n in range(0, p.npdf):
 
         if p[n].npdf != 1:
-            raise ValueError('quick_rbpe only handles Ensembles with a single PDF, for ensembles with more than one PDF, use the qp.metrics.risk_based_point_estimate function.')
+            raise ValueError('quick_rbpe only handles Ensembles with a single PDF '
+                             'for ensembles with more than one PDF, use the qp.metrics.risk_based_point_estimate function.')
 
         this_dist_pdf_at_z = partial(evaluate_pdf_at_z, dist=p[n])
         integration_bounds = (p[n].ppf(0.01)[0][0], p[n].ppf(0.99)[0][0])
@@ -254,7 +255,7 @@ def calculate_brier(p, truth, limits, dx=0.01):
     Please use calculate_goodness_of_fit instead. This method is for testing purposes only.
     """,
     category=DeprecationWarning)
-def calculate_anderson_darling(p, scipy_distribution='norm', num_samples=100, _random_state=None):
+def calculate_anderson_darling(p, scipy_distribution='norm', num_samples=100, _random_state=None):  # pylint: disable=unused-argument
     """This function is deprecated and will be completely removed in a later version.
     Please use `calculate_goodness_of_fit` instead.
 
@@ -270,7 +271,7 @@ def calculate_anderson_darling(p, scipy_distribution='norm', num_samples=100, _r
     Please use calculate_goodness_of_fit instead. This method is for testing purposes only.
     """,
     category=DeprecationWarning)
-def calculate_cramer_von_mises(p, q, num_samples=100, _random_state=None, **kwargs):
+def calculate_cramer_von_mises(p, q, num_samples=100, _random_state=None, **kwargs):  # pylint: disable=unused-argument
     """This function is deprecated and will be completely removed in a later version.
     Please use `calculate_goodness_of_fit` instead.
 
@@ -286,7 +287,7 @@ def calculate_cramer_von_mises(p, q, num_samples=100, _random_state=None, **kwar
     Please use calculate_goodness_of_fit instead. This method is for testing purposes only.
     """,
     category=DeprecationWarning)
-def calculate_kolmogorov_smirnov(p, q, num_samples=100, _random_state=None):
+def calculate_kolmogorov_smirnov(p, q, num_samples=100, _random_state=None):  # pylint: disable=unused-argument
     """This function is deprecated and will be completely removed in a later version.
     Please use `calculate_goodness_of_fit` instead.
 
@@ -382,7 +383,7 @@ def calculate_goodness_of_fit(estimate, reference, fit_metric='ad', num_samples=
         logging.warning("Each element in the ensemble `reference` must be a single distribution.")
 
     if fit_metric not in goodness_of_fit_metrics:
-        metrics = [k for k in goodness_of_fit_metrics.keys()]
+        metrics = list(goodness_of_fit_metrics.keys())
         raise KeyError(f"`fit_metric` should be one of {metrics}.")
 
     return goodness_of_fit_metrics[fit_metric](
