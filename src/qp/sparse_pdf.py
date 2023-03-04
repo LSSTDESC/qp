@@ -77,7 +77,6 @@ class sparse_gen(interp_gen):
         if 'dims' not in kwargs:
             raise ValueError("required argument dims not in kwargs") #pragma: no cover
         nsp = np.array(kwargs['dims']).flatten()[4]
-        # nmu = np.array(kwargs['dims']).flatten()[0]
         return dict(sparse_indices=((npdf, nsp), 'i8'))
 
     @classmethod
