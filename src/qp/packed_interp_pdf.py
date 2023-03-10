@@ -187,6 +187,8 @@ class packed_interp_gen(Pdf_rows_gen):
         """ Compute the mth moment """
         m = np.asarray(m)
         dx = self._xvals[1] - self._xvals[0]
+        if self._yvals is None:  # pragma: no cover
+            self._unpack()
         return np.sum(self._xvals**m * self._yvals, axis=1) * dx
 
     def _updated_ctor_param(self):

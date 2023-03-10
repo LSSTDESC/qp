@@ -95,7 +95,7 @@ def log_unpack_from_rowmax(packed_array, row_max, log_floor=-3.):
         The unpacked values
     """
     neg_log_floor = -1. * log_floor
-    unpacked_array = row_max * np.power(10, neg_log_floor * ( (packed_array / 255.) - 1. ) )
+    unpacked_array = row_max * np.where(packed_array == 0, 0., np.power(10, neg_log_floor * ( (packed_array / 255.) - 1. ) ))
     return unpacked_array
 
 
