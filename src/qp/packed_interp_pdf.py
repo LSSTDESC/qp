@@ -28,6 +28,9 @@ def extract_and_pack_vals_at_x(in_dist, **kwargs):
     xvals : `np.array`
         Locations at which the pdf is evaluated
 
+    packing_type : PackingType
+        Enum specifying the type of packing to use
+
     Returns
     -------
     data : `dict`
@@ -51,7 +54,7 @@ class packed_interp_gen(Pdf_rows_gen):
 
     See qp.packing_utils for options on packing
 
-    See qp.inter_pdf for details on interpolation
+    See qp.interp_pdf for details on interpolation
     """
     # pylint: disable=protected-access
 
@@ -188,7 +191,7 @@ class packed_interp_gen(Pdf_rows_gen):
 
     def _updated_ctor_param(self):
         """
-        Set the bins as additional constructor argument
+        Set the bin edges and packing data as additional constructor argument
         """
         dct = super()._updated_ctor_param()
         dct['xvals'] = self._xvals

@@ -72,8 +72,9 @@ def log_pack_from_rowmax(input_array, log_floor=-3.):
         The max for each row, need to unpack the array
     """
     neg_log_floor = -1. * log_floor
+    epsilon = np.power(10., 3 * log_floor)
     row_max = np.expand_dims(input_array.max(axis=1), -1)
-    return np.round(255*(np.log10(input_array / row_max) + neg_log_floor)/neg_log_floor).clip(0., 255.).astype(np.uint8), row_max
+    return np.round(255*(np.log10((input_array + epsilon) / row_max) + neg_log_floor)/neg_log_floor).clip(0., 255.).astype(np.uint8), row_max
 
 
 def log_unpack_from_rowmax(packed_array, row_max, log_floor=-3.):
