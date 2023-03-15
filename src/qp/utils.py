@@ -181,8 +181,8 @@ def get_eval_case(x, row):
     -----
     The cases are:
 
-    CASE_FLAT : x, row have shapes (n) , (n) and do not factor
-    CASE_FACTOR : x, row can be factors to shapes (1, nx) and (npdf, 1)
+    CASE_FLAT : x, row have shapes (n), (n) and do not factor
+    CASE_FACTOR : x, row have shapes (n), (n) but can be factored to shapes (1, nx) and (npdf, 1) (i.e., they were flattend by scipy) 
     CASE_PRODUCT : x, row have shapes (1, nx) and (npdf, 1)
     CASE_2D : x, row have shapes (npdf, nx) and (npdf, nx)
     """
