@@ -164,6 +164,20 @@ class Factory(OrderedDict):
             data = reader_convert(data)
         return Ensemble(ctor_func, data=data, ancil=ancil_table)
 
+    def data_length(self, filename):
+        """Get the size of data
+
+        Parameters
+        ----------
+        filename : `str`
+
+        Returns
+        -------
+        nrows : `int`
+        """
+        f, infp = io.readHdf5Group(filename, 'data')
+        num_rows = io.getGroupInputDataLength(f)
+        return num_rows
 
     def iterator(self, filename, chunk_size=100_000, rank=0, parallel_size=1):
         """Return an iterator for chunked read
@@ -189,7 +203,7 @@ class Factory(OrderedDict):
 
         f, infp = io.readHdf5Group(filename, 'data')
         try:
-            ancil_f, ancil_infp = io.readHdf5Group(filename, 'data')
+            ancil_f, ancil_infp = io.readHdf5Group(filename, 'ancil')
         except KeyError:  #pragma: no cover
             ancil_f, ancil_infp = (None, None)
         num_rows = io.getGroupInputDataLength(f)
@@ -307,3 +321,4 @@ read = _FACTORY.read
 iterator = _FACTORY.iterator
 convert = _FACTORY.convert
 concatenate = _FACTORY.concatenate
+data_length = _FACTORY.data_length
