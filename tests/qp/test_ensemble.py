@@ -204,6 +204,8 @@ class EnsembleTestCase(unittest.TestCase):
         QP_DIR = os.path.abspath(os.path.dirname(qp.__file__))
         data_file = os.path.join(QP_DIR, 'data', 'test.hdf5')
         ens = qp.read(data_file)
+        data_length = qp.data_length(data_file)
+        assert data_length == ens.npdf
         itr = qp.iterator(data_file, 10)
         test_grid = np.linspace(0., 1., 11)
         for start, end, ens_i in itr:
