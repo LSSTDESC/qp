@@ -175,7 +175,7 @@ class Factory(OrderedDict):
         -------
         nrows : `int`
         """
-        f, infp = io.readHdf5Group(filename, 'data')
+        f, _ = io.readHdf5Group(filename, 'data')
         num_rows = io.getGroupInputDataLength(f)
         return num_rows
 
