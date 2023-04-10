@@ -120,7 +120,36 @@ class Factory(OrderedDict):
         ctor_func = the_class.creation_method(method)
         return Ensemble(ctor_func, data)
 
+    def from_tables(self, tables):
+        """Build this ensemble from a tables
+        
+        Parameters
+        ----------
+        tables: `dict` 
 
+        Notes
+        -----
+        This will use information in the meta data table to figure out how to construct the data
+        need to build the ensemble.
+        """
+        md_table = tables['meta']
+        data_table = tables['data']
+        ancil_table = tables.get('ancil')
+
+        data = self._build_data_dict(md_table, data_table)
+
+        pdf_name = data.pop('pdf_name')
+        pdf_version = data.pop('pdf_version')
+        if pdf_name not in self: #pragma: no cover
+            raise KeyError("Class nameed %s is not in factory" % pdf_name)
+
+        the_class = self[pdf_name]
+        reader_convert = the_class.reader_method(pdf_version)
+        ctor_func = the_class.creation_method(None)
+        if reader_convert is not None: #pragma: no cover
+            data = reader_convert(data)
+        return Ensemble(ctor_func, data=data, ancil=ancil_table)
+       
     def read(self, filename):
         """Read this ensemble from a file
 
@@ -146,23 +175,7 @@ class Factory(OrderedDict):
         tables = io.read(filename, NUMPY_DICT, keys=keys,
                          allow_missing_keys=allow_missing_keys) #pylint: disable=no-member
 
-        md_table = tables['meta']
-        data_table = tables['data']
-        ancil_table = tables.get('ancil')
-
-        data = self._build_data_dict(md_table, data_table)
-
-        pdf_name = data.pop('pdf_name')
-        pdf_version = data.pop('pdf_version')
-        if pdf_name not in self: #pragma: no cover
-            raise KeyError("Class nameed %s is not in factory" % pdf_name)
-
-        the_class = self[pdf_name]
-        reader_convert = the_class.reader_method(pdf_version)
-        ctor_func = the_class.creation_method(None)
-        if reader_convert is not None: #pragma: no cover
-            data = reader_convert(data)
-        return Ensemble(ctor_func, data=data, ancil=ancil_table)
+        return self.from_tables(tables)
 
     def data_length(self, filename):
         """Get the size of data
@@ -322,3 +335,4 @@ iterator = _FACTORY.iterator
 convert = _FACTORY.convert
 concatenate = _FACTORY.concatenate
 data_length = _FACTORY.data_length
+from_tables = _FACTORY.from_tables
