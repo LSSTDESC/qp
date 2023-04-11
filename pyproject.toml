@@ -13,10 +13,8 @@ classifiers = [
 ]
 dynamic = ["version"]
 dependencies = [
-    "matplotlib",
     "numpy",
     "scipy >= 1.9.0",
-    "scikit-learn",
     "tables_io >= 0.7.7",
     "deprecated",
 ]
@@ -45,7 +43,30 @@ build-backend = "setuptools.build_meta"
 write_to = "src/qp/_version.py"
 
 [project.optional-dependencies]
+io = [
+    "astropy",
+    "tables",
+    "h5py>=2.9",
+    "pandas",
+    "pyarrow",
+]
+all = [
+    "astropy",
+    "tables",
+    "h5py>=2.9",
+    "pandas",
+    "pyarrow",
+    "matplotlib",
+    "scikit-learn",
+]
 dev = [
+    "astropy",
+    "tables",
+    "h5py>=2.9",
+    "pandas",
+    "pyarrow",
+    "matplotlib",
+    "scikit-learn",
     "pytest",
     "pytest-cov",
     "packaging",
@@ -55,7 +76,6 @@ dev = [
     "kiwisolver",
     "joblib",
     "threadpoolctl",
-    "h5py",
     "pylint",
     "mpi4py",
     "coverage",

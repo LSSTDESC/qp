@@ -122,10 +122,10 @@ class Factory(OrderedDict):
 
     def from_tables(self, tables):
         """Build this ensemble from a tables
-        
+
         Parameters
         ----------
-        tables: `dict` 
+        tables: `dict`
 
         Notes
         -----
@@ -149,7 +149,7 @@ class Factory(OrderedDict):
         if reader_convert is not None: #pragma: no cover
             data = reader_convert(data)
         return Ensemble(ctor_func, data=data, ancil=ancil_table)
-       
+
     def read(self, filename):
         """Read this ensemble from a file
 
