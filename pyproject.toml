@@ -44,27 +44,15 @@ write_to = "src/qp/_version.py"
 
 [project.optional-dependencies]
 full = [
-    "astropy",
-    "tables",
-    "h5py>=2.9",
-    "pandas",
-    "pyarrow",
+    "tables_io[full]",
 ]
 all = [
-    "astropy",
-    "tables",
-    "h5py>=2.9",
-    "pandas",
-    "pyarrow",
+    "tables_io[full]",
     "matplotlib",
     "scikit-learn",
 ]
 dev = [
-    "astropy",
-    "tables",
-    "h5py>=2.9",
-    "pandas",
-    "pyarrow",
+    "tables_io[full]",
     "matplotlib",
     "scikit-learn",
     "pytest",
