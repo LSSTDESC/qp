@@ -2,6 +2,6 @@
 
 from tables_io.lazy_modules import lazyImport
 
-mpl = lazyImport('matploblib')
+mpl = lazyImport('matplotlib')
 plt = lazyImport('matplotlib.pyplot')
-sklearn = lazyImport('sklearn')
+mixture = lazyImport('sklearn.mixture')

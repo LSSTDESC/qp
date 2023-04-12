@@ -3,5 +3,9 @@ numpy
 scipy>=1.9.0
 scikit-learn
 setuptools_scm
-tables_io>=0.7.7
+tables-io>=0.7.7
+astropy
+h5py
+pandas
+pyarrow
 deprecated
