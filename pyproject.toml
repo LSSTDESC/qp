@@ -43,7 +43,7 @@ build-backend = "setuptools.build_meta"
 write_to = "src/qp/_version.py"
 
 [project.optional-dependencies]
-io = [
+full = [
     "astropy",
     "tables",
     "h5py>=2.9",
