@@ -15,7 +15,7 @@ dynamic = ["version"]
 dependencies = [
     "numpy",
     "scipy >= 1.9.0",
-    "tables_io >= 0.7.7",
+    "tables-io >= 0.8.0",
     "deprecated",
 ]
 
@@ -44,15 +44,15 @@ write_to = "src/qp/_version.py"
 
 [project.optional-dependencies]
 full = [
-    "tables_io[full]",
+    "tables-io[full]",
 ]
 all = [
-    "tables_io[full]",
+    "tables-io[full]",
     "matplotlib",
     "scikit-learn",
 ]
 dev = [
-    "tables_io[full]",
+    "tables-io[full]",
     "matplotlib",
     "scikit-learn",
     "pytest",
