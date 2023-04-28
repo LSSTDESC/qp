@@ -39,7 +39,6 @@ class PIT():
         eval_grid : [float], optional
             A strictly increasing array-like sequence in the range [0,1], by default DEFAULT_QUANTS
         """
-
         self._true_vals = true_vals
 
         # For each distribution in the Ensemble, calculate the CDF where x = known_true_value
@@ -52,7 +51,8 @@ class PIT():
             eval_grid = np.linspace(0, 1, n_pit)
 
         data_quants = np.quantile(self._pit_samps, eval_grid)
-        self._pit = qp.Ensemble(qp.quant, data=dict(quants=eval_grid, locs=np.atleast_2d(data_quants)))
+        quant_mask = np.bitwise_and(data_quants > 0., data_quants < 1)
+        self._pit = qp.Ensemble(qp.quant, data=dict(quants=eval_grid[quant_mask], locs=np.atleast_2d(data_quants[quant_mask])))
 
     @property
     def pit_samps(self):
