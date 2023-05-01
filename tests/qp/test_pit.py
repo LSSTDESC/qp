@@ -69,3 +69,37 @@ class PitTestCase(unittest.TestCase):
             quant_grid = np.linspace(0, 1, 1000)
             _ = PIT(self.grid_ens, self.true_zs, quant_grid)
             self.assertIn('Number of pit samples is smaller', log.output[0])
+
+    def test_pit_metric_masking(self):
+        """The normal distributions created in this test will produce a quantile
+        array in PIT that have multiple values of 1.0. This test will confirm
+        that the some quants have been removed. 
+
+        If no quants had been removed, then the final length would be 101.
+        """
+
+        true_zs = np.random.uniform(low=NMAX-0.1, high=NMAX, size=NPDF)
+
+        locs = np.expand_dims(true_zs + np.random.normal(0.0, 0.01, NPDF), -1)
+        scales = np.ones((NPDF, 1)) * 0.001
+        n_ens = Ensemble(qp.stats.norm, data=dict(loc=locs, scale=scales))
+
+        grid_ens = n_ens.convert_to(interp_gen, xvals=ZGRID)
+
+        quant_grid = np.linspace(0, 1, 101)
+        pit_obj = PIT(grid_ens, true_zs, quant_grid)
+        pit_ens = pit_obj.pit
+        assert len(pit_ens.dist.quants) == 90
+
+    def test_pit_create_quant_mask(self):
+        """Basic test where all values should be returned"""
+        input = np.linspace(0.1, 0.9, 10)
+        mask = PIT._create_quant_mask(input)
+        assert np.all(input[mask] == input)
+
+    def test_pit_create_quant_mask_with_exclusions(self):
+        """Test with values that should be excluded"""
+        input = np.linspace(-0.1, 1.1, 10)
+        mask = PIT._create_quant_mask(input)
+        assert np.all(input[mask] > 0)
+        assert np.all(input[mask] < 1)

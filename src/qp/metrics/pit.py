@@ -51,7 +51,7 @@ class PIT():
             eval_grid = np.linspace(0, 1, n_pit)
 
         data_quants = np.quantile(self._pit_samps, eval_grid)
-        quant_mask = np.bitwise_and(data_quants > 0., data_quants < 1)
+        quant_mask = self._create_quant_mask(data_quants)
         self._pit = qp.Ensemble(qp.quant, data=dict(quants=eval_grid[quant_mask], locs=np.atleast_2d(data_quants[quant_mask])))
 
     @property
@@ -165,6 +165,25 @@ class PIT():
             The percentage of outliers in this distribution given the min and max bounds.
         """
         return calculate_outlier_rate(self._pit, pit_min, pit_max)[0]
+
+    @classmethod
+    def _create_quant_mask(self, data_quants):
+        """ Create a numpy mask such that, when applied only values greater than
+        0 and less than 1.0 are kept. While this function is fairly simple,
+        separating it into a small helper method makes testing much easier.
+
+        Parameters
+        ----------
+        data_quants : np.array [float]
+            An array of values.
+
+        Returns
+        -------
+        np.array [bool]
+            The boolean mask
+        """
+
+        return np.bitwise_and(data_quants > 0., data_quants < 1)
 
     def _trim_pit_values(self, cdf_min, cdf_max):
         """Remove and report any cdf(x) that are outside the min/max range.
