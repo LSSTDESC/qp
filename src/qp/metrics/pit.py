@@ -51,8 +51,20 @@ class PIT():
             eval_grid = np.linspace(0, 1, n_pit)
 
         data_quants = np.quantile(self._pit_samps, eval_grid)
-        quant_mask = self._create_quant_mask(data_quants)
-        self._pit = qp.Ensemble(qp.quant, data=dict(quants=eval_grid[quant_mask], locs=np.atleast_2d(data_quants[quant_mask])))
+
+        # Remove duplicates values as well as values outside the range (0,1)
+        _, unique_indices = np.unique(data_quants, return_index=True)
+        unique_data_quants = data_quants[unique_indices]
+        unique_eval_grid = eval_grid[unique_indices]
+        quant_mask = self._create_quant_mask(unique_data_quants)
+
+        self._pit = qp.Ensemble(
+            qp.quant,
+            data=dict(
+                quants=unique_eval_grid[quant_mask],
+                locs=np.atleast_2d(unique_data_quants[quant_mask])
+            )
+        )
 
     @property
     def pit_samps(self):
