@@ -106,6 +106,8 @@ def plot_pdf_on_axes(axes, pdf, xvals, **kwargs):
     axes : The axes the data are plotted on
     """
     yvals = pdf.pdf(xvals)
+    norm = kwargs.pop('norm', 1.0)
+    yvals *= norm
     axes.plot(np.squeeze(xvals), np.squeeze(yvals), **kwargs)
     return axes
 
