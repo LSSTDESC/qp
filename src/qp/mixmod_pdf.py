@@ -49,7 +49,7 @@ class mixmod_gen(Pdf_rows_gen):
         stds:  array_like
             The standard deviations of the Gaussians
         weights : array_like
-            The weights to attach to the Gaussians
+            The weights to attach to the Gaussians. Weights should sum up to one. If not, the weights are interpreted as relative weights.
         """
         self._scipy_version_warning()
         self._means = reshape_to_pdf_size(means, -1)
@@ -58,6 +58,9 @@ class mixmod_gen(Pdf_rows_gen):
         kwargs['shape'] = means.shape[:-1]
         self._ncomps = means.shape[-1]
         super().__init__(*args, **kwargs)
+        if np.any(self._weights<0):
+            raise ValueError('All weights need to be larger than zero')
+        self._weights = self._weights/self._weights.sum(axis=1)[:,None]
         self._addobjdata('weights', self._weights)
         self._addobjdata('stds', self._stds)
         self._addobjdata('means', self._means)
