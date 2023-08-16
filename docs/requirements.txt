@@ -5,8 +5,3 @@ scikit-learn
 setuptools_scm
 tables-io[full]
 deprecated
-nbsphinx
-sphinx
-sphinx_rtd_theme
-sphinx-autoapi
-
