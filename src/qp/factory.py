@@ -60,11 +60,9 @@ class Factory(OrderedDict):
         """Build a qp class from a scipy class"""
         # pylint: disable=protected-access
         override_dict = dict(name=class_name,
-                                version=0,
-                                freeze=Pdf_gen_wrap._my_freeze,
-                                _argcheck=Pdf_gen_wrap._my_argcheck,
-                                _other_argcheck=scipy_class._argcheck,
-                                _other_init=scipy_class.__init__)
+                            version=0,
+                            freeze=Pdf_gen_wrap._my_freeze,
+                            _other_init=scipy_class.__init__)
         the_class = type(class_name, (Pdf_gen_wrap, scipy_class), override_dict)
         self.add_class(the_class)
 

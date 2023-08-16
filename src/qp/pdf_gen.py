@@ -162,7 +162,7 @@ class rv_frozen_func(rv_continuous_frozen):
     that includes the number of PDFs it represents
     """
 
-    def __init__(self, dist, shape, *args, **kwds):
+    def __init__(self, dist, *args, **kwds):
         """C'tor
 
         Parameters
@@ -172,10 +172,16 @@ class rv_frozen_func(rv_continuous_frozen):
         npdf : `int`
             The number of PDFs this object represents
         """
-        self._shape = shape
-        self._npdf = np.product(shape).astype(int)
-        self._ndim = np.size(shape)
         super().__init__(dist, *args, **kwds)
+        array_list = [ np.array(val) for val in self.kwds.values() ]
+        bc = np.broadcast(array_list)
+        ss = bc.shape
+        if len(ss) < 2:
+            self._shape = (1)
+        else:
+            self._shape = ss[1:-1]
+        self._npdf = np.product(self._shape).astype(int)
+        self._ndim = np.size(self._shape)
 
     @property
     def ndim(self):
@@ -382,7 +388,6 @@ class Pdf_gen_wrap(Pdf_gen):
         super().__init__(*args, **kwargs)
         self._other_init(*args, **kwargs)
 
-
     def _my_freeze(self, *args, **kwds):
         """Freeze the distribution for the given arguments.
 
@@ -397,20 +402,7 @@ class Pdf_gen_wrap(Pdf_gen):
         rv_frozen : rv_frozen instance
             The frozen distribution.
         """
-        # pylint: disable=no-member,protected-access
-        args, loc, scale = self._parse_args(*args, **kwds)
-        x, loc, scale = map(asarray, (1, loc, scale))
-        x = np.asarray((x - loc)/scale)
-        args = tuple(map(asarray, args))
-        cond0 = np.atleast_1d(self._argcheck(*args)) & (scale > 0)
-        cond1 = self._support_mask(x, *args) & (scale > 0)
-        cond = cond0 & cond1
-        return rv_frozen_func(self, cond.shape[:-1], *args, **kwds)
-
-    def _my_argcheck(self, *args):
-        # pylint: disable=no-member,protected-access
-        return np.atleast_1d(self._other_argcheck(*args))
-
+        return rv_frozen_func(self, *args, **kwds)
 
     @classmethod
     def get_allocation_kwds(cls, npdf, **kwargs):
