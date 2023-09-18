@@ -260,7 +260,7 @@ class EnsembleTestCase(unittest.TestCase):
         sigmas = np.array([0.15,0.13,0.14])
         weights = np.array([1,0.5,-0.25])
         with self.assertRaises(ValueError):
-            _ = qp.mixmod(gen_func=qp.stats.norm, weights=weights, data = dict(loc=means, scale=sigmas))
+            _ = qp.mixmod(weights=weights, means=means, stds=sigmas)
 
 if __name__ == '__main__':
     unittest.main()
