@@ -54,7 +54,7 @@ class Factory(OrderedDict):
                 data_dict[col] = col_data
         return data_dict
 
-    def _make_scipy_wrapped_class(self, class_name, scipy_class):
+    def _make_scipy_wrapped_class(self, class_name, scipy_class, ctor_param):
         """Build a qp class from a scipy class"""
         # pylint: disable=protected-access
         override_dict = dict(
@@ -72,7 +72,7 @@ class Factory(OrderedDict):
         for name in names:
             attr = getattr(sps, name)
             if isinstance(attr, sps.rv_continuous):
-                self._make_scipy_wrapped_class(name, type(attr))
+                self._make_scipy_wrapped_class(name, type(attr), attr._updated_ctor_param())
 
     def add_class(self, the_class):
         """Add a class to the factory

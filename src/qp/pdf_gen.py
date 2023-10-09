@@ -124,8 +124,13 @@ class Pdf_gen:
         """Create and return a `scipy.stats.rv_continuous` object using the
         keyword arguemntets provided"""
         kwds_copy = kwds.copy()
+<<<<<<< HEAD
         name = kwds_copy.pop("name", "dist")
         return (cls(name=name), kwds_copy)
+=======
+        name = kwds_copy.pop('name', 'dist')
+        return (cls(), kwds_copy)
+>>>>>>> 71047e2 (fixed mixture model implementation with scipy basis functions that require additional parameters)
 
     @classmethod
     def create(cls, **kwds):
@@ -393,7 +398,9 @@ class Pdf_gen_wrap(Pdf_gen):
         """C'tor"""
         # pylint: disable=no-member,protected-access
         super().__init__(*args, **kwargs)
-        self._other_init(*args, **kwargs)
+        if kwargs==self._ctor_param:
+            kwargs=dict()
+        self._other_init(*args, **kwargs, **self._ctor_param)
 
     def _my_freeze(self, *args, **kwds):
         """Freeze the distribution for the given arguments.

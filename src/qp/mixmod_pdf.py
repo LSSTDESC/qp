@@ -66,7 +66,6 @@ class mixmod_gen(Pdf_rows_gen):
 >>>>>>> 9b08a50 (Started implementing mixture model implementation with generic scipy base function. So far only the ones using loc and scale parameters work. PPFs need to be implemented.)
         """
         self._gen_func = gen_func
-        print(data)
         self._frozen = self._gen_func(**data)
         self._gen_obj = self._frozen.dist
         self._gen_class = type(self._gen_obj)
@@ -87,7 +86,6 @@ class mixmod_gen(Pdf_rows_gen):
 =======
         for key in self._data.keys():
             self._data[key] = reshape_to_pdf_size(self._data[key],-1)
-        print(self._data)
         kwargs['shape'] = weights.shape[:-1]
         self._ncomps = weights.shape[-1]
         super().__init__(*args, **kwargs)
