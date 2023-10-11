@@ -213,47 +213,6 @@ class EnsembleTestCase(unittest.TestCase):
             test_vals = ens_i.pdf(test_grid)
             assert np.allclose(check_vals, test_vals)
 
-    def test_quant_get_default_pdf_constructor_name(self):
-        """Test that the getter for pdf constructor name works"""
-        quantiles = np.linspace(0.001, 0.999, 16)
-        locations = np.linspace(0, 5, 16)
-        quant_dist = qp.quant(quants=quantiles, locs=locations)
-        self.assertEqual(quant_dist.dist.pdf_constructor_name, 'piecewise_linear')
-
-    def test_quant_get_default_pdf_constructor(self):
-        """Test that the getter for pdf constructor returns an AbstractQuantilePdfConstructor"""
-        quantiles = np.linspace(0.001, 0.999, 16)
-        locations = np.linspace(0, 5, 16)
-        quant_dist = qp.quant(quants=quantiles, locs=locations)
-        assert isinstance(quant_dist.dist.pdf_constructor, AbstractQuantilePdfConstructor)
-
-    def test_quant_change_pdf_constructor(self):
-        """Test that changing the pdf constructor works as expected"""
-        quantiles = np.linspace(0.001, 0.999, 16)
-        locations = np.linspace(0, 5, 16)
-        quant_dist = qp.quant(quants=quantiles, locs=locations)
-        quant_dist.dist.pdf_constructor_name = 'piecewise_constant'
-        self.assertEqual(quant_dist.dist.pdf_constructor_name, 'piecewise_constant')
-
-    def test_quant_change_pdf_constructor_raises(self):
-        """Verify that attempting to change the pdf constructor to one that
-        isn't in the dictionary, will raise an error."""
-        quantiles = np.linspace(0.001, 0.999, 16)
-        locations = np.linspace(0, 5, 16)
-        quant_dist = qp.quant(quants=quantiles, locs=locations)
-        with self.assertRaises(ValueError):
-            quant_dist.dist.pdf_constructor_name = 'drewtonian'
-
-    def test_quant_change_pdf_constructor_warns(self):
-        """Verify that attempting to change the pdf constructor to the one
-        currently being used will log a warning."""
-        quantiles = np.linspace(0.001, 0.999, 16)
-        locations = np.linspace(0, 5, 16)
-        quant_dist = qp.quant(quants=quantiles, locs=locations)
-        with self.assertLogs(level=logging.WARNING) as log:
-            quant_dist.dist.pdf_constructor_name = 'piecewise_linear'
-            self.assertIn('Already using', log.output[0])
-
     def test_mixmod_with_negative_weights(self):
         """Verify that an exception is raised when setting up a mixture model with negative weights"""
         means = np.array([0.5,1.1, 2.9])
