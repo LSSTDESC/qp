@@ -1,0 +1,8 @@
+# Changes here will be overwritten by Copier
+_commit: v0.2
+_src_path: gh:LSSTDESC/RAIL-project-template
+author_email: later@later.com
+author_name: LSST Dark Energy Science Collaboration (DESC)
+create_example_module: false
+package_name: qp
+project_name: qp-prob

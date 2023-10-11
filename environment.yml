@@ -1,0 +1,24 @@
+name: qp
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - numpy>=1.21.0
+  - tables-io
+  - astropy
+  - h5py>=2.9=*mpi_openmpi*
+  - pandas
+  - pyarrow
+  - pytables
+  - mpi4py
+  - hdf5=*=*mpi_openmpi*
+  - pylint
+  - pytest
+  - pytest-cov
+  - jupyter
+  - pip
+  - setuptools
+  - coverage
+  - flake8
+  - jax
+  - jaxlib
