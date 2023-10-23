@@ -70,7 +70,7 @@ write_to = "src/qp/_version.py"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["rail"]
+include = ["qp"]
 namespaces = true
 
 [tool.pytest.ini_options]
