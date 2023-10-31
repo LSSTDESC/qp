@@ -44,6 +44,11 @@ dev = [
     "mpi4py",
     "coverage",
 ]
+full = [
+    "tables-io[full]",
+    "matplotlib",
+    "scikit-learn",
+]
 all = [
     "tables-io[full]",
     "matplotlib",
