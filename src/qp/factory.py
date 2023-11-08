@@ -172,9 +172,12 @@ class Factory(OrderedDict):
             True if the file is a qp file
         """
         try:
+            # If this isn't a table-like file with a 'meta' table this will throw an exception
             tables = io.readNative(filename, keys=['meta'])
+            # If the 'meta' tables doesn't have 'pdf_name' or it is empty this will throw an exception or fail
             return len(tables['meta']['pdf_name']) > 0
         except Exception:
+            # Any exception means it isn't a qp file
             pass
         return False
 
