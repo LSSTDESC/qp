@@ -28,26 +28,26 @@ class MetricInputType(enum.Enum):
     point_to_dist = 4
 
 
-    def uses_distribution_for_estimate(self):
+    def uses_distribution_for_estimate(self) -> bool:
         return self in [
             MetricInputType.single_ensemble,
             MetricInputType.dist_to_point,
             MetricInputType.dist_to_dist,
         ]
 
-    def uses_distribution_for_reference(self):
+    def uses_distribution_for_reference(self) -> bool:
         return self in [
             MetricInputType.dist_to_dist,
             MetricInputType.point_to_dist,
         ]
 
-    def uses_point_for_estimate(self):
+    def uses_point_for_estimate(self) -> bool:
         return self in [
             MetricInputType.point_to_dist,
             MetricInputType.point_to_dist,
         ]
 
-    def uses_point_for_reference(self):
+    def uses_point_for_reference(self) -> bool:
         return self in [
             MetricInputType.dist_to_point,
             MetricInputType.point_to_point,
@@ -80,29 +80,20 @@ class BaseMetric(ABC):
         self._limit = limit
         self._dx = dx
 
-    def initialize(self) -> None:
-        pass
-
-    def evaluate(self) -> None:
-        pass
-
-    def finalize(self) -> None:
-        pass
-
     @classmethod
-    def uses_distribution_for_estimate(cls):
+    def uses_distribution_for_estimate(cls) -> bool:
         return cls.metric_input_type.uses_distribution_for_estimate()
 
     @classmethod
-    def uses_distribution_for_reference(cls):
+    def uses_distribution_for_reference(cls) -> bool:
         return cls.metric_input_type.uses_distribution_for_reference()
 
     @classmethod
-    def uses_point_for_estimate(cls):
+    def uses_point_for_estimate(cls) -> bool:
         return cls.metric_input_type.uses_point_for_estimate()
 
     @classmethod
-    def uses_point_for_reference(cls):
+    def uses_point_for_reference(cls) -> bool:
         return cls.metric_input_type.uses_point_for_reference()
 
 
@@ -120,6 +111,15 @@ class DistToDistMetric(BaseMetric):
 class DistToPointMetric(BaseMetric):
 
     metric_input_type = MetricInputType.dist_to_point
+
+    def initialize(self, **kwargs):
+        raise NotImplementedError()
+
+    def evaluate(self, estimate, reference, **kwargs):
+        raise NotImplementedError()
+
+    def finalize(self, **kwargs):
+        raise NotImplementedError()
 
 
 class PointToPointMetric(BaseMetric):
