@@ -102,23 +102,41 @@ class SingleEnsembleMetric(BaseMetric):
     metric_input_type = MetricInputType.single_ensemble
     metric_output_type = MetricOuputType.one_value_per_distribution
 
+    def initialize(self):
+        raise NotImplementedError()
+
+    def evaluate(self, estimate):
+        raise NotImplementedError()
+
+    def finalize(self):
+        raise NotImplementedError()
+
 
 class DistToDistMetric(BaseMetric):
 
     metric_input_type = MetricInputType.dist_to_dist
+
+    def initialize(self):
+        raise NotImplementedError()
+
+    def evaluate(self, estimate, reference):
+        raise NotImplementedError()
+
+    def finalize(self):
+        raise NotImplementedError()
 
 
 class DistToPointMetric(BaseMetric):
 
     metric_input_type = MetricInputType.dist_to_point
 
-    def initialize(self, **kwargs):
+    def initialize(self):
         raise NotImplementedError()
 
-    def evaluate(self, estimate, reference, **kwargs):
+    def evaluate(self, estimate, reference):
         raise NotImplementedError()
 
-    def finalize(self, **kwargs):
+    def finalize(self):
         raise NotImplementedError()
 
 
