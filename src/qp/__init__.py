@@ -12,7 +12,7 @@ from .sparse_pdf import *
 from .scipy_pdfs import *
 from .packed_interp_pdf import *
 from .ensemble import Ensemble
-from .factory import instance, add_class, create, read, read_metadata, convert, concatenate, iterator, data_length, from_tables
+from .factory import instance, add_class, create, read, read_metadata, convert, concatenate, iterator, data_length, from_tables, is_qp_file
 from .lazy_modules import *
 
 from . import utils

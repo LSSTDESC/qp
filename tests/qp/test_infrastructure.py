@@ -55,6 +55,10 @@ class InfrastructureTestCase(unittest.TestCase):
         test_dict.pop(None)
         assert qp.dict_utils.get_val_or_default(test_dict, 'nokey') is None
 
+    @staticmethod
+    def test_is_qp_file():
+        assert qp.instance().is_qp_file('tests/qp/qp_test_ensemble.hdf5')
+        assert not qp.instance().is_qp_file('test_pit.py')
 
 if __name__ == '__main__':
     unittest.main()
