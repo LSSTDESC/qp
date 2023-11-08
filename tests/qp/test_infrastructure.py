@@ -4,7 +4,7 @@ Unit tests for PDF class
 import os
 import unittest
 import qp
-
+from qp.test_funcs import build_ensemble
 from qp import test_data
 
 
@@ -55,9 +55,13 @@ class InfrastructureTestCase(unittest.TestCase):
         test_dict.pop(None)
         assert qp.dict_utils.get_val_or_default(test_dict, 'nokey') is None
 
-    @staticmethod
-    def test_is_qp_file():
-        assert qp.instance().is_qp_file('tests/qp/qp_test_ensemble.hdf5')
+    def test_is_qp_file(self):
+        fname = 'norm_ensemble.hdf5'
+        norm_test_data = qp.stats.norm_gen.test_data['norm']
+        ens_norm = build_ensemble(norm_test_data)
+        ens_norm.write_to(fname)
+        self.files.append(fname)
+        assert qp.instance().is_qp_file(fname)
         assert not qp.instance().is_qp_file('test_pit.py')
 
 if __name__ == '__main__':
