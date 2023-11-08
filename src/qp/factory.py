@@ -173,9 +173,7 @@ class Factory(OrderedDict):
         """
         try:
             tables = io.readNative(filename, keys=['meta'])
-            if tables['meta']['pdf_name']:
-                return True
-            return False
+            return len(tables['meta']['pdf_name']) > 0
         except Exception:
             pass
         return False
