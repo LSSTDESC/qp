@@ -75,9 +75,9 @@ class BaseMetric(ABC):
     metric_input_type = MetricInputType.unknown # The type of input data expected for this metric
     metric_output_type = MetricOuputType.unknown # The form of the output data from this metric
 
-    def __init__(self, limit:tuple=(0.0, 3.0), dx:float=0.01) -> None:
+    def __init__(self, limits:tuple=(0.0, 3.0), dx:float=0.01) -> None:
 
-        self._limit = limit
+        self._limits = limits
         self._dx = dx
 
     @classmethod
@@ -144,7 +144,24 @@ class PointToPointMetric(BaseMetric):
 
     metric_input_type = MetricInputType.point_to_point
 
+    def initialize(self):
+        raise NotImplementedError()
+
+    def evaluate(self, estimate, reference):
+        raise NotImplementedError()
+
+    def finalize(self):
+        raise NotImplementedError()
 
 class PointToDistMetric(BaseMetric):
 
     metric_input_type = MetricInputType.point_to_dist
+
+    def initialize(self):
+        raise NotImplementedError()
+
+    def evaluate(self, estimate, reference):
+        raise NotImplementedError()
+
+    def finalize(self):
+        raise NotImplementedError()
