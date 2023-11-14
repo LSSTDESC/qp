@@ -1,5 +1,6 @@
 import numpy as np
 
+from qp.ensemble import Ensemble
 from qp.metrics.base_metric_classes import (
     MetricOuputType,
     DistToDistMetric,
@@ -15,6 +16,7 @@ from qp.metrics.metrics import (
     calculate_rmse,
     calculate_rbpe,
 )
+from qp.metrics.pit import PIT
 
 class MomentMetric(SingleEnsembleMetric):
     """Class wrapper around the `calculate_moment` function.
@@ -242,6 +244,30 @@ class KSMetric(DistToDistMetric):
             num_samples=self._num_samples,
             _random_state=self._random_state
         )
+
+    def finalize(self) -> None:
+        pass
+
+
+ #! Confirm metric output type - perhaps a new type is appropriate ???
+class PITMetric(DistToPointMetric):
+    """Class wrapper for the PIT Metric class.
+    """
+
+    metric_name = 'pit'
+    metric_output_type = MetricOuputType.single_distribution
+    default_eval_grid = np.linspace(0, 1, 100)
+
+    def __init__(self, eval_grid: list = default_eval_grid) -> None:
+        super().__init__()
+        self._eval_grid = eval_grid
+
+    def initialize(self):
+        pass
+
+    def evaluate(self, estimate, reference) -> Ensemble:
+        pit_object = PIT(estimate, reference, self._eval_grid)
+        return pit_object.pit
 
     def finalize(self) -> None:
         pass
