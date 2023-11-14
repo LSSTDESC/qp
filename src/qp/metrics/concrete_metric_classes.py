@@ -154,11 +154,11 @@ class ADMetric(DistToDistMetric):
         self._random_state = None
 
     @property
-    def _random_state(self):
+    def random_state(self):
         return self._random_state
 
-    @_random_state.setter
-    def _random_state(self, random_state):
+    @random_state.setter
+    def random_state(self, random_state):
         self._random_state=random_state
 
     def initialize(self):
@@ -190,11 +190,11 @@ class CvMMetric(DistToDistMetric):
         self._random_state = None
 
     @property
-    def _random_state(self):
+    def random_state(self):
         return self._random_state
 
-    @_random_state.setter
-    def _random_state(self, random_state):
+    @random_state.setter
+    def random_state(self, random_state):
         self._random_state=random_state
 
     def initialize(self):
@@ -226,11 +226,11 @@ class KSMetric(DistToDistMetric):
         self._random_state = None
 
     @property
-    def _random_state(self):
+    def random_state(self):
         return self._random_state
 
-    @_random_state.setter
-    def _random_state(self, random_state):
+    @random_state.setter
+    def random_state(self, random_state):
         self._random_state=random_state
 
     def initialize(self):
