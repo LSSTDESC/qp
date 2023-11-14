@@ -1,3 +1,5 @@
+# pylint: disable=unused-argument
+
 import numpy as np
 
 from qp.ensemble import Ensemble
@@ -24,7 +26,7 @@ class MomentMetric(SingleEnsembleMetric):
 
     metric_name = "moment"
 
-    def __init__(self, moment_order:int=1, limits:tuple=(0.0, 3.0), dx:float=0.01) -> None:
+    def __init__(self, moment_order:int=1, limits:tuple=(0.0, 3.0), dx:float=0.01, **kwargs) -> None:
         super().__init__(limits, dx)
         self._moment_order = moment_order
 
@@ -45,7 +47,7 @@ class KLDMetric(DistToDistMetric):
     metric_name = "kld"
     metric_output_type = MetricOuputType.one_value_per_distribution
 
-    def __init__(self, limits:tuple=(0.0, 3.0), dx:float=0.01) -> None:
+    def __init__(self, limits:tuple=(0.0, 3.0), dx:float=0.01, **kwargs) -> None:
         super().__init__(limits, dx)
 
     def initialize(self) -> None:
@@ -65,7 +67,7 @@ class RMSEMetric(DistToDistMetric):
     metric_name = "rmse"
     metric_output_type = MetricOuputType.one_value_per_distribution
 
-    def __init__(self, limits:tuple=(0.0, 3.0), dx:float=0.01) -> None:
+    def __init__(self, limits:tuple=(0.0, 3.0), dx:float=0.01, **kwargs) -> None:
         super().__init__(limits, dx)
 
     def initialize(self) -> None:
@@ -85,7 +87,7 @@ class RBPEMetric(SingleEnsembleMetric):
     metric_name = 'rbpe'
     metric_output_type = MetricOuputType.one_value_per_distribution
 
-    def __init__(self, limits:tuple=(np.inf, np.inf)) -> None:
+    def __init__(self, limits:tuple=(np.inf, np.inf), **kwargs) -> None:
         super().__init__(limits)
 
     def initialize(self) -> None:
@@ -107,7 +109,7 @@ class BrierMetric(DistToPointMetric):
     metric_name = 'brier'
     metric_output_type = MetricOuputType.one_value_per_distribution
 
-    def __init__(self, limits:tuple=(0.0, 3.0), dx:float=0.01) -> None:
+    def __init__(self, limits:tuple=(0.0, 3.0), dx:float=0.01, **kwargs) -> None:
         super().__init__(limits, dx)
 
     def initialize(self) -> None:
@@ -127,7 +129,7 @@ class OutlierMetric(SingleEnsembleMetric):
     metric_name = 'outlier'
     metric_output_type = MetricOuputType.one_value_per_distribution
 
-    def __init__(self, cdf_limits:tuple = (0.0001, 0.9999)) -> None:
+    def __init__(self, cdf_limits:tuple = (0.0001, 0.9999), **kwargs) -> None:
         super().__init__()
         self._cdf_limits=cdf_limits
 
@@ -148,10 +150,10 @@ class ADMetric(DistToDistMetric):
     metric_name = 'ad'
     metric_output_type = MetricOuputType.one_value_per_distribution
 
-    def __init__(self, num_samples:int=100) -> None:
+    def __init__(self, num_samples:int=100, _random_state:float=None, **kwargs) -> None:
         super().__init__()
         self._num_samples = num_samples
-        self._random_state = None
+        self._random_state = _random_state
 
     @property
     def random_state(self):
@@ -184,10 +186,10 @@ class CvMMetric(DistToDistMetric):
     metric_name = 'cvm'
     metric_output_type = MetricOuputType.one_value_per_distribution
 
-    def __init__(self, num_samples:int=100) -> None:
+    def __init__(self, num_samples:int=100, _random_state:float=None, **kwargs) -> None:
         super().__init__()
         self._num_samples = num_samples
-        self._random_state = None
+        self._random_state = _random_state
 
     @property
     def random_state(self):
@@ -220,10 +222,10 @@ class KSMetric(DistToDistMetric):
     metric_name = 'ks'
     metric_output_type = MetricOuputType.one_value_per_distribution
 
-    def __init__(self, num_samples:int=100) -> None:
+    def __init__(self, num_samples:int=100, _random_state:float=None, **kwargs) -> None:
         super().__init__()
         self._num_samples = num_samples
-        self._random_state = None
+        self._random_state = _random_state
 
     @property
     def random_state(self):
