@@ -8,7 +8,7 @@ import qp.metrics
 import numpy as np
 
 from qp import test_funcs
-from qp.metrics.metrics import * 
+from qp.metrics.metrics import *
 from qp.utils import epsilon
 from scipy import stats
 

@@ -44,7 +44,7 @@ class MetricInputType(enum.Enum):
     def uses_point_for_estimate(self) -> bool:
         return self in [
             MetricInputType.point_to_dist,
-            MetricInputType.point_to_dist,
+            MetricInputType.point_to_point,
         ]
 
     def uses_point_for_reference(self) -> bool:
