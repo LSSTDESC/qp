@@ -33,7 +33,7 @@ class MomentMetric(SingleEnsembleMetric):
     def initialize(self) -> None:
         pass
 
-    def evalulate(self, estimate) -> list:
+    def evaluate(self, estimate) -> list:
         return calculate_moment(estimate, self._moment_order, self._limits, self._dx)
 
     def finalize(self) -> None:
