@@ -38,7 +38,9 @@ class MetricFactoryTestCase(unittest.TestCase):
         for metric_name in all_metric_names:
             a_metric = qp.metrics.create_metric(metric_name)
             assert a_metric.metric_name == metric_name
-
+        a_metric = qp.metrics.create_metric("outlier", force_update=True)
+        assert a_metric.metric_name == 'outlier'
+            
     def test_bad_metric_name(self):
         """ Catch error on making a bad metric """
         with self.assertRaises(KeyError):
