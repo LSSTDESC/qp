@@ -4,7 +4,7 @@ import numpy as np
 
 from qp.ensemble import Ensemble
 from qp.metrics.base_metric_classes import (
-    MetricOuputType,
+    MetricOutputType,
     DistToDistMetric,
     DistToPointMetric,
     SingleEnsembleMetric,
