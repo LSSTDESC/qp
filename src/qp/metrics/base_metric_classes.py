@@ -53,7 +53,7 @@ class MetricInputType(enum.Enum):
         ]
 
 
-class MetricOuputType(enum.Enum):
+class MetricOutputType(enum.Enum):
     """Defines the various output types that metric classes can return."""
 
     unknown = -1
@@ -78,7 +78,7 @@ class BaseMetric(ABC):
         MetricInputType.unknown
     )  # The type of input data expected for this metric
     metric_output_type = (
-        MetricOuputType.unknown
+        MetricOutputType.unknown
     )  # The form of the output data from this metric
 
     def __init__(self, limits: tuple = (0.0, 3.0), dx: float = 0.01) -> None:
@@ -112,7 +112,7 @@ class SingleEnsembleMetric(BaseMetric):
     """A base class for metrics that accept only a single ensemble as input."""
 
     metric_input_type = MetricInputType.single_ensemble
-    metric_output_type = MetricOuputType.one_value_per_distribution
+    metric_output_type = MetricOutputType.one_value_per_distribution
 
     def evaluate(self, estimate):
         raise NotImplementedError()

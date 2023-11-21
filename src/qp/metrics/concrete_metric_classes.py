@@ -44,7 +44,7 @@ class KLDMetric(DistToDistMetric):
     """Class wrapper around the KLD metric"""
 
     metric_name = "kld"
-    metric_output_type = MetricOuputType.one_value_per_distribution
+    metric_output_type = MetricOutputType.one_value_per_distribution
 
     def __init__(self, limits: tuple = (0.0, 3.0), dx: float = 0.01, **kwargs) -> None:
         super().__init__(limits, dx)
@@ -57,7 +57,7 @@ class RMSEMetric(DistToDistMetric):
     """Class wrapper around the Root Mean Square Error metric"""
 
     metric_name = "rmse"
-    metric_output_type = MetricOuputType.one_value_per_distribution
+    metric_output_type = MetricOutputType.one_value_per_distribution
 
     def __init__(self, limits: tuple = (0.0, 3.0), dx: float = 0.01, **kwargs) -> None:
         super().__init__(limits, dx)
@@ -70,7 +70,7 @@ class RBPEMetric(SingleEnsembleMetric):
     """Class wrapper around the Risk Based Point Estimate metric."""
 
     metric_name = "rbpe"
-    metric_output_type = MetricOuputType.one_value_per_distribution
+    metric_output_type = MetricOutputType.one_value_per_distribution
 
     def __init__(self, limits: tuple = (np.inf, np.inf), **kwargs) -> None:
         super().__init__(limits)
@@ -86,7 +86,7 @@ class BrierMetric(DistToPointMetric):
     """
 
     metric_name = "brier"
-    metric_output_type = MetricOuputType.one_value_per_distribution
+    metric_output_type = MetricOutputType.one_value_per_distribution
 
     def __init__(self, limits: tuple = (0.0, 3.0), dx: float = 0.01, **kwargs) -> None:
         super().__init__(limits, dx)
@@ -99,7 +99,7 @@ class OutlierMetric(SingleEnsembleMetric):
     """Class wrapper around the outlier calculation metric."""
 
     metric_name = "outlier"
-    metric_output_type = MetricOuputType.one_value_per_distribution
+    metric_output_type = MetricOutputType.one_value_per_distribution
 
     def __init__(self, cdf_limits: tuple = (0.0001, 0.9999), **kwargs) -> None:
         super().__init__()
@@ -115,7 +115,7 @@ class ADMetric(DistToDistMetric):
     """Class wrapper for Anderson Darling metric."""
 
     metric_name = "ad"
-    metric_output_type = MetricOuputType.one_value_per_distribution
+    metric_output_type = MetricOutputType.one_value_per_distribution
 
     def __init__(
         self, num_samples: int = 100, _random_state: float = None, **kwargs
@@ -146,7 +146,7 @@ class CvMMetric(DistToDistMetric):
     """Class wrapper for Cramer von Mises metric."""
 
     metric_name = "cvm"
-    metric_output_type = MetricOuputType.one_value_per_distribution
+    metric_output_type = MetricOutputType.one_value_per_distribution
 
     def __init__(
         self, num_samples: int = 100, _random_state: float = None, **kwargs
@@ -177,7 +177,7 @@ class KSMetric(DistToDistMetric):
     """Class wrapper for Kolmogorov Smirnov metric."""
 
     metric_name = "ks"
-    metric_output_type = MetricOuputType.one_value_per_distribution
+    metric_output_type = MetricOutputType.one_value_per_distribution
 
     def __init__(
         self, num_samples: int = 100, _random_state: float = None, **kwargs
@@ -209,7 +209,7 @@ class PITMetric(DistToPointMetric):
     """Class wrapper for the PIT Metric class."""
 
     metric_name = "pit"
-    metric_output_type = MetricOuputType.single_distribution
+    metric_output_type = MetricOutputType.single_distribution
     default_eval_grid = np.linspace(0, 1, 100)
 
     def __init__(self, eval_grid: list = default_eval_grid, **kwargs) -> None:
