@@ -9,9 +9,11 @@ from qp.metrics.point_estimate_metric_classes import (
     PointSigmaMAD,
 )
 
+from qp.metrics.concrete_metric_classes import CDELossMetric
+
 # values for metrics
 OUTRATE = 0.0
-# CDEVAL = -4.31200
+CDEVAL = -4.31200
 SIGIQR = 0.0045947
 BIAS = -0.00001576
 OUTRATE = 0.0
@@ -27,7 +29,7 @@ def construct_test_ensemble():
     true_ez = (locs.flatten() - true_zs) / (1.0 + true_zs)
     scales = np.ones((NPDF, 1)) * 0.1 + np.random.uniform(size=(NPDF, 1)) * 0.05
 
-    #pylint: disable=no-member
+    # pylint: disable=no-member
     n_ens = qp.Ensemble(qp.stats.norm, data=dict(loc=locs, scale=scales))
     zgrid = np.linspace(0, nmax, 301)
     grid_ens = n_ens.convert_to(qp.interp_gen, xvals=zgrid)
@@ -35,6 +37,8 @@ def construct_test_ensemble():
 
 
 def test_point_metrics():
+    """Basic tests for the various point estimate metrics
+    """
     zgrid, zspec, pdf_ens, true_ez = construct_test_ensemble()
     zb = pdf_ens.mode(grid=zgrid).flatten()
 
@@ -53,3 +57,12 @@ def test_point_metrics():
 
     sig_mad = PointSigmaMAD().evaluate(zb, zspec)
     assert np.isclose(sig_mad, SIGMAD)
+
+
+def test_cde_loss_metric():
+    """Basic test to ensure that the CDE Loss metric class is working.
+    """
+    zgrid, zspec, pdf_ens, _ = construct_test_ensemble()
+    cde_loss_class = CDELossMetric(zgrid)
+    result = cde_loss_class.evaluate(pdf_ens, zspec)
+    assert np.isclose(result, CDEVAL)

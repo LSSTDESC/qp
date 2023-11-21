@@ -212,10 +212,39 @@ class PITMetric(DistToPointMetric):
     metric_output_type = MetricOuputType.single_distribution
     default_eval_grid = np.linspace(0, 1, 100)
 
-    def __init__(self, eval_grid: list = default_eval_grid) -> None:
+    def __init__(self, eval_grid: list = default_eval_grid, **kwargs) -> None:
         super().__init__()
         self._eval_grid = eval_grid
 
     def evaluate(self, estimate, reference) -> Ensemble:
         pit_object = PIT(estimate, reference, self._eval_grid)
         return pit_object.pit
+
+
+class CDELossMetric(DistToPointMetric):
+    """Conditional density loss"""
+
+    metric_name = "cdeloss"
+    metric_output_type = MetricOuputType.one_value_per_distribution
+    default_eval_grid = np.linspace(0, 2.5, 301)
+
+    def __init__(self, eval_grid: list = default_eval_grid, **kwargs) -> None:
+        super().__init__()
+        self._xvals = eval_grid
+
+    def evaluate(self, estimate, reference):
+        """Evaluate the estimated conditional density loss described in
+        Izbicki & Lee 2017 (arXiv:1704.08095).
+        """
+
+        pdfs = estimate.pdf(self._xvals)
+        npdf = estimate.npdf
+
+        # Calculate first term E[\int f*(z | X)^2 dz]
+        term1 = np.mean(np.trapz(pdfs**2, x=self._xvals))
+        # z bin closest to ztrue
+        nns = [np.argmin(np.abs(self._xvals - z)) for z in reference]
+        # Calculate second term E[f*(Z | X)]
+        term2 = np.mean(pdfs[range(npdf), nns])
+        cdeloss = term1 - 2 * term2
+        return cdeloss
