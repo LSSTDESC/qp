@@ -29,9 +29,7 @@ def test_single_ensemble_raises_unimplemented():
     dx = 0.001
     single_ens_metric = SingleEnsembleMetric(limits, dx)
 
-    pytest.raises(NotImplementedError, single_ens_metric.initialize)
     pytest.raises(NotImplementedError, single_ens_metric.evaluate, estimate=None)
-    pytest.raises(NotImplementedError, single_ens_metric.finalize)
 
 
 def test_dist_to_dist_metrics():
@@ -53,11 +51,9 @@ def test_dist_to_dist_raises_unimplemented():
     dx = 0.001
     dist_to_dist_metric = DistToDistMetric(limits, dx)
 
-    pytest.raises(NotImplementedError, dist_to_dist_metric.initialize)
     pytest.raises(
         NotImplementedError, dist_to_dist_metric.evaluate, estimate=None, reference=None
     )
-    pytest.raises(NotImplementedError, dist_to_dist_metric.finalize)
 
 
 def test_dist_to_point_metrics():
@@ -79,14 +75,12 @@ def test_dist_to_point_raises_unimplemented():
     dx = 0.001
     dist_to_point_metric = DistToPointMetric(limits, dx)
 
-    pytest.raises(NotImplementedError, dist_to_point_metric.initialize)
     pytest.raises(
         NotImplementedError,
         dist_to_point_metric.evaluate,
         estimate=None,
         reference=None,
     )
-    pytest.raises(NotImplementedError, dist_to_point_metric.finalize)
 
 
 def test_point_to_point_metrics():
@@ -108,14 +102,12 @@ def test_point_to_point_raises_unimplemented():
     dx = 0.001
     point_to_point_metric = PointToPointMetric(limits, dx)
 
-    pytest.raises(NotImplementedError, point_to_point_metric.initialize)
     pytest.raises(
         NotImplementedError,
         point_to_point_metric.evaluate,
         estimate=None,
         reference=None,
     )
-    pytest.raises(NotImplementedError, point_to_point_metric.finalize)
 
 
 def test_point_to_dist_metrics():
@@ -137,11 +129,9 @@ def test_point_to_dist_raises_unimplemented():
     dx = 0.001
     point_to_dist_metric = PointToDistMetric(limits, dx)
 
-    pytest.raises(NotImplementedError, point_to_dist_metric.initialize)
     pytest.raises(
         NotImplementedError,
         point_to_dist_metric.evaluate,
         estimate=None,
         reference=None,
     )
-    pytest.raises(NotImplementedError, point_to_dist_metric.finalize)
