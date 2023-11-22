@@ -1,6 +1,6 @@
 import numpy as np
 from qp.metrics.base_metric_classes import (
-    MetricOuputType,
+    MetricOutputType,
     PointToPointMetric,
 )
 
@@ -12,7 +12,7 @@ class PointStatsEz(PointToPointMetric):
     metric_name = "point_stats_ez"
 
     #! This doesn't seem quiet correct, perhaps we need a `single_value_per_input_element` ???
-    metric_output_type = MetricOuputType.one_value_per_distribution
+    metric_output_type = MetricOutputType.one_value_per_distribution
 
     def __init__(self) -> None:
         super().__init__()
@@ -41,7 +41,7 @@ class PointSigmaIQR(PointToPointMetric):
     """Calculate sigmaIQR"""
 
     metric_name = "point_stats_iqr"
-    metric_output_type = MetricOuputType.single_value
+    metric_output_type = MetricOutputType.single_value
 
     def __init__(self) -> None:
         super().__init__()
@@ -75,7 +75,7 @@ class PointBias(PointToPointMetric):
     """
 
     metric_name = "point_bias"
-    metric_output_type = MetricOuputType.single_value
+    metric_output_type = MetricOutputType.single_value
 
     def __init__(self) -> None:
         super().__init__()
@@ -106,7 +106,7 @@ class PointOutlierRate(PointToPointMetric):
     """
 
     metric_name = "point_outlier_rate"
-    metric_output_type = MetricOuputType.single_value
+    metric_output_type = MetricOutputType.single_value
 
     def __init__(self) -> None:
         super().__init__()
@@ -144,7 +144,7 @@ class PointSigmaMAD(PointToPointMetric):
     """
 
     metric_name = "point_stats_sigma_mad"
-    metric_output_type = MetricOuputType.single_value
+    metric_output_type = MetricOutputType.single_value
 
     def __init__(self) -> None:
         super().__init__()
