@@ -1,13 +1,12 @@
 # pylint: disable=protected-access
 
 import pytest
-from qp.metrics.base_metric_classes import (
-    SingleEnsembleMetric,
-    DistToDistMetric,
-    DistToPointMetric,
-    PointToPointMetric,
-    PointToDistMetric,
-)
+
+from qp.metrics.base_metric_classes import (DistToDistMetric,
+                                            DistToPointMetric,
+                                            PointToDistMetric,
+                                            PointToPointMetric,
+                                            SingleEnsembleMetric)
 
 
 def test_single_ensemble_metrics():

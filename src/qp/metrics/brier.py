@@ -4,7 +4,7 @@ import numpy as np
 
 class Brier:
     """Brier score based on https://en.wikipedia.org/wiki/Brier_score#Original_definition_by_Brier
-    
+
     Parameters
     ----------
     prediction: NxM array, float

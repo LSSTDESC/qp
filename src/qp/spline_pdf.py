@@ -4,7 +4,7 @@
 import numpy as np
 from scipy.integrate import quad
 from scipy.interpolate import splev, splint, splrep
-from scipy.special import errstate
+from scipy.special import errstate  # pylint: disable=no-name-in-module
 from scipy.stats import rv_continuous
 
 from qp.conversion_funcs import extract_samples, extract_xy_vals
@@ -41,10 +41,11 @@ def normalize_spline(xvals, yvals, limits, **kwargs):
     def row_integral(irow):
         def spl(xv):
             return splev(xv, splrep(xvals[irow], yvals[irow]))
+
         return quad(spl, limits[0], limits[1], **kwargs)[0]
 
     vv = np.vectorize(row_integral)
-    with errstate(all='ignore'):
+    with errstate(all="ignore"):
         integrals = vv(np.arange(xvals.shape[0]))
     return (yvals.T / integrals).T
 
@@ -104,9 +105,10 @@ class spline_gen(Pdf_rows_gen):
     The ppf() will use the default scipy implementation, which
     inverts the cdf() as evaluated on an adaptive grid.
     """
+
     # pylint: disable=protected-access
 
-    name = 'spline'
+    name = "spline"
     version = 0
 
     _support_mask = rv_continuous._support_mask
@@ -128,27 +130,28 @@ class spline_gen(Pdf_rows_gen):
         -----
         Either (splx, sply and spln) must be provided.
         """
-        splx = kwargs.pop('splx', None)
-        sply = kwargs.pop('sply', None)
-        spln = kwargs.pop('spln', None)
+        splx = kwargs.pop("splx", None)
+        sply = kwargs.pop("sply", None)
+        spln = kwargs.pop("spln", None)
 
         if splx is None:  # pragma: no cover
             raise ValueError("splx must be provided")
         if splx.shape != sply.shape:  # pragma: no cover
-            raise ValueError("Shape of xvals (%s) != shape of yvals (%s)" % (splx.shape, sply.shape))
-        #kwargs['a'] = self.a = np.min(splx)
-        #kwargs['b'] = self.b = np.max(splx)
+            raise ValueError(
+                "Shape of xvals (%s) != shape of yvals (%s)" % (splx.shape, sply.shape)
+            )
+        # kwargs['a'] = self.a = np.min(splx)
+        # kwargs['b'] = self.b = np.max(splx)
         self._xmin = np.min(splx)
         self._xmax = np.max(splx)
-        kwargs['shape'] = splx.shape[:-1]
+        kwargs["shape"] = splx.shape[:-1]
         self._splx = reshape_to_pdf_size(splx, -1)
         self._sply = reshape_to_pdf_size(sply, -1)
         self._spln = reshape_to_pdf_size(spln, -1)
         super().__init__(*args, **kwargs)
-        self._addobjdata('splx', self._splx)
-        self._addobjdata('sply', self._sply)
-        self._addobjdata('spln', self._spln)
-
+        self._addobjdata("splx", self._splx)
+        self._addobjdata("sply", self._sply)
+        self._addobjdata("spln", self._spln)
 
     @staticmethod
     def build_normed_splines(xvals, yvals, **kwargs):
@@ -172,12 +175,14 @@ class spline_gen(Pdf_rows_gen):
           The order of the spline knots
         """
         if xvals.shape != yvals.shape:  # pragma: no cover
-            raise ValueError("Shape of xvals (%s) != shape of yvals (%s)" % (xvals.shape, yvals.shape))
+            raise ValueError(
+                "Shape of xvals (%s) != shape of yvals (%s)"
+                % (xvals.shape, yvals.shape)
+            )
         xmin = np.min(xvals)
         xmax = np.max(xvals)
         yvals = normalize_spline(xvals, yvals, limits=(xmin, xmax), **kwargs)
         return build_splines(xvals, yvals)
-
 
     @classmethod
     def create_from_xy_vals(cls, xvals, yvals, **kwargs):
@@ -218,11 +223,10 @@ class spline_gen(Pdf_rows_gen):
             The requested PDF
         """
         kdes = build_kdes(samples)
-        kwargs.pop('yvals', None)
+        kwargs.pop("yvals", None)
         yvals = evaluate_kdes(xvals, kdes)
-        xvals_expand = (np.expand_dims(xvals, -1)*np.ones(samples.shape[0])).T
+        xvals_expand = (np.expand_dims(xvals, -1) * np.ones(samples.shape[0])).T
         return cls.create_from_xy_vals(xvals_expand, yvals, **kwargs)
-
 
     @property
     def splx(self):
@@ -242,19 +246,24 @@ class spline_gen(Pdf_rows_gen):
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
         def pdf_row(xv, irow):
-            return splev(xv, (self._splx[irow], self._sply[irow], self._spln[irow].item()))
+            return splev(
+                xv, (self._splx[irow], self._sply[irow], self._spln[irow].item())
+            )
 
-        with errstate(all='ignore'):
+        with errstate(all="ignore"):
             vv = np.vectorize(pdf_row)
         return vv(x, row).ravel()
-
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
         def cdf_row(xv, irow):
-            return splint(self._xmin, xv, (self._splx[irow], self._sply[irow], self._spln[irow].item()))
+            return splint(
+                self._xmin,
+                xv,
+                (self._splx[irow], self._sply[irow], self._spln[irow].item()),
+            )
 
-        with errstate(all='ignore'):
+        with errstate(all="ignore"):
             vv = np.vectorize(cdf_row)
         return vv(x, row).ravel()
 
@@ -263,9 +272,9 @@ class spline_gen(Pdf_rows_gen):
         Set the bins as additional constructor argument
         """
         dct = super()._updated_ctor_param()
-        dct['splx'] = self._splx
-        dct['sply'] = self._sply
-        dct['spln'] = self._spln
+        dct["splx"] = self._splx
+        dct["sply"] = self._sply
+        dct["spln"] = self._spln
         return dct
 
     @classmethod
@@ -274,7 +283,7 @@ class spline_gen(Pdf_rows_gen):
         Return the keywords necessary to create an 'empty' hdf5 file with npdf entries
         for iterative file writeout.  We only need to allocate the objdata columns, as
         the metadata can be written when we finalize the file.
-        
+
         Parameters
         ----------
         npdf: int
@@ -282,12 +291,11 @@ class spline_gen(Pdf_rows_gen):
         kwargs: dict
             dictionary of kwargs needed to create the ensemble
         """
-        if 'splx' not in kwargs: #pragma: no cover
+        if "splx" not in kwargs:  # pragma: no cover
             raise ValueError("required argument splx not included in kwargs")
 
-        shape = np.shape(kwargs['splx'])
-        return dict(splx=(shape, 'f4'), sply=(shape, 'f4'), spln=((shape[0],1), 'i4'))
-
+        shape = np.shape(kwargs["splx"])
+        return dict(splx=(shape, "f4"), sply=(shape, "f4"), spln=((shape[0], 1), "i4"))
 
     @classmethod
     def plot_native(cls, pdf, **kwargs):
@@ -296,7 +304,7 @@ class spline_gen(Pdf_rows_gen):
         For a spline this shows the spline knots
         """
         axes, _, kw = get_axes_and_xlims(**kwargs)
-        xvals = pdf.dist.splx[pdf.kwds['row']]
+        xvals = pdf.dist.splx[pdf.kwds["row"]]
         return plot_pdf_on_axes(axes, pdf, xvals, **kw)
 
     @classmethod
@@ -310,22 +318,32 @@ class spline_gen(Pdf_rows_gen):
         cls._add_extraction_method(extract_xy_vals, "xy")
         cls._add_extraction_method(extract_samples, "samples")
 
-
     @classmethod
     def make_test_data(cls):
-        """ Make data for unit tests """
+        """Make data for unit tests"""
         SPLX, SPLY, SPLN = cls.build_normed_splines(XARRAY, YARRAY)
-        cls.test_data = dict(spline=dict(gen_func=spline, ctor_data=dict(splx=SPLX, sply=SPLY, spln=SPLN),\
-                                         test_xvals=TEST_XVALS[::10]),
-                             spline_kde=dict(gen_func=spline_from_samples,\
-                                             ctor_data=dict(samples=SAMPLES, xvals=np.linspace(0, 5, 51)),\
-                                             convert_data=dict(xvals=np.linspace(0, 5, 51), method='samples'),\
-                                             test_xvals=TEST_XVALS, atol_diff2=1., test_pdf=False),\
-                             spline_xy=dict(gen_func=spline_from_xy,\
-                                            ctor_data=dict(xvals=XARRAY, yvals=YARRAY),\
-                                            convert_data=dict(xvals=np.linspace(0, 5, 51), method='xy'),\
-                                            test_xvals=TEST_XVALS, test_pdf=False))
-
+        cls.test_data = dict(
+            spline=dict(
+                gen_func=spline,
+                ctor_data=dict(splx=SPLX, sply=SPLY, spln=SPLN),
+                test_xvals=TEST_XVALS[::10],
+            ),
+            spline_kde=dict(
+                gen_func=spline_from_samples,
+                ctor_data=dict(samples=SAMPLES, xvals=np.linspace(0, 5, 51)),
+                convert_data=dict(xvals=np.linspace(0, 5, 51), method="samples"),
+                test_xvals=TEST_XVALS,
+                atol_diff2=1.0,
+                test_pdf=False,
+            ),
+            spline_xy=dict(
+                gen_func=spline_from_xy,
+                ctor_data=dict(xvals=XARRAY, yvals=YARRAY),
+                convert_data=dict(xvals=np.linspace(0, 5, 51), method="xy"),
+                test_xvals=TEST_XVALS,
+                test_pdf=False,
+            ),
+        )
 
 
 spline = spline_gen.create

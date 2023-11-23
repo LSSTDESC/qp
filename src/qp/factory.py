@@ -20,9 +20,8 @@ from qp.pdf_gen import Pdf_gen_wrap
 
 
 class Factory(OrderedDict):
-    """Factory that creates and mangages PDFs
+    """Factory that creates and mangages PDFs"""
 
-    """
     def __init__(self):
         """C'tor"""
         super().__init__()
@@ -34,7 +33,6 @@ class Factory(OrderedDict):
         data_dict = {}
 
         for col, col_data in md_table.items():
-
             ndim = np.ndim(col_data)
 
             if ndim > 1:
@@ -50,7 +48,7 @@ class Factory(OrderedDict):
             data_dict[col] = col_data
 
         for col, col_data in data_table.items():
-            if len(col_data.shape) < 2: #pragma: no cover
+            if len(col_data.shape) < 2:  # pragma: no cover
                 data_dict[col] = np.expand_dims(col_data, -1)
             else:
                 data_dict[col] = col_data
@@ -59,10 +57,12 @@ class Factory(OrderedDict):
     def _make_scipy_wrapped_class(self, class_name, scipy_class):
         """Build a qp class from a scipy class"""
         # pylint: disable=protected-access
-        override_dict = dict(name=class_name,
-                            version=0,
-                            freeze=Pdf_gen_wrap._my_freeze,
-                            _other_init=scipy_class.__init__)
+        override_dict = dict(
+            name=class_name,
+            version=0,
+            freeze=Pdf_gen_wrap._my_freeze,
+            _other_init=scipy_class.__init__,
+        )
         the_class = type(class_name, (Pdf_gen_wrap, scipy_class), override_dict)
         self.add_class(the_class)
 
@@ -82,18 +82,23 @@ class Factory(OrderedDict):
         the_class : class
             The class we are adding, must inherit from Pdf_Gen
         """
-        #if not isinstance(the_class, Pdf_gen): #pragma: no cover
+        # if not isinstance(the_class, Pdf_gen): #pragma: no cover
         #    raise TypeError("Can only add sub-classes of Pdf_Gen to factory")
-        if not hasattr(the_class, 'name'): #pragma: no cover
-            raise AttributeError("Can not add class %s to factory because it doesn't have a name attribute" % the_class)
-        if the_class.name in self: #pragma: no cover
-            raise KeyError("Class nameed %s is already in factory, point to %s" % (the_class.name, self[the_class.name]))
+        if not hasattr(the_class, "name"):  # pragma: no cover
+            raise AttributeError(
+                "Can not add class %s to factory because it doesn't have a name attribute"
+                % the_class
+            )
+        if the_class.name in self:  # pragma: no cover
+            raise KeyError(
+                "Class nameed %s is already in factory, point to %s"
+                % (the_class.name, self[the_class.name])
+            )
         the_class.add_method_dicts()
         the_class.add_mappings()
         self[the_class.name] = the_class
         setattr(self, "%s_gen" % the_class.name, the_class)
         setattr(self, the_class.name, the_class.create)
-
 
     def create(self, class_name, data, method=None):
         """Make an ensemble of a particular type of distribution
@@ -112,7 +117,7 @@ class Factory(OrderedDict):
         ens : `qp.Ensemble`
             The newly created ensemble
         """
-        if class_name not in self: #pragma: no cover
+        if class_name not in self:  # pragma: no cover
             raise KeyError("Class nameed %s is not in factory" % class_name)
         the_class = self[class_name]
         ctor_func = the_class.creation_method(method)
@@ -130,21 +135,21 @@ class Factory(OrderedDict):
         This will use information in the meta data table to figure out how to construct the data
         need to build the ensemble.
         """
-        md_table = tables['meta']
-        data_table = tables['data']
-        ancil_table = tables.get('ancil')
+        md_table = tables["meta"]
+        data_table = tables["data"]
+        ancil_table = tables.get("ancil")
 
         data = self._build_data_dict(md_table, data_table)
 
-        pdf_name = data.pop('pdf_name')
-        pdf_version = data.pop('pdf_version')
-        if pdf_name not in self: #pragma: no cover
+        pdf_name = data.pop("pdf_name")
+        pdf_version = data.pop("pdf_version")
+        if pdf_name not in self:  # pragma: no cover
             raise KeyError("Class nameed %s is not in factory" % pdf_name)
 
         the_class = self[pdf_name]
         reader_convert = the_class.reader_method(pdf_version)
         ctor_func = the_class.creation_method(None)
-        if reader_convert is not None: #pragma: no cover
+        if reader_convert is not None:  # pragma: no cover
             data = reader_convert(data)
         return Ensemble(ctor_func, data=data, ancil=ancil_table)
 
@@ -155,7 +160,7 @@ class Factory(OrderedDict):
         ----------
         filename : `str`
         """
-        tables = io.read(filename, NUMPY_DICT, keys=['meta'])
+        tables = io.read(filename, NUMPY_DICT, keys=["meta"])
         return tables["meta"]
 
     def is_qp_file(self, filename):
@@ -173,9 +178,9 @@ class Factory(OrderedDict):
         """
         try:
             # If this isn't a table-like file with a 'meta' table this will throw an exception
-            tables = io.readNative(filename, keys=['meta'])
+            tables = io.readNative(filename, keys=["meta"])
             # If the 'meta' tables doesn't have 'pdf_name' or it is empty this will throw an exception or fail
-            return len(tables['meta']['pdf_name']) > 0
+            return len(tables["meta"]["pdf_name"]) > 0
         except Exception as msg:
             # Any exception means it isn't a qp file
             print(f"This is not a qp file because {msg}")
@@ -194,15 +199,16 @@ class Factory(OrderedDict):
         need to build the ensemble.
         """
         _, ext = os.path.splitext(filename)
-        if ext in ['.pq']:
-            keys = ['data', 'meta', 'ancil']
+        if ext in [".pq"]:
+            keys = ["data", "meta", "ancil"]
             allow_missing_keys = True
         else:
             keys = None
             allow_missing_keys = False
 
-        tables = io.read(filename, NUMPY_DICT, keys=keys,
-                         allow_missing_keys=allow_missing_keys) #pylint: disable=no-member
+        tables = io.read(
+            filename, NUMPY_DICT, keys=keys, allow_missing_keys=allow_missing_keys
+        )  # pylint: disable=no-member
 
         return self.from_tables(tables)
 
@@ -217,7 +223,7 @@ class Factory(OrderedDict):
         -------
         nrows : `int`
         """
-        f, _ = io.readHdf5Group(filename, 'data')
+        f, _ = io.readHdf5Group(filename, "data")
         num_rows = io.getGroupInputDataLength(f)
         return num_rows
 
@@ -231,22 +237,22 @@ class Factory(OrderedDict):
         chunk_size : `int`
         """
         extension = os.path.splitext(filename)[1]
-        if extension not in ['.hdf5']:  #pragma: no cover
+        if extension not in [".hdf5"]:  # pragma: no cover
             raise TypeError("Can only use qp.iterator on hdf5 files")
 
-        metadata = io.readHdf5ToDict(filename, 'meta')
-        pdf_name = metadata.pop('pdf_name')[0].decode()
-        pdf_version = metadata.pop('pdf_version')[0]
-        if pdf_name not in self: #pragma: no cover
+        metadata = io.readHdf5ToDict(filename, "meta")
+        pdf_name = metadata.pop("pdf_name")[0].decode()
+        _pdf_version = metadata.pop("pdf_version")[0]
+        if pdf_name not in self:  # pragma: no cover
             raise KeyError("Class nameed %s is not in factory" % pdf_name)
         the_class = self[pdf_name]
         # reader_convert = the_class.reader_method(pdf_version)
         ctor_func = the_class.creation_method(None)
 
-        f, infp = io.readHdf5Group(filename, 'data')
+        f, infp = io.readHdf5Group(filename, "data")
         try:
-            ancil_f, ancil_infp = io.readHdf5Group(filename, 'ancil')
-        except KeyError:  #pragma: no cover
+            ancil_f, ancil_infp = io.readHdf5Group(filename, "ancil")
+        except KeyError:  # pragma: no cover
             ancil_f, ancil_infp = (None, None)
         num_rows = io.getGroupInputDataLength(f)
         ranges = io.data_ranges_by_rank(num_rows, chunk_size, parallel_size, rank)
@@ -280,17 +286,19 @@ class Factory(OrderedDict):
         """
         kwds_copy = kwds.copy()
         method = kwds_copy.pop("method", None)
-        if class_name not in self: #pragma: no cover
+        if class_name not in self:  # pragma: no cover
             raise KeyError("Class nameed %s is not in factory" % class_name)
-        if class_name not in self: #pragma: no cover
+        if class_name not in self:  # pragma: no cover
             raise KeyError("Class nameed %s is not in factory" % class_name)
         the_class = self[class_name]
         extract_func = the_class.extraction_method(method)
-        if extract_func is None: #pragma: no cover
-            raise KeyError("Class named %s does not have a extraction_method named %s" % (class_name, method))
+        if extract_func is None:  # pragma: no cover
+            raise KeyError(
+                "Class named %s does not have a extraction_method named %s"
+                % (class_name, method)
+            )
         data = extract_func(in_dist, **kwds_copy)
         return self.create(class_name, data, method)
-
 
     def pretty_print(self, stream=sys.stdout):
         """Print a level of the converstion dictionary in a human-readable format
@@ -319,7 +327,7 @@ class Factory(OrderedDict):
         ens : `qp.Ensemble`
             The output
         """
-        if not ensembles:  #pragma: no cover
+        if not ensembles:  # pragma: no cover
             return None
         metadata_list = []
         objdata_list = []
@@ -333,18 +341,18 @@ class Factory(OrderedDict):
             if ancil_list is not None:
                 if ensemble.ancil is None:
                     ancil_list = None
-                else:  #pragma: no cover
+                else:  # pragma: no cover
                     ancil_list.append(ensemble.ancil)
-        if not compare_dicts(metadata_list):  #pragma: no cover
+        if not compare_dicts(metadata_list):  # pragma: no cover
             raise ValueError("Metadata does not match")
         metadata = metadata_list[0]
         data = concatenate_dicts(objdata_list)
-        if ancil_list is not None:  #pragma: no cover
+        if ancil_list is not None:  # pragma: no cover
             ancil = concatenate_dicts(ancil_list)
         else:
             ancil = None
         for k, v in metadata.items():
-            if k in ['pdf_name', 'pdf_version']:
+            if k in ["pdf_name", "pdf_version"]:
                 continue
             data[k] = np.squeeze(v)
         return Ensemble(gen_func, data, ancil)
@@ -352,9 +360,11 @@ class Factory(OrderedDict):
 
 _FACTORY = Factory()
 
+
 def instance():
     """Return the factory instance"""
     return _FACTORY
+
 
 stats = _FACTORY
 add_class = _FACTORY.add_class

@@ -11,9 +11,12 @@ from qp.metrics.brier import Brier
 from qp.metrics.goodness_of_fit import goodness_of_fit_metrics
 from qp.utils import epsilon
 
-Grid = namedtuple('Grid', ['grid_values', 'cardinality', 'resolution', 'hist_bin_edges', 'limits'])
+Grid = namedtuple(
+    "Grid", ["grid_values", "cardinality", "resolution", "hist_bin_edges", "limits"]
+)
 
-def _calculate_grid_parameters(limits, dx:float=0.01) -> Grid:
+
+def _calculate_grid_parameters(limits, dx: float = 0.01) -> Grid:
     """
     Create a grid of points and return parameters describing it.
 
@@ -37,9 +40,12 @@ def _calculate_grid_parameters(limits, dx:float=0.01) -> Grid:
     cardinality = int((limits[-1] - limits[0]) / dx)
     grid_values = np.linspace(limits[0], limits[1], cardinality)
     resolution = (limits[-1] - limits[0]) / (cardinality - 1)
-    hist_bin_edges = np.histogram_bin_edges((limits[0]-resolution/2, limits[1]+resolution/2), cardinality)
+    hist_bin_edges = np.histogram_bin_edges(
+        (limits[0] - resolution / 2, limits[1] + resolution / 2), cardinality
+    )
 
     return Grid(grid_values, cardinality, resolution, hist_bin_edges, limits)
+
 
 def calculate_moment(p, N, limits, dx=0.01):
     """
@@ -68,7 +74,7 @@ def calculate_moment(p, N, limits, dx=0.01):
     pe = p.gridded(grid.grid_values)[1]
 
     # calculate the moment
-    grid_to_N = grid.grid_values ** N
+    grid_to_N = grid.grid_values**N
     M = array_metrics.quick_moment(pe, grid_to_N, grid.resolution)
 
     return M
@@ -99,7 +105,9 @@ def calculate_kld(p, q, limits, dx=0.01):
     TO DO: have this take number of points not dx!
     """
     if p.shape != q.shape:
-        raise ValueError('Cannot calculate KLD between two ensembles with different shapes')
+        raise ValueError(
+            "Cannot calculate KLD between two ensembles with different shapes"
+        )
 
     # Make a grid from the limits and resolution
     grid = _calculate_grid_parameters(limits, dx)
@@ -111,11 +119,13 @@ def calculate_kld(p, q, limits, dx=0.01):
     qn = qe[1]
 
     # Calculate the KLD from q to p
-    Dpq = array_metrics.quick_kld(pn, qn, grid.resolution)# np.dot(pn * logquotient, np.ones(len(grid)) * dx)
+    Dpq = array_metrics.quick_kld(
+        pn, qn, grid.resolution
+    )  # np.dot(pn * logquotient, np.ones(len(grid)) * dx)
 
-    if np.any(Dpq < 0.): #pragma: no cover
-        print('broken KLD: '+str((Dpq, pn, qn, grid.resolution)))
-        Dpq = epsilon*np.ones(Dpq.shape)
+    if np.any(Dpq < 0.0):  # pragma: no cover
+        print("broken KLD: " + str((Dpq, pn, qn, grid.resolution)))
+        Dpq = epsilon * np.ones(Dpq.shape)
     return Dpq
 
 
@@ -126,9 +136,11 @@ def calculate_rmse(p, q, limits, dx=0.01):
     Parameters
     ----------
     p: qp.Ensemble object
-        probability distribution function whose distance between its truth and the approximation of `q` will be calculated.
+        probability distribution function whose distance between its truth and the
+        approximation of `q` will be calculated.
     q: qp.Ensemble object
-        probability distribution function whose distance between its approximation and the truth of `p` will be calculated.
+        probability distribution function whose distance between its approximation and the
+        truth of `p` will be calculated.
     limits: tuple of floats
         endpoints of integration interval in which to calculate RMS
     dx: float
@@ -144,7 +156,9 @@ def calculate_rmse(p, q, limits, dx=0.01):
     TO DO: change dx to N
     """
     if p.shape != q.shape:
-        raise ValueError('Cannot calculate RMSE between two ensembles with different shapes')
+        raise ValueError(
+            "Cannot calculate RMSE between two ensembles with different shapes"
+        )
 
     # Make a grid from the limits and resolution
     grid = _calculate_grid_parameters(limits, dx)
@@ -154,7 +168,9 @@ def calculate_rmse(p, q, limits, dx=0.01):
     qe = q.gridded(grid.grid_values)[1]
 
     # Calculate the RMS between p and q
-    rms = array_metrics.quick_rmse(pe, qe, grid.cardinality)# np.sqrt(dx * np.sum((pe - qe) ** 2))
+    rms = array_metrics.quick_rmse(
+        pe, qe, grid.cardinality
+    )  # np.sqrt(dx * np.sum((pe - qe) ** 2))
 
     return rms
 
@@ -162,7 +178,7 @@ def calculate_rmse(p, q, limits, dx=0.01):
 def calculate_rbpe(p, limits=(np.inf, np.inf)):
     """
     Calculates the risk based point estimates of a qp.Ensemble object.
-    Algorithm as defined in 4.2 of 'Photometric redshifts for Hyper Suprime-Cam 
+    Algorithm as defined in 4.2 of 'Photometric redshifts for Hyper Suprime-Cam
     Subaru Strategic Program Data Release 1' (Tanaka et al. 2018).
 
     Parameters
@@ -185,30 +201,35 @@ def calculate_rbpe(p, limits=(np.inf, np.inf)):
         return dist.pdf(z)[0][0]
 
     for n in range(0, p.npdf):
-
         if p[n].npdf != 1:
-            raise ValueError('quick_rbpe only handles Ensembles with a single PDF '
-                             'for ensembles with more than one PDF, use the qp.metrics.risk_based_point_estimate function.')
+            raise ValueError(
+                "quick_rbpe only handles Ensembles with a single PDF "
+                "for ensembles with more than one PDF, use the qp.metrics.risk_based_point_estimate function."
+            )
 
         this_dist_pdf_at_z = partial(evaluate_pdf_at_z, dist=p[n])
         integration_bounds = (p[n].ppf(0.01)[0][0], p[n].ppf(0.99)[0][0])
 
-        rbpes.append(array_metrics.quick_rbpe(this_dist_pdf_at_z, integration_bounds, limits))
+        rbpes.append(
+            array_metrics.quick_rbpe(this_dist_pdf_at_z, integration_bounds, limits)
+        )
 
     return np.array(rbpes)
 
+
 def calculate_brier(p, truth, limits, dx=0.01):
     """This function will do the following:
-    
+
     1) Generate a Mx1 sized grid based on `limits` and `dx`.
-    2) Produce an NxM array by evaluating the pdf for each of the N distribution objects in the Ensemble p on the grid. 
+    2) Produce an NxM array by evaluating the pdf for each of the N distribution objects
+       in the Ensemble p on the grid.
     3) Produce an NxM truth_array using the input truth and the generated grid. All values will be 0 or 1.
     4) Create a Brier metric evaluation object
     5) Return the result of the Brier metric calculation.
 
     Parameters
     ----------
-    p: qp.Ensemble object 
+    p: qp.Ensemble object
         of N distributions probability distribution functions that will be gridded and compared against truth.
     truth: Nx1 sequence
         the list of true values, 1 per distribution in p.
@@ -222,9 +243,13 @@ def calculate_brier(p, truth, limits, dx=0.01):
     Brier_metric: float
     """
 
-    # Ensure that the number of distributions objects in the Ensemble is equal to the length of the truth array
+    # Ensure that the number of distributions objects in the Ensemble
+    # is equal to the length of the truth array
     if p.npdf != len(truth):
-        raise ValueError("Number of distributions in the Ensemble (%d) is not equal to the number of truth values (%d)" % (p.npdf, len(truth)))
+        raise ValueError(
+            "Number of distributions in the Ensemble (%d) is not equal to the number of truth values (%d)"
+            % (p.npdf, len(truth))
+        )
 
     # Values of truth that are outside the defined limits will not appear truth_array.
     # Consider expanding the limits or using numpy.clip to restrict truth values to the limits.
@@ -250,13 +275,17 @@ def calculate_brier(p, truth, limits, dx=0.01):
     # return the results of evaluating the Brier metric
     return brier_metric_evaluation.evaluate()
 
+
 @deprecated(
     reason="""
     This implementation is deprecated for performance reasons and does not accommodate N vs 1 comparisons.
     Please use calculate_goodness_of_fit instead. This method is for testing purposes only.
     """,
-    category=DeprecationWarning)
-def calculate_anderson_darling(p, scipy_distribution='norm', num_samples=100, _random_state=None):  # pylint: disable=unused-argument
+    category=DeprecationWarning,
+)
+def calculate_anderson_darling(
+    p, scipy_distribution="norm", num_samples=100, _random_state=None
+):  # pylint: disable=unused-argument
     """This function is deprecated and will be completely removed in a later version.
     Please use `calculate_goodness_of_fit` instead.
 
@@ -264,15 +293,21 @@ def calculate_anderson_darling(p, scipy_distribution='norm', num_samples=100, _r
     -------
     logger.warning
     """
-    logging.warning("This function is deprecated, please use `calculate_goodness_of_fit` with `fit_metric='ad'`") # pragma: no cover
+    logging.warning(
+        "This function is deprecated, please use `calculate_goodness_of_fit` with `fit_metric='ad'`"
+    )  # pragma: no cover
+
 
 @deprecated(
     reason="""
     This implementation is deprecated for performance reasons and does not accommodate N vs 1 comparisons.
     Please use calculate_goodness_of_fit instead. This method is for testing purposes only.
     """,
-    category=DeprecationWarning)
-def calculate_cramer_von_mises(p, q, num_samples=100, _random_state=None, **kwargs):  # pylint: disable=unused-argument
+    category=DeprecationWarning,
+)
+def calculate_cramer_von_mises(
+    p, q, num_samples=100, _random_state=None, **kwargs
+):  # pylint: disable=unused-argument
     """This function is deprecated and will be completely removed in a later version.
     Please use `calculate_goodness_of_fit` instead.
 
@@ -280,15 +315,21 @@ def calculate_cramer_von_mises(p, q, num_samples=100, _random_state=None, **kwar
     -------
     logger.warning
     """
-    logging.warning("This function is deprecated, please use `calculate_goodness_of_fit` with `fit_metric='cvm'`") # pragma: no cover
+    logging.warning(
+        "This function is deprecated, please use `calculate_goodness_of_fit` with `fit_metric='cvm'`"
+    )  # pragma: no cover
+
 
 @deprecated(
     reason="""
     This implementation is deprecated for performance reasons and does not accommodate N vs 1 comparisons.
     Please use calculate_goodness_of_fit instead. This method is for testing purposes only.
     """,
-    category=DeprecationWarning)
-def calculate_kolmogorov_smirnov(p, q, num_samples=100, _random_state=None):  # pylint: disable=unused-argument
+    category=DeprecationWarning,
+)
+def calculate_kolmogorov_smirnov(
+    p, q, num_samples=100, _random_state=None
+):  # pylint: disable=unused-argument
     """This function is deprecated and will be completely removed in a later version.
     Please use `calculate_goodness_of_fit` instead.
 
@@ -296,7 +337,10 @@ def calculate_kolmogorov_smirnov(p, q, num_samples=100, _random_state=None):  # 
     -------
     logger.warning
     """
-    logging.warning("This function is deprecated, please use `calculate_goodness_of_fit` with `fit_metric='ks'`") # pragma: no cover
+    logging.warning(
+        "This function is deprecated, please use `calculate_goodness_of_fit` with `fit_metric='ks'`"
+    )  # pragma: no cover
+
 
 def calculate_outlier_rate(p, lower_limit=0.0001, upper_limit=0.9999):
     """Fraction of outliers in each distribution
@@ -319,13 +363,22 @@ def calculate_outlier_rate(p, lower_limit=0.0001, upper_limit=0.9999):
     # Validate that all the distributions in the Ensemble are single distributions - i.e. no nested Ensembles
     try:
         _check_ensemble_is_not_nested(p)
-    except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
-        logging.warning("Each element in the ensemble `p` must be a single distribution.")
+    except (
+        ValueError
+    ):  # pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
+        logging.warning(
+            "Each element in the ensemble `p` must be a single distribution."
+        )
 
-    outlier_rates = [(dist.cdf(lower_limit) + (1. - dist.cdf(upper_limit)))[0][0] for dist in p]
+    outlier_rates = [
+        (dist.cdf(lower_limit) + (1.0 - dist.cdf(upper_limit)))[0][0] for dist in p
+    ]
     return outlier_rates
 
-def calculate_goodness_of_fit(estimate, reference, fit_metric='ks', num_samples=100, _random_state=None):
+
+def calculate_goodness_of_fit(
+    estimate, reference, fit_metric="ks", num_samples=100, _random_state=None
+):
     """This method calculates goodness of fit between the distributions in the
     `estimate` and `reference` Ensembles using the specified fit_metric.
 
@@ -370,18 +423,31 @@ def calculate_goodness_of_fit(estimate, reference, fit_metric='ks', num_samples=
 
     try:
         _check_ensembles_contain_correct_number_of_distributions(estimate, reference)
-    except ValueError: #pragma: no cover - unittest coverage for _check_ensembles_contain_correct_number_of_distributions is complete
-        logging.warning("The ensemble `reference` should have 1 or N distributions. With N = number of distributions in the ensemble `estimate`.")
+    except (
+        ValueError
+    ):  # pragma: no cover - unittest coverage for _check_ensembles_contain_correct_number_of_distributions is complete  pylint: disable=line-too-long
+        logging.warning(
+            "The ensemble `reference` should have 1 or N distributions.  "
+            "With N = number of distributions in the ensemble `estimate`."
+        )
 
     try:
         _check_ensemble_is_not_nested(estimate)
-    except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
-        logging.warning("Each element in the ensemble `estimate` must be a single distribution.")
+    except (
+        ValueError
+    ):  # pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
+        logging.warning(
+            "Each element in the ensemble `estimate` must be a single distribution."
+        )
 
     try:
         _check_ensemble_is_not_nested(reference)
-    except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
-        logging.warning("Each element in the ensemble `reference` must be a single distribution.")
+    except (
+        ValueError
+    ):  # pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
+        logging.warning(
+            "Each element in the ensemble `reference` must be a single distribution."
+        )
 
     if fit_metric not in goodness_of_fit_metrics:
         metrics = list(goodness_of_fit_metrics.keys())
@@ -389,21 +455,23 @@ def calculate_goodness_of_fit(estimate, reference, fit_metric='ks', num_samples=
 
     return goodness_of_fit_metrics[fit_metric](
         reference,
-        np.squeeze(estimate.rvs(size=num_samples, random_state=_random_state))
+        np.squeeze(estimate.rvs(size=num_samples, random_state=_random_state)),
     )
 
+
 def _check_ensembles_are_same_size(p, q):
-    """This utility function ensures checks that two Ensembles contain an equal number of distribution objects.
+    """This utility function ensures checks that two Ensembles contain equal numbers of distributions"
 
     Args:
         p qp.Ensemble: An Ensemble containing 0 or more distributions
         q qp.Ensemble: A second Ensemble containing 0 or more distributions
 
     Raises:
-        ValueError: If the result of evaluating qp.Ensemble.npdf on each Ensemble is not the same, raise an error.
+        ValueError: If the result of evaluating qp.Ensemble.npdf on each Ensemble is not the same.
     """
     if p.npdf != q.npdf:
         raise ValueError("Input ensembles should have the same number of distributions")
+
 
 def _check_ensemble_is_not_nested(p):
     """This utility function ensures that each element in the Ensemble is a single distribution.
@@ -412,11 +480,14 @@ def _check_ensemble_is_not_nested(p):
         p qp.Ensemble: An Ensemble that could contain nested Ensembles with multiple distributions in each
 
     Raises:
-        ValueError: If there are any elements of the input Ensemble that contain more than 1 PDF, raise an error.
+        ValueError: If there are any elements of the input Ensemble that contain more than 1 PDF.
     """
     for dist in p:
         if dist.npdf != 1:
-            raise ValueError("Each element in the input Ensemble should be a single distribution.")
+            raise ValueError(
+                "Each element in the input Ensemble should be a single distribution."
+            )
+
 
 def _check_ensembles_contain_correct_number_of_distributions(estimate, reference):
     """This utility function ensures that the number of distributions in the ensembles matches
@@ -451,4 +522,7 @@ def _check_ensembles_contain_correct_number_of_distributions(estimate, reference
     elif reference.npdf == 1:
         pass
     else:
-        raise ValueError("`reference` should contain either 1 distribution or the same number of distributions as `estimate`.")
+        raise ValueError(
+            "`reference` should contain either 1 distribution "
+            "or the same number of distributions as `estimate`."
+        )

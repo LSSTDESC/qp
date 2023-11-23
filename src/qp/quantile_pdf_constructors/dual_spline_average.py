@@ -105,17 +105,26 @@ class DualSplineAverage(AbstractQuantilePdfConstructor):
             filtered_p_of_zs = list(map(self._p_of_zs.__getitem__, np.unique(row)))
             filtered_locations = list(map(self._locations.__getitem__, np.unique(row)))
 
-        # Create a list of interpolated splines for the even and odd pairs of (specific_locations, specific_p_of_zs)
+        # Create a list of interpolated splines for the even and odd pairs of
+        # (specific_locations, specific_p_of_zs)
         f1 = np.asarray(
             [
-                interp1d(np.squeeze(specific_locations[0::2]), np.squeeze(specific_p_of_zs[0::2]), bounds_error=False, fill_value=0.0, kind='cubic')
+                interp1d(
+                    np.squeeze(specific_locations[0::2]),
+                    np.squeeze(specific_p_of_zs[0::2]),
+                    bounds_error=False, fill_value=0.0, kind='cubic'
+                )
                 for specific_p_of_zs, specific_locations in zip(filtered_p_of_zs, filtered_locations)
             ]
         )
 
         f2 = np.asarray(
             [
-                interp1d(np.squeeze(specific_locations[1::2]), np.squeeze(specific_p_of_zs[1::2]), bounds_error=False, fill_value=0.0, kind='cubic')
+                interp1d(
+                    np.squeeze(specific_locations[1::2]),
+                    np.squeeze(specific_p_of_zs[1::2]),
+                    bounds_error=False, fill_value=0.0, kind='cubic'
+                )
                 for specific_p_of_zs, specific_locations in zip(filtered_p_of_zs, filtered_locations)
             ]
         )
@@ -138,7 +147,8 @@ class DualSplineAverage(AbstractQuantilePdfConstructor):
             _locations :
                 Input during constructor instantiation
             _p_of_zs :
-                Resulting p(z) values found after calculating the area of trapezoids based on the difference between adjacent quantile values
+                Resulting p(z) values found after calculating the area of trapezoids based
+                on the difference between adjacent quantile values
             y1 :
                 One of two splines fit to alternating pairs of (_locations, _p_of_zs)
             y2 :

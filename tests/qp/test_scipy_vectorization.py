@@ -4,16 +4,13 @@ Unit tests for PDF class
 """
 import time
 import unittest
+
 import numpy as np
+
 import qp
 import qp.metrics
-
 from qp import test_funcs
-from qp.metrics.concrete_metric_classes import (
-    ADMetric,
-    CvMMetric,
-    KSMetric,
-)
+from qp.metrics.concrete_metric_classes import ADMetric, CvMMetric, KSMetric
 
 
 class ScipyVectorizationTests(unittest.TestCase):

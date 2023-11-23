@@ -9,7 +9,8 @@ from qp.metrics.metrics import calculate_outlier_rate
 
 DEFAULT_QUANTS = np.linspace(0, 1, 100)
 
-class PIT():
+
+class PIT:
     """PIT(qp_ens, true_vals, eval_grid=DEFAULT_QUANTS)
     Probability Integral Transform
 
@@ -44,7 +45,12 @@ class PIT():
         self._true_vals = true_vals
 
         # For each distribution in the Ensemble, calculate the CDF where x = known_true_value
-        self._pit_samps = np.array([qp_ens[i].cdf(self._true_vals[i])[0][0] for i in range(len(self._true_vals))])
+        self._pit_samps = np.array(
+            [
+                qp_ens[i].cdf(self._true_vals[i])[0][0]
+                for i in range(len(self._true_vals))
+            ]
+        )
 
         # These two lines set all `NaN` values to 0. This may or may not make sense
         # Alternatively if it's better to simply remove the `NaN`, this can be done
@@ -52,12 +58,16 @@ class PIT():
         samp_mask = np.isfinite(self._pit_samps)
         self._pit_samps[~samp_mask] = 0
         if not np.all(samp_mask):
-            logging.warning('Some PIT samples were `NaN`. They have been replacd with 0.')
+            logging.warning(
+                "Some PIT samples were `NaN`. They have been replacd with 0."
+            )
 
         n_pit = np.min([len(self._pit_samps), len(eval_grid)])
         if n_pit < len(eval_grid):
-            logging.warning('Number of pit samples is smaller than the evaluation grid size. '
-                            'Will create a new evaluation grid with size = number of pit samples')
+            logging.warning(
+                "Number of pit samples is smaller than the evaluation grid size. "
+                "Will create a new evaluation grid with size = number of pit samples"
+            )
             eval_grid = np.linspace(0, 1, n_pit)
 
         data_quants = np.quantile(self._pit_samps, eval_grid)
@@ -72,13 +82,14 @@ class PIT():
             qp.quant,
             data=dict(
                 quants=unique_eval_grid[quant_mask],
-                locs=np.atleast_2d(unique_data_quants[quant_mask])
-            )
+                locs=np.atleast_2d(unique_data_quants[quant_mask]),
+            ),
         )
 
     @property
     def pit_samps(self):
-        """Returns the PIT samples. i.e. ``CDF(true_vals)`` for each distribution in the Ensemble used to initialize the PIT object.
+        """Returns the PIT samples. i.e. ``CDF(true_vals)`` for each distribution
+        in the Ensemble used to initialize the PIT object.
 
         Returns
         -------
@@ -99,7 +110,7 @@ class PIT():
         return self._pit
 
     def calculate_pit_meta_metrics(self):
-        """Convenience method that will calculate all of the PIT meta metrics and return 
+        """Convenience method that will calculate all of the PIT meta metrics and return
         them as a dictionary.
 
         Returns
@@ -109,14 +120,14 @@ class PIT():
         """
         pit_meta_metrics = {}
 
-        pit_meta_metrics['ad'] = self.evaluate_PIT_anderson_ksamp()
-        pit_meta_metrics['cvm'] = self.evaluate_PIT_CvM()
-        pit_meta_metrics['ks'] = self.evaluate_PIT_KS()
-        pit_meta_metrics['outlier_rate'] = self.evaluate_PIT_outlier_rate()
+        pit_meta_metrics["ad"] = self.evaluate_PIT_anderson_ksamp()
+        pit_meta_metrics["cvm"] = self.evaluate_PIT_CvM()
+        pit_meta_metrics["ks"] = self.evaluate_PIT_KS()
+        pit_meta_metrics["outlier_rate"] = self.evaluate_PIT_outlier_rate()
 
         return pit_meta_metrics
 
-    def evaluate_PIT_anderson_ksamp(self, pit_min=0., pit_max=1.):
+    def evaluate_PIT_anderson_ksamp(self, pit_min=0.0, pit_max=1.0):
         """Use scipy.stats.anderson_ksamp to compute the Anderson-Darling statistic
         for the cdf(truth) values by comparing with a uniform distribution between 0 and 1.
         Up to the current version (1.9.3), scipy.stats.anderson does not support
@@ -136,7 +147,8 @@ class PIT():
         -------
         array
             A array of objects with attributes `statistic`, `critical_values`, and `significance_level`.
-            For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.anderson_ksamp.html
+            For details see:
+            https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.anderson_ksamp.html
         """
         # Removed the CDF values that are outside the min/max range
         trimmed_pit_values = self._trim_pit_values(pit_min, pit_max)
@@ -154,7 +166,8 @@ class PIT():
         -------
         array
             A array of objects with attributes `statistic` and `pvalue`
-            For details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.cramervonmises.html
+            For details see:
+            https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.cramervonmises.html
         """
         return stats.cramervonmises(self._pit_samps, stats.uniform.cdf)
 
@@ -189,8 +202,8 @@ class PIT():
         return calculate_outlier_rate(self._pit, pit_min, pit_max)[0]
 
     @classmethod
-    def _create_quant_mask(self, data_quants):
-        """ Create a numpy mask such that, when applied only values greater than
+    def _create_quant_mask(cls, data_quants):
+        """Create a numpy mask such that, when applied only values greater than
         0 and less than 1.0 are kept. While this function is fairly simple,
         separating it into a small helper method makes testing much easier.
 
@@ -205,7 +218,7 @@ class PIT():
             The boolean mask
         """
 
-        return np.bitwise_and(data_quants > 0., data_quants < 1)
+        return np.bitwise_and(data_quants > 0.0, data_quants < 1)
 
     def _trim_pit_values(self, cdf_min, cdf_max):
         """Remove and report any cdf(x) that are outside the min/max range.

@@ -5,19 +5,21 @@ import os
 import numpy as np
 from tables_io import io
 
-from qp.dict_utils import (check_array_shapes, compare_dicts,
-                           concatenate_dicts, slice_dict)
+from qp.dict_utils import (
+    check_array_shapes,
+    compare_dicts,
+    concatenate_dicts,
+    slice_dict,
+)
 from qp.metrics import quick_moment
 
 # import psutil
-#import timeit
-
-
-
+# import timeit
 
 
 class Ensemble:
     """An object comprised of many qp.PDF objects to efficiently perform operations on all of them"""
+
     def __init__(self, gen_func, data, ancil=None):
         """Class constructor
 
@@ -29,7 +31,7 @@ class Ensemble:
             Dictionary with data used to construct the ensemble
 
         """
-        #start_time = timeit.default_timer()
+        # start_time = timeit.default_timer()
         self._gen_func = gen_func
         self._frozen = self._gen_func(**data)
         self._gen_obj = self._frozen.dist
@@ -56,8 +58,8 @@ class Ensemble:
         """
         red_data = {}
         md = self.metadata()
-        md.pop('pdf_name')
-        md.pop('pdf_version')
+        md.pop("pdf_name")
+        md.pop("pdf_version")
         for k, v in md.items():
             red_data[k] = np.squeeze(v)
         dd = slice_dict(self.objdata(), key)
@@ -129,7 +131,7 @@ class Ensemble:
         ----------
         to_class :  `class`
             Class to convert to
-        **kwargs : 
+        **kwargs :
             keyword arguments are passed to the output class constructor
 
         Other Parameters
@@ -146,11 +148,17 @@ class Ensemble:
         method = kwds.pop("method", None)
         ctor_func = to_class.creation_method(method)
         class_name = to_class.name
-        if ctor_func is None: #pragma: no cover
-            raise KeyError("Class named %s does not have a creation_method named %s" % (class_name, method))
+        if ctor_func is None:  # pragma: no cover
+            raise KeyError(
+                "Class named %s does not have a creation_method named %s"
+                % (class_name, method)
+            )
         extract_func = to_class.extraction_method(method)
-        if extract_func is None: #pragma: no cover
-            raise KeyError("Class named %s does not have a extraction_method named %s" % (class_name, method))
+        if extract_func is None:  # pragma: no cover
+            raise KeyError(
+                "Class named %s does not have a extraction_method named %s"
+                % (class_name, method)
+            )
         data = extract_func(self, **kwds)
         return Ensemble(ctor_func, data=data)
 
@@ -178,7 +186,7 @@ class Ensemble:
         """
         new_data = {}
         for k, v in self.metadata().items():
-            if k in ['pdf_name', 'pdf_version']:
+            if k in ["pdf_name", "pdf_version"]:
                 continue
             new_data[k] = np.squeeze(v)
         new_data.update(self.objdata())
@@ -218,7 +226,7 @@ class Ensemble:
 
         dd = {}
         dd.update(self._frozen.kwds)
-        dd.pop('row', None)
+        dd.pop("row", None)
         dd.update(self._gen_obj.objdata)
         return dd
 
@@ -239,7 +247,7 @@ class Ensemble:
         self._ancil = ancil
 
     def add_to_ancil(self, to_add):  # pragma: no cover
-        """ Add additionaly columns to the ancillary data dict
+        """Add additionaly columns to the ancillary data dict
 
         Parameters
         ----------
@@ -256,16 +264,17 @@ class Ensemble:
         check_array_shapes(to_add, self.npdf)
         self._ancil.update(to_add)
 
-
     def append(self, other_ens):
-        """ Append another other_ens to this one
+        """Append another other_ens to this one
 
         Parameters
         ----------
         other_ens : `qp.Ensemble`
             The other Ensemble
         """
-        if not compare_dicts([self.metadata(), other_ens.metadata()]):  # pragma: no cover
+        if not compare_dicts(
+            [self.metadata(), other_ens.metadata()]
+        ):  # pragma: no cover
             raise KeyError("Metadata does not match, can not append")
         full_objdata = concatenate_dicts([self.objdata(), other_ens.objdata()])
         if self._ancil is not None and other_ens.ancil is not None:  # pragma: no cover
@@ -274,9 +283,8 @@ class Ensemble:
             full_ancil = None
         self.update_objdata(full_objdata, full_ancil)
 
-
     def build_tables(self):
-        """ Return dicts of numpy arrays for the meta data and object data
+        """Return dicts of numpy arrays for the meta data and object data
         for this ensemble
 
         Returns
@@ -288,7 +296,7 @@ class Ensemble:
         """
         dd = dict(meta=self.metadata(), data=self.objdata())
         if self.ancil is not None:
-            dd['ancil'] = self.ancil
+            dd["ancil"] = self.ancil
         return dd
 
     def mode(self, grid):
@@ -379,7 +387,6 @@ class Ensemble:
         """
         return self._frozen.logpdf(x)
 
-
     def cdf(self, x):
         """
         Evaluates the cumalative distribution function for the whole ensemble
@@ -421,7 +428,6 @@ class Ensemble:
         -------
         """
         return self._frozen.ppf(q)
-
 
     def sf(self, q):
         """
@@ -478,9 +484,11 @@ class Ensemble:
         Returns
         -------
         """
-        return self._frozen.rvs(size=(self._frozen.npdf, size), random_state=random_state)
+        return self._frozen.rvs(
+            size=(self._frozen.npdf, size), random_state=random_state
+        )
 
-    def stats(self, moments='mv'):
+    def stats(self, moments="mv"):
         """
         Retrun the stats for this ensemble
 
@@ -495,41 +503,40 @@ class Ensemble:
         return self._frozen.stats(moments=moments)
 
     def median(self):
-        """ Return the medians for this ensemble """
+        """Return the medians for this ensemble"""
         return self._frozen.median()
 
     def mean(self):
-        """ Return the means for this ensemble """
+        """Return the means for this ensemble"""
         return self._frozen.mean()
 
     def var(self):
-        """ Return the variences for this ensemble """
+        """Return the variences for this ensemble"""
         return self._frozen.var()
 
     def std(self):
-        """ Return the standard deviations for this ensemble """
+        """Return the standard deviations for this ensemble"""
         return self._frozen.std()
 
     def moment(self, n):
-        """ Return the nth moments for this ensemble """
+        """Return the nth moments for this ensemble"""
         return self._frozen.moment(n)
 
     def entropy(self):
-        """ Return the entropy for this ensemble """
+        """Return the entropy for this ensemble"""
         return self._frozen.entropy()
 
-    #def pmf(self, k):
+    # def pmf(self, k):
     #    """ Return the kth pmf for this ensemble """
     #    return self._frozen.pmf(k)
 
-    #def logpmf(self, k):
+    # def logpmf(self, k):
     #    """ Return the log of the kth pmf for this ensemble """
     #    return self._frozen.logpmf(k)
 
     def interval(self, alpha):
-        """ Return the intervals corresponding to a confidnce level of alpha for this ensemble"""
+        """Return the intervals corresponding to a confidnce level of alpha for this ensemble"""
         return self._frozen.interval(alpha)
-
 
     def histogramize(self, bins):
         """
@@ -568,8 +575,7 @@ class Ensemble:
         """
         return self.cdf(limits[1]) - self.cdf(limits[0])
 
-
-    def mix_mod_fit(self, comps=5): #pragma: no cover
+    def mix_mod_fit(self, comps=5):  # pragma: no cover
         """
         Fits the parameters of a given functional form to an approximation
 
@@ -593,9 +599,8 @@ class Ensemble:
         """
         raise NotImplementedError("mix_mod_fit %i" % comps)
 
-
     def moment_partial(self, n, limits, dx=0.01):
-        """ Return the nth moments for this over a particular range"""
+        """Return the nth moments for this over a particular range"""
         D = int((limits[-1] - limits[0]) / dx)
         grid = np.linspace(limits[0], limits[1], D)
         # dx = (limits[-1] - limits[0]) / (D - 1)
@@ -628,8 +633,8 @@ class Ensemble:
         tables = self.build_tables()
         keywords = {}
         for group, tab in tables.items():
-            if group != 'meta':
-                keywords[group]={}
+            if group != "meta":
+                keywords[group] = {}
                 for key, array in tab.items():
                     shape = list(array.shape)
                     shape[0] = npdf
@@ -642,11 +647,12 @@ class Ensemble:
 
         Parameters
         ----------
-        filename : `str` 
+        filename : `str`
             Name of the file to create
-        npdf : `int` 
-            Total number of pdfs that will contain the file, usually larger then the size of the current ensemble
-        comm : `MPI communicator` 
+        npdf : `int`
+            Total number of pdfs that will contain the file,
+            usually larger then the size of the current ensemble
+        comm : `MPI communicator`
             Optional MPI communicator to allow parallel writing
         """
         kwds = self._get_allocation_kwds(npdf)
@@ -658,15 +664,15 @@ class Ensemble:
 
         Parameters
         ----------
-        fname : h5py `File object` 
+        fname : h5py `File object`
             file or group
-        start : `int` 
+        start : `int`
             starting index of h5py file
-        end : `int` 
+        end : `int`
             ending index in h5py file
         """
         odict = self.build_tables().copy()
-        odict.pop('meta')
+        odict.pop("meta")
         io.writeDictToHdf5Chunk(fname, odict, start, end)
 
     def finalizeHdf5Write(self, filename):
@@ -674,11 +680,11 @@ class Ensemble:
 
         Parameters
         ----------
-        filename : h5py `File object` 
+        filename : h5py `File object`
             file or group
         """
         mdata = self.metadata()
-        io.finalizeHdf5Write(filename, 'meta', **mdata)
+        io.finalizeHdf5Write(filename, "meta", **mdata)
 
     # def stack(self, loc, using, vb=True):
     #     """
@@ -718,7 +724,9 @@ class Ensemble:
     #     self.stacked[using] = (evaluated[0], stack)
     #     return self.stacked
 
+
 # Note: A copious quantity of commented code has been removed in this commit!
 # For future reference, it can still be found here:
 #  https://github.com/aimalz/qp/blob/d8d145af9514e29c76e079e869b8b4923f592f40/qp/ensemble.py
-# Critical additions still remain.  Metrics of individual qp.PDF objects collected in aggregate over a qp.Ensemble are still desired.
+# Critical additions still remain.  Metrics of individual qp.PDF objects collected in aggregate
+# over a qp.Ensemble are still desired.

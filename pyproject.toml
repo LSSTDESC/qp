@@ -94,6 +94,7 @@ disable = [
     "duplicate-code",
     "use-dict-literal",
     "broad-exception-caught",
+    "consider-using-f-string",
 ]
 max-line-length = 110
 max-locals = 50

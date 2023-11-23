@@ -1,15 +1,12 @@
 import numpy as np
+
 import qp
-
-from qp.metrics.point_estimate_metric_classes import (
-    PointStatsEz,
-    PointBias,
-    PointOutlierRate,
-    PointSigmaIQR,
-    PointSigmaMAD,
-)
-
 from qp.metrics.concrete_metric_classes import CDELossMetric
+from qp.metrics.point_estimate_metric_classes import (PointBias,
+                                                      PointOutlierRate,
+                                                      PointSigmaIQR,
+                                                      PointSigmaMAD,
+                                                      PointStatsEz)
 
 # values for metrics
 OUTRATE = 0.0
@@ -37,8 +34,7 @@ def construct_test_ensemble():
 
 
 def test_point_metrics():
-    """Basic tests for the various point estimate metrics
-    """
+    """Basic tests for the various point estimate metrics"""
     zgrid, zspec, pdf_ens, true_ez = construct_test_ensemble()
     zb = pdf_ens.mode(grid=zgrid).flatten()
 
@@ -60,8 +56,7 @@ def test_point_metrics():
 
 
 def test_cde_loss_metric():
-    """Basic test to ensure that the CDE Loss metric class is working.
-    """
+    """Basic test to ensure that the CDE Loss metric class is working."""
     zgrid, zspec, pdf_ens, _ = construct_test_ensemble()
     cde_loss_class = CDELossMetric(zgrid)
     result = cde_loss_class.evaluate(pdf_ens, zspec)

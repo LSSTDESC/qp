@@ -88,9 +88,9 @@ def pretty_print(in_dict, prefixes, idx=0, stream=sys.stdout):
             key_str = "default"
         else:
             key_str = key
-        if isinstance(val, dict): #pragma: no cover
+        if isinstance(val, dict):  # pragma: no cover
             stream.write("%s%s:\n" % (prefix, key_str))
-            pretty_print(val, prefixes, idx+1, stream)
+            pretty_print(val, prefixes, idx + 1, stream)
         else:
             stream.write("%s%s : %s\n" % (prefix, key_str, val))
 
@@ -138,12 +138,14 @@ def check_keys(in_dicts):
 
     Raises KeyError if one does not match.
     """
-    if not in_dicts:  #pragma: no cover
+    if not in_dicts:  # pragma: no cover
         return
     master_keys = in_dicts[0].keys()
     for in_dict in in_dicts[1:]:
-        if in_dict.keys() != master_keys:  #pragma: no cover
-            raise ValueError("Keys to not match: %s != %s" % (in_dict.keys(), master_keys))
+        if in_dict.keys() != master_keys:  # pragma: no cover
+            raise ValueError(
+                "Keys to not match: %s != %s" % (in_dict.keys(), master_keys)
+            )
 
 
 def concatenate_dicts(in_dicts):
@@ -159,10 +161,10 @@ def concatenate_dicts(in_dicts):
     out_dict : `dict`
         The stacked dicionary
     """
-    if not in_dicts:  #pragma: no cover
+    if not in_dicts:  # pragma: no cover
         return {}
     check_keys(in_dicts)
-    out_dict = { key : None for key in in_dicts[0].keys() }
+    out_dict = {key: None for key in in_dicts[0].keys()}
     for key in out_dict.keys():
         out_dict[key] = np.concatenate([in_dict[key] for in_dict in in_dicts])
     return out_dict
@@ -176,11 +178,14 @@ def check_array_shapes(in_dict, npdf):
     if in_dict is None:
         return
     for key, val in in_dict.items():
-        if np.size(val) == 1 and npdf == 1:  #pragma: no cover
+        if np.size(val) == 1 and npdf == 1:  # pragma: no cover
             continue
-        if np.shape(val)[0] != npdf:  #pragma: no cover
-            raise ValueError("First dimension of array %s does not match npdf: %i != %i" %
-                                 (key, np.shape(val)[0], npdf))
+        if np.shape(val)[0] != npdf:  # pragma: no cover
+            raise ValueError(
+                "First dimension of array %s does not match npdf: %i != %i"
+                % (key, np.shape(val)[0], npdf)
+            )
+
 
 def compare_two_dicts(d1, d2):
     """Check that all the items in d1 and d2 match
@@ -190,15 +195,15 @@ def compare_two_dicts(d1, d2):
     match : `bool`
         True if they all match, False otherwise
     """
-    if d1.keys() != d2.keys():  #pragma: no cover
+    if d1.keys() != d2.keys():  # pragma: no cover
         return False
     for k, v in d1.items():
         vv = d2[k]
         try:
-            if v != vv:  #pragma: no cover
+            if v != vv:  # pragma: no cover
                 return False
         except ValueError:
-            if not np.allclose(v, vv): #pragma: no cover
+            if not np.allclose(v, vv):  # pragma: no cover
                 return False
     return True
 
@@ -211,10 +216,10 @@ def compare_dicts(in_dicts):
     match : `bool`
         True if they all match, False otherwise
     """
-    if not in_dicts:  #pragma: no cover
+    if not in_dicts:  # pragma: no cover
         return True
     first_dict = in_dicts[0]
     for in_dict in in_dicts[1:]:
-        if not compare_two_dicts(first_dict, in_dict): #pragma: no cover
+        if not compare_two_dicts(first_dict, in_dict):  # pragma: no cover
             return False
     return True

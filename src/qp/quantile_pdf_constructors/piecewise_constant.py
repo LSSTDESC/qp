@@ -38,7 +38,8 @@ class PiecewiseConstant(AbstractQuantilePdfConstructor):
         self._cdf_derivatives = np.zeros(self._locations.shape)
         self._cdf_2nd_derivatives = np.zeros(self._locations.shape)
 
-        self._cdf_derivatives[:,0:-1] = (self._quantiles[1:] - self._quantiles[0:-1])/(self._locations[:,1:] - self._locations[:,0:-1])
+        self._cdf_derivatives[:,0:-1] = (self._quantiles[1:] - self._quantiles[0:-1])/\
+          (self._locations[:,1:] - self._locations[:,0:-1])
         self._cdf_2nd_derivatives[:,0:-1] = self._cdf_derivatives[:,1:]  - self._cdf_derivatives[:,0:-1]
 
         # Offset the locations by -(l_[i+1] - l_i) / 2. So that the cdf_deriv can be correctly located.
@@ -95,4 +96,5 @@ class PiecewiseConstant(AbstractQuantilePdfConstructor):
             _adjusted_locations :
                 Result of shifting the locations due to the use of non-central numerical derivatives
         """
-        return self._quantiles, self._locations, self._cdf_derivatives, self._cdf_2nd_derivatives, self._adjusted_locations
+        return (self._quantiles, self._locations, self._cdf_derivatives,
+                self._cdf_2nd_derivatives, self._adjusted_locations)

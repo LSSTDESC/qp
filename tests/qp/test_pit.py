@@ -2,13 +2,14 @@
 # pylint: disable=protected-access
 
 import unittest
+
 import numpy as np
+
 import qp
 from qp import interp_gen
 from qp.ensemble import Ensemble
-from qp.metrics.pit import PIT
 from qp.metrics.concrete_metric_classes import PITMetric
-
+from qp.metrics.pit import PIT
 
 # constants for tests
 NMAX = 2.5

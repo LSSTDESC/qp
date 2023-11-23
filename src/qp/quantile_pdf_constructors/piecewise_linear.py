@@ -34,7 +34,8 @@ class PiecewiseLinear(AbstractQuantilePdfConstructor):
         not a central derivative.
         """
         # calculate the first derivative using a forward difference.
-        self._cdf_derivatives = (self._quantiles[1:] - self._quantiles[0:-1])/(self._locations[:,1:] - self._locations[:,0:-1])
+        self._cdf_derivatives = (self._quantiles[1:] - self._quantiles[0:-1])/\
+          (self._locations[:,1:] - self._locations[:,0:-1])
 
         # Offset the locations by -(l_[i+1] - l_i) / 2. So that the cdf_deriv can be correctly located.
         # This offset is necessary to correctly place the _cdf_derivs because we are using a

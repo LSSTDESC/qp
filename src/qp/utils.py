@@ -8,12 +8,13 @@ from scipy.interpolate import interp1d
 
 epsilon = sys.float_info.epsilon
 infty = sys.float_info.max * epsilon
-lims = (epsilon, 1.)
+lims = (epsilon, 1.0)
 
 CASE_PRODUCT = 0
 CASE_FACTOR = 1
 CASE_2D = 2
 CASE_FLAT = 3
+
 
 def safelog(arr, threshold=epsilon):
     """
@@ -65,9 +66,10 @@ def normalize_quantiles(in_data, threshold=epsilon, vb=False):
     return out_data
 """
 
+
 def edge_to_center(edges):
     """Return the centers of a set of bins given the edges"""
-    return 0.5*(edges[1:] + edges[:-1])
+    return 0.5 * (edges[1:] + edges[:-1])
 
 
 def bin_widths(edges):
@@ -84,13 +86,13 @@ def get_bin_indices(bins, x):
     widths = bin_widths(bins)
     n_bins = np.size(bins) - 1
     if np.allclose(widths, widths[0]):
-        idx = np.atleast_1d(np.floor((x-bins[0])/widths[0]).astype(int))
+        idx = np.atleast_1d(np.floor((x - bins[0]) / widths[0]).astype(int))
     else:
-        idx = np.atleast_1d(np.searchsorted(bins, x, side='left')-1)
-    mask = (idx >= 0) * (idx < bins.size-1)
-    np.putmask(idx, 1-mask, 0)
+        idx = np.atleast_1d(np.searchsorted(bins, x, side="left") - 1)
+    mask = (idx >= 0) * (idx < bins.size - 1)
+    np.putmask(idx, 1 - mask, 0)
     xshape = np.shape(x)
-    return idx.reshape(xshape).clip(0, n_bins-1), mask.reshape(xshape)
+    return idx.reshape(xshape).clip(0, n_bins - 1), mask.reshape(xshape)
 
 
 def normalize_interp1d(xvals, yvals):
@@ -109,12 +111,14 @@ def normalize_interp1d(xvals, yvals):
     ynorm: array-like
         Normalized y-vals
     """
-    #def row_integral(irow):
+    # def row_integral(irow):
     #    return quad(interp1d(xvals[irow], yvals[irow], **kwargs), limits[0], limits[1])[0]
 
-    #vv = np.vectorize(row_integral)
-    #integrals = vv(np.arange(xvals.shape[0]))
-    integrals = np.sum(xvals[:,1:]*yvals[:,1:] - xvals[:,:-1]*yvals[:,1:], axis=1)
+    # vv = np.vectorize(row_integral)
+    # integrals = vv(np.arange(xvals.shape[0]))
+    integrals = np.sum(
+        xvals[:, 1:] * yvals[:, 1:] - xvals[:, :-1] * yvals[:, 1:], axis=1
+    )
     return (yvals.T / integrals).T
 
 
@@ -135,8 +139,7 @@ def build_kdes(samples, **kwargs):
     -------
     kdes : list of `scipy.stats.gaussian_kde` objects
     """
-    return [ sps.gaussian_kde(row, **kwargs) for row in samples ]
-
+    return [sps.gaussian_kde(row, **kwargs) for row in samples]
 
 
 def evaluate_kdes(xvals, kdes):
@@ -159,7 +162,7 @@ def evaluate_kdes(xvals, kdes):
 
 
 def get_eval_case(x, row):
-    """ Figure out which of the various input formats scipy.stats has passed us
+    """Figure out which of the various input formats scipy.stats has passed us
 
     Parameters
     ----------
@@ -182,18 +185,21 @@ def get_eval_case(x, row):
     The cases are:
 
     CASE_FLAT : x, row have shapes (n), (n) and do not factor
-    CASE_FACTOR : x, row have shapes (n), (n) but can be factored to shapes (1, nx) and (npdf, 1) (i.e., they were flattend by scipy) 
+    CASE_FACTOR : x, row have shapes (n), (n) but can be factored to shapes (1, nx) and (npdf, 1)
+                  (i.e., they were flattend by scipy)
     CASE_PRODUCT : x, row have shapes (1, nx) and (npdf, 1)
     CASE_2D : x, row have shapes (npdf, nx) and (npdf, nx)
     """
     nd_x = np.ndim(x)
     nd_row = np.ndim(row)
-    #if nd_x > 2 or nd_row > 2:  #pragma: no cover
+    # if nd_x > 2 or nd_row > 2:  #pragma: no cover
     #    raise ValueError("Too many dimensions: x(%s), row(%s)" % (np.shape(x), np.shape(row)))
     if nd_x >= 2 and nd_row != 1:
         return CASE_2D, x, row
-    if nd_x >= 2 and nd_row == 1:  #pragma: no cover
-        raise ValueError("Dimension mismatch: x(%s), row(%s)" % (np.shape(x), np.shape(row)))
+    if nd_x >= 2 and nd_row == 1:  # pragma: no cover
+        raise ValueError(
+            "Dimension mismatch: x(%s), row(%s)" % (np.shape(x), np.shape(row))
+        )
     if nd_row >= 2:
         return CASE_PRODUCT, x, row
     if np.size(x) == 1 or np.size(row) == 1:
@@ -209,7 +215,7 @@ def get_eval_case(x, row):
     return CASE_FACTOR, xx, np.expand_dims(rr, -1)
 
 
-def evaluate_hist_x_multi_y_flat(x, row, bins, vals, derivs=None):  #pragma: no cover
+def evaluate_hist_x_multi_y_flat(x, row, bins, vals, derivs=None):  # pragma: no cover
     """
     Evaluate a set of values from histograms
 
@@ -235,15 +241,19 @@ def evaluate_hist_x_multi_y_flat(x, row, bins, vals, derivs=None):  #pragma: no 
         deltas = np.zeros(idx.shape)
     else:
         deltas = x - bins[idx]
+
     def evaluate_row(idxv, maskv, rv, delta):
         if derivs is None:
             return np.where(maskv, vals[rv, idxv], 0)
-        return np.where(maskv, vals[rv, idxv] + delta*derivs[rv, idxv], 0)
+        return np.where(maskv, vals[rv, idxv] + delta * derivs[rv, idxv], 0)
+
     vv = np.vectorize(evaluate_row)
     return vv(idx, mask, row, deltas)
 
 
-def evaluate_hist_x_multi_y_product(x, row, bins, vals, derivs=None):  #pragma: no cover
+def evaluate_hist_x_multi_y_product(
+    x, row, bins, vals, derivs=None
+):  # pragma: no cover
     """
     Evaluate a set of values from histograms
 
@@ -263,16 +273,20 @@ def evaluate_hist_x_multi_y_product(x, row, bins, vals, derivs=None):  #pragma: 
     out : array_like (npdf, npts)
         The histogram values
     """
-    #assert np.ndim(x) < 2 and np.ndim(row) == 2
+    # assert np.ndim(x) < 2 and np.ndim(row) == 2
     idx, mask0 = get_bin_indices(bins, x)
     mask = np.ones(row.shape) * mask0
     if derivs is None:
-        return np.where(mask, vals[:,idx][np.squeeze(row)], 0)
+        return np.where(mask, vals[:, idx][np.squeeze(row)], 0)
     deltas = x - bins[idx]
-    return np.where(mask, vals[:,idx][np.squeeze(row)] + deltas*derivs[:,idx][np.squeeze(row)] , 0)
+    return np.where(
+        mask,
+        vals[:, idx][np.squeeze(row)] + deltas * derivs[:, idx][np.squeeze(row)],
+        0,
+    )
 
 
-def evaluate_hist_x_multi_y_2d(x, row, bins, vals, derivs=None):  #pragma: no cover
+def evaluate_hist_x_multi_y_2d(x, row, bins, vals, derivs=None):  # pragma: no cover
     """
     Evaluate a set of values from histograms
 
@@ -302,7 +316,8 @@ def evaluate_hist_x_multi_y_2d(x, row, bins, vals, derivs=None):  #pragma: no co
     def evaluate_row(idxv, maskv, rv, delta):
         if derivs is None:
             return np.where(maskv, vals[rv, idxv], 0)
-        return np.where(maskv, vals[rv, idxv] + delta*derivs[rv, idxv], 0)
+        return np.where(maskv, vals[rv, idxv] + delta * derivs[rv, idxv], 0)
+
     vv = np.vectorize(evaluate_row)
     return vv(idx, mask, row, deltas)
 
@@ -340,7 +355,9 @@ def evaluate_hist_x_multi_y(x, row, bins, vals, derivs=None):
     return evaluate_hist_x_multi_y_flat(xx, rr, bins, vals, derivs)
 
 
-def evaluate_hist_multi_x_multi_y_flat(x, row, bins, vals, derivs=None):  #pragma: no cover
+def evaluate_hist_multi_x_multi_y_flat(
+    x, row, bins, vals, derivs=None
+):  # pragma: no cover
     """
     Evaluate a set of values from histograms
 
@@ -360,18 +377,22 @@ def evaluate_hist_multi_x_multi_y_flat(x, row, bins, vals, derivs=None):  #pragm
     out : array_like (n)
         The histogram values
     """
+
     def evaluate_row(xv, rv):
         bins_row = bins[rv]
         idx, mask = get_bin_indices(bins_row, xv)
         delta = xv - bins_row[idx]
         if derivs is None:
             return np.where(mask, vals[rv, idx], 0)
-        return np.where(mask, vals[rv, idx] + delta*derivs[rv, idx], 0)
+        return np.where(mask, vals[rv, idx] + delta * derivs[rv, idx], 0)
+
     vv = np.vectorize(evaluate_row)
     return vv(x, row)
 
 
-def evaluate_hist_multi_x_multi_y_product(x, row, bins, vals, derivs=None):  #pragma: no cover
+def evaluate_hist_multi_x_multi_y_product(
+    x, row, bins, vals, derivs=None
+):  # pragma: no cover
     """
     Evaluate a set of values from histograms
 
@@ -391,18 +412,24 @@ def evaluate_hist_multi_x_multi_y_product(x, row, bins, vals, derivs=None):  #pr
     out : array_like (npdf, npts)
         The histogram values
     """
+
     def evaluate_row(rv):
         bins_flat = bins[rv].flatten()
         idx, mask = get_bin_indices(bins_flat, x)
         delta = x - bins_flat[idx]
         if derivs is None:
             return np.where(mask, np.squeeze(vals[rv])[idx], 0).flatten()
-        return np.where(mask, np.squeeze(vals[rv])[idx] + delta* np.squeeze(derivs[rv])[idx], 0)
+        return np.where(
+            mask, np.squeeze(vals[rv])[idx] + delta * np.squeeze(derivs[rv])[idx], 0
+        )
+
     vv = np.vectorize(evaluate_row, signature="(1)->(%i)" % (x.size))
     return vv(row)
 
 
-def evaluate_hist_multi_x_multi_y_2d(x, row, bins, vals, derivs=None):  #pragma: no cover
+def evaluate_hist_multi_x_multi_y_2d(
+    x, row, bins, vals, derivs=None
+):  # pragma: no cover
     """
     Evaluate a set of values from histograms
 
@@ -423,15 +450,20 @@ def evaluate_hist_multi_x_multi_y_2d(x, row, bins, vals, derivs=None):  #pragma:
         The histogram values
     """
     nx = np.shape(x)[-1]
+
     def evaluate_row(rv, xv):
         flat_bins = bins[rv].flatten()
         idx, mask = get_bin_indices(flat_bins, xv)
         delta = xv - flat_bins[idx]
         if derivs is None:
             return np.where(mask, np.squeeze(vals[rv])[idx], 0).flatten()
-        return np.where(mask, np.squeeze(vals[rv])[idx] + delta*np.squeeze(derivs[rv])[idx], 0).flatten()
+        return np.where(
+            mask, np.squeeze(vals[rv])[idx] + delta * np.squeeze(derivs[rv])[idx], 0
+        ).flatten()
+
     vv = np.vectorize(evaluate_row, signature="(1),(%i)->(%i)" % (nx, nx))
     return vv(row, x)
+
 
 def evaluate_hist_multi_x_multi_y(x, row, bins, vals, derivs=None):
     """
@@ -481,8 +513,10 @@ def interpolate_x_multi_y_flat(x, row, xvals, yvals, **kwargs):
     vals : array_like (npdf, n)
         The interpoalted values
     """
+
     def single_row(xv, rv):
         return interp1d(xvals, yvals[rv], **kwargs)(xv)
+
     vv = np.vectorize(single_row)
     return vv(x, row)
 
@@ -532,8 +566,10 @@ def interpolate_x_multi_y_2d(x, row, xvals, yvals, **kwargs):
         The interpoalted values
     """
     nx = np.shape(x)[-1]
+
     def evaluate_row(rv, xv):
         return interp1d(xvals, yvals[rv], **kwargs)(xv)
+
     vv = np.vectorize(evaluate_row, signature="(1),(%i)->(%i)" % (nx, nx))
     return vv(row, x)
 
@@ -586,8 +622,10 @@ def interpolate_multi_x_multi_y_flat(x, row, xvals, yvals, **kwargs):
     vals : array_like (npdf, n)
         The interpoalted values
     """
+
     def single_row(xv, rv):
         return interp1d(xvals[rv], yvals[rv], **kwargs)(xv)
+
     vv = np.vectorize(single_row)
     return vv(x, row)
 
@@ -614,8 +652,10 @@ def interpolate_multi_x_multi_y_product(x, row, xvals, yvals, **kwargs):
     """
     rr = np.squeeze(row)
     nx = np.shape(x)[-1]
+
     def single_row(rv):
         return interp1d(xvals[rv], yvals[rv], **kwargs)(x)
+
     vv = np.vectorize(single_row, signature="()->(%i)" % (nx))
     return vv(rr)
 
@@ -641,8 +681,10 @@ def interpolate_multi_x_multi_y_2d(x, row, xvals, yvals, **kwargs):
         The interpoalted values
     """
     nx = np.shape(x)[-1]
+
     def evaluate_row(rv, xv):
         return interp1d(xvals[rv], yvals[rv], **kwargs)(xv)
+
     vv = np.vectorize(evaluate_row, signature="(),(%i)->(%i)" % (nx, nx))
     return vv(np.squeeze(row), x)
 
@@ -695,8 +737,10 @@ def interpolate_multi_x_y_flat(x, row, xvals, yvals, **kwargs):
     vals : array_like (npdf, n)
         The interpoalted values
     """
+
     def single_row(xv, rv):
         return interp1d(xvals[rv], yvals, **kwargs)(xv)
+
     vv = np.vectorize(single_row)
     return vv(x, row)
 
@@ -723,8 +767,10 @@ def interpolate_multi_x_y_product(x, row, xvals, yvals, **kwargs):
     """
     rr = np.squeeze(row)
     nx = np.shape(x)[-1]
+
     def single_row(rv):
         return interp1d(xvals[rv], yvals, **kwargs)(x)
+
     vv = np.vectorize(single_row, signature="()->(%i)" % (nx))
     return vv(rr)
 
@@ -750,8 +796,10 @@ def interpolate_multi_x_y_2d(x, row, xvals, yvals, **kwargs):
         The interpoalted values
     """
     nx = np.shape(x)[-1]
+
     def evaluate_row(rv, xv):
         return interp1d(xvals[rv], yvals, **kwargs)(xv)
+
     vv = np.vectorize(evaluate_row, signature="(),(%i)->(%i)" % (nx, nx))
     return vv(np.squeeze(row), x)
 
@@ -806,13 +854,13 @@ def profile(x_data, y_data, x_bins, std=True):
         The standard deviations or errors on the means
     """
     idx, mask = get_bin_indices(x_bins, x_data)
-    count = np.zeros(x_bins.size-1)
-    vals = np.zeros(x_bins.size-1)
-    errs = np.zeros(x_bins.size-1)
-    for i in range(x_bins.size-1):
+    count = np.zeros(x_bins.size - 1)
+    vals = np.zeros(x_bins.size - 1)
+    errs = np.zeros(x_bins.size - 1)
+    for i in range(x_bins.size - 1):
         mask_col = mask * (idx == i)
         count[i] = mask_col.sum()
-        if mask_col.sum() == 0:  #pragma: no cover
+        if mask_col.sum() == 0:  # pragma: no cover
             vals[i] = np.nan
             errs[i] = np.nan
             continue
@@ -823,6 +871,7 @@ def profile(x_data, y_data, x_bins, std=True):
         errs /= np.sqrt(count)
     return vals, errs
 
+
 def reshape_to_pdf_size(vals, split_dim):
     """Reshape an array to match the number of PDFs in a distribution
 
@@ -832,7 +881,7 @@ def reshape_to_pdf_size(vals, split_dim):
         The input array
     split_dim : int
         The dimension at which to split between pdf indices and per_pdf indices
-    
+
     Returns
     -------
     out : array

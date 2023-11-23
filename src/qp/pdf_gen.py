@@ -53,8 +53,8 @@ class Pdf_gen:
         self._addclassmetadata(type(self))
 
     def _addclassmetadata(self, cls):
-        self._metadata['pdf_name'] = np.array([cls.name.encode()])
-        self._metadata['pdf_version'] = np.array([cls.version])
+        self._metadata["pdf_name"] = np.array([cls.name.encode()])
+        self._metadata["pdf_version"] = np.array([cls.version])
 
     def _addmetadata(self, key, val):
         self._metadata[key] = np.expand_dims(val, 0)
@@ -108,7 +108,7 @@ class Pdf_gen:
         set_val_or_default(cls._extraction_map, method, the_func)
 
     @classmethod
-    def _add_reader_method(cls, the_func, version): #pragma: no cover
+    def _add_reader_method(cls, the_func, version):  # pragma: no cover
         """Add a method used to convert data read from a file PDF of this type"""
         set_val_or_default(cls._reader_map, version, the_func)
 
@@ -119,13 +119,12 @@ class Pdf_gen:
         pretty_print(cls._extraction_map, ["Extract "], stream=stream)
         pretty_print(cls._reader_map, ["Reader  "], stream=stream)
 
-
     @classmethod
     def create_gen(cls, **kwds):
         """Create and return a `scipy.stats.rv_continuous` object using the
         keyword arguemntets provided"""
         kwds_copy = kwds.copy()
-        name = kwds_copy.pop('name', 'dist')
+        name = kwds_copy.pop("name", "dist")
         return (cls(name=name), kwds_copy)
 
     @classmethod
@@ -154,7 +153,7 @@ class Pdf_gen:
         """Return kwds necessary to create 'empty' hdf5 file with npdf entries
         for iterative writeout
         """
-        raise NotImplementedError()  #pragma: no cover
+        raise NotImplementedError()  # pragma: no cover
 
 
 class rv_frozen_func(rv_continuous_frozen):
@@ -173,11 +172,11 @@ class rv_frozen_func(rv_continuous_frozen):
             The number of PDFs this object represents
         """
         super().__init__(dist, *args, **kwds)
-        array_list = [ np.array(val) for val in self.kwds.values() ]
+        array_list = [np.array(val) for val in self.kwds.values()]
         bc = np.broadcast(array_list)
         ss = bc.shape
         if len(ss) < 2:
-            self._shape = (1)
+            self._shape = 1
         else:
             self._shape = ss[1:-1]
         self._npdf = np.product(self._shape).astype(int)
@@ -214,8 +213,8 @@ class rv_frozen_func(rv_continuous_frozen):
             of bins and values in bins
         """
         cdf_vals = reshape_to_pdf_size(self.cdf(bins), -1)
-        bin_vals = cdf_vals[:,1:] - cdf_vals[:,0:-1]
-        return (bins, reshape_to_pdf_shape(bin_vals, self._shape, bins.size-1))
+        bin_vals = cdf_vals[:, 1:] - cdf_vals[:, 0:-1]
+        return (bins, reshape_to_pdf_shape(bin_vals, self._shape, bins.size - 1))
 
 
 class rv_frozen_rows(rv_continuous_frozen):
@@ -231,7 +230,9 @@ class rv_frozen_rows(rv_continuous_frozen):
         self._npdf = np.product(shape).astype(int)
         self._ndim = np.size(shape)
         if self._npdf is not None:
-            kwds.setdefault('row', np.expand_dims(np.arange(self._npdf).reshape(self._shape), -1))
+            kwds.setdefault(
+                "row", np.expand_dims(np.arange(self._npdf).reshape(self._shape), -1)
+            )
         super().__init__(dist, *args, **kwds)
 
     @property
@@ -265,9 +266,8 @@ class rv_frozen_rows(rv_continuous_frozen):
             of bins and values in bins
         """
         cdf_vals = reshape_to_pdf_size(self.cdf(bins), -1)
-        bin_vals = cdf_vals[:,1:] - cdf_vals[:,0:-1]
-        return (bins, reshape_to_pdf_shape(bin_vals, self._shape, bins.size-1))
-
+        bin_vals = cdf_vals[:, 1:] - cdf_vals[:, 0:-1]
+        return (bins, reshape_to_pdf_shape(bin_vals, self._shape, bins.size - 1))
 
 
 class Pdf_rows_gen(rv_continuous, Pdf_gen):
@@ -277,9 +277,10 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
     where each object represents a single distribtuion
 
     """
+
     def __init__(self, *args, **kwargs):
         """C'tor"""
-        self._shape = kwargs.pop('shape', (1))
+        self._shape = kwargs.pop("shape", (1))
         self._npdf = np.product(self._shape).astype(int)
         super().__init__(*args, **kwargs)
 
@@ -294,7 +295,7 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
         return self._npdf
 
     @staticmethod
-    def _sliceargs(x, row, *args):  #pragma: no cover
+    def _sliceargs(x, row, *args):  # pragma: no cover
         if np.size(x) == 1 or np.size(row) == 1:
             return False, x, row, args
         xx = np.unique(x)
@@ -305,14 +306,14 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
             rr = row
         if np.size(xx) * np.size(rr) != np.size(x):
             return False, x, row, args
-        outargs = [arg[0:np.size(xx)] for arg in args]
+        outargs = [arg[0 : np.size(xx)] for arg in args]
         return True, xx, rr, outargs
 
     def _rvs(self, *args, size=None, random_state=None):
         # Use basic inverse cdf algorithm for RV generation as default.
         U = random_state.uniform(size=size)
         Y = self._ppf(U, *args)
-        if size is None:  #pragma: no cover
+        if size is None:  # pragma: no cover
             return Y
         return Y.reshape(size)
 
@@ -323,7 +324,10 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
         """
         cond = 1
         if args:
-            cond = np.logical_and(cond, np.logical_and(asarray(args[0]) >= 0, asarray(args[0]) < self._npdf))
+            cond = np.logical_and(
+                cond,
+                np.logical_and(asarray(args[0]) >= 0, asarray(args[0]) < self._npdf),
+            )
         return np.atleast_1d(cond)
 
     def freeze(self, *args, **kwds):
@@ -349,12 +353,15 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
         return (cls(**kwds), {})
 
     def _scipy_version_warning(self):
-        import scipy  #pylint: disable=import-outside-toplevel
+        import scipy  # pylint: disable=import-outside-toplevel
+
         scipy_version = scipy.__version__
-        vtuple = scipy_version.split('.')
+        vtuple = scipy_version.split(".")
         if int(vtuple[0]) > 1 or int(vtuple[1]) > 7:
             return
-        raise DeprecationWarning(f"Ensemble.moments will not work correctly with scipy version < 1.8.0, you have {scipy_version}")  #pragma: no cover
+        raise DeprecationWarning(
+            f"Ensemble.moments will not work correctly with scipy version < 1.8.0, you have {scipy_version}"
+        )  # pragma: no cover
 
     def moment(self, n, *args, **kwds):
         """Returns the moments request moments for all the PDFs.
@@ -376,12 +383,12 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
         return rv_continuous.moment(self, n, *args, **kwds)
 
 
-
 class Pdf_gen_wrap(Pdf_gen):
     """Mixin class to extend `scipy.stats.rv_continuous` with
     information needed for `qp` for analytic distributions.
 
     """
+
     def __init__(self, *args, **kwargs):
         """C'tor"""
         # pylint: disable=no-member,protected-access
@@ -406,8 +413,7 @@ class Pdf_gen_wrap(Pdf_gen):
 
     @classmethod
     def get_allocation_kwds(cls, npdf, **kwargs):
-        return {key:((npdf,1), val.dtype) for key, val in kwargs.items()}
-
+        return {key: ((npdf, 1), val.dtype) for key, val in kwargs.items()}
 
     @classmethod
     def add_mappings(cls):

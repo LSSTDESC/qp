@@ -49,7 +49,9 @@ class CdfSplineDerivative(AbstractQuantilePdfConstructor):
 
         # ! create an issue (or fix) if the spline fit fails, can fall back to a simpler interpolator ???
         self._interpolation_functions = [
-            InterpolatedUnivariateSpline(self._locations[i,:], self._quantiles, k=spline_order, ext=1).derivative()
+            InterpolatedUnivariateSpline(
+                self._locations[i,:], self._quantiles, k=spline_order, ext=1
+            ).derivative()
             for i in range(0,number_of_locations)
         ]
 

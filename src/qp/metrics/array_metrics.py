@@ -7,8 +7,9 @@ from scipy.optimize import minimize_scalar
 
 from qp.utils import safelog
 
+
 def quick_anderson_ksamp(p_random_variables, q_random_variables, **kwargs):
-    """Calculate the k-sample Anderson-Darling statistic using scipy.stats.anderson_ksamp for two CDFs. 
+    """Calculate the k-sample Anderson-Darling statistic using scipy.stats.anderson_ksamp for two CDFs.
     For more details see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.anderson_ksamp.html
 
     Parameters
@@ -24,6 +25,7 @@ def quick_anderson_ksamp(p_random_variables, q_random_variables, **kwargs):
         A array of objects with attributes ``statistic``, ``critical_values``, and ``significance_level``.
     """
     return stats.anderson_ksamp([p_random_variables, q_random_variables], **kwargs)
+
 
 def quick_kld(p_eval, q_eval, dx=0.01):
     """
@@ -51,6 +53,7 @@ def quick_kld(p_eval, q_eval, dx=0.01):
     Dpq = dx * np.sum(p_eval * logquotient, axis=-1)
     return Dpq
 
+
 def quick_moment(p_eval, grid_to_N, dx):
     """
     Calculates a moment of an evaluated PDF
@@ -73,6 +76,7 @@ def quick_moment(p_eval, grid_to_N, dx):
     """
     M = np.dot(p_eval, grid_to_N) * dx
     return M
+
 
 def quick_rmse(p_eval, q_eval, N):
     """
@@ -97,6 +101,7 @@ def quick_rmse(p_eval, q_eval, N):
     # Calculate the RMS between p and q
     rms = np.sqrt(np.sum((p_eval - q_eval) ** 2, axis=-1) / N)
     return rms
+
 
 def quick_rbpe(pdf_function, integration_bounds, limits=(np.inf, np.inf)):
     """
