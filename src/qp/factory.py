@@ -20,7 +20,7 @@ from qp.pdf_gen import Pdf_gen_wrap
 
 
 class Factory(OrderedDict):
-    """Factory that creates and mangages PDFs"""
+    """Factory that creates and manages PDFs"""
 
     def __init__(self):
         """C'tor"""
