@@ -363,16 +363,10 @@ def calculate_outlier_rate(p, lower_limit=0.0001, upper_limit=0.9999):
     # Validate that all the distributions in the Ensemble are single distributions - i.e. no nested Ensembles
     try:
         _check_ensemble_is_not_nested(p)
-    except (
-        ValueError
-    ):  # pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
-        logging.warning(
-            "Each element in the ensemble `p` must be a single distribution."
-        )
+    except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
+        logging.warning("Each element in the ensemble `p` must be a single distribution.")
 
-    outlier_rates = [
-        (dist.cdf(lower_limit) + (1.0 - dist.cdf(upper_limit)))[0][0] for dist in p
-    ]
+    outlier_rates = np.array([(dist.cdf(lower_limit) + (1. - dist.cdf(upper_limit)))[0][0] for dist in p])
     return outlier_rates
 
 

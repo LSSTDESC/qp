@@ -225,7 +225,7 @@ class CDELossMetric(DistToPointMetric):
     """Conditional density loss"""
 
     metric_name = "cdeloss"
-    metric_output_type = MetricOutputType.one_value_per_distribution
+    metric_output_type = MetricOutputType.single_value
     default_eval_grid = np.linspace(0, 2.5, 301)
 
     def __init__(self, eval_grid: list = default_eval_grid, **kwargs) -> None:
