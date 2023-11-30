@@ -36,15 +36,9 @@ class mixmod_gen(Pdf_rows_gen):
 
     # pylint: disable=protected-access
 
-<<<<<<< HEAD
-    name = "mixmod"
-    version = 0
-
-=======
->>>>>>> 9b08a50 (Started implementing mixture model implementation with generic scipy base function. So far only the ones using loc and scale parameters work. PPFs need to be implemented.)
     _support_mask = rv_continuous._support_mask
 
-    name = 'gen_mixmod'
+    name = 'mixmod'
     version = 0
 
     def __init__(self, gen_func, weights, data, ancil=None, *args, **kwargs):
@@ -58,12 +52,8 @@ class mixmod_gen(Pdf_rows_gen):
         stds:  array_like
             The standard deviations of the basis functions
         weights : array_like
-<<<<<<< HEAD
             The weights to attach to the Gaussians. Weights should sum up to one.
             If not, the weights are interpreted as relative weights.
-=======
-            The weights to attach to the basis functions. Weights should sum up to one. If not, the weights are interpreted as relative weights.
->>>>>>> 9b08a50 (Started implementing mixture model implementation with generic scipy base function. So far only the ones using loc and scale parameters work. PPFs need to be implemented.)
         """
         self._gen_func = gen_func
         self._frozen = self._gen_func(**data)
@@ -73,17 +63,6 @@ class mixmod_gen(Pdf_rows_gen):
 
         self._scipy_version_warning()
         self._weights = reshape_to_pdf_size(weights, -1)
-<<<<<<< HEAD
-        kwargs["shape"] = means.shape[:-1]
-        self._ncomps = means.shape[-1]
-        super().__init__(*args, **kwargs)
-        if np.any(self._weights < 0):
-            raise ValueError("All weights need to be larger than zero")
-        self._weights = self._weights / self._weights.sum(axis=1)[:, None]
-        self._addobjdata("weights", self._weights)
-        self._addobjdata("stds", self._stds)
-        self._addobjdata("means", self._means)
-=======
         for key in self._data.keys():
             self._data[key] = reshape_to_pdf_size(self._data[key],-1)
         kwargs['shape'] = weights.shape[:-1]
@@ -93,7 +72,6 @@ class mixmod_gen(Pdf_rows_gen):
             raise ValueError('All weights need to be larger than zero')
         self._weights = self._weights/self._weights.sum(axis=1)[:,None]
         self._addobjdata('weights', self._weights)
->>>>>>> 9b08a50 (Started implementing mixture model implementation with generic scipy base function. So far only the ones using loc and scale parameters work. PPFs need to be implemented.)
 
     def _scipy_version_warning(self):
         import scipy  # pylint: disable=import-outside-toplevel
@@ -115,41 +93,21 @@ class mixmod_gen(Pdf_rows_gen):
         # pylint: disable=arguments-differ
         if np.ndim(x) > 1:  # pragma: no cover
             x = np.expand_dims(x, -2)
-<<<<<<< HEAD
-        return (
-            self.weights[row].swapaxes(-2, -1)
-            * sps.norm(
-                loc=self._means[row].swapaxes(-2, -1),
-                scale=self._stds[row].swapaxes(-2, -1),
-            ).pdf(x)
-        ).sum(axis=0)
-=======
         data_swap=dict()
         for key in self._data.keys():
             data_swap[key] = self._data[key][row].swapaxes(-2,-1)
         return (self.weights[row].swapaxes(-2,-1) *
                 self._gen_func(**data_swap).pdf(x)).sum(axis=0)
->>>>>>> 9b08a50 (Started implementing mixture model implementation with generic scipy base function. So far only the ones using loc and scale parameters work. PPFs need to be implemented.)
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
         if np.ndim(x) > 1:  # pragma: no cover
             x = np.expand_dims(x, -2)
-<<<<<<< HEAD
-        return (
-            self.weights[row].swapaxes(-2, -1)
-            * sps.norm(
-                loc=self._means[row].swapaxes(-2, -1),
-                scale=self._stds[row].swapaxes(-2, -1),
-            ).cdf(x)
-        ).sum(axis=0)
-=======
         data_swap=dict()
         for key in self._data.keys():
             data_swap[key] = self._data[key][row].swapaxes(-2,-1)
         return (self.weights[row].swapaxes(-2,-1) *
                 self._gen_func(**data_swap).cdf(x)).sum(axis=0)
->>>>>>> 9b08a50 (Started implementing mixture model implementation with generic scipy base function. So far only the ones using loc and scale parameters work. PPFs need to be implemented.)
 
     def _ppf(self, x, row):
         # pylint: disable=arguments-differ

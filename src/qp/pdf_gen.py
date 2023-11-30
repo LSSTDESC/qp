@@ -124,13 +124,8 @@ class Pdf_gen:
         """Create and return a `scipy.stats.rv_continuous` object using the
         keyword arguemntets provided"""
         kwds_copy = kwds.copy()
-<<<<<<< HEAD
         name = kwds_copy.pop("name", "dist")
         return (cls(name=name), kwds_copy)
-=======
-        name = kwds_copy.pop('name', 'dist')
-        return (cls(), kwds_copy)
->>>>>>> 71047e2 (fixed mixture model implementation with scipy basis functions that require additional parameters)
 
     @classmethod
     def create(cls, **kwds):
