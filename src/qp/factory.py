@@ -62,6 +62,7 @@ class Factory(OrderedDict):
             version=0,
             freeze=Pdf_gen_wrap._my_freeze,
             _other_init=scipy_class.__init__,
+            _ctor_param=ctor_param,
         )
         the_class = type(class_name, (Pdf_gen_wrap, scipy_class), override_dict)
         self.add_class(the_class)
