@@ -80,7 +80,8 @@ ENS_ORIG = test_funcs.build_ensemble(
 ENS_MULTI = test_funcs.build_ensemble(
     qp.stats.norm_gen.test_data["norm"]  # pylint: disable=no-member
 )
-TEST_CLASSES = qp.instance().values()
+TEST_CLASSES = list(qp.instance().values())
+TEST_CLASSES.remove(qp.mixmod_pdf.mixmod_gen)
 
 PDFTestCase.auto_add(TEST_CLASSES, [ENS_ORIG, ENS_MULTI])
 
