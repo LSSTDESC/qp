@@ -393,7 +393,10 @@ class Pdf_gen_wrap(Pdf_gen):
         """C'tor"""
         # pylint: disable=no-member,protected-access
         super().__init__(*args, **kwargs)
-        self._other_init(*args, **kwargs)
+        if kwargs==self._ctor_param:
+            kwargs=dict()
+        kwargs.pop('name', None)
+        self._other_init(*args, **kwargs, **self._ctor_param)
 
     def _my_freeze(self, *args, **kwds):
         """Freeze the distribution for the given arguments.

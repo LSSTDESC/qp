@@ -54,7 +54,7 @@ class Factory(OrderedDict):
                 data_dict[col] = col_data
         return data_dict
 
-    def _make_scipy_wrapped_class(self, class_name, scipy_class):
+    def _make_scipy_wrapped_class(self, class_name, scipy_class, ctor_param):
         """Build a qp class from a scipy class"""
         # pylint: disable=protected-access
         override_dict = dict(
@@ -62,6 +62,7 @@ class Factory(OrderedDict):
             version=0,
             freeze=Pdf_gen_wrap._my_freeze,
             _other_init=scipy_class.__init__,
+            _ctor_param=ctor_param,
         )
         the_class = type(class_name, (Pdf_gen_wrap, scipy_class), override_dict)
         self.add_class(the_class)
@@ -72,7 +73,7 @@ class Factory(OrderedDict):
         for name in names:
             attr = getattr(sps, name)
             if isinstance(attr, sps.rv_continuous):
-                self._make_scipy_wrapped_class(name, type(attr))
+                self._make_scipy_wrapped_class(name, type(attr), attr._updated_ctor_param())
 
     def add_class(self, the_class):
         """Add a class to the factory

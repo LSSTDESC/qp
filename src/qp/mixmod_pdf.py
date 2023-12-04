@@ -17,16 +17,18 @@ class mixmod_gen(Pdf_rows_gen):
 
     Notes
     -----
-    This implements a PDF using a Gaussian Mixture model
+    This is a base class for implementing PDFs using a mixture model. 
+    Classes implementing mixture models with specific basis functions
+    need to define the pdf and cdf.
 
     The relevant data members are:
 
-    means:  (npdf, ncomp) means of the Gaussians
-    stds:  (npdf, ncomp) standard deviations of the Gaussians
-    weights: (npdf, ncomp) weights for the Gaussians
+    means:  (npdf, ncomp) means of the basis functions
+    stds:  (npdf, ncomp) standard deviations of the basis functions
+    weights: (npdf, ncomp) weights for the basis functions
 
     The pdf() and cdf() are exact, and are computed as a weighted sum of
-    the pdf() and cdf() of the component Gaussians.
+    the pdf() and cdf() of the component basis functions.
 
     The ppf() is computed by computing the cdf() values on a fixed
     grid and interpolating the inverse function.
@@ -34,38 +36,42 @@ class mixmod_gen(Pdf_rows_gen):
 
     # pylint: disable=protected-access
 
-    name = "mixmod"
-    version = 0
-
     _support_mask = rv_continuous._support_mask
 
-    def __init__(self, means, stds, weights, *args, **kwargs):
+    name = 'mixmod'
+    version = 0
+
+    def __init__(self, gen_func, weights, data, ancil=None, *args, **kwargs):
         """
         Create a new distribution using the given histogram
 
         Parameters
         ----------
         means : array_like
-            The means of the Gaussians
+            The means of the basis functions
         stds:  array_like
-            The standard deviations of the Gaussians
+            The standard deviations of the basis functions
         weights : array_like
             The weights to attach to the Gaussians. Weights should sum up to one.
             If not, the weights are interpreted as relative weights.
         """
+        self._gen_func = gen_func
+        self._frozen = self._gen_func(**data)
+        self._gen_obj = self._frozen.dist
+        self._gen_class = type(self._gen_obj)
+        self._data = data
+
         self._scipy_version_warning()
-        self._means = reshape_to_pdf_size(means, -1)
-        self._stds = reshape_to_pdf_size(stds, -1)
         self._weights = reshape_to_pdf_size(weights, -1)
-        kwargs["shape"] = means.shape[:-1]
-        self._ncomps = means.shape[-1]
+        for key in self._data.keys():
+            self._data[key] = reshape_to_pdf_size(self._data[key],-1)
+        kwargs['shape'] = weights.shape[:-1]
+        self._ncomps = weights.shape[-1]
         super().__init__(*args, **kwargs)
-        if np.any(self._weights < 0):
-            raise ValueError("All weights need to be larger than zero")
-        self._weights = self._weights / self._weights.sum(axis=1)[:, None]
-        self._addobjdata("weights", self._weights)
-        self._addobjdata("stds", self._stds)
-        self._addobjdata("means", self._means)
+        if np.any(self._weights<0):
+            raise ValueError('All weights need to be larger than zero')
+        self._weights = self._weights/self._weights.sum(axis=1)[:,None]
+        self._addobjdata('weights', self._weights)
 
     def _scipy_version_warning(self):
         import scipy  # pylint: disable=import-outside-toplevel
@@ -80,42 +86,28 @@ class mixmod_gen(Pdf_rows_gen):
 
     @property
     def weights(self):
-        """Return weights to attach to the Gaussians"""
+        """Return weights to attach to the basis functions"""
         return self._weights
-
-    @property
-    def means(self):
-        """Return means of the Gaussians"""
-        return self._means
-
-    @property
-    def stds(self):
-        """Return standard deviations of the Gaussians"""
-        return self._stds
 
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
         if np.ndim(x) > 1:  # pragma: no cover
             x = np.expand_dims(x, -2)
-        return (
-            self.weights[row].swapaxes(-2, -1)
-            * sps.norm(
-                loc=self._means[row].swapaxes(-2, -1),
-                scale=self._stds[row].swapaxes(-2, -1),
-            ).pdf(x)
-        ).sum(axis=0)
+        data_swap=dict()
+        for key in self._data.keys():
+            data_swap[key] = self._data[key][row].swapaxes(-2,-1)
+        return (self.weights[row].swapaxes(-2,-1) *
+                self._gen_func(**data_swap).pdf(x)).sum(axis=0)
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
         if np.ndim(x) > 1:  # pragma: no cover
             x = np.expand_dims(x, -2)
-        return (
-            self.weights[row].swapaxes(-2, -1)
-            * sps.norm(
-                loc=self._means[row].swapaxes(-2, -1),
-                scale=self._stds[row].swapaxes(-2, -1),
-            ).cdf(x)
-        ).sum(axis=0)
+        data_swap=dict()
+        for key in self._data.keys():
+            data_swap[key] = self._data[key][row].swapaxes(-2,-1)
+        return (self.weights[row].swapaxes(-2,-1) *
+                self._gen_func(**data_swap).cdf(x)).sum(axis=0)
 
     def _ppf(self, x, row):
         # pylint: disable=arguments-differ
@@ -140,9 +132,11 @@ class mixmod_gen(Pdf_rows_gen):
         Set the bins as additional constructor argument
         """
         dct = super()._updated_ctor_param()
-        dct["means"] = self._means
-        dct["stds"] = self._stds
-        dct["weights"] = self._weights
+        # for key in self._data.keys():
+        #     dct[key] = self._data[key]
+        dct['weights'] = self._weights
+        dct['data'] = self._data
+        dct['gen_func'] = self._gen_func
         return dct
 
     @classmethod
@@ -191,7 +185,7 @@ class mixmod_gen(Pdf_rows_gen):
             )
         )
 
-
 mixmod = mixmod_gen.create
 
 add_class(mixmod_gen)
+
