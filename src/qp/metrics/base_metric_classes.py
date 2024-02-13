@@ -151,6 +151,21 @@ class PointToPointMetric(BaseMetric):
     def evaluate(self, estimate, reference):
         raise NotImplementedError()
 
+    def eval_from_iterator(self, estimate, reference):
+        self.initialize()
+        for estimate, reference in zip(estimate, reference):
+            self.accumulate(estimate, reference)
+        return self.finalize()
+
+    def initialize(self):
+        pass
+
+    def accumulate(self, estimate, reference):
+        raise NotImplementedError()
+
+    def finalize(self):
+        raise NotImplementedError()
+
 
 class PointToDistMetric(BaseMetric):
     """A base class for metrics that require a point estimate as the estimated

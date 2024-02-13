@@ -39,7 +39,7 @@ class PointStatsEz(PointToPointMetric):
         return (estimate - reference) / (1.0 + reference)
 
 
-class PointSigmaIQR(PointToPointMetricDigester):
+class PointSigmaIQR(PointToPointMetric):
     """Calculate sigmaIQR"""
 
     metric_name = "point_stats_iqr"
@@ -75,6 +75,22 @@ class PointSigmaIQR(PointToPointMetricDigester):
         digest = TDigest.compute(ez, compression=100)
         centroids = digest.get_centroids()
         return centroids
+
+    def finalize(self, comm=None, centroids=None):
+        # ents = comm.gather()
+        # meta_digest = TDigest.from_centroid(cents)  # Or something like this
+        # return self.compute_from_digest(meta_digest)
+        # centroids = comm.gather(centroids, root=0) # ???
+
+        #? Does this need to be the more complex version from the example? i.e.
+        # digests = (
+        #     TDigest.of_centroids(centroid, compression=COMPRESSION)
+        #     for centroid in chain.from_iterable(centroids)
+        # )
+        # digest = reduce(add, digests)
+        digest = TDigest.of_centroids(centroids, compression=100)
+
+        return self.compute_from_digest(digest)
 
     def compute_from_digest(self, digest):
         x75, x25 = digest.inverse_cdf([0.75,0.25])
