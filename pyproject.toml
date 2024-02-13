@@ -21,6 +21,7 @@ dependencies = [
     "scipy",
     "tables-io",
     "deprecated",
+    "pytdigest",
 ]
 
 # On a mac, install optional dependencies with `pip install '.[dev]'` (include the single quotes)
