@@ -44,6 +44,7 @@ dev = [
     "pylint",
     "mpi4py",
     "coverage",
+    "ipyparallel",
 ]
 full = [
     "tables-io[full]",

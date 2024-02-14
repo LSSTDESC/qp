@@ -2,9 +2,10 @@ import numpy as np
 from qp.metrics.base_metric_classes import (
     MetricOutputType,
     PointToPointMetric,
-    PointToPointMetricDigester
 )
 from pytdigest import TDigest
+from functools import reduce
+from operator import add
 
 
 class PointStatsEz(PointToPointMetric):
@@ -76,19 +77,12 @@ class PointSigmaIQR(PointToPointMetric):
         centroids = digest.get_centroids()
         return centroids
 
-    def finalize(self, comm=None, centroids=None):
-        # ents = comm.gather()
-        # meta_digest = TDigest.from_centroid(cents)  # Or something like this
-        # return self.compute_from_digest(meta_digest)
-        # centroids = comm.gather(centroids, root=0) # ???
-
-        #? Does this need to be the more complex version from the example? i.e.
-        # digests = (
-        #     TDigest.of_centroids(centroid, compression=COMPRESSION)
-        #     for centroid in chain.from_iterable(centroids)
-        # )
-        # digest = reduce(add, digests)
-        digest = TDigest.of_centroids(centroids, compression=100)
+    def finalize(self, centroids=None):
+        digests = (
+            TDigest.of_centroids(np.array(centroid), compression=100)
+            for centroid in centroids
+        )
+        digest = reduce(add, digests)
 
         return self.compute_from_digest(digest)
 
