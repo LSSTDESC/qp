@@ -73,13 +73,13 @@ class PointSigmaIQR(PointToPointMetric):
 
     def accumulate(self, estimate, reference):
         ez = (estimate - reference) / (1.0 + reference)
-        digest = TDigest.compute(ez, compression=100)
+        digest = TDigest.compute(ez, compression=1000)
         centroids = digest.get_centroids()
         return centroids
 
     def finalize(self, centroids=None):
         digests = (
-            TDigest.of_centroids(np.array(centroid), compression=100)
+            TDigest.of_centroids(np.array(centroid), compression=1000)
             for centroid in centroids
         )
         digest = reduce(add, digests)
@@ -120,6 +120,24 @@ class PointBias(PointToPointMetric):
             Median of the ez values
         """
         return np.median((estimate - reference) / (1.0 + reference))
+
+    def accumulate(self, estimate, reference):
+        ez = (estimate - reference) / (1.0 + reference)
+        digest = TDigest.compute(ez, compression=1000)
+        centroids = digest.get_centroids()
+        return centroids
+
+    def finalize(self, centroids=None):
+        digests = (
+            TDigest.of_centroids(np.array(centroid), compression=1000)
+            for centroid in centroids
+        )
+        digest = reduce(add, digests)
+
+        return self.compute_from_digest(digest)
+
+    def compute_from_digest(self, digest):
+        return digest.inverse_cdf([0.50])[0]
 
 
 class PointOutlierRate(PointToPointMetric):
