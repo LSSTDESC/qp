@@ -178,6 +178,37 @@ class PointOutlierRate(PointToPointMetric):
         outlier = np.sum(mask)
         return float(outlier) / float(num)
 
+    def accumulate(self, estimate, reference):
+        ez = (estimate - reference) / (1.0 + reference)
+        digest = TDigest.compute(ez, compression=1000)
+        centroids = digest.get_centroids()
+        return centroids
+
+    def finalize(self, centroids=None):
+        digests = (
+            TDigest.of_centroids(np.array(centroid), compression=1000)
+            for centroid in centroids
+        )
+        digest = reduce(add, digests)
+
+        # this replaces the call to PointSigmaIQR().evaluate()
+        x75, x25 = digest.inverse_cdf([0.75,0.25])
+        iqr = x75 - x25
+        sigma_iqr = iqr / 1.349
+
+        three_sig = 3.0 * sigma_iqr
+        cut_criterion = np.maximum(0.06, three_sig)
+
+        # here we use the number of points in the centroids as an approximation
+        # of ez.
+        centroids = digest.get_centroids()
+        mask = np.fabs(centroids[:,0]) > cut_criterion
+        outlier = np.sum(centroids[mask,1])
+
+        # Since we use equal weights for all the values in the digest
+        # digest.weight is the total number of values, and is stored as a float.
+        return float(outlier) / digest.weight
+
 
 class PointSigmaMAD(PointToPointMetric):
     """Function to calculate median absolute deviation and sigma
