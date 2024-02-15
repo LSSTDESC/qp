@@ -137,7 +137,7 @@ class PointBias(PointToPointMetric):
         return self.compute_from_digest(digest)
 
     def compute_from_digest(self, digest):
-        return digest.inverse_cdf([0.50])[0]
+        return digest.inverse_cdf(0.50)
 
 
 class PointOutlierRate(PointToPointMetric):
@@ -212,3 +212,35 @@ class PointSigmaMAD(PointToPointMetric):
         ez = (estimate - reference) / (1.0 + reference)
         mad = np.median(np.fabs(ez - np.median(ez)))
         return mad * SCALE_FACTOR
+
+    def accumulate(self, estimate, reference):
+        ez = (estimate - reference) / (1.0 + reference)
+        digest = TDigest.compute(ez, compression=1000)
+        centroids = digest.get_centroids()
+        return centroids
+
+    def finalize(self, centroids=None):
+        digests = (
+            TDigest.of_centroids(np.array(centroid), compression=1000)
+            for centroid in centroids
+        )
+        digest = reduce(add, digests)
+
+        SCALE_FACTOR = 1.4826
+
+        # calculation of `np.median(np.fabs(ez - np.median(ez)))` as suggested by Eric Charles
+        this_median = digest.inverse_cdf([0.50])[0]
+        lots_of_bins = 100000
+        this_min = digest.inverse_cdf(0)
+        this_max = digest.inverse_cdf(1)
+        bins = np.linspace(this_min, this_max, lots_of_bins)
+        this_pdf = digest.cdf(bins[1:]) - digest.cdf(bins[0:-1]) # len(this_pdf) = lots_of_bins - 1
+        bin_dist = np.fabs(bins - this_median) # get the distance to the center for each bin in the hist
+
+        sorted_bins_dist_idx = np.argsort(bin_dist) # sort the bins by dist to median
+        sorted_bins_dist = bin_dist[sorted_bins_dist_idx] # get the sorted distances
+        cumulative_sorted = this_pdf[sorted_bins_dist_idx[0:-1]].cumsum() # the cumulate PDF within the nearest bins
+        median_sorted_bin = np.searchsorted(cumulative_sorted, 0.5) # which bins are the nearest 50% of the PDF
+        dist_to_median = sorted_bins_dist[median_sorted_bin] # return the corresponding distance to the median
+
+        return dist_to_median * SCALE_FACTOR
