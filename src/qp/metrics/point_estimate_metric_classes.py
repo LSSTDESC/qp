@@ -219,7 +219,7 @@ class PointSigmaMAD(PointToPointMetric):
         centroids = digest.get_centroids()
         return centroids
 
-    def finalize(self, centroids=None):
+    def finalize(self, centroids=None, num_bins=1_000_000):
         digests = (
             TDigest.of_centroids(np.array(centroid), compression=1000)
             for centroid in centroids
@@ -229,11 +229,10 @@ class PointSigmaMAD(PointToPointMetric):
         SCALE_FACTOR = 1.4826
 
         # calculation of `np.median(np.fabs(ez - np.median(ez)))` as suggested by Eric Charles
-        this_median = digest.inverse_cdf([0.50])[0]
-        lots_of_bins = 100000
+        this_median = digest.inverse_cdf(0.50)
         this_min = digest.inverse_cdf(0)
         this_max = digest.inverse_cdf(1)
-        bins = np.linspace(this_min, this_max, lots_of_bins)
+        bins = np.linspace(this_min, this_max, num_bins)
         this_pdf = digest.cdf(bins[1:]) - digest.cdf(bins[0:-1]) # len(this_pdf) = lots_of_bins - 1
         bin_dist = np.fabs(bins - this_median) # get the distance to the center for each bin in the hist
 
