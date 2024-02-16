@@ -84,6 +84,13 @@ class test_point_metrics(unittest.TestCase):
         sig_mad = point_sigma_mad.finalize([centroids])
         assert np.isclose(sig_mad, SIGMAD, atol=1e-5)
 
+        configuration = {'tdigest_compression': 5000, 'num_bins': 1_000}
+        point_sigma_mad = PointSigmaMAD(**configuration)
+        centroids = point_sigma_mad.accumulate(zb, zspec)
+        sig_mad = point_sigma_mad.finalize([centroids])
+        assert np.isclose(sig_mad, SIGMAD, atol=1e-4)
+
+
 
     def test_cde_loss_metric(self):
         """Basic test to ensure that the CDE Loss metric class is working."""
