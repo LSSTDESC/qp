@@ -279,10 +279,11 @@ class PointSigmaMAD(PointToPointMetricDigester):
         this_min = digest.inverse_cdf(0)
         this_max = digest.inverse_cdf(1)
         bins = np.linspace(this_min, this_max, self._num_bins)
+        bin_cents = (bins[0:-1] + bins[1:]) / 2.0
         this_pdf = digest.cdf(bins[1:]) - digest.cdf(bins[0:-1]) # len(this_pdf) = lots_of_bins - 1
-        bin_dist = np.fabs(bins - this_median) # get the distance to the center for each bin in the hist
+        bin_dist = np.fabs(bin_cents - this_median) # get the distance to the center for each bin in the hist
 
-        sorted_bins_dist_idx = np.argsort(bin_dist[0:-1]) # sort the bins by dist to median
+        sorted_bins_dist_idx = np.argsort(bin_dist) # sort the bins by dist to median
         sorted_bins_dist = bin_dist[sorted_bins_dist_idx] # get the sorted distances
         cumulative_sorted = this_pdf[sorted_bins_dist_idx].cumsum() # the cumulate PDF within the nearest bins
         median_sorted_bin = np.searchsorted(cumulative_sorted, 0.5) # which bins are the nearest 50% of the PDF
