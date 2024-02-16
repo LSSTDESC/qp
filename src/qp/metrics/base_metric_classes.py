@@ -2,7 +2,6 @@ import enum
 
 from abc import ABC
 
-from pytdigest import TDigest
 
 class MetricInputType(enum.Enum):
     """Defines the various combinations of input types that metric classes accept."""
@@ -151,21 +150,6 @@ class PointToPointMetric(BaseMetric):
     def evaluate(self, estimate, reference):
         raise NotImplementedError()
 
-    def eval_from_iterator(self, estimate, reference):
-        self.initialize()
-        for estimate, reference in zip(estimate, reference):
-            self.accumulate(estimate, reference)
-        return self.finalize()
-
-    def initialize(self):
-        pass
-
-    def accumulate(self, estimate, reference):
-        raise NotImplementedError()
-
-    def finalize(self):
-        raise NotImplementedError()
-
 
 class PointToDistMetric(BaseMetric):
     """A base class for metrics that require a point estimate as the estimated
@@ -191,29 +175,3 @@ class PointToDistMetric(BaseMetric):
 
     def finalize(self):
         raise NotImplementedError()
-
-
-class PointToPointMetricDigester(PointToPointMetric):
-
-    def accumulate(self, estimate, reference):
-        # centroids = estimate.ancil['z_mode'] - reference
-        # digest = TDigest.make_centroied(centroids)  # Or something like this
-        digest = TDigest.compute(estimate, compression=100)
-        centroids = digest.get_centroids()
-        return centroids
-
-    def finalize(self):
-        # ents = comm.gather()
-        # meta_digest = TDigest.from_centroid(cents)  # Or something like this
-        # return self.compute_from_digest(meta_digest)
-        centroids = comm.gather(centroids, root=0) # ???
-
-        #? Does this need to be the more complex version from the example? i.e.
-        # digests = (
-        #     TDigest.of_centroids(centroid, compression=COMPRESSION)
-        #     for centroid in chain.from_iterable(centroids)
-        # )
-        # digest = reduce(add, digests)
-        digest = TDigest.of_centroids(centroids, compression=100)
-
-        return self.compute_from_digest(digest)
