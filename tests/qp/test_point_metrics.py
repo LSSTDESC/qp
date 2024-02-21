@@ -33,6 +33,11 @@ def construct_test_ensemble():
     return zgrid, true_zs, grid_ens, true_ez
 
 
+#generator that yields chunks from estimate and reference
+def chunker(seq, size):
+    return (seq[pos:pos + size] for pos in range(0, len(seq), size))
+
+
 class test_point_metrics(unittest.TestCase):
 
     def test_point_metrics(self):
@@ -42,6 +47,7 @@ class test_point_metrics(unittest.TestCase):
 
         ez = PointStatsEz().evaluate(zb, zspec)
         assert np.allclose(ez, true_ez, atol=1.0e-2)
+
         # grid limits ez vals to ~10^-2 tol
 
         sig_iqr = PointSigmaIQR().evaluate(zb, zspec)
@@ -68,6 +74,11 @@ class test_point_metrics(unittest.TestCase):
         centroids = point_sigma_iqr.accumulate(zb, zspec)
         sig_iqr = point_sigma_iqr.finalize([centroids])
         assert np.isclose(sig_iqr, SIGIQR, atol=1.0e-4)
+
+        zb_iter = chunker(zb, 100)
+        zspec_iter = chunker(zspec, 100)
+        
+        sig_iqr_v2 = point_sigma_iqr.eval_from_iterator(zb_iter, zspec_iter)
 
         point_bias = PointBias(**configuration)
         centroids = point_bias.accumulate(zb, zspec)

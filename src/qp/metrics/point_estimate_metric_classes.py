@@ -14,13 +14,6 @@ class PointToPointMetricDigester(PointToPointMetric):
         super().__init__()
         self._tdigest_compression = tdigest_compression
 
-    # ! Not entirely sure this function will be used, will keep it here for now.
-    def eval_from_iterator(self, estimate, reference):
-        self.initialize()
-        for estimate, reference in zip(estimate, reference):
-            self.accumulate(estimate, reference)
-        return self.finalize()
-
     def initialize(self):
         pass
 
@@ -70,7 +63,7 @@ class PointToPointMetricDigester(PointToPointMetric):
 
         return self.compute_from_digest(digest)
 
-    def compute_from_digest(self, digest):
+    def compute_from_digest(self, digest):  #pragma: no cover
         raise NotImplementedError
 
 

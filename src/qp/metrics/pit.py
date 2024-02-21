@@ -57,7 +57,7 @@ class PIT:
         # efficiently on line 61 with `data_quants = np.nanquantile(...)`.`
         samp_mask = np.isfinite(self._pit_samps)
         self._pit_samps[~samp_mask] = 0
-        if not np.all(samp_mask):
+        if not np.all(samp_mask):  #pragma: no cover
             logging.warning(
                 "Some PIT samples were `NaN`. They have been replacd with 0."
             )
