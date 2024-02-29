@@ -287,7 +287,7 @@ class PITMetric(DistToPointMetricDigester):
         data_quants = digest.inverse_cdf(eval_grid)
         PIT()._produce_output_ensemble(data_quants, eval_grid)
 
-class CDELossMetric(DistToPointMetric):
+class CDELossMetric(DistToPointMetricDigester):
     """Conditional density loss"""
 
     metric_name = "cdeloss"
@@ -314,3 +314,19 @@ class CDELossMetric(DistToPointMetric):
         term2 = np.mean(pdfs[range(npdf), nns])
         cdeloss = term1 - 2 * term2
         return cdeloss
+
+    def accumulate(self, estimate, reference):
+        pdfs = estimate.pdf(self._xvals)
+        npdf = estimate.npdf
+        term1_sum = np.sum(np.trapz(pdfs**2, x=self._xvals))
+
+        nns = [np.argmin(np.abs(self._xvals - z)) for z in reference]
+        term2_sum = np.sum(pdfs[range(npdf), nns])
+
+        return (term1_sum, term2_sum, npdf)
+
+    def finalize(self, tuples):
+        summed_terms = np.sum(tuples, axis=0)
+        term1 = summed_terms[0] / summed_terms[2]
+        term2 = summed_terms[1] / summed_terms[2]
+        return term1 - 2 * term2

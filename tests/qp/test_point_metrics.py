@@ -109,3 +109,8 @@ class test_point_metrics(unittest.TestCase):
         cde_loss_class = CDELossMetric(zgrid)
         result = cde_loss_class.evaluate(pdf_ens, zspec)
         assert np.isclose(result, CDEVAL)
+
+        chunk_output = cde_loss_class.accumulate(pdf_ens, zspec)
+        chunked_result = cde_loss_class.finalize([chunk_output])
+
+        assert np.isclose(chunked_result, CDEVAL)
