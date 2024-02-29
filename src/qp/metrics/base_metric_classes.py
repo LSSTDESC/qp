@@ -139,6 +139,14 @@ class DistToPointMetric(BaseMetric):
     def evaluate(self, estimate, reference):
         raise NotImplementedError()
 
+    def initialize(self):  #pragma: no cover
+        pass
+
+    def accumulate(self, estimate, reference):  #pragma: no cover
+        raise NotImplementedError()
+
+    def finalize(self):  #pragma: no cover
+        raise NotImplementedError()
 
 class PointToPointMetric(BaseMetric):
     """A base class for metrics that require a point estimate as input for both

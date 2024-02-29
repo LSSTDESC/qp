@@ -20,6 +20,50 @@ from qp.metrics.metrics import (
 )
 from qp.metrics.pit import PIT
 
+from pytdigest import TDigest
+from functools import reduce
+from operator import add
+
+
+class DistToPointMetricDigester(DistToPointMetric):
+
+    def __init__(self, tdigest_compression: int = 1000, **kwargs) -> None:
+        super().__init__()
+        self._tdigest_compression = tdigest_compression
+
+    def initialize(self):
+        pass
+
+    def accumulate(self, estimate, reference):  #pragma: no cover
+        raise NotImplementedError()
+
+    def finalize(self, centroids: np.ndarray = []):
+        """This function combines all the centroids that were calculated for the
+        input estimate and reference subsets and returns the resulting TDigest
+        object.
+
+        Parameters
+        ----------
+        centroids : Numpy 2d array, optional
+            The output collected from prior calls to `accumulate`, by default []
+
+        Returns
+        -------
+        float
+            The result of the specific metric calculation defined in the subclasses
+            `compute_from_digest` method.
+        """
+        digests = (
+            TDigest.of_centroids(np.array(centroid), compression=self._tdigest_compression)
+            for centroid in centroids
+        )
+        digest = reduce(add, digests)
+
+        return self.compute_from_digest(digest)
+
+    def compute_from_digest(self, digest):  #pragma: no cover
+        raise NotImplementedError()
+
 
 class MomentMetric(SingleEnsembleMetric):
     """Class wrapper around the `calculate_moment` function."""
@@ -204,8 +248,7 @@ class KSMetric(DistToDistMetric):
         )
 
 
-#! Confirm metric output type - perhaps a new type is appropriate ???
-class PITMetric(DistToPointMetric):
+class PITMetric(DistToPointMetricDigester):
     """Class wrapper for the PIT Metric class."""
 
     metric_name = "pit"
@@ -220,6 +263,28 @@ class PITMetric(DistToPointMetric):
         pit_object = PIT(estimate, reference, self._eval_grid)
         return pit_object.pit
 
+    def accumulate(self, estimate, reference):
+        pit_samples = PIT(estimate, reference, self._eval_grid)._gather_pit_samples(estimate, reference)
+        digest = TDigest.compute(pit_samples, compression=self._tdigest_compression)
+        centroids = digest.get_centroids()
+        return centroids
+
+    def compute_from_digest(self, digest):
+        # Since we use equal weights for all the values in the digest
+        # digest.weight is the total number of values, it is stored as a float,
+        # so we cast to int.
+        total_samples = int(digest.weight)
+        n_pit = np.min([total_samples, len(eval_grid)])
+        if n_pit < len(eval_grid):
+            #! TODO: Determine what the appropriate style of logging is going to be for metrics.
+            print(
+                "Number of pit samples is smaller than the evaluation grid size. "
+                "Will create a new evaluation grid with size = number of pit samples"
+            )
+            eval_grid = np.linspace(0, 1, n_pit)
+
+        data_quants = digest.inverse_cdf(eval_grid)
+        PIT()._produce_output_ensemble(data_quants, eval_grid)
 
 class CDELossMetric(DistToPointMetric):
     """Conditional density loss"""

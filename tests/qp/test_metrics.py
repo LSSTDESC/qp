@@ -299,7 +299,6 @@ class MetricTestCase(unittest.TestCase):
         brier_class = BrierMetric(limits=limits)
         brier_class.initialize()
         class_result = brier_class.evaluate(self.ens_n, truth)
-        brier_class.finalize()
         assert np.all(result == class_result)
 
     def test_calculate_brier_mismatched_number_of_truths(self):

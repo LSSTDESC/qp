@@ -121,7 +121,6 @@ class PitTestCase(unittest.TestCase):
         pit_metric = PITMetric(eval_grid=quant_grid)
         pit_metric.initialize()
         class_result = pit_metric.evaluate(self.grid_ens, self.true_zs)
-        pit_metric.finalize()
 
         eval_grid = np.linspace(0, 3, 100)
         assert np.all(class_result.pdf(eval_grid) == pit_obj.pit.pdf(eval_grid))

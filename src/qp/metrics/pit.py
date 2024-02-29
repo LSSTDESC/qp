@@ -42,25 +42,8 @@ class PIT:
         eval_grid : [float], optional
             A strictly increasing array-like sequence in the range [0,1], by default DEFAULT_QUANTS
         """
-        self._true_vals = true_vals
 
-        # For each distribution in the Ensemble, calculate the CDF where x = known_true_value
-        self._pit_samps = np.array(
-            [
-                qp_ens[i].cdf(self._true_vals[i])[0][0]
-                for i in range(len(self._true_vals))
-            ]
-        )
-
-        # These two lines set all `NaN` values to 0. This may or may not make sense
-        # Alternatively if it's better to simply remove the `NaN`, this can be done
-        # efficiently on line 61 with `data_quants = np.nanquantile(...)`.`
-        samp_mask = np.isfinite(self._pit_samps)
-        self._pit_samps[~samp_mask] = 0
-        if not np.all(samp_mask):  #pragma: no cover
-            logging.warning(
-                "Some PIT samples were `NaN`. They have been replacd with 0."
-            )
+        self._pit_samps = self._gather_pit_samples(qp_ens, true_vals)
 
         n_pit = np.min([len(self._pit_samps), len(eval_grid)])
         if n_pit < len(eval_grid):
@@ -72,19 +55,7 @@ class PIT:
 
         data_quants = np.quantile(self._pit_samps, eval_grid)
 
-        # Remove duplicates values as well as values outside the range (0,1)
-        _, unique_indices = np.unique(data_quants, return_index=True)
-        unique_data_quants = data_quants[unique_indices]
-        unique_eval_grid = eval_grid[unique_indices]
-        quant_mask = self._create_quant_mask(unique_data_quants)
-
-        self._pit = qp.Ensemble(
-            qp.quant,
-            data=dict(
-                quants=unique_eval_grid[quant_mask],
-                locs=np.atleast_2d(unique_data_quants[quant_mask]),
-            ),
-        )
+        self._pit = self._produce_output_ensemble(data_quants, eval_grid)
 
     @property
     def pit_samps(self):
@@ -200,6 +171,43 @@ class PIT:
             The percentage of outliers in this distribution given the min and max bounds.
         """
         return calculate_outlier_rate(self._pit, pit_min, pit_max)[0]
+
+    @classmethod
+    def _gather_pit_samples(cls, qp_ens, true_vals):
+        pit_samples = np.array(
+            [
+                qp_ens[i].cdf(true_vals[i])[0][0]
+                for i in range(len(true_vals))
+            ]
+        )
+
+        # These two lines set all `NaN` values to 0. This may or may not make sense
+        # Alternatively if it's better to simply remove the `NaN`, this can be done
+        # efficiently on line 61 with `data_quants = np.nanquantile(...)`.`
+        sample_mask = np.isfinite(pit_samples)
+        pit_samples[~sample_mask] = 0
+        if not np.all(sample_mask):  #pragma: no cover
+            logging.warning(
+                "Some PIT samples were `NaN`. They have been replacd with 0."
+            )
+
+        return pit_samples
+
+    @classmethod
+    def _produce_output_ensemble(cls, data_quants, eval_grid):
+        # Remove duplicates values as well as values outside the range (0,1)
+        _, unique_indices = np.unique(data_quants, return_index=True)
+        unique_data_quants = data_quants[unique_indices]
+        unique_eval_grid = eval_grid[unique_indices]
+        quant_mask = cls._create_quant_mask(unique_data_quants)
+
+        return qp.Ensemble(
+            qp.quant,
+            data=dict(
+                quants=unique_eval_grid[quant_mask],
+                locs=np.atleast_2d(unique_data_quants[quant_mask]),
+            ),
+        )
 
     @classmethod
     def _create_quant_mask(cls, data_quants):
