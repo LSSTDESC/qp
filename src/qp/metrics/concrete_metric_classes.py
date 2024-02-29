@@ -69,6 +69,7 @@ class MomentMetric(SingleEnsembleMetric):
     """Class wrapper around the `calculate_moment` function."""
 
     metric_name = "moment"
+    metric_output_type = MetricOutputType.one_value_per_distribution
 
     def __init__(
         self,

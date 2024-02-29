@@ -174,12 +174,7 @@ class PIT:
 
     @classmethod
     def _gather_pit_samples(cls, qp_ens, true_vals):
-        pit_samples = np.array(
-            [
-                qp_ens[i].cdf(true_vals[i])[0][0]
-                for i in range(len(true_vals))
-            ]
-        )
+        pit_samples = np.squeeze(qp_ens.cdf(np.vstack(true_vals)))
 
         # These two lines set all `NaN` values to 0. This may or may not make sense
         # Alternatively if it's better to simply remove the `NaN`, this can be done
