@@ -270,7 +270,7 @@ class PITMetric(DistToPointMetricDigester):
     default_eval_grid = np.linspace(0, 1, 100)
 
     def __init__(self, eval_grid: list = default_eval_grid, **kwargs) -> None:
-        super().__init__()
+        super().__init__(**kwargs)
         self._eval_grid = eval_grid
 
     def evaluate(self, estimate, reference) -> Ensemble:
@@ -287,6 +287,7 @@ class PITMetric(DistToPointMetricDigester):
         # Since we use equal weights for all the values in the digest
         # digest.weight is the total number of values, it is stored as a float,
         # so we cast to int.
+        eval_grid = self._eval_grid
         total_samples = int(digest.weight)
         n_pit = np.min([total_samples, len(eval_grid)])
         if n_pit < len(eval_grid):
@@ -298,7 +299,7 @@ class PITMetric(DistToPointMetricDigester):
             eval_grid = np.linspace(0, 1, n_pit)
 
         data_quants = digest.inverse_cdf(eval_grid)
-        PIT()._produce_output_ensemble(data_quants, eval_grid)
+        return PIT._produce_output_ensemble(data_quants, eval_grid)
 
 
 class CDELossMetric(DistToPointMetricDigester):
