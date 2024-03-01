@@ -301,6 +301,12 @@ class MetricTestCase(unittest.TestCase):
         class_result = brier_class.evaluate(self.ens_n, truth)
         assert np.all(result == class_result)
 
+        brier_class_accumulate = BrierMetric(limits=limits)
+        brier_class_accumulate.initialize()
+        sum_tuple = brier_class_accumulate.accumulate(self.ens_n, truth)
+        accumulated_result = brier_class_accumulate.finalize([sum_tuple])
+        assert np.all(result == accumulated_result)
+
     def test_calculate_brier_mismatched_number_of_truths(self):
         """Expect an exception when number of truth values doesn't match number of distributions"""
         truth = 2 * (np.random.uniform(size=(10, 1)) - 0.5)

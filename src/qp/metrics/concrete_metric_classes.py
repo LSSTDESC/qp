@@ -11,6 +11,7 @@ from qp.metrics.base_metric_classes import (
 )
 from qp.metrics.metrics import (
     calculate_brier,
+    calculate_brier_for_accumulation,
     calculate_goodness_of_fit,
     calculate_kld,
     calculate_moment,
@@ -28,7 +29,7 @@ from operator import add
 class DistToPointMetricDigester(DistToPointMetric):
 
     def __init__(self, tdigest_compression: int = 1000, **kwargs) -> None:
-        super().__init__()
+        super().__init__(**kwargs)
         self._tdigest_compression = tdigest_compression
 
     def initialize(self):
@@ -125,7 +126,7 @@ class RBPEMetric(SingleEnsembleMetric):
 
 
 #! Should this be implemented as `DistToPointMetric` or `DistToDistMetric` ???
-class BrierMetric(DistToPointMetric):
+class BrierMetric(DistToPointMetricDigester):
     """Class wrapper around the calculate_brier function. (Which itself is a
     wrapper around the `Brier` metric evaluator class).
     """
@@ -134,11 +135,23 @@ class BrierMetric(DistToPointMetric):
     metric_output_type = MetricOutputType.one_value_per_distribution
 
     def __init__(self, limits: tuple = (0.0, 3.0), dx: float = 0.01, **kwargs) -> None:
-        super().__init__(limits, dx)
+        kwargs.update({"limits": limits, "dx": dx})
+        super().__init__(**kwargs)
 
     def evaluate(self, estimate, reference) -> list:
         return calculate_brier(estimate, reference, self._limits, self._dx)
 
+    def accumulate(self, estimate, reference):
+        brier_sum_npdf_tuple = calculate_brier_for_accumulation(estimate, reference, self._limits, self._dx)
+        return brier_sum_npdf_tuple
+
+    def finalize(self, tuples):
+        # tuples is a list of tuples. The first value in the tuple is the Brier sum
+        # The second value is the number of PDFs
+        summed_terms = np.sum(tuples, axis=0)
+
+        # calculate the mean from the summed terms
+        return summed_terms[0] / summed_terms[1]
 
 class OutlierMetric(SingleEnsembleMetric):
     """Class wrapper around the outlier calculation metric."""
@@ -286,6 +299,7 @@ class PITMetric(DistToPointMetricDigester):
 
         data_quants = digest.inverse_cdf(eval_grid)
         PIT()._produce_output_ensemble(data_quants, eval_grid)
+
 
 class CDELossMetric(DistToPointMetricDigester):
     """Conditional density loss"""

@@ -217,32 +217,7 @@ def calculate_rbpe(p, limits=(np.inf, np.inf)):
     return np.array(rbpes)
 
 
-def calculate_brier(p, truth, limits, dx=0.01):
-    """This function will do the following:
-
-    1) Generate a Mx1 sized grid based on `limits` and `dx`.
-    2) Produce an NxM array by evaluating the pdf for each of the N distribution objects
-       in the Ensemble p on the grid.
-    3) Produce an NxM truth_array using the input truth and the generated grid. All values will be 0 or 1.
-    4) Create a Brier metric evaluation object
-    5) Return the result of the Brier metric calculation.
-
-    Parameters
-    ----------
-    p: qp.Ensemble object
-        of N distributions probability distribution functions that will be gridded and compared against truth.
-    truth: Nx1 sequence
-        the list of true values, 1 per distribution in p.
-    limits: 2-tuple of floats
-        endpoints grid to evaluate the PDFs for the distributions in p
-    dx: float
-        resolution of the grid Defaults to 0.01.
-
-    Returns
-    -------
-    Brier_metric: float
-    """
-
+def _prepare_for_brier(p, truth, limits, dx=0.01):
     # Ensure that the number of distributions objects in the Ensemble
     # is equal to the length of the truth array
     if p.npdf != len(truth):
@@ -270,11 +245,45 @@ def calculate_brier(p, truth, limits, dx=0.01):
     truth_array = np.squeeze([np.histogram(t, grid.hist_bin_edges)[0] for t in truth])
 
     # instantiate the Brier metric object
-    brier_metric_evaluation = Brier(pdf_values, truth_array)
+    return Brier(pdf_values, truth_array)
+
+def calculate_brier(p, truth, limits, dx=0.01):
+    """This function will do the following:
+
+    1) Generate a Mx1 sized grid based on `limits` and `dx`.
+    2) Produce an NxM array by evaluating the pdf for each of the N distribution objects
+       in the Ensemble p on the grid.
+    3) Produce an NxM truth_array using the input truth and the generated grid. All values will be 0 or 1.
+    4) Create a Brier metric evaluation object
+    5) Return the result of the Brier metric calculation.
+
+    Parameters
+    ----------
+    p: qp.Ensemble object
+        of N distributions probability distribution functions that will be gridded and compared against truth.
+    truth: Nx1 sequence
+        the list of true values, 1 per distribution in p.
+    limits: 2-tuple of floats
+        endpoints grid to evaluate the PDFs for the distributions in p
+    dx: float
+        resolution of the grid Defaults to 0.01.
+
+    Returns
+    -------
+    Brier_metric: float
+    """
+
+    brier_metric_evaluation = _prepare_for_brier(p, truth, limits, dx)
 
     # return the results of evaluating the Brier metric
     return brier_metric_evaluation.evaluate()
 
+def calculate_brier_for_accumulation(p, truth, limits, dx=0.01):
+    brier_metric_evaluation = _prepare_for_brier(p, truth, limits, dx)
+
+    brier_sum = brier_metric_evaluation.accumulate()
+
+    return (brier_sum, p.npdf)
 
 @deprecated(
     reason="""

@@ -36,6 +36,11 @@ class Brier:
         self._validate_data()
         return self._calculate_metric()
 
+    def accumulate(self):
+        self._manipulate_data()
+        self._validate_data()
+        return self._calculate_metric_for_accumulation()
+
     def _manipulate_data(self):
         """
         Placeholder for data manipulation as required. i.e. converting from
@@ -93,5 +98,10 @@ class Brier:
         Calculate the Brier metric for the input data.
         """
         return np.mean(
+            np.sum((self._prediction - self._truth) ** 2, axis=self._axis_for_summation)
+        )
+
+    def _calculate_metric_for_accumulation(self):
+        return np.sum(
             np.sum((self._prediction - self._truth) ** 2, axis=self._axis_for_summation)
         )
