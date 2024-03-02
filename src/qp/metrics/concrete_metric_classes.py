@@ -290,7 +290,7 @@ class PITMetric(DistToPointMetricDigester):
         eval_grid = self._eval_grid
         total_samples = int(digest.weight)
         n_pit = np.min([total_samples, len(eval_grid)])
-        if n_pit < len(eval_grid):
+        if n_pit < len(eval_grid):  # pragma: no cover
             #! TODO: Determine what the appropriate style of logging is going to be for metrics.
             print(
                 "Number of pit samples is smaller than the evaluation grid size. "
