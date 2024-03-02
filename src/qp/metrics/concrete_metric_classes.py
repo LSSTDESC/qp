@@ -148,7 +148,7 @@ class BrierMetric(DistToPointMetricDigester):
     def finalize(self, tuples):
         # tuples is a list of tuples. The first value in the tuple is the Brier sum
         # The second value is the number of PDFs
-        summed_terms = np.sum(tuples, axis=0)
+        summed_terms = np.sum(np.atleast_2d(tuples), axis=0)
 
         # calculate the mean from the summed terms
         return summed_terms[0] / summed_terms[1]
@@ -341,7 +341,7 @@ class CDELossMetric(DistToPointMetricDigester):
         return (term1_sum, term2_sum, npdf)
 
     def finalize(self, tuples):
-        summed_terms = np.sum(tuples, axis=0)
+        summed_terms = np.sum(np.atleast_2d(tuples), axis=0)
         term1 = summed_terms[0] / summed_terms[2]
         term2 = summed_terms[1] / summed_terms[2]
         return term1 - 2 * term2
