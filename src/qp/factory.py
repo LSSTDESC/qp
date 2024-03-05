@@ -368,6 +368,32 @@ class Factory(OrderedDict):
             output_tables[key] = val.build_tables()
         io.writeDictsToHdf5(output_tables, filename, **kwargs)
 
+    @staticmethod
+    def read_dict(filename):
+        """Assume that filename is an HDF5 file, containing multiple qp.Ensembles
+        that have been stored at nparrays."""
+        results = {}
+
+        # retrieve all the top level groups. Assume each top level group 
+        # corresponds to an ensemble.
+        top_level_groups = io.readHdf5GroupNames(filename)
+
+        # for each top level group, convert the subgroups (data, meta, ancil) into
+        # a dictionary of dictionaries and pass the result to `from_tables`.
+        for top_level_group in top_level_groups:
+            tables = {}
+            keys = io.readHdf5GroupNames(filename, top_level_group)
+            for key_name in keys:
+                # retrieve the hdf5 group object
+                group_object, _ = io.readHdf5Group(filename, f"{top_level_group}/{key_name}")
+
+                # use the hdf5 group object to gather data into a dictionary
+                tables[key_name] = io.readHdf5GroupToDict(group_object)
+
+            results[top_level_group] = from_tables(tables)
+
+        return results
+
 _FACTORY = Factory()
 
 
@@ -388,3 +414,4 @@ data_length = _FACTORY.data_length
 from_tables = _FACTORY.from_tables
 is_qp_file = _FACTORY.is_qp_file
 write_dict = _FACTORY.write_dict
+read_dict = _FACTORY.read_dict
