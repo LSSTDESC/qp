@@ -24,6 +24,7 @@ from .factory import (
     data_length,
     from_tables,
     is_qp_file,
+    write_dict,
 )
 from .lazy_modules import *
 
