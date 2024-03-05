@@ -357,6 +357,16 @@ class Factory(OrderedDict):
             data[k] = np.squeeze(v)
         return Ensemble(gen_func, data, ancil)
 
+    @staticmethod
+    def write_dict(filename, ensemble_dict, **kwargs):
+        output_tables = {}
+        for key, val in ensemble_dict.items():
+            # check that val is a qp.Ensemble
+            if not isinstance(val, Ensemble):
+                raise ValueError("All values in ensemble_dict must be qp.Ensemble")
+
+            output_tables[key] = val.build_tables()
+        io.writeDictsToHdf5(output_tables, filename, **kwargs)
 
 _FACTORY = Factory()
 
@@ -377,3 +387,4 @@ concatenate = _FACTORY.concatenate
 data_length = _FACTORY.data_length
 from_tables = _FACTORY.from_tables
 is_qp_file = _FACTORY.is_qp_file
+write_dict = _FACTORY.write_dict
