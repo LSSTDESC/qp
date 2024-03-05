@@ -413,9 +413,5 @@ concatenate = _FACTORY.concatenate
 data_length = _FACTORY.data_length
 from_tables = _FACTORY.from_tables
 is_qp_file = _FACTORY.is_qp_file
-<<<<<<< HEAD
 write_dict = _FACTORY.write_dict
 read_dict = _FACTORY.read_dict
-=======
-write_dict = _FACTORY.write_dict
->>>>>>> 4ae1d03 (WIP - Initial commit to support writing out a dictionary collection of ensembles.)
