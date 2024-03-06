@@ -6,7 +6,7 @@ import os
 import unittest
 
 import numpy as np
-
+from numpy.testing import assert_array_equal, assert_array_almost_equal
 import qp
 from qp import test_data
 from qp.plotting import init_matplotlib
@@ -235,6 +235,34 @@ class EnsembleTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             _ = qp.mixmod(weights=weights, means=means, stds=sigmas)
 
+    def test_dictionary_output(self):
+        """Test that writing and reading a dictionary of ensembles works as expected."""
+        key = "hist"
+        qp.hist_gen.make_test_data()
+        cls_test_data = qp.hist_gen.test_data[key]
+        ens_h = build_ensemble(cls_test_data)
+
+        key = "interp"
+        qp.interp_gen.make_test_data()
+        cls_test_data = qp.interp_gen.test_data[key]
+        ens_i = build_ensemble(cls_test_data)
+
+        output_dict = {
+            'hist': ens_h,
+            'interp': ens_i,
+        }
+
+        qp.factory.write_dict('test_dict.hdf5', output_dict)
+
+        input_dict = qp.factory.read_dict('test_dict.hdf5')
+
+        assert input_dict.keys() == output_dict.keys()
+
+        XVALS = np.linspace(0,3,100)
+        for ens_type in ["hist", "interp"]:
+            assert_array_equal(input_dict[ens_type].metadata()['pdf_name'], output_dict[ens_type].metadata()['pdf_name'])
+
+            assert_array_almost_equal(input_dict[ens_type].pdf(XVALS), output_dict[ens_type].pdf(XVALS))
 
 if __name__ == "__main__":
     unittest.main()
