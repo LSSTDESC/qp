@@ -363,7 +363,7 @@ class Factory(OrderedDict):
         for key, val in ensemble_dict.items():
             # check that val is a qp.Ensemble
             if not isinstance(val, Ensemble):
-                raise ValueError("All values in ensemble_dict must be qp.Ensemble")
+                raise ValueError("All values in ensemble_dict must be qp.Ensemble") # pragma: no cover
 
             output_tables[key] = val.build_tables()
         io.writeDictsToHdf5(output_tables, filename, **kwargs)
