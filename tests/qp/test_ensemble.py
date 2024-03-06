@@ -235,7 +235,6 @@ class EnsembleTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             _ = qp.mixmod(weights=weights, means=means, stds=sigmas)
 
-    @unittest.skip("Waiting for tables_io implementation")
     def test_dictionary_output(self):
         """Test that writing and reading a dictionary of ensembles works as expected."""
         key = "hist"
