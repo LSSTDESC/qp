@@ -2,7 +2,6 @@
 
 import numpy as np
 
-from qp.ensemble import Ensemble
 from qp.metrics.base_metric_classes import (
     MetricOutputType,
     DistToDistMetric,
@@ -273,7 +272,7 @@ class PITMetric(DistToPointMetricDigester):
         super().__init__(**kwargs)
         self._eval_grid = eval_grid
 
-    def evaluate(self, estimate, reference) -> Ensemble:
+    def evaluate(self, estimate, reference):
         pit_object = PIT(estimate, reference, self._eval_grid)
         return pit_object.pit
 
