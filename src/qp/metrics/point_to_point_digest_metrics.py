@@ -7,32 +7,39 @@ from pytdigest import TDigest
 from functools import reduce
 from operator import add
 
-class PointToPointMetricTDigester(PointToPointMetric):
-
-    def __init__(self, tdigest_compression: int = 1000, **kwargs) -> None:
-        super().__init__()
-        self._tdigest_compression = tdigest_compression
-
+class EvaluateFromIteratorMixin:
     def eval_from_iterator(self, estimate, reference):
         self.initialize()
         for estimate, reference in zip(estimate, reference):
             centroids = self.accumulate(estimate, reference)
         return self.finalize([centroids])
 
+class PointToPointMetricTDigester(PointToPointMetric, EvaluateFromIteratorMixin):
+
+    def __init__(self, tdigest_compression: int = 1000, **kwargs) -> None:
+        super().__init__()
+        self._tdigest_compression = tdigest_compression
+
     def initialize(self):
         pass
 
-    def evaluate(self, estimate, reference, tdigest_compression=1000):
-        # we do the check, just once for all child classes
+    def evaluate(self, estimate, reference, tdigest_compression=None):
         self._do_type_check(estimate, reference)
+        if tdigest_compression is None:
+            tdigest_compression = self._tdigest_compression
         self._evaluate(estimate, reference, tdigest_compression)
 
     def _do_type_check(self, estimate, reference):
-        # type check here
-        pass
+        #check if estimate is an iterator
+        if not hasattr(estimate, '__iter__'):
+            raise ValueError('estimate should be an iterator')  #pragma: no cover
 
-    def _evaluate(estimate, reference, tdigest_compression):
-        raise NotImplementedError()
+        #check if reference is an iterator
+        if not hasattr(reference, '__iter__'):
+            raise ValueError('reference should be an iterator') #pragma: no cover
+
+    def _evaluate(self, estimate, reference, tdigest_compression):
+        return self.eval_from_iterator(estimate, reference, tdigest_compression)
 
     def accumulate(self, estimate, reference):
         """This function compresses the input into a TDigest and returns the
@@ -83,6 +90,7 @@ class PointToPointMetricTDigester(PointToPointMetric):
     def _compute_from_digest(self, digest):  #pragma: no cover
         raise NotImplementedError
 
+
 class PointSigmaIQR_digest(PointToPointMetricTDigester):
     """Calculate sigmaIQR with t-digest approximation"""
 
@@ -92,27 +100,23 @@ class PointSigmaIQR_digest(PointToPointMetricTDigester):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
-    def _evaluate(self, estimate, reference, tdigest_compression=1000):
-        """Calculate the width of the e_z distribution
-        using the Interquartile range 
-
-        Parameters
-        ----------
-        estimate : Iterators over numpy 1d array
-            Point estimate values
-        reference : Iterators over numpy 1d array
-            True values
-
-        Returns
-        -------
-        float
-            The interquartile range.
-        """
-
-        return self.eval_from_iterator(estimate, reference, tdigest_compression)
-
     def _compute_from_digest(self, digest):
         x75, x25 = digest.inverse_cdf([0.75,0.25])
         iqr = x75 - x25
         sigma_iqr = iqr / 1.349
         return sigma_iqr
+
+
+class PointBias(PointToPointMetricTDigester):
+    """calculates the bias of the point stats ez samples with t-digest approximation.
+    In keeping with the Science Book, this is just the median of the ez values.
+    """
+
+    metric_name = "point_bias"
+    metric_output_type = MetricOutputType.single_value
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+    def compute_from_digest(self, digest):
+        return digest.inverse_cdf(0.50)

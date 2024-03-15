@@ -8,65 +8,6 @@ from functools import reduce
 from operator import add
 
 
-class PointToPointMetricDigester(PointToPointMetric):
-
-    def __init__(self, tdigest_compression: int = 1000, **kwargs) -> None:
-        super().__init__()
-        self._tdigest_compression = tdigest_compression
-
-    def initialize(self):
-        pass
-
-    def accumulate(self, estimate, reference):
-        """This function compresses the input into a TDigest and returns the
-        centroids.
-
-        Parameters
-        ----------
-        estimate : Numpy 1d array
-            Point estimate values
-        reference : Numpy 1d array
-            True values
-
-        Returns
-        -------
-        Numpy 2d array
-            The centroids of the TDigest. Roughly approximates a histogram with
-            centroid locations and weights.
-        """
-        ez = (estimate - reference) / (1.0 + reference)
-        digest = TDigest.compute(ez, compression=self._tdigest_compression)
-        centroids = digest.get_centroids()
-        return centroids
-
-    def finalize(self, centroids: np.ndarray = []):
-        """This function combines all the centroids that were calculated for the
-        input estimate and reference subsets and returns the resulting TDigest
-        object.
-
-        Parameters
-        ----------
-        centroids : Numpy 2d array, optional
-            The output collected from prior calls to `accumulate`, by default []
-
-        Returns
-        -------
-        float
-            The result of the specific metric calculation defined in the subclasses
-            `compute_from_digest` method.
-        """
-        digests = (
-            TDigest.of_centroids(np.array(centroid), compression=self._tdigest_compression)
-            for centroid in centroids
-        )
-        digest = reduce(add, digests)
-
-        return self.compute_from_digest(digest)
-
-    def compute_from_digest(self, digest):  #pragma: no cover
-        raise NotImplementedError
-
-
 class PointStatsEz(PointToPointMetric):
     """Copied from PZDC1paper repo. Adapted to remove the cut based on
     magnitude."""
