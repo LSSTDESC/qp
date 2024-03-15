@@ -155,22 +155,7 @@ class PointToPointMetric(BaseMetric):
 
     metric_input_type = MetricInputType.point_to_point
 
-    def eval_from_iterator(self, estimate, reference):
-        self.initialize()
-        for estimate, reference in zip(estimate, reference):
-            centroids = self.accumulate(estimate, reference)
-        return self.finalize([centroids])
-
     def evaluate(self, estimate, reference):
-        raise NotImplementedError()
-
-    def initialize(self):  #pragma: no cover
-        pass
-
-    def accumulate(self, estimate, reference):  #pragma: no cover
-        raise NotImplementedError()
-
-    def finalize(self):  #pragma: no cover
         raise NotImplementedError()
 
 

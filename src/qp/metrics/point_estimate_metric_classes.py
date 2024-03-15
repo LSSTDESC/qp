@@ -99,7 +99,7 @@ class PointStatsEz(PointToPointMetric):
         return (estimate - reference) / (1.0 + reference)
 
 
-class PointSigmaIQR(PointToPointMetricDigester):
+class PointSigmaIQR(PointToPointMetric):
     """Calculate sigmaIQR"""
 
     metric_name = "point_stats_iqr"
@@ -126,12 +126,6 @@ class PointSigmaIQR(PointToPointMetricDigester):
         """
         ez = (estimate - reference) / (1.0 + reference)
         x75, x25 = np.percentile(ez, [75.0, 25.0])
-        iqr = x75 - x25
-        sigma_iqr = iqr / 1.349
-        return sigma_iqr
-
-    def compute_from_digest(self, digest):
-        x75, x25 = digest.inverse_cdf([0.75,0.25])
         iqr = x75 - x25
         sigma_iqr = iqr / 1.349
         return sigma_iqr
