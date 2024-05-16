@@ -2,6 +2,8 @@ from .array_metrics import *
 from .metrics import *
 from .goodness_of_fit import *
 from .base_metric_classes import *
+from .concrete_metric_classes import *
+from .point_estimate_metric_classes import *
 
 # added for testing purposes
 
