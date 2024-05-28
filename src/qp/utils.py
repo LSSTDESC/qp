@@ -888,7 +888,7 @@ def reshape_to_pdf_size(vals, split_dim):
         The reshaped array
     """
     in_shape = np.shape(vals)
-    npdf = np.product(in_shape[:split_dim]).astype(int)
+    npdf = np.prod(in_shape[:split_dim]).astype(int)
     per_pdf = in_shape[split_dim:]
     out_shape = np.hstack([npdf, per_pdf])
     return vals.reshape(out_shape)

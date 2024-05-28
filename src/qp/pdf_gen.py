@@ -179,7 +179,7 @@ class rv_frozen_func(rv_continuous_frozen):
             self._shape = 1
         else:
             self._shape = ss[1:-1]
-        self._npdf = np.product(self._shape).astype(int)
+        self._npdf = np.prod(self._shape).astype(int)
         self._ndim = np.size(self._shape)
 
     @property
@@ -227,7 +227,7 @@ class rv_frozen_rows(rv_continuous_frozen):
     def __init__(self, dist, shape, *args, **kwds):
         """C'tor"""
         self._shape = shape
-        self._npdf = np.product(shape).astype(int)
+        self._npdf = np.prod(shape).astype(int)
         self._ndim = np.size(shape)
         if self._npdf is not None:
             kwds.setdefault(
@@ -281,7 +281,7 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
     def __init__(self, *args, **kwargs):
         """C'tor"""
         self._shape = kwargs.pop("shape", (1))
-        self._npdf = np.product(self._shape).astype(int)
+        self._npdf = np.prod(self._shape).astype(int)
         super().__init__(*args, **kwargs)
 
     @property
