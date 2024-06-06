@@ -34,3 +34,5 @@ from . import utils
 from . import packing_utils
 
 from . import test_funcs
+
+from . import projectors
