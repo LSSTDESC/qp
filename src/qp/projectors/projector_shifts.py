@@ -26,6 +26,12 @@ class ProjectorShifts(ProjectorBase):
         self.shift = self._find_shift()
 
     def evaluate_model(self, pz, shift):
+        """
+        Aplies a shift to the given p(z) distribution.
+        This is done by interpolating the p(z) distribution
+        at the shifted z values and then evaluating it at the
+        original z values.
+        """
         z = pz[0]
         pz = pz[1]
         z_shift = z + shift

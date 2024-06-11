@@ -7,6 +7,20 @@ from scipy.stats import multivariate_normal as mvn
 
 
 class ProjectorMoments(ProjectorBase):
+    """
+    Projector for the moments model.
+    The moments model assumes that meausred photometric distribution
+    is Gaussian meaning that it can be fully described by its mean and
+    covariance matrix. Conceptually, this is equavalent to a 
+    Gaussian process regressio for a given p(z). The details can be found 
+    in the paper: 2301.11978
+
+    Some measured photometric distributions will possess non-invertible
+    covariance matrices. If this is the case, ProjectorMoments will
+    attempt regularize the covariance matrix by adding a small jitter
+    to its eigen-values. If this fails, the covariance matrix will be
+    diagonalized.
+    """
     @dispatch()
     def __init__(self):
         self._project_base()
@@ -47,6 +61,11 @@ class ProjectorMoments(ProjectorBase):
         return np.all(np.linalg.eigvals(A) > 0)
 
     def evaluate_model(self, pz, alpha):
+        """
+        Samples a photometric distribution 
+        from a Gaussian distribution with mean
+        and covariance measured from the data.
+        """
         z = pz[0]
         pz = pz[1]
         return [z, pz + self.pz_chol @ alpha]

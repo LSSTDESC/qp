@@ -4,6 +4,17 @@ from multipledispatch import dispatch
 
 
 class ProjectorBase(object):
+    """
+    Base class for projectors. Projectors are used to project the measured
+    photometric distributions by RAIL onto the space of a given generative
+    photometric model for inference. 
+    This class is not meant to be used directly, 
+    but to be subclassed by specific projectors. 
+    The subclasses should implement the following methods:
+    - evaluate_model: given a set of parameters, evaluate the model
+    - get_prior: return the prior distribution of the model given
+    the meadured photometric distributions.
+    """
     @dispatch()
     def __init__(self):
         self._project_base()
@@ -45,16 +56,29 @@ class ProjectorBase(object):
         return pzs
 
     def evaluate_model(self, *args):
+        """
+        Evaluate the model at the given parameters.
+        """
         raise NotImplementedError
 
     def get_prior(self):
+        """
+        Returns the calibrated prior distribution for the model 
+        parameters given the measured photometric distributions.
+        """
         if self.prior is None:
             self.prior = self._get_prior()
         return self.prior
 
     def sample_prior(self):
+        """
+        Draws a sample from the prior distribution.
+        """
         prior = self.get_prior()
         return prior.rvs()
 
     def save_prior(self):
+        """
+        Saves the prior distribution to a file.
+        """
         raise NotImplementedError
