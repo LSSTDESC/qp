@@ -15,7 +15,7 @@ def make_qp_ens(file):
 def make_projector():
     file = np.load('tests/qp/dummy.npz')
     ens = make_qp_ens(file)
-    return proj.projector_shifts.ProjectorShifts(ens)
+    return proj.ProjectorShifts(ens)
 
 
 def test_prior():

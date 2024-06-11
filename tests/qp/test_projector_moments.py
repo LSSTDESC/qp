@@ -15,7 +15,7 @@ def make_qp_ens(file):
 def make_projector():
     file = np.load('tests/qp/dummy.npz')
     ens = make_qp_ens(file)
-    return proj.projector_moments.ProjectorMoments(ens)
+    return proj.ProjectorMoments(ens)
 
 
 def test_prior():

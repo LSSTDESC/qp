@@ -14,7 +14,7 @@ def make_qp_ens(file):
 def test_base_from_qp():
     file = np.load('tests/qp/dummy.npz')
     ens = make_qp_ens(file)
-    projector = proj.ProjectorBase.ProjectorBase(ens)
+    projector = proj.ProjectorBase(ens)
     m, n = projector.pzs.shape
     k, = projector.z.shape
     pzs = file['pzs']
@@ -26,7 +26,7 @@ def test_base_from_arrs():
     file = np.load('tests/qp/dummy.npz')
     zs = file['zs']
     pzs = file['pzs']
-    projector = proj.ProjectorBase.ProjectorBase(zs, pzs)
+    projector = proj.ProjectorBase(zs, pzs)
     m, n = projector.pzs.shape
     k, = projector.z.shape
     pzs = file['pzs']
