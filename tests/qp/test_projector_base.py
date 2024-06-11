@@ -1,6 +1,6 @@
 import qp
+import qp.projectors as proj
 import numpy as np
-import rail_projector.projectors as rp
 
 
 def make_qp_ens(file):
@@ -12,9 +12,9 @@ def make_qp_ens(file):
     return q
 
 def test_base_from_qp():
-    file = np.load('rail_projector/tests/dummy.npz')
+    file = np.load('tests/qp/dummy.npz')
     ens = make_qp_ens(file)
-    projector = rp.ProjectorBase(ens)
+    projector = proj.ProjectorBase.ProjectorBase(ens)
     m, n = projector.pzs.shape
     k, = projector.z.shape
     pzs = file['pzs']
@@ -23,10 +23,10 @@ def test_base_from_qp():
     assert np.allclose(projector.pz_mean, np.mean(pzs, axis=0))
 
 def test_base_from_arrs():
-    file = np.load('rail_projector/tests/dummy.npz')
+    file = np.load('tests/qp/dummy.npz')
     zs = file['zs']
     pzs = file['pzs']
-    projector = rp.ProjectorBase(zs, pzs)
+    projector = proj.ProjectorBase.ProjectorBase(zs, pzs)
     m, n = projector.pzs.shape
     k, = projector.z.shape
     pzs = file['pzs']

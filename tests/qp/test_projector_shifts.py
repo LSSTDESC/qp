@@ -1,6 +1,6 @@
 import qp
 import numpy as np
-import rail_projector.projectors as rp
+import qp.projectors as proj
 
 
 def make_qp_ens(file):
@@ -13,9 +13,9 @@ def make_qp_ens(file):
 
 
 def make_projector():
-    file = np.load('rail_projector/tests/dummy.npz')
+    file = np.load('tests/qp/dummy.npz')
     ens = make_qp_ens(file)
-    return rp.ProjectorShifts(ens)
+    return proj.projector_shifts.ProjectorShifts(ens)
 
 
 def test_prior():

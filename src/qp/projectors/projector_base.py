@@ -28,7 +28,7 @@ class ProjectorBase(object):
         self.pz_mean = np.mean(self.pzs, axis=0)
         self.prior = None
 
-    @dispatch(qp.ensemble.Ensemble)
+    @dispatch(Ensemble)
     def _project_base(self, ens, z=None):
         if z is None:
             z = np.linspace(0, 1.5, 45)
