@@ -27,8 +27,8 @@ class ProjectorMoments(ProjectorBase):
         self._project()
 
     @dispatch(np.ndarray, np.ndarray)
-    def __init__(self, zs, pzs):
-        self._project_base(zs, pzs)
+    def __init__(self, zs, nzs):
+        self._project_base(zs, nzs)
         self._project()
 
     @dispatch(Ensemble)
@@ -37,11 +37,10 @@ class ProjectorMoments(ProjectorBase):
         self._project()
 
     def _project(self):
-        self.pz_cov = self._get_cov()
-        self.pz_chol = cholesky(self.pz_cov)
+        self.nz_chol = self._get_chol()
 
-    def _get_cov(self):
-        cov = np.cov(self.pzs, rowvar=False)
+    def _get_chol(self):
+        cov = self.nz_cov
         if not self._is_pos_def(cov):
             print('Warning: Covariance matrix is not positive definite')
             print('The covariance matrix will be regularized')
@@ -55,22 +54,23 @@ class ProjectorMoments(ProjectorBase):
                 print('Warning: regularization failed')
                 print('The covariance matrix will be diagonalized')
                 cov = np.diag(np.diag(cov))
-        return cov
+        chol = cholesky(cov)
+        return chol
 
     def _is_pos_def(self, A):
         return np.all(np.linalg.eigvals(A) > 0)
 
-    def evaluate_model(self, pz, alpha):
+    def evaluate_model(self, nz, alpha):
         """
         Samples a photometric distribution 
         from a Gaussian distribution with mean
         and covariance measured from the data.
         """
-        z = pz[0]
-        pz = pz[1]
-        return [z, pz + self.pz_chol @ alpha]
+        z = nz[0]
+        nz = nz[1]
+        return [z, nz + self.nz_chol @ alpha]
 
     def _get_prior(self):
-        return mvn(np.zeros_like(self.pz_mean),
-                   np.ones_like(self.pz_mean))
+        return mvn(np.zeros_like(self.nz_mean),
+                   np.ones_like(self.nz_mean))
 
