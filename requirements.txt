@@ -5,4 +5,3 @@ scikit-learn
 setuptools_scm
 tables-io[full]
 deprecated
-multipledispatch
