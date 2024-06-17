@@ -20,17 +20,6 @@ class ProjectorMoments(ProjectorBase):
     to its eigen-values. If this fails, the covariance matrix will be
     diagonalized.
     """
-    @dispatch()
-    def __init__(self):
-        self._project_base()
-        self._project()
-
-    @dispatch(np.ndarray, np.ndarray)
-    def __init__(self, zs, nzs):
-        self._project_base(zs, nzs)
-        self._project()
-
-    @dispatch(Ensemble)
     def __init__(self, ens):
         self._project_base(ens)
         self._project()
@@ -72,4 +61,3 @@ class ProjectorMoments(ProjectorBase):
     def _get_prior(self):
         return mvn(np.zeros_like(self.nz_mean),
                    np.ones_like(self.nz_mean))
-
