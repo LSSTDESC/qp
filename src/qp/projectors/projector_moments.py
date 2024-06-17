@@ -1,6 +1,5 @@
 import numpy as np
 from ..ensemble import Ensemble
-from multipledispatch import dispatch
 from .projector_base import ProjectorBase
 from numpy.linalg import eig, cholesky
 from scipy.stats import multivariate_normal as mvn
