@@ -27,7 +27,7 @@ def test_prior():
 def test_sample_prior():
     projector = make_projector()
     prior_sample = projector.sample_prior()
-    assert len([prior_sample]) == len([projector.shift, projector.width])
+    assert len(prior_sample) == len([projector.shift, projector.width])
 
 
 def test_model():
