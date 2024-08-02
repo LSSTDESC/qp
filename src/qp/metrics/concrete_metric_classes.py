@@ -20,7 +20,7 @@ from qp.metrics.metrics import (
 )
 from qp.metrics.pit import PIT
 
-from ..lazy_modules import pytdigest
+from qp.lazy_modules import pytdigest
 from functools import reduce
 from operator import add
 

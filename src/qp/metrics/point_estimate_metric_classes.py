@@ -5,7 +5,7 @@ from qp.metrics.base_metric_classes import (
 )
 from functools import reduce
 from operator import add
-from ..lazy_modules import pytdigest
+from qp.lazy_modules import pytdigest
 
 class PointToPointMetricDigester(PointToPointMetric):
 
