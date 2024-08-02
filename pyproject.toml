@@ -36,7 +36,7 @@ dev = [
     "packaging",
     "pillow",
     "cycler",
-    "pytdigest',
+    "pytdigest",
     "python-dateutil",
     "kiwisolver",
     "joblib",
@@ -48,13 +48,13 @@ dev = [
 ]
 full = [
     "tables-io[full]",
-    "pytdigest',
+    "pytdigest",
     "matplotlib",
     "scikit-learn",
 ]
 all = [
     "tables-io[full]",
-    "pytdigest',
+    "pytdigest",
     "matplotlib",
     "scikit-learn",
 ]
