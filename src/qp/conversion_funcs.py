@@ -312,7 +312,7 @@ def extract_voigt_xy_sparse(in_dist, **kwargs):  # pragma: no cover
     newz = np.linspace(minz, maxz, nz)
     interp = sciinterp.interp1d(z, yvals, assume_sorted=True)
     newpdf = interp(newz)
-    newpdf = newpdf / sciint.trapz(newpdf, newz).reshape(-1, 1)
+    newpdf = newpdf / sciint.trapezoid(newpdf, newz).reshape(-1, 1)
     ALL, bigD, _ = build_sparse_representation(newz, newpdf)
     return dict(indices=ALL, metadata=bigD)
 
@@ -410,7 +410,7 @@ def extract_xy_sparse(in_dist, **kwargs):  # pragma: no cover
     # normalize and sum the weighted pdfs
     x = sparse_meta["z"]
     y = pdf_y.sum(axis=-1)
-    norms = sciint.trapz(y.T, x)
+    norms = sciint.trapezoid(y.T, x)
     y /= norms
     # super(sparse_gen, self).__init__(x, y.T, *args, **kwargs)
     xvals = x

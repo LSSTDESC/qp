@@ -48,7 +48,7 @@ class sparse_gen(interp_gen):
         # normalize and sum the weighted pdfs
         x = sparse_meta["xvals"]
         y = pdf_y.sum(axis=-1)
-        norms = sciint.trapz(y.T, x)
+        norms = sciint.trapezoid(y.T, x)
         y /= norms
         kwargs.setdefault("xvals", x)
         kwargs.setdefault("yvals", y.T)
@@ -97,7 +97,7 @@ class sparse_gen(interp_gen):
         P = np.load(filein)
         z = P[-1]
         P = P[:NPDF]
-        P = P / sciint.trapz(P, z).reshape(-1, 1)
+        P = P / sciint.trapezoid(P, z).reshape(-1, 1)
         minz = np.min(z)
         nz = 301
         _, j = np.where(P > 0)
@@ -105,7 +105,7 @@ class sparse_gen(interp_gen):
         newz = np.linspace(minz, maxz, nz)
         interp = sciinterp.interp1d(z, P, assume_sorted=True)
         newpdf = interp(newz)
-        newpdf = newpdf / sciint.trapz(newpdf, newz).reshape(-1, 1)
+        newpdf = newpdf / sciint.trapezoid(newpdf, newz).reshape(-1, 1)
         sparse_idx, meta, _ = sparse_rep.build_sparse_representation(
             newz, newpdf, verbose=False
         )

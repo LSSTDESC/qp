@@ -17,11 +17,10 @@ classifiers = [
 dynamic = ["version"]
 
 dependencies = [
-    "numpy",
+    "numpy<2.0.0",
     "scipy",
     "tables-io",
     "deprecated",
-    "pytdigest",
 ]
 
 # On a mac, install optional dependencies with `pip install '.[dev]'` (include the single quotes)
@@ -37,6 +36,7 @@ dev = [
     "packaging",
     "pillow",
     "cycler",
+    "pytdigest",
     "python-dateutil",
     "kiwisolver",
     "joblib",
@@ -48,11 +48,13 @@ dev = [
 ]
 full = [
     "tables-io[full]",
+    "pytdigest",
     "matplotlib",
     "scikit-learn",
 ]
 all = [
     "tables-io[full]",
+    "pytdigest",
     "matplotlib",
     "scikit-learn",
 ]

@@ -20,7 +20,7 @@ from qp.metrics.metrics import (
 )
 from qp.metrics.pit import PIT
 
-from pytdigest import TDigest
+from qp.lazy_modules import pytdigest
 from functools import reduce
 from operator import add
 
@@ -54,7 +54,7 @@ class DistToPointMetricDigester(DistToPointMetric):
             `compute_from_digest` method.
         """
         digests = (
-            TDigest.of_centroids(np.array(centroid), compression=self._tdigest_compression)
+            pytdigest.TDigest.of_centroids(np.array(centroid), compression=self._tdigest_compression)
             for centroid in centroids
         )
         digest = reduce(add, digests)
@@ -277,7 +277,7 @@ class PITMetric(DistToPointMetricDigester):
 
     def accumulate(self, estimate, reference):
         pit_samples = PIT(estimate, reference, self._eval_grid)._gather_pit_samples(estimate, reference)
-        digest = TDigest.compute(pit_samples, compression=self._tdigest_compression)
+        digest = pytdigest.TDigest.compute(pit_samples, compression=self._tdigest_compression)
         centroids = digest.get_centroids()
         return centroids
 
