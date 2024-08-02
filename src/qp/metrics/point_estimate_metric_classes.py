@@ -3,10 +3,9 @@ from qp.metrics.base_metric_classes import (
     MetricOutputType,
     PointToPointMetric,
 )
-from pytdigest import TDigest
 from functools import reduce
 from operator import add
-
+from ..lazy_modules import pytdigest
 
 class PointToPointMetricDigester(PointToPointMetric):
 
@@ -35,7 +34,7 @@ class PointToPointMetricDigester(PointToPointMetric):
             centroid locations and weights.
         """
         ez = (estimate - reference) / (1.0 + reference)
-        digest = TDigest.compute(ez, compression=self._tdigest_compression)
+        digest = pytdigest.TDigest.compute(ez, compression=self._tdigest_compression)
         centroids = digest.get_centroids()
         return centroids
 
@@ -56,7 +55,7 @@ class PointToPointMetricDigester(PointToPointMetric):
             `compute_from_digest` method.
         """
         digests = (
-            TDigest.of_centroids(np.array(centroid), compression=self._tdigest_compression)
+            pytdigest.TDigest.of_centroids(np.array(centroid), compression=self._tdigest_compression)
             for centroid in centroids
         )
         digest = reduce(add, digests)
