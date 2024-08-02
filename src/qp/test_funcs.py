@@ -132,7 +132,7 @@ def run_pdf_func_tests(test_class, test_data, short=False, check_props=True):
 
     alloc_kwds = pdf.dist.get_allocation_kwds(pdf.npdf, **test_data["ctor_data"])
     for key, val in alloc_kwds.items():
-        assert np.product(val[0]) == np.size(test_data["ctor_data"][key])
+        assert np.prod(val[0]) == np.size(test_data["ctor_data"][key])
 
     return pdf_func_tests(pdf, test_data, short=short, check_props=check_props)
 

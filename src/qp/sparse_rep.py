@@ -26,7 +26,7 @@ def shapes2pdf(wa, ma, sa, ga, meta, cut=1.0e-5):  # pylint: disable=too-many-ar
         pdft = w * pdft / sla.norm(pdft)
         pdf += pdft
     pdf = np.where(pdf >= cut, pdf, 0.0)
-    return pdf / sciint.trapz(pdf, x)
+    return pdf / sciint.trapezoid(pdf, x)
 
 
 def create_basis(metadata, cut=1.0e-5):
@@ -301,6 +301,6 @@ def pdf_from_sparse(sparse_indices, A, xvals, cut=1.0e-5):
     pdf_y = (A[:, indices] * vals).sum(axis=-1)
     pdf_y = np.where(pdf_y >= cut, pdf_y, 0.0)
     pdf_x = xvals
-    norms = sciint.trapz(pdf_y.T, pdf_x)
+    norms = sciint.trapezoid(pdf_y.T, pdf_x)
     pdf_y /= norms
     return pdf_y
