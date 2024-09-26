@@ -11,11 +11,11 @@ Once Scipy 1.10 is made available, we can swap out the copied functions for thos
 import numpy as np
 
 
-def _anderson_darling(dist, data):
+def _anderson_darling(dist, data, tiny = 1e-100):
     x = np.sort(data, axis=-1)
     n = data.shape[-1]
     i = np.arange(1, n + 1)
-    Si = (2 * i - 1) / n * (dist.logcdf(x) + dist.logsf(x[..., ::-1]))
+    Si = (2 * i - 1) / n * (np.log(dist.cdf(x)+tiny) + np.log(dist.sf(x) + tiny))
     S = np.sum(Si, axis=-1)
     return -n - S
 
