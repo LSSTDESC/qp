@@ -11,7 +11,7 @@ from qp.conversion_funcs import extract_quantiles
 from qp.core.factory import add_class
 from qp.core.pdf_gen import Pdf_rows_gen
 from qp.plotting import get_axes_and_xlims, plot_pdf_quantiles_on_axes
-from qp.quantile_pdf_constructors import (
+from .quantile_pdf_constructors import (
     AbstractQuantilePdfConstructor,
     CdfSplineDerivative,
     DualSplineAverage,

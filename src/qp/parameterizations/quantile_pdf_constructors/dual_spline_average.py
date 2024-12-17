@@ -3,7 +3,8 @@ from typing import List
 import numpy as np
 from scipy.interpolate import interp1d
 
-from qp.quantile_pdf_constructors.abstract_pdf_constructor import AbstractQuantilePdfConstructor
+from .abstract_pdf_constructor import AbstractQuantilePdfConstructor
+
 
 class DualSplineAverage(AbstractQuantilePdfConstructor):
     """Implementation of the "area-under-the-curve" using the average of
@@ -22,7 +23,7 @@ class DualSplineAverage(AbstractQuantilePdfConstructor):
     This constructor implements that algorithmic approach.
     """
 
-    def __init__(self, quantiles:List[float], locations: List[List[float]]) -> None:
+    def __init__(self, quantiles: List[float], locations: List[List[float]]) -> None:
         """Constructor to instantiate this class.
 
         Parameters
@@ -69,12 +70,16 @@ class DualSplineAverage(AbstractQuantilePdfConstructor):
 
         # Perform the step-wise calculation for all distributions simultaneously
         for i in range(1, np.shape(self._p_of_zs)[-1]):
-            self._p_of_zs[:,i] = np.maximum(zeros_for_comparison, first_term[:,i-1] - self._p_of_zs[:,i-1])
+            self._p_of_zs[:, i] = np.maximum(
+                zeros_for_comparison, first_term[:, i - 1] - self._p_of_zs[:, i - 1]
+            )
 
         # Set any negative values to 0.
         self._p_of_zs = np.maximum(np.zeros(self._locations.shape), self._p_of_zs)
 
-    def construct_pdf(self, grid: List[float], row: List[int] = None) -> List[List[float]]:
+    def construct_pdf(
+        self, grid: List[float], row: List[int] = None
+    ) -> List[List[float]]:
         """This method utilizes intermediate calculations from `prepare_constructor`
         along with the provided grid (i.e. x) values to return corresponding y values
         to construct the PDF approximation.
@@ -112,9 +117,13 @@ class DualSplineAverage(AbstractQuantilePdfConstructor):
                 interp1d(
                     np.squeeze(specific_locations[0::2]),
                     np.squeeze(specific_p_of_zs[0::2]),
-                    bounds_error=False, fill_value=0.0, kind='cubic'
+                    bounds_error=False,
+                    fill_value=0.0,
+                    kind="cubic",
                 )
-                for specific_p_of_zs, specific_locations in zip(filtered_p_of_zs, filtered_locations)
+                for specific_p_of_zs, specific_locations in zip(
+                    filtered_p_of_zs, filtered_locations
+                )
             ]
         )
 
@@ -123,9 +132,13 @@ class DualSplineAverage(AbstractQuantilePdfConstructor):
                 interp1d(
                     np.squeeze(specific_locations[1::2]),
                     np.squeeze(specific_p_of_zs[1::2]),
-                    bounds_error=False, fill_value=0.0, kind='cubic'
+                    bounds_error=False,
+                    fill_value=0.0,
+                    kind="cubic",
                 )
-                for specific_p_of_zs, specific_locations in zip(filtered_p_of_zs, filtered_locations)
+                for specific_p_of_zs, specific_locations in zip(
+                    filtered_p_of_zs, filtered_locations
+                )
             ]
         )
 

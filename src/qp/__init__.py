@@ -9,7 +9,7 @@ from .parameterizations.interp_pdf import *
 from .parameterizations.quant_pdf import *
 from .parameterizations.mixmod_pdf import *
 from .parameterizations.sparse_pdf import *
-from .scipy_pdfs import *
+from .parameterizations.scipy_pdfs import *
 from .parameterizations.packed_interp_pdf import *
 from .ensemble import Ensemble
 from .core.factory import (
@@ -31,6 +31,6 @@ from .lazy_modules import *
 
 from . import utils
 
-from . import packing_utils
+from .parameterizations import packing_utils
 
 from . import test_funcs

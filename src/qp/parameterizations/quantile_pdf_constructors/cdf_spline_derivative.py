@@ -3,7 +3,8 @@ from typing import List
 import numpy as np
 from scipy.interpolate import InterpolatedUnivariateSpline
 
-from qp.quantile_pdf_constructors.abstract_pdf_constructor import AbstractQuantilePdfConstructor
+from .abstract_pdf_constructor import AbstractQuantilePdfConstructor
+
 
 class CdfSplineDerivative(AbstractQuantilePdfConstructor):
     """Implements an interpolation algorithm based on a list of quantiles and locations.
@@ -14,7 +15,8 @@ class CdfSplineDerivative(AbstractQuantilePdfConstructor):
     Calling `cdf_spline.interpolate(grid)` will evaluate the spline derivatives at the
     provided grid values.
     """
-    def __init__(self, quantiles:List[float], locations: List[List[float]]) -> None:
+
+    def __init__(self, quantiles: List[float], locations: List[List[float]]) -> None:
         """Constructor to instantiate this class.
 
         Parameters
@@ -31,7 +33,7 @@ class CdfSplineDerivative(AbstractQuantilePdfConstructor):
         # A list of interpolation functions (spline derivatives fit to quant,loc pairs)
         self._interpolation_functions = None
 
-    def prepare_constructor(self, spline_order:int = 3) -> None:
+    def prepare_constructor(self, spline_order: int = 3) -> None:
         """Calculate the fit spline derivative for each of the original distributions
         This function is the least performant - for reference, on a M1 Mac,
         it requires about 30 seconds to produce an output given
@@ -45,17 +47,19 @@ class CdfSplineDerivative(AbstractQuantilePdfConstructor):
         spline_order : int
             Defines the order of the spline fit, defaults to 4
         """
-        number_of_locations = len(self._locations[:,0])
+        number_of_locations = len(self._locations[:, 0])
 
         # ! create an issue (or fix) if the spline fit fails, can fall back to a simpler interpolator ???
         self._interpolation_functions = [
             InterpolatedUnivariateSpline(
-                self._locations[i,:], self._quantiles, k=spline_order, ext=1
+                self._locations[i, :], self._quantiles, k=spline_order, ext=1
             ).derivative()
-            for i in range(0,number_of_locations)
+            for i in range(0, number_of_locations)
         ]
 
-    def construct_pdf(self, grid: List[float], row: List[int] = None) -> List[List[float]]:
+    def construct_pdf(
+        self, grid: List[float], row: List[int] = None
+    ) -> List[List[float]]:
         """Evaluate the fit spline derivative at each of the grid values
 
         Parameters
@@ -79,7 +83,9 @@ class CdfSplineDerivative(AbstractQuantilePdfConstructor):
         # otherwise, return a subset of the rows.
         selected_interpolation_functions = self._interpolation_functions
         if row is not None:
-            selected_interpolation_functions = map(self._interpolation_functions.__getitem__, np.unique(row))
+            selected_interpolation_functions = map(
+                self._interpolation_functions.__getitem__, np.unique(row)
+            )
 
         # For each of the fit spline derivative, calculate y value given the grid (or x) values.
         # Note: This implementation uses list comprehension, there might be a faster way.
