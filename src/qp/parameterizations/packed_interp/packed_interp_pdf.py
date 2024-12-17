@@ -5,7 +5,7 @@ import numpy as np
 from scipy.stats import rv_continuous
 
 from qp.core.factory import add_class
-from qp.parameterizations.packing_utils import PackingType, pack_array, unpack_array
+from .packing_utils import PackingType, pack_array, unpack_array
 from qp.core.pdf_gen import Pdf_rows_gen
 from qp.plotting import get_axes_and_xlims, plot_pdf_on_axes
 from qp.utils.test_data import TEST_XVALS, XBINS, YARRAY

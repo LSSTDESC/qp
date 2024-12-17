@@ -7,7 +7,7 @@ import numpy as np
 from scipy.stats import rv_continuous
 from scipy import integrate as sciint
 from scipy import interpolate as sciinterp
-from qp import sparse_rep
+from . import sparse_rep
 from qp.core.factory import add_class
 from qp.parameterizations.interp_pdf import interp_gen
 from qp.conversion_funcs import extract_sparse_from_xy
