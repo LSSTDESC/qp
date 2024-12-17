@@ -3,8 +3,10 @@ import unittest
 import numpy as np
 
 import qp
-from qp.quantile_pdf_constructors import (AbstractQuantilePdfConstructor,
-                                          DualSplineAverage)
+from qp.parameterizations.quantile_pdf_constructors import (
+    AbstractQuantilePdfConstructor,
+    DualSplineAverage,
+)
 
 
 class DualSplineAverageTestCase(unittest.TestCase):

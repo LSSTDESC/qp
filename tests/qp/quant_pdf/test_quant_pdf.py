@@ -1,13 +1,16 @@
 """
 Unit tests for quant_pdf class
 """
+
 import logging
 import unittest
 
 import numpy as np
 
 import qp
-from qp.quantile_pdf_constructors import AbstractQuantilePdfConstructor
+from qp.parameterizations.quantile_pdf_constructors import (
+    AbstractQuantilePdfConstructor,
+)
 
 
 class QuantPdfTestCase(unittest.TestCase):

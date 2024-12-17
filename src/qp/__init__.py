@@ -33,4 +33,6 @@ from .utils import utils
 
 from .parameterizations.packed_interp import packing_utils
 
-from .utils import test_funcs
+from .utils import test_funcs, dict_utils
+
+from .core import factory
