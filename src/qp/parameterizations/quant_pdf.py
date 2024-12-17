@@ -18,8 +18,12 @@ from .quantile_pdf_constructors import (
     PiecewiseConstant,
     PiecewiseLinear,
 )
-from qp.test_data import QLOCS, QUANTS, TEST_XVALS
-from qp.utils import interpolate_multi_x_y, interpolate_x_multi_y, reshape_to_pdf_size
+from qp.utils.test_data import QLOCS, QUANTS, TEST_XVALS
+from qp.utils.utils import (
+    interpolate_multi_x_y,
+    interpolate_x_multi_y,
+    reshape_to_pdf_size,
+)
 
 epsilon = sys.float_info.epsilon
 

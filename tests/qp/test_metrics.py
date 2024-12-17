@@ -10,18 +10,30 @@ import numpy as np
 
 import qp
 import qp.metrics
-from qp import test_funcs
+from qp.utils import test_funcs
 from qp.metrics.array_metrics import quick_rbpe
-from qp.metrics.concrete_metric_classes import (BrierMetric, KLDMetric,
-                                                MomentMetric, OutlierMetric,
-                                                RBPEMetric, RMSEMetric)
+from qp.metrics.concrete_metric_classes import (
+    BrierMetric,
+    KLDMetric,
+    MomentMetric,
+    OutlierMetric,
+    RBPEMetric,
+    RMSEMetric,
+)
 from qp.metrics.metrics import (
-    _calculate_grid_parameters, _check_ensemble_is_not_nested,
+    _calculate_grid_parameters,
+    _check_ensemble_is_not_nested,
     _check_ensembles_are_same_size,
-    _check_ensembles_contain_correct_number_of_distributions, calculate_brier,
-    calculate_goodness_of_fit, calculate_kld, calculate_moment,
-    calculate_outlier_rate, calculate_rbpe, calculate_rmse)
-from qp.utils import epsilon
+    _check_ensembles_contain_correct_number_of_distributions,
+    calculate_brier,
+    calculate_goodness_of_fit,
+    calculate_kld,
+    calculate_moment,
+    calculate_outlier_rate,
+    calculate_rbpe,
+    calculate_rmse,
+)
+from qp.utils.utils import epsilon
 
 
 class MetricTestCase(unittest.TestCase):

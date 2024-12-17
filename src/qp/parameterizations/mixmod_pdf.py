@@ -8,8 +8,8 @@ from scipy.stats import rv_continuous
 from qp.conversion_funcs import extract_mixmod_fit_samples
 from qp.core.factory import add_class
 from qp.core.pdf_gen import Pdf_rows_gen
-from qp.test_data import MEAN_MIXMOD, STD_MIXMOD, TEST_XVALS, WEIGHT_MIXMOD
-from qp.utils import get_eval_case, interpolate_multi_x_y, reshape_to_pdf_size
+from qp.utils.test_data import MEAN_MIXMOD, STD_MIXMOD, TEST_XVALS, WEIGHT_MIXMOD
+from qp.utils.utils import get_eval_case, interpolate_multi_x_y, reshape_to_pdf_size
 
 
 class mixmod_gen(Pdf_rows_gen):

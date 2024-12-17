@@ -29,8 +29,8 @@ from .core.factory import (
 )
 from .lazy_modules import *
 
-from . import utils
+from .utils import utils
 
 from .parameterizations import packing_utils
 
-from . import test_funcs
+from .utils import test_funcs

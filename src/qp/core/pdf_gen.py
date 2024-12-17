@@ -15,6 +15,7 @@ is required to inherit from `scipy.stats.rv_continuous`; however, providing impl
 _logpdf, _cdf, _logcdf, _ppf, _rvs, _isf, _sf, _logsf could speed the code up a lot in some cases.
 
 """
+
 import sys
 
 import numpy as np
@@ -23,8 +24,8 @@ from numpy import asarray
 from scipy.stats import rv_continuous
 from scipy.stats._distn_infrastructure import rv_continuous_frozen
 
-from qp.utils import reshape_to_pdf_size, reshape_to_pdf_shape
-from qp.dict_utils import get_val_or_default, set_val_or_default, pretty_print
+from qp.utils.utils import reshape_to_pdf_size, reshape_to_pdf_shape
+from qp.utils.dict_utils import get_val_or_default, set_val_or_default, pretty_print
 from qp.plotting import plot_dist_pdf
 
 

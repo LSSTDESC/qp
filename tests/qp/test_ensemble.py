@@ -1,6 +1,7 @@
 """
 Unit tests for PDF class
 """
+
 import copy
 import os
 import unittest
@@ -8,9 +9,9 @@ import unittest
 import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal
 import qp
-from qp import test_data
+from qp.utils import test_data
 from qp.plotting import init_matplotlib
-from qp.test_funcs import assert_all_close, assert_all_small, build_ensemble
+from qp.utils.test_funcs import assert_all_close, assert_all_small, build_ensemble
 
 
 class EnsembleTestCase(unittest.TestCase):
@@ -125,7 +126,9 @@ class EnsembleTestCase(unittest.TestCase):
             try:
                 import mpi4py.MPI  # pylint: disable=import-outside-toplevel
 
-                commList.append(mpi4py.MPI.COMM_WORLD)  # pylint: disable=c-extension-no-member
+                commList.append(
+                    mpi4py.MPI.COMM_WORLD
+                )  # pylint: disable=c-extension-no-member
             except ImportError:
                 pass
             for comm in commList:
@@ -248,21 +251,27 @@ class EnsembleTestCase(unittest.TestCase):
         ens_i = build_ensemble(cls_test_data)
 
         output_dict = {
-            'hist': ens_h,
-            'interp': ens_i,
+            "hist": ens_h,
+            "interp": ens_i,
         }
 
-        qp.factory.write_dict('test_dict.hdf5', output_dict)
+        qp.factory.write_dict("test_dict.hdf5", output_dict)
 
-        input_dict = qp.factory.read_dict('test_dict.hdf5')
+        input_dict = qp.factory.read_dict("test_dict.hdf5")
 
         assert input_dict.keys() == output_dict.keys()
 
-        XVALS = np.linspace(0,3,100)
+        XVALS = np.linspace(0, 3, 100)
         for ens_type in ["hist", "interp"]:
-            assert_array_equal(input_dict[ens_type].metadata()['pdf_name'], output_dict[ens_type].metadata()['pdf_name'])
+            assert_array_equal(
+                input_dict[ens_type].metadata()["pdf_name"],
+                output_dict[ens_type].metadata()["pdf_name"],
+            )
 
-            assert_array_almost_equal(input_dict[ens_type].pdf(XVALS), output_dict[ens_type].pdf(XVALS))
+            assert_array_almost_equal(
+                input_dict[ens_type].pdf(XVALS), output_dict[ens_type].pdf(XVALS)
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

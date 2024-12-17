@@ -11,8 +11,8 @@ from qp.conversion_funcs import extract_samples, extract_xy_vals
 from qp.core.factory import add_class
 from qp.core.pdf_gen import Pdf_rows_gen
 from qp.plotting import get_axes_and_xlims, plot_pdf_on_axes
-from qp.test_data import SAMPLES, TEST_XVALS, XARRAY, YARRAY
-from qp.utils import build_kdes, evaluate_kdes, reshape_to_pdf_size
+from qp.utils.test_data import SAMPLES, TEST_XVALS, XARRAY, YARRAY
+from qp.utils.utils import build_kdes, evaluate_kdes, reshape_to_pdf_size
 
 
 def normalize_spline(xvals, yvals, limits, **kwargs):

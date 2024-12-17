@@ -1,4 +1,5 @@
 """This module implements some performance metrics for distribution parameterization"""
+
 import logging
 from collections import namedtuple
 from functools import partial
@@ -9,7 +10,7 @@ from deprecated import deprecated
 from qp.metrics import array_metrics
 from qp.metrics.brier import Brier
 from qp.metrics.goodness_of_fit import goodness_of_fit_metrics
-from qp.utils import epsilon
+from qp.utils.utils import epsilon
 
 Grid = namedtuple(
     "Grid", ["grid_values", "cardinality", "resolution", "hist_bin_edges", "limits"]
@@ -229,7 +230,9 @@ def _prepare_for_brier(p, truth, limits, dx=0.01):
     # Values of truth that are outside the defined limits will not appear truth_array.
     # Consider expanding the limits or using numpy.clip to restrict truth values to the limits.
     if np.any(np.less(truth, limits[0])) or np.any(np.greater(truth, limits[1])):
-        raise ValueError(f"Input truth values exceed the defined limits ({min(truth)}, {max(truth)}) ({limits[0]} {limits[1]})")
+        raise ValueError(
+            f"Input truth values exceed the defined limits ({min(truth)}, {max(truth)}) ({limits[0]} {limits[1]})"
+        )
 
     # Make a grid object that defines grid values and histogram bin edges using limits and dx
     grid = _calculate_grid_parameters(limits, dx)
@@ -246,6 +249,7 @@ def _prepare_for_brier(p, truth, limits, dx=0.01):
 
     # instantiate the Brier metric object
     return Brier(pdf_values, truth_array)
+
 
 def calculate_brier(p, truth, limits, dx=0.01):
     """This function will do the following:
@@ -278,12 +282,14 @@ def calculate_brier(p, truth, limits, dx=0.01):
     # return the results of evaluating the Brier metric
     return brier_metric_evaluation.evaluate()
 
+
 def calculate_brier_for_accumulation(p, truth, limits, dx=0.01):
     brier_metric_evaluation = _prepare_for_brier(p, truth, limits, dx)
 
     brier_sum = brier_metric_evaluation.accumulate()
 
     return (brier_sum, p.npdf)
+
 
 @deprecated(
     reason="""
@@ -372,10 +378,16 @@ def calculate_outlier_rate(p, lower_limit=0.0001, upper_limit=0.9999):
     # Validate that all the distributions in the Ensemble are single distributions - i.e. no nested Ensembles
     try:
         _check_ensemble_is_not_nested(p)
-    except ValueError:  #pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
-        logging.warning("Each element in the ensemble `p` must be a single distribution.")
+    except (
+        ValueError
+    ):  # pragma: no cover - unittest coverage for _check_ensemble_is_not_nested is complete
+        logging.warning(
+            "Each element in the ensemble `p` must be a single distribution."
+        )
 
-    outlier_rates = np.array([(dist.cdf(lower_limit) + (1. - dist.cdf(upper_limit)))[0][0] for dist in p])
+    outlier_rates = np.array(
+        [(dist.cdf(lower_limit) + (1.0 - dist.cdf(upper_limit)))[0][0] for dist in p]
+    )
     return outlier_rates
 
 

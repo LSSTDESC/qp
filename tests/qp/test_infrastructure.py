@@ -1,12 +1,13 @@
 """
 Unit tests for PDF class
 """
+
 import os
 import unittest
 
 import qp
-from qp import test_data
-from qp.test_funcs import build_ensemble
+from qp.utils import test_data
+from qp.utils.test_funcs import build_ensemble
 
 
 class InfrastructureTestCase(unittest.TestCase):
@@ -58,7 +59,9 @@ class InfrastructureTestCase(unittest.TestCase):
 
     def test_is_qp_file(self):
         fname = "norm_ensemble.hdf5"
-        norm_test_data = qp.stats.norm_gen.test_data["norm"]  # pylint: disable=no-member
+        norm_test_data = qp.stats.norm_gen.test_data[
+            "norm"
+        ]  # pylint: disable=no-member
         ens_norm = build_ensemble(norm_test_data)
         ens_norm.write_to(fname)
         self.files.append(fname)

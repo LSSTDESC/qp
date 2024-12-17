@@ -1,12 +1,13 @@
 """
 Unit tests for PDF class
 """
+
 import unittest
 
 import numpy as np
 
 import qp
-from qp import test_data
+from qp.utils import test_data
 
 
 class UtilsTestCase(unittest.TestCase):

@@ -19,7 +19,7 @@ variables have shape either (npdf, 1) or (1)
 
 import numpy as np
 
-from qp.test_data import LOC, SCALE, TEST_XVALS
+from qp.utils.test_data import LOC, SCALE, TEST_XVALS
 from qp.core.factory import stats
 
 # pylint: disable=no-member

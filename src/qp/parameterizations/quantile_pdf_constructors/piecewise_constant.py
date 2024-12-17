@@ -3,7 +3,7 @@ from typing import List
 import numpy as np
 
 from .abstract_pdf_constructor import AbstractQuantilePdfConstructor
-from qp.utils import evaluate_hist_multi_x_multi_y
+from qp.utils.utils import evaluate_hist_multi_x_multi_y
 
 
 class PiecewiseConstant(AbstractQuantilePdfConstructor):

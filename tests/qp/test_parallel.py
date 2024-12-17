@@ -1,6 +1,7 @@
 """
 Unit tests for PDF class
 """
+
 import os
 import unittest
 
@@ -10,7 +11,7 @@ import pytest
 from mpi4py import MPI
 
 import qp
-from qp.test_funcs import build_ensemble
+from qp.utils.test_funcs import build_ensemble
 
 
 @pytest.mark.skipif(

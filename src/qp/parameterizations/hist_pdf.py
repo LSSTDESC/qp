@@ -8,13 +8,13 @@ from scipy.stats import rv_continuous
 from qp.core.pdf_gen import Pdf_rows_gen
 from qp.conversion_funcs import extract_hist_values, extract_hist_samples
 from qp.plotting import get_axes_and_xlims, plot_pdf_histogram_on_axes
-from qp.utils import (
+from qp.utils.utils import (
     evaluate_hist_x_multi_y,
     interpolate_multi_x_y,
     interpolate_x_multi_y,
     reshape_to_pdf_size,
 )
-from qp.test_data import XBINS, HIST_DATA, TEST_XVALS, NSAMPLES
+from qp.utils.test_data import XBINS, HIST_DATA, TEST_XVALS, NSAMPLES
 from qp.core.factory import add_class
 
 

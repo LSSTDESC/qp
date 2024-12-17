@@ -1,11 +1,12 @@
 """
 Unit tests for PDF class
 """
+
 import unittest
 from functools import partial
 
 import qp
-from qp import test_funcs
+from qp.utils import test_funcs
 
 
 class PDFTestCase(unittest.TestCase):
