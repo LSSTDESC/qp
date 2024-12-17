@@ -4,9 +4,9 @@
 import numpy as np
 from scipy.stats import rv_continuous
 
-from qp.factory import add_class
+from qp.core.factory import add_class
 from qp.packing_utils import PackingType, pack_array, unpack_array
-from qp.pdf_gen import Pdf_rows_gen
+from qp.core.pdf_gen import Pdf_rows_gen
 from qp.plotting import get_axes_and_xlims, plot_pdf_on_axes
 from qp.test_data import TEST_XVALS, XBINS, YARRAY
 from qp.utils import interpolate_multi_x_y, interpolate_x_multi_y, reshape_to_pdf_size

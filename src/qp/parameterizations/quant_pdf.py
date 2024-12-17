@@ -1,5 +1,6 @@
 """This module implements a PDT distribution sub-class using interpolated quantiles
 """
+
 import logging
 import sys
 
@@ -7,8 +8,8 @@ import numpy as np
 from scipy.stats import rv_continuous
 
 from qp.conversion_funcs import extract_quantiles
-from qp.factory import add_class
-from qp.pdf_gen import Pdf_rows_gen
+from qp.core.factory import add_class
+from qp.core.pdf_gen import Pdf_rows_gen
 from qp.plotting import get_axes_and_xlims, plot_pdf_quantiles_on_axes
 from qp.quantile_pdf_constructors import (
     AbstractQuantilePdfConstructor,

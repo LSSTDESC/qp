@@ -6,8 +6,8 @@ from scipy import stats as sps
 from scipy.stats import rv_continuous
 
 from qp.conversion_funcs import extract_mixmod_fit_samples
-from qp.factory import add_class
-from qp.pdf_gen import Pdf_rows_gen
+from qp.core.factory import add_class
+from qp.core.pdf_gen import Pdf_rows_gen
 from qp.test_data import MEAN_MIXMOD, STD_MIXMOD, TEST_XVALS, WEIGHT_MIXMOD
 from qp.utils import get_eval_case, interpolate_multi_x_y, reshape_to_pdf_size
 

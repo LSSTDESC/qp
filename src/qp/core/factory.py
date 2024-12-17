@@ -16,7 +16,7 @@ from qp.ensemble import Ensemble
 
 from qp.dict_utils import compare_dicts, concatenate_dicts
 
-from qp.pdf_gen import Pdf_gen_wrap
+from qp.core.pdf_gen import Pdf_gen_wrap
 
 
 class Factory(OrderedDict):
@@ -363,7 +363,9 @@ class Factory(OrderedDict):
         for key, val in ensemble_dict.items():
             # check that val is a qp.Ensemble
             if not isinstance(val, Ensemble):
-                raise ValueError("All values in ensemble_dict must be qp.Ensemble") # pragma: no cover
+                raise ValueError(
+                    "All values in ensemble_dict must be qp.Ensemble"
+                )  # pragma: no cover
 
             output_tables[key] = val.build_tables()
         io.writeDictsToHdf5(output_tables, filename, **kwargs)
@@ -374,7 +376,7 @@ class Factory(OrderedDict):
         that have been stored at nparrays."""
         results = {}
 
-        # retrieve all the top level groups. Assume each top level group 
+        # retrieve all the top level groups. Assume each top level group
         # corresponds to an ensemble.
         top_level_groups = io.readHdf5GroupNames(filename)
 
@@ -385,7 +387,9 @@ class Factory(OrderedDict):
             keys = io.readHdf5GroupNames(filename, top_level_group)
             for key_name in keys:
                 # retrieve the hdf5 group object
-                group_object, _ = io.readHdf5Group(filename, f"{top_level_group}/{key_name}")
+                group_object, _ = io.readHdf5Group(
+                    filename, f"{top_level_group}/{key_name}"
+                )
 
                 # use the hdf5 group object to gather data into a dictionary
                 tables[key_name] = io.readHdf5GroupToDict(group_object)
@@ -393,6 +397,7 @@ class Factory(OrderedDict):
             results[top_level_group] = from_tables(tables)
 
         return results
+
 
 _FACTORY = Factory()
 

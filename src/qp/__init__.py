@@ -3,16 +3,16 @@
 import os
 from .version import __version__
 
-from .spline_pdf import *
-from .hist_pdf import *
-from .interp_pdf import *
-from .quant_pdf import *
-from .mixmod_pdf import *
-from .sparse_pdf import *
+from .parameterizations.spline_pdf import *
+from .parameterizations.hist_pdf import *
+from .parameterizations.interp_pdf import *
+from .parameterizations.quant_pdf import *
+from .parameterizations.mixmod_pdf import *
+from .parameterizations.sparse_pdf import *
 from .scipy_pdfs import *
-from .packed_interp_pdf import *
+from .parameterizations.packed_interp_pdf import *
 from .ensemble import Ensemble
-from .factory import (
+from .core.factory import (
     instance,
     add_class,
     create,

@@ -1,12 +1,11 @@
 """This module implements a PDT distribution sub-class using histograms
 """
 
-
 import numpy as np
 
 from scipy.stats import rv_continuous
 
-from qp.pdf_gen import Pdf_rows_gen
+from qp.core.pdf_gen import Pdf_rows_gen
 from qp.conversion_funcs import extract_hist_values, extract_hist_samples
 from qp.plotting import get_axes_and_xlims, plot_pdf_histogram_on_axes
 from qp.utils import (
@@ -16,7 +15,7 @@ from qp.utils import (
     reshape_to_pdf_size,
 )
 from qp.test_data import XBINS, HIST_DATA, TEST_XVALS, NSAMPLES
-from qp.factory import add_class
+from qp.core.factory import add_class
 
 
 class hist_gen(Pdf_rows_gen):

@@ -8,7 +8,7 @@ import numpy as np
 from qp.ensemble import Ensemble
 from qp.plotting import plot_native, plot, plot_pdf_samples_on_axes
 from qp.test_data import NPDF
-from qp.factory import read, read_metadata, convert
+from qp.core.factory import read, read_metadata, convert
 
 
 def assert_all_close(arr, arr2, **kwds):

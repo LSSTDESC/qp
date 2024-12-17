@@ -1,5 +1,6 @@
 """This module implements a PDT distribution sub-class using a Gaussian mixture model
 """
+
 import os
 import sys
 import numpy as np
@@ -7,8 +8,8 @@ from scipy.stats import rv_continuous
 from scipy import integrate as sciint
 from scipy import interpolate as sciinterp
 from qp import sparse_rep
-from qp.factory import add_class
-from qp.interp_pdf import interp_gen
+from qp.core.factory import add_class
+from qp.parameterizations.interp_pdf import interp_gen
 from qp.conversion_funcs import extract_sparse_from_xy
 from qp.test_data import TEST_XVALS, NPDF
 
@@ -31,7 +32,9 @@ class sparse_gen(interp_gen):
 
     _support_mask = rv_continuous._support_mask
 
-    def __init__(self, xvals, mu, sig, dims, sparse_indices, *args, **kwargs):  # pylint: disable=too-many-arguments
+    def __init__(
+        self, xvals, mu, sig, dims, sparse_indices, *args, **kwargs
+    ):  # pylint: disable=too-many-arguments
         self.sparse_indices = sparse_indices
         self._xvals = xvals
         self.mu = mu

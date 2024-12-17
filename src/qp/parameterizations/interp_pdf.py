@@ -5,8 +5,8 @@ import numpy as np
 from scipy.stats import rv_continuous
 
 from qp.conversion_funcs import extract_vals_at_x, extract_xy_sparse, extract_xy_vals
-from qp.factory import add_class
-from qp.pdf_gen import Pdf_rows_gen
+from qp.core.factory import add_class
+from qp.core.pdf_gen import Pdf_rows_gen
 from qp.plotting import get_axes_and_xlims, plot_pdf_on_axes
 from qp.test_data import TEST_XVALS, XARRAY, XBINS, YARRAY
 from qp.utils import (
