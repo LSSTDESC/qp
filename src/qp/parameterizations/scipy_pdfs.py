@@ -20,7 +20,7 @@ variables have shape either (npdf, 1) or (1)
 import numpy as np
 
 from qp.utils.test_data import LOC, SCALE, TEST_XVALS
-from qp.core.factory import stats
+from qp.utils.factory import stats
 
 # pylint: disable=no-member
 stats.norm_gen.test_data = dict(

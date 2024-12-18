@@ -8,10 +8,10 @@ import numpy as np
 from scipy.stats import rv_continuous
 
 from qp.conversion_funcs import extract_quantiles
-from qp.core.factory import add_class
-from qp.core.pdf_gen import Pdf_rows_gen
+from qp.utils.factory import add_class
+from qp.parameterizations.base_parameterization import Pdf_rows_gen
 from qp.plotting import get_axes_and_xlims, plot_pdf_quantiles_on_axes
-from .quantile_pdf_constructors import (
+from . import (
     AbstractQuantilePdfConstructor,
     CdfSplineDerivative,
     DualSplineAverage,

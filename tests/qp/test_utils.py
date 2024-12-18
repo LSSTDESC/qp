@@ -8,6 +8,7 @@ import numpy as np
 
 import qp
 from qp.utils import test_data
+from tests.qp import test_funcs
 
 
 class UtilsTestCase(unittest.TestCase):
@@ -35,14 +36,14 @@ class UtilsTestCase(unittest.TestCase):
         )
         pf_1 = qp.utils.profile(x_data.flatten(), y_data.flatten(), x_bins, std=False)
         pf_2 = qp.utils.profile(x_data.flatten(), y_data.flatten(), x_bins, std=True)
-        qp.test_funcs.assert_all_close(
+        test_funcs.assert_all_close(
             pf_1[0], c_vals, atol=0.02, test_name="profile_mean"
         )
-        qp.test_funcs.assert_all_close(pf_1[0], pf_2[0], test_name="profile_check")
-        qp.test_funcs.assert_all_close(
+        test_funcs.assert_all_close(pf_1[0], pf_2[0], test_name="profile_check")
+        test_funcs.assert_all_close(
             pf_1[1], c_vals / npdf * np.sqrt(12), atol=0.2, test_name="profile_std"
         )
-        qp.test_funcs.assert_all_close(pf_1[1], 0.1 * pf_2[1], test_name="profile_err")
+        test_funcs.assert_all_close(pf_1[1], 0.1 * pf_2[1], test_name="profile_err")
 
     def test_sparse(self):
         """Test the sparse representation"""

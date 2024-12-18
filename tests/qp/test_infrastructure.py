@@ -7,7 +7,7 @@ import unittest
 
 import qp
 from qp.utils import test_data
-from qp.utils.test_funcs import build_ensemble
+from .test_funcs import build_ensemble
 
 
 class InfrastructureTestCase(unittest.TestCase):

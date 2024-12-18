@@ -16,7 +16,7 @@ from qp.ensemble import Ensemble
 
 from qp.utils.dict_utils import compare_dicts, concatenate_dicts
 
-from qp.core.pdf_gen import Pdf_gen_wrap
+from qp.parameterizations.base_parameterization import Pdf_gen_wrap
 
 
 class Factory(OrderedDict):

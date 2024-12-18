@@ -8,7 +8,7 @@ import unittest
 import numpy as np
 
 import qp
-from qp.parameterizations.quantile_pdf_constructors import (
+from qp.parameterizations.quant import (
     AbstractQuantilePdfConstructor,
 )
 

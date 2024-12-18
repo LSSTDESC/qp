@@ -11,7 +11,7 @@ from numpy.testing import assert_array_equal, assert_array_almost_equal
 import qp
 from qp.utils import test_data
 from qp.plotting import init_matplotlib
-from qp.utils.test_funcs import assert_all_close, assert_all_small, build_ensemble
+from .test_funcs import assert_all_close, assert_all_small, build_ensemble
 
 
 class EnsembleTestCase(unittest.TestCase):

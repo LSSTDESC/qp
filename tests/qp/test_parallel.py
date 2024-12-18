@@ -11,7 +11,7 @@ import pytest
 from mpi4py import MPI
 
 import qp
-from qp.utils.test_funcs import build_ensemble
+from .test_funcs import build_ensemble
 
 
 @pytest.mark.skipif(

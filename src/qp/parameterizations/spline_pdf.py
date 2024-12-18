@@ -8,8 +8,8 @@ from scipy.special import errstate  # pylint: disable=no-name-in-module
 from scipy.stats import rv_continuous
 
 from qp.conversion_funcs import extract_samples, extract_xy_vals
-from qp.core.factory import add_class
-from qp.core.pdf_gen import Pdf_rows_gen
+from qp.utils.factory import add_class
+from qp.parameterizations.base_parameterization import Pdf_rows_gen
 from qp.plotting import get_axes_and_xlims, plot_pdf_on_axes
 from qp.utils.test_data import SAMPLES, TEST_XVALS, XARRAY, YARRAY
 from qp.utils.utils import build_kdes, evaluate_kdes, reshape_to_pdf_size
