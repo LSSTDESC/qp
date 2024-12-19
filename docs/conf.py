@@ -21,7 +21,8 @@ extensions = [
 ]
 
 myst_enable_extensions = ["colon_fence"]
-jupyter_execute_notebooks = "auto"
+myst_heading_anchors = 3
+jupyter_execute_notebooks = "cache"
 
 # on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
 on_rtd = os.environ.get("READTHEDOCS", None) == False

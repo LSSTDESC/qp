@@ -1,18 +1,15 @@
-===============
-Getting Started
-===============
+# Getting Started
 
 
-Installation
-============
+## Installation
+
 
 * pip install for non-parallel
 
 * git clone and conda install via yaml file for parallel hdf5
 
 
-What is qp?
-===========
+## What is qp?
 
 
 * The point of qp is to provide a method of representing and storing distributions that are not continuous, analytic functions
@@ -30,8 +27,8 @@ What is qp?
 	4. Mixed Models
 
 
-Basic Usage 
-===========
+## Basic Usage 
+
 
 * The main object of qp is the qp.Ensemble 
     * This is a data structure that can store many distributions with the same parameterizations
@@ -55,8 +52,8 @@ Basic Usage
 
 
 
-Troubleshooting and Common Pitfalls
-===================================
+## Troubleshooting and Common Pitfalls
+
 
 * normalization (?) I think the parameterizations normalize upon initialization so may actually be ok?
 * scipy updates 

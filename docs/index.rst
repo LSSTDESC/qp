@@ -12,7 +12,7 @@ qp : quantile-parametrized PDF approximation
     :padding: 0
 
     .. grid-item-card::
-        :link: user_docs/index
+        :link: user_docs/quickstart
         :link-type: doc 
         :link-alt: user-documentation
         :text-align: center 
@@ -24,7 +24,7 @@ qp : quantile-parametrized PDF approximation
         description
 
     .. grid-item-card::
-        :link: developer_docs/index
+        :link: developer_docs/setup
         :link-type: doc
         :link-alt: developer-documentation
         :text-align: center
@@ -41,17 +41,16 @@ qp : quantile-parametrized PDF approximation
     :maxdepth: 4
     :caption: User Documentation
 
-    user_docs/index
     user_docs/quickstart
     user_docs/dataschema
     user_docs/cookbook
+    user_docs/parameterizations
 
 .. toctree::
     :hidden:
     :maxdepth: 4
     :caption: Developer Documentation
 
-    developer_docs/index
     developer_docs/setup
     developer_docs/contributing
     developer_docs/techdebt
