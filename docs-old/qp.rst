@@ -1,8 +1,8 @@
 .. _qp:
 
-========================
+
 API Documentation for qp
-========================
+************************
 
 `qp` provides a `PDF` class object, that builds on the
 `scipy.stats` distributions to provide various approximate forms.
