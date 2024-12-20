@@ -1,13 +1,14 @@
 Demo Notebooks
 ==============
 
-This needs to be updated to have the right title displayed here, currently there are multiple links for some notebooks and none for others.
+Need to add in links to download the notebooks here (or in the header of the notebooks)
 
 .. toctree::
-    :maxdepth: 1
+    :titlesonly:
     
-    Basic Demo <demo.ipynb>
-    Practical Example <practical_example.ipynb>
-    Using Iterators <iterator_demo.ipynb>
-    Using Metrics <metrics_examples.ipynb>
-    Quantile Parameterization <quantile_parameterization_demo.ipynb> 
+    Practical Example <practical_example>
+    Iterator Example <iterator_demo>
+    Metrics Example <metrics_examples>
+    Mixed Model Examples <mixmod_examples>
+    Quantile Parameterization <quantile_parameterization_demo> 
+    Demo Notebook <demo>

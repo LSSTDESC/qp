@@ -22,7 +22,9 @@ extensions = [
 
 myst_enable_extensions = ["colon_fence"]
 myst_heading_anchors = 3
-jupyter_execute_notebooks = "cache"
+nb_execution_mode = "auto"
+nb_execution_allow_errors = True
+exclude_patterns = ["_build/jupyter_execute"]
 
 # on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
 on_rtd = os.environ.get("READTHEDOCS", None) == False
@@ -44,9 +46,9 @@ autodoc_default_flags = ["members", "no-special-members"]
 autodoc_member_order = "bysource"
 
 
-html_sidebars = {
-    "**": ["globaltoc.html", "relations.html", "sourcelink.html", "searchbox.html"],
-}
+# html_sidebars = {
+#     "**": ["globaltoc.html", "relations.html", "sourcelink.html", "searchbox.html"],
+# }
 html_css_files = [
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
 ]

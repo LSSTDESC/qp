@@ -1,4 +1,4 @@
-# Set up
+# Setup
 
 * installing with developer packages
     * conda install the environment

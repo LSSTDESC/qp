@@ -6,13 +6,13 @@ qp : quantile-parametrized PDF approximation
 
 .. _cards-clickable: 
 
-.. grid:: 2
+.. grid:: 4
     :gutter: 3
     :margin: 5 5 0 0
     :padding: 0
 
     .. grid-item-card::
-        :link: user_docs/quickstart
+        :link: user_docs/index
         :link-type: doc 
         :link-alt: user-documentation
         :text-align: center 
@@ -29,9 +29,33 @@ qp : quantile-parametrized PDF approximation
         :link-alt: developer-documentation
         :text-align: center
 
-        :fas:`fa-solid fa-laptop-code; fa-5x`
+        :fas:`fa-solid fa-code-compare; fa-5x`
 
         **Developer Documentation**
+
+        description 
+
+    .. grid-item-card::
+        :link: qp
+        :link-type: doc
+        :link-alt: api-documentation
+        :text-align: center
+
+        :fas:`fa-solid fa-code-compare; fa-5x`
+
+        **API Documentation**
+
+        description 
+
+    .. grid-item-card::
+        :link: nb/index
+        :link-type: doc
+        :link-alt: demo-notebooks
+        :text-align: center
+
+        :fas:`fa-solid fa-code-compare; fa-5x`
+
+        **Demo Notebooks**
 
         description 
 
@@ -41,7 +65,11 @@ qp : quantile-parametrized PDF approximation
     :maxdepth: 4
     :caption: User Documentation
 
-    user_docs/quickstart
+    user_docs/index
+    user_docs/installation
+    user_docs/whatqp
+    user_docs/basicusage
+    user_docs/troubleshooting
     user_docs/dataschema
     user_docs/cookbook
     user_docs/parameterizations
@@ -64,15 +92,11 @@ qp : quantile-parametrized PDF approximation
 
 .. toctree::
     :hidden:
-    :maxdepth: 1
+    :maxdepth: 2
     :caption: Demo Notebooks
 
     nb/index.rst
-    nb/demo.ipynb
-    nb/practical_example.ipynb
-    nb/iterator_example.ipynb
-    nb/mixmod_examples.ipynb
-    nb/metrics_examples.ipynb
-    nb/quantile_parameterization_demo.ipynb
+    
+    
 
 
