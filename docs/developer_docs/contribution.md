@@ -8,6 +8,7 @@
 
 ### Placement
 
+* diagram or list here of basic code structure (i.e. folders and what they're meant to include)
 * parameterizations go in the parameterizations folder
 * if you have one that needs supporting functions, create a folder and place the class file and the supporting files in that folder
 * conversion functions go in the conversion_funcs file
@@ -24,10 +25,11 @@
 ## Documentation
 
 * every function should have docstrings describing what the function does 
-* what is expected in terms of documentation upkeep (may be nothing, but ideally would have some expectations of updating documentation as code is updated)
+* what is expected in terms of documentation upkeep (i.e. if you change something and the documentation is now out of date)
 
 
 ## PR 
 
 * steps for submitting a PR to github
-
+    * run pylint 
+    * make sure you have appropriate test coverage

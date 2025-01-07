@@ -16,7 +16,7 @@
 * Working with a qp ensemble 
     * objdata, metadata, and ancil tables 
     * What methods can be called for ensembles of all types (i.e. the scipy ones, maybe table like in scipy, also link to scipy for more info)
-    * convert to different parameterizations (more detail elsewhere)
-    * calculating metrics (similarly table, more detail elsewhere)
+    * basics of how to convert to different parameterizations (more detail elsewhere)
+    * calculating metrics (basics, table of existing supported metrics)
 
 * Writing out a qp ensemble

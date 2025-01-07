@@ -8,7 +8,7 @@
     * typically data has one 2d array of y values, with a shape (num_pdfs (rows), len(xvals) (columns))
 
 * data schema is slightly different for each parameterization
-* For all parameterizations that are not continuous, just the 'x values' in the metadata table and 'y values' in the data table have different names 
+* for all parameterizations that are not continuous, mostly just the 'x values' in the metadata table and 'y values' in the data table have different names 
 * the format of the data itself within those places is roughly the same 
 
 
@@ -17,10 +17,6 @@
 * x is 'bins'
 * y is 'pdfs', number of columns is len(bins) - y instead of length of bins
 
-## Interpolated parameterization
-
-* x is 'xvals'
-* y is 'yvals'
 
 ## Quantile parameterization
 
@@ -33,6 +29,10 @@
 data table
 weights, stds, means 
 
+## Interpolated parameterization
+
+* x is 'xvals'
+* y is 'yvals'
 
 ## Spline 
 

@@ -2,7 +2,7 @@
 qp : quantile-parametrized PDF approximation
 ============================================
 
-* quick description of qp 
+* quick introduction to qp
 
 .. _cards-clickable: 
 
@@ -59,7 +59,12 @@ qp : quantile-parametrized PDF approximation
 
         description 
 
+.. toctree:: 
+    :hidden:
+    :maxdepth: 4
 
+    whatisqp
+    
 .. toctree::
     :hidden:
     :maxdepth: 4
@@ -67,13 +72,14 @@ qp : quantile-parametrized PDF approximation
 
     getting_started/quickstart
     getting_started/installation
-    getting_started/whatqp
+    getting_started/qpprimer
     getting_started/basicusage
     getting_started/troubleshooting
 
     advanced_usage/dataschema
     advanced_usage/cookbook
     advanced_usage/parameterizations
+    advanced_usage/metrics
 
 .. toctree::
     :hidden:

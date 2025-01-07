@@ -1,6 +1,10 @@
-# Troubleshooting and Common Pitfalls
+# Troubleshooting
 
+* This is the place to go when you're not sure what's going wrong 
+* also goes over a few common mistakes
 
-* normalization (?) I think the parameterizations normalize upon initialization so may actually be ok?
-* scipy updates 
-* some parameterizations currently have some known bugs 
+Topics to include:
+* normalization
+* scipy updates (major updates in scipy can cause errors)
+* any known bugs
+    * interpolation parameterization can go negative 

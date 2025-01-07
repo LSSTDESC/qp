@@ -1,9 +1,10 @@
 # Cookbook
 
-This is for instructions on how to do commonly needed things 
+This is for instructions on how to do a few commonly performed operations
 
-Things to include:
-* should detailed conversion info be here? other option is to include it with the detailed parameterization information 
-
+For example:
+* creating a qp ensemble from a scipy stats distribution (or instead include this as a parameterization)
+* sampling from a pdf 
+* a conversion example 
 * iterating over a qp ensemble 
-* using plotnative and/or making your own plot of a pdf
+* plotting a specific pdf from an ensemble 

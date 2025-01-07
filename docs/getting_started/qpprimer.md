@@ -1,9 +1,8 @@
-# What is qp?
-
+# qp Primer
 
 * The point of qp is to provide a method of representing and storing distributions that are not continuous, analytic functions
 
-* Essentially a mini stats primer on distributions 
+* A quick stats primer on distributions 
     * What is a distribution/pdf? 
     * What are the qualities of a distribution (i.e. normalized, always positive, etc)
     * What can you do with a distribution? (i.e. CDF, moments, etc)
