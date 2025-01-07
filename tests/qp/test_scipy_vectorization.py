@@ -9,7 +9,7 @@ import numpy as np
 
 import qp
 import qp.metrics
-from qp import test_funcs
+from tests.qp import test_funcs
 from qp.metrics.concrete_metric_classes import ADMetric, CvMMetric, KSMetric
 
 

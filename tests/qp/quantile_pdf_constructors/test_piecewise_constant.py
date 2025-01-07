@@ -3,8 +3,10 @@ import unittest
 import numpy as np
 
 import qp
-from qp.quantile_pdf_constructors import (AbstractQuantilePdfConstructor,
-                                          PiecewiseConstant)
+from qp.parameterizations.quant import (
+    AbstractQuantilePdfConstructor,
+    PiecewiseConstant,
+)
 
 
 class PiecewiseLinearTestCase(unittest.TestCase):

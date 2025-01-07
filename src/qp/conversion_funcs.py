@@ -2,12 +2,13 @@
 These functions should then be registered with the `qp.ConversionDict` using `qp_add_mapping`.
 That will allow the automated conversion mechanisms to work.
 """
+
 import numpy as np
 from scipy import integrate as sciint
 from scipy import interpolate as sciinterp
 
 from .lazy_modules import mixture
-from .sparse_rep import (
+from .parameterizations.sparse_interp.sparse_rep import (
     build_sparse_representation,
     decode_sparse_indices,
     indices2shapes,
