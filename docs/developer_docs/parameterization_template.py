@@ -1,4 +1,4 @@
-from qp.pdf_gen import Pdf_rows_gen
+from qp.parameterizations.base_parameterization import Pdf_rows_gen
 from scipy.stats import rv_continuous
 
 
