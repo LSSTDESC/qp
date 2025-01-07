@@ -81,7 +81,8 @@ qp : quantile-parametrized PDF approximation
     :caption: Developer Documentation
 
     developer_docs/setup
-    developer_docs/contributing
+    developer_docs/contribution
+    developer_docs/parameterizationcontribution
     developer_docs/techdebt
 
 .. toctree:: 

@@ -1,10 +1,10 @@
-# Setup
+# Getting Started
 
 * installing with developer packages
     * conda install the environment
     * then pip install with -e and whichever of the additional package sections you want in the pyproject.toml
 
 
-* making documentation locally 
+* how to make documentation locally 
 
-* description of code or expectations here as well? 
+* introduction to the rest of the section (i.e. link to guidelines, mention development priorities a place to look for things to work on, etc)

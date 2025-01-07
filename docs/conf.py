@@ -6,9 +6,18 @@ sys.path.insert(0, os.path.abspath("../qp"))
 
 import qp
 
+# set up readthedocs theme
+import sphinx_rtd_theme
+
+html_theme = "sphinx_rtd_theme"
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+
+
 # Avoid imports that may be unsatisfied when running sphinx, see:
 # http://stackoverflow.com/questions/15889621/sphinx-how-to-exclude-imports-in-automodule#15912502
 autodoc_mock_imports = ["scipy", "scipy.interpolate", "sklearn"]
+
+# set up extensions
 
 extensions = [
     "sphinx.ext.autodoc",
@@ -18,6 +27,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx_design",
     "myst_nb",
+    "sphinx_copybutton",
 ]
 
 myst_enable_extensions = ["colon_fence"]
@@ -25,19 +35,8 @@ myst_heading_anchors = 3
 nb_execution_mode = "auto"
 nb_execution_allow_errors = True
 exclude_patterns = ["_build/jupyter_execute"]
+copybutton_exclude = ".linenos, .gp"
 
-# on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
-on_rtd = os.environ.get("READTHEDOCS", None) == False
-
-if not on_rtd:
-    # only import and set the theme if we're building docs locally
-    import sphinx_rtd_theme
-
-    html_theme = "sphinx_rtd_theme"
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-
-# otherwise, readthedocs.org uses their theme by default, so
-# no need to specify it.
 
 master_doc = "index"
 autosummary_generate = True
