@@ -4,6 +4,7 @@ This covers details of each of the parameterizations.
 
 ## Histogram
 
+* figure of what an example of this parameterization looks like 
 * how to make an ensemble of histograms
 * how to convert an ensemble to histogram parameterization
 * details of how this parameterization works 
@@ -11,6 +12,7 @@ This covers details of each of the parameterizations.
 
 ## Interpolated
 
+* figure of what an example of this parameterization looks like 
 * how to make an ensemble of histograms
 * how to convert an ensemble to histogram parameterization
 * details of how this parameterization works
@@ -18,6 +20,7 @@ This covers details of each of the parameterizations.
 
 ## Quantile
 
+* figure of what an example of this parameterization looks like 
 * how to make an ensemble of histograms
 * how to convert an ensemble to histogram parameterization
 * details of how this parameterization works
@@ -26,6 +29,7 @@ This covers details of each of the parameterizations.
 
 ## Mixed Model
 
+* figure of what an example of this parameterization looks like 
 * how to make an ensemble of histograms
 * how to convert an ensemble to histogram parameterization
 * details of how this parameterization works
@@ -34,8 +38,5 @@ This covers details of each of the parameterizations.
 
 ## Additional parameterizations
 
-* Not sure if we want this divide here, or maybe we do and we want to call them 'sub parameterizations' or 'unsupported parameterizations'?
-
-### Spline
-
-### Packed Interpolated
+* some additional parameterizations exist, you can see some documentation for them in the API (link)
+* you can also add your own parameterizations, see here for guidelines and how to get started (link)

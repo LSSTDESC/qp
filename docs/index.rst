@@ -74,12 +74,12 @@ qp : quantile-parametrized PDF approximation
     getting_started/installation
     getting_started/qpprimer
     getting_started/basicusage
+    getting_started/methods
     getting_started/troubleshooting
 
-    advanced_usage/dataschema
+    advanced_usage/datastructure
     advanced_usage/cookbook
     advanced_usage/parameterizations
-    advanced_usage/metrics
 
 .. toctree::
     :hidden:
@@ -87,6 +87,7 @@ qp : quantile-parametrized PDF approximation
     :caption: Developer Documentation
 
     developer_docs/setup
+    developer_docs/codestructure
     developer_docs/contribution
     developer_docs/parameterizationcontribution
     developer_docs/techdebt
@@ -104,6 +105,14 @@ qp : quantile-parametrized PDF approximation
     :caption: Demo Notebooks
 
     nb/index.rst
+
+.. toctree::
+    :hidden:
+    :maxdepth: 2
+    :caption: More
+
+    license
+    acknowledgements
     
 Indices and tables
 ==================

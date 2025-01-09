@@ -5,6 +5,7 @@
 
 Topics to include:
 * normalization
+* making sure your coordinates cover the range of data for all the distributions in your ensemble
 * scipy updates (major updates in scipy can cause errors)
-* any known bugs
+* any known issues/things to watch for 
     * interpolation parameterization can go negative 

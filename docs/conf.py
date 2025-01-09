@@ -34,10 +34,10 @@ myst_enable_extensions = ["colon_fence"]
 myst_heading_anchors = 3
 nb_execution_mode = "auto"
 nb_execution_allow_errors = True
-exclude_patterns = ["_build/jupyter_execute"]
+exclude_patterns = ["_build", "_build/jupyter_execute", "_build/html/_downloads"]
 copybutton_exclude = ".linenos, .gp"
 
-
+# set up autodocs
 master_doc = "index"
 autosummary_generate = True
 autoclass_content = "class"

@@ -4,10 +4,10 @@
 * The main object of qp is the qp.Ensemble 
     * This is a data structure that can store many distributions with the same parameterizations
     * General ensemble structure: 
-        * qp metadata: tells you parameterization, qp version, and the 'x values' of whatever the distribution parameterization is
-        * qp objdata: the 'y values' of the distributions 
+        * qp metadata: tells you parameterization, qp version, and the 'coordinates' of whatever the distribution parameterization is
+        * qp objdata: the 'data' of the distributions 
         * Optional: qp ancil: this contains whatever information you choose
-    * The exact configuration differs by ensemble, see qp data schema for details
+    * The exact configuration differs by ensemble, see qp data structure for details
 
 * Creating a qp ensemble 
     * from data in a dictionary or table 
@@ -15,8 +15,11 @@
 
 * Working with a qp ensemble 
     * objdata, metadata, and ancil tables 
-    * What methods can be called for ensembles of all types (i.e. the scipy ones, maybe table like in scipy, also link to scipy for more info)
+    * Show a couple of the more important methods that can be called, link to the ensemble methods page which lists all of them
     * basics of how to convert to different parameterizations (more detail elsewhere)
     * calculating metrics (basics, table of existing supported metrics)
 
 * Writing out a qp ensemble
+    * format file is normally written to 
+    * see data structure for more information about what's written
+    * see cookbook for example 

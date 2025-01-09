@@ -7,10 +7,11 @@
     * should call addmetadata and addobjdata methods
 * functions to access each of the data and metadata fields 
 * _pdf and _cdf hook functions 
+    * useful functions to help implement pdfs can be found in utils files
 * implement _updated_ctor_param function
 * define functions to convert other ensembles to this representation
 * register class with the factor and make function available 
-* add test data generation (or simply a test data file) to the tests folder and add a test to the automatically generated tests
+* add test data generation (or simply a test data file) to the tests folder
 
 ## Optional 
  
