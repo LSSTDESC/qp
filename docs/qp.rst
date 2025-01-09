@@ -90,7 +90,7 @@ Gaussian mixture model based
 `scipy` distributions
 ---------------------
 
-.. automodule :: qp.scipy_pdfs
+.. automodule :: qp.parameterizations.scipy_pdfs
     :members:
     :undoc-members:
 
@@ -140,7 +140,7 @@ Infrastructure and Core functionality
 `qp.pdf_gen`: `scipy.stats` interface
 -------------------------------------
 
-.. automodule:: qp.pdf_gen
+.. automodule:: qp.parameterizations.base_parameterization
     :members:
     :undoc-members:
 
