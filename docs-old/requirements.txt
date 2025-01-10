@@ -1,7 +1,0 @@
-matplotlib
-numpy
-scipy>=1.9.0
-scikit-learn
-setuptools_scm
-tables-io[full]
-deprecated
