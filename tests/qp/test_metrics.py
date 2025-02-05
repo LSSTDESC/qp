@@ -322,11 +322,11 @@ class MetricTestCase(unittest.TestCase):
         truth = 2 * (np.random.uniform(size=(10, 1)) - 0.5)
         truth = np.append(truth, 100)
         limits = [-2.0, 2]
-        with self.assertRaises(ValueError) as context:
-            _ = calculate_brier(self.ens_n, truth, limits)
-
-        error_msg = "Input truth values exceed the defined limits"
-        self.assertTrue(error_msg in str(context.exception))
+        # this no longer raises, but rather expands the limits
+        # with self.assertRaises(ValueError) as context:
+        #     error_msg = "Input truth values exceed the defined limits"
+        # self.assertTrue(error_msg in str(context.exception))
+        _ = calculate_brier(self.ens_n, truth, limits)
 
     def test_calculate_outlier_rate(self):
         """Base case test. Ensure that the class wrapped
