@@ -227,12 +227,16 @@ def _prepare_for_brier(p, truth, limits, dx=0.01):
             % (p.npdf, len(truth))
         )
 
-    # Values of truth that are outside the defined limits will not appear truth_array.
-    # Consider expanding the limits or using numpy.clip to restrict truth values to the limits.
-    if np.any(np.less(truth, limits[0])) or np.any(np.greater(truth, limits[1])):
-        raise ValueError(
-            f"Input truth values exceed the defined limits ({min(truth)}, {max(truth)}) ({limits[0]} {limits[1]})"
+    # Handle values of truth that are outside the defined limit
+    # by expanding the limits
+    if np.any(np.less(truth, limits[0])) or np.any(
+        np.greater(truth, limits[1])
+    ):  # pragma: no cover
+        limits = (
+            np.min([np.min(truth), limits[0]]),
+            np.max([np.max(truth), limits[1]]),
         )
+        print("Expanding limits to {limits}")
 
     # Make a grid object that defines grid values and histogram bin edges using limits and dx
     grid = _calculate_grid_parameters(limits, dx)
