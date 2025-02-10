@@ -9,9 +9,9 @@ from .parameterizations.spline_pdf import *
 from .parameterizations.hist_pdf import *
 from .parameterizations.interp_pdf import *
 from .parameterizations.quant.quant_pdf import *
-from .parameterizations.mixmod_pdf import *
+from .parameterizations.analytic_parameterizations.mixmod_pdf import *
 from .parameterizations.sparse_interp.sparse_pdf import *
-from .parameterizations.scipy_pdfs import *
+from .parameterizations.analytic_parameterizations.scipy_dists_import import *
 from .parameterizations.packed_interp.packed_interp_pdf import *
 from .ensemble import Ensemble
 from .utils.factory import (
@@ -31,7 +31,7 @@ from .utils.factory import (
 )
 from .lazy_modules import *
 
-from .utils import utils
+from .utils import misc_utils
 
 from .parameterizations.packed_interp import packing_utils
 

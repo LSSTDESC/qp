@@ -1,6 +1,7 @@
 """
 Unit tests for PDF class
 """
+
 import unittest
 
 import numpy as np
@@ -8,7 +9,9 @@ import numpy as np
 import qp
 
 
-class EvalFuncsTestCase(unittest.TestCase):  # pylint: disable=too-many-instance-attributes
+class EvalFuncsTestCase(
+    unittest.TestCase
+):  # pylint: disable=too-many-instance-attributes
     """Tests of evaluations and interpolation functions"""
 
     def setUp(self):
@@ -48,19 +51,19 @@ class EvalFuncsTestCase(unittest.TestCase):  # pylint: disable=too-many-instance
     def test_evaluate_hist_x_multi_y(self):
         """Test the evaluate_hist_x_multi_y function"""
         self._check_interface_function(
-            qp.utils.evaluate_hist_x_multi_y, self.hbins, self.hpdfs
+            qp.misc_utils.evaluate_hist_x_multi_y, self.hbins, self.hpdfs
         )
 
     def test_evaluate_hist_multi_x_multi_y(self):
         """Test the evaluate_hist_multi_x_multi_y function"""
         self._check_interface_function(
-            qp.utils.evaluate_hist_multi_x_multi_y, self.hbins2, self.hpdfs
+            qp.misc_utils.evaluate_hist_multi_x_multi_y, self.hbins2, self.hpdfs
         )
 
     def test_interpolate_x_multi_y(self):
         """Test the interpolate_x_multi_y"""
         self._check_interface_function(
-            qp.utils.interpolate_x_multi_y,
+            qp.misc_utils.interpolate_x_multi_y,
             self.xvals,
             self.hpdfs,
             bounds_error=False,
@@ -70,7 +73,7 @@ class EvalFuncsTestCase(unittest.TestCase):  # pylint: disable=too-many-instance
     def test_interpolate_multi_x_multi_y(self):
         """Test the interpolate_multi_x_multi_y"""
         self._check_interface_function(
-            qp.utils.interpolate_multi_x_multi_y,
+            qp.misc_utils.interpolate_multi_x_multi_y,
             self.xvals2,
             self.hpdfs,
             bounds_error=False,
@@ -80,7 +83,7 @@ class EvalFuncsTestCase(unittest.TestCase):  # pylint: disable=too-many-instance
     def test_interpolate_multi_x_y(self):
         """Test the interpolate_multi_x_y"""
         self._check_interface_function(
-            qp.utils.interpolate_multi_x_y,
+            qp.misc_utils.interpolate_multi_x_y,
             self.xvals2,
             self.yvals1d,
             bounds_error=False,

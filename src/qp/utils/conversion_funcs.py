@@ -7,8 +7,8 @@ import numpy as np
 from scipy import integrate as sciint
 from scipy import interpolate as sciinterp
 
-from .lazy_modules import mixture
-from .parameterizations.sparse_interp.sparse_rep import (
+from ..lazy_modules import mixture
+from ..parameterizations.sparse_interp.sparse_rep import (
     build_sparse_representation,
     decode_sparse_indices,
     indices2shapes,

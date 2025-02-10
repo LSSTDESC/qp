@@ -91,7 +91,7 @@ class Factory(OrderedDict):
             )
         if the_class.name in self:  # pragma: no cover
             raise KeyError(
-                "Class nameed %s is already in factory, point to %s"
+                "Class named %s is already in factory, point to %s"
                 % (the_class.name, self[the_class.name])
             )
         the_class.add_method_dicts()
@@ -118,7 +118,7 @@ class Factory(OrderedDict):
             The newly created ensemble
         """
         if class_name not in self:  # pragma: no cover
-            raise KeyError("Class nameed %s is not in factory" % class_name)
+            raise KeyError("Class named %s is not in factory" % class_name)
         the_class = self[class_name]
         ctor_func = the_class.creation_method(method)
         return Ensemble(ctor_func, data)
@@ -144,7 +144,7 @@ class Factory(OrderedDict):
         pdf_name = data.pop("pdf_name")
         pdf_version = data.pop("pdf_version")
         if pdf_name not in self:  # pragma: no cover
-            raise KeyError("Class nameed %s is not in factory" % pdf_name)
+            raise KeyError("Class named %s is not in factory" % pdf_name)
 
         the_class = self[pdf_name]
         reader_convert = the_class.reader_method(pdf_version)
@@ -244,7 +244,7 @@ class Factory(OrderedDict):
         pdf_name = metadata.pop("pdf_name")[0].decode()
         _pdf_version = metadata.pop("pdf_version")[0]
         if pdf_name not in self:  # pragma: no cover
-            raise KeyError("Class nameed %s is not in factory" % pdf_name)
+            raise KeyError("Class named %s is not in factory" % pdf_name)
         the_class = self[pdf_name]
         # reader_convert = the_class.reader_method(pdf_version)
         ctor_func = the_class.creation_method(None)
@@ -270,7 +270,7 @@ class Factory(OrderedDict):
             ancil_infp.close()
 
     def convert(self, in_dist, class_name, **kwds):
-        """Read an ensemble to a different repersenation
+        """Read an ensemble to a different representation
 
         Parameters
         ----------
@@ -287,9 +287,9 @@ class Factory(OrderedDict):
         kwds_copy = kwds.copy()
         method = kwds_copy.pop("method", None)
         if class_name not in self:  # pragma: no cover
-            raise KeyError("Class nameed %s is not in factory" % class_name)
+            raise KeyError("Class named %s is not in factory" % class_name)
         if class_name not in self:  # pragma: no cover
-            raise KeyError("Class nameed %s is not in factory" % class_name)
+            raise KeyError("Class named %s is not in factory" % class_name)
         the_class = self[class_name]
         extract_func = the_class.extraction_method(method)
         if extract_func is None:  # pragma: no cover
@@ -301,7 +301,7 @@ class Factory(OrderedDict):
         return self.create(class_name, data, method)
 
     def pretty_print(self, stream=sys.stdout):
-        """Print a level of the converstion dictionary in a human-readable format
+        """Print a level of the conversion dictionary in a human-readable format
 
         Parameters
         ----------
@@ -315,12 +315,12 @@ class Factory(OrderedDict):
 
     @staticmethod
     def concatenate(ensembles):
-        """Concatanate a list of ensembles
+        """Concatenate a list of ensembles
 
         Parameters
         ----------
         ensembles : `list`
-            The ensembles we are concatanating
+            The ensembles we are concatenating
 
         Returns
         -------

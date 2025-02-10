@@ -6,9 +6,9 @@ import numpy as np
 from scipy.stats import rv_continuous
 
 from qp.parameterizations.base_parameterization import Pdf_rows_gen
-from qp.conversion_funcs import extract_hist_values, extract_hist_samples
+from qp.utils.conversion_funcs import extract_hist_values, extract_hist_samples
 from qp.plotting import get_axes_and_xlims, plot_pdf_histogram_on_axes
-from qp.utils.utils import (
+from qp.utils.misc_utils import (
     evaluate_hist_x_multi_y,
     interpolate_multi_x_y,
     interpolate_x_multi_y,

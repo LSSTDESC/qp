@@ -3,7 +3,7 @@
 Notes
 -----
 
-In the qp distribtuions the last axis in the
+In the qp distributions the last axis in the
 input array shapes is reserved for pdf parameters.
 
 This is because qp deals with numerical representations

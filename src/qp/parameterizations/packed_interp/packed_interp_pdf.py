@@ -9,7 +9,7 @@ from .packing_utils import PackingType, pack_array, unpack_array
 from qp.parameterizations.base_parameterization import Pdf_rows_gen
 from qp.plotting import get_axes_and_xlims, plot_pdf_on_axes
 from qp.utils.test_data import TEST_XVALS, XBINS, YARRAY
-from qp.utils.utils import (
+from qp.utils.misc_utils import (
     interpolate_multi_x_y,
     interpolate_x_multi_y,
     reshape_to_pdf_size,

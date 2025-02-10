@@ -33,7 +33,7 @@ from qp.metrics.metrics import (
     calculate_rbpe,
     calculate_rmse,
 )
-from qp.utils.utils import epsilon
+from qp.utils.misc_utils import epsilon
 
 
 class MetricTestCase(unittest.TestCase):

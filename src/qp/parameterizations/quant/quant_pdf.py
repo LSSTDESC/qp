@@ -7,7 +7,7 @@ import sys
 import numpy as np
 from scipy.stats import rv_continuous
 
-from qp.conversion_funcs import extract_quantiles
+from qp.utils.conversion_funcs import extract_quantiles
 from qp.utils.factory import add_class
 from qp.parameterizations.base_parameterization import Pdf_rows_gen
 from qp.plotting import get_axes_and_xlims, plot_pdf_quantiles_on_axes
@@ -19,7 +19,7 @@ from . import (
     PiecewiseLinear,
 )
 from qp.utils.test_data import QLOCS, QUANTS, TEST_XVALS
-from qp.utils.utils import (
+from qp.utils.misc_utils import (
     interpolate_multi_x_y,
     interpolate_x_multi_y,
     reshape_to_pdf_size,
