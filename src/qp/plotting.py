@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from .lazy_modules import mpl, plt
+from .core.lazy_modules import mpl, plt
 
 
 def init_matplotlib():

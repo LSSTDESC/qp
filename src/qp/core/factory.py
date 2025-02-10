@@ -12,7 +12,7 @@ from scipy import stats as sps
 from tables_io import io
 from tables_io.types import NUMPY_DICT
 
-from qp.ensemble import Ensemble
+from qp.core.ensemble import Ensemble
 
 from qp.utils.dict_utils import compare_dicts, concatenate_dicts
 

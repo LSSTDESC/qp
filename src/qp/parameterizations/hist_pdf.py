@@ -15,7 +15,7 @@ from qp.utils.misc_utils import (
     reshape_to_pdf_size,
 )
 from qp.utils.test_data import XBINS, HIST_DATA, TEST_XVALS, NSAMPLES
-from qp.utils.factory import add_class
+from qp.core.factory import add_class
 
 
 class hist_gen(Pdf_rows_gen):

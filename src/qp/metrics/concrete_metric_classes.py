@@ -20,7 +20,7 @@ from qp.metrics.metrics import (
 )
 from qp.metrics.pit import PIT
 
-from qp.lazy_modules import pytdigest
+from qp.core.lazy_modules import pytdigest
 from functools import reduce
 from operator import add
 
@@ -34,7 +34,7 @@ class DistToPointMetricDigester(DistToPointMetric):
     def initialize(self):
         pass
 
-    def accumulate(self, estimate, reference):  #pragma: no cover
+    def accumulate(self, estimate, reference):  # pragma: no cover
         raise NotImplementedError()
 
     def finalize(self, centroids: np.ndarray = []):
@@ -54,14 +54,16 @@ class DistToPointMetricDigester(DistToPointMetric):
             `compute_from_digest` method.
         """
         digests = (
-            pytdigest.TDigest.of_centroids(np.array(centroid), compression=self._tdigest_compression)
+            pytdigest.TDigest.of_centroids(
+                np.array(centroid), compression=self._tdigest_compression
+            )
             for centroid in centroids
         )
         digest = reduce(add, digests)
 
         return self.compute_from_digest(digest)
 
-    def compute_from_digest(self, digest):  #pragma: no cover
+    def compute_from_digest(self, digest):  # pragma: no cover
         raise NotImplementedError()
 
 
@@ -140,7 +142,9 @@ class BrierMetric(DistToPointMetricDigester):
         return calculate_brier(estimate, reference, self._limits, self._dx)
 
     def accumulate(self, estimate, reference):
-        brier_sum_npdf_tuple = calculate_brier_for_accumulation(estimate, reference, self._limits, self._dx)
+        brier_sum_npdf_tuple = calculate_brier_for_accumulation(
+            estimate, reference, self._limits, self._dx
+        )
         return brier_sum_npdf_tuple
 
     def finalize(self, tuples):
@@ -150,6 +154,7 @@ class BrierMetric(DistToPointMetricDigester):
 
         # calculate the mean from the summed terms
         return summed_terms[0] / summed_terms[1]
+
 
 class OutlierMetric(SingleEnsembleMetric):
     """Class wrapper around the outlier calculation metric."""
@@ -276,8 +281,12 @@ class PITMetric(DistToPointMetricDigester):
         return pit_object.pit
 
     def accumulate(self, estimate, reference):
-        pit_samples = PIT(estimate, reference, self._eval_grid)._gather_pit_samples(estimate, reference)
-        digest = pytdigest.TDigest.compute(pit_samples, compression=self._tdigest_compression)
+        pit_samples = PIT(estimate, reference, self._eval_grid)._gather_pit_samples(
+            estimate, reference
+        )
+        digest = pytdigest.TDigest.compute(
+            pit_samples, compression=self._tdigest_compression
+        )
         centroids = digest.get_centroids()
         return centroids
 

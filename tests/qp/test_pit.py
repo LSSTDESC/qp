@@ -7,7 +7,7 @@ import numpy as np
 
 import qp
 from qp import interp_gen
-from qp.ensemble import Ensemble
+from qp.core.ensemble import Ensemble
 from qp.metrics.concrete_metric_classes import PITMetric
 from qp.metrics.pit import PIT
 
@@ -126,13 +126,13 @@ class PitTestCase(unittest.TestCase):
         assert np.all(class_result.pdf(eval_grid) == pit_obj.pit.pdf(eval_grid))
 
     def test_pit_metric_parallelization(self):
-        """ This test primarily ensures that the machinery of the parallelization
+        """This test primarily ensures that the machinery of the parallelization
         works as expected, but does not verify the correctness of the parallelization"""
 
         quant_grid = np.linspace(0, 1, 101)
         pit_obj = PIT(self.grid_ens, self.true_zs, quant_grid)
 
-        configuration = {'tdigest_compression': 100000}
+        configuration = {"tdigest_compression": 100000}
         pit_metric = PITMetric(eval_grid=quant_grid, **configuration)
         pit_metric.initialize()
         centroids = pit_metric.accumulate(self.grid_ens, self.true_zs)

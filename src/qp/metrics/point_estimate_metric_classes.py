@@ -5,7 +5,8 @@ from qp.metrics.base_metric_classes import (
 )
 from functools import reduce
 from operator import add
-from qp.lazy_modules import pytdigest
+from qp.core.lazy_modules import pytdigest
+
 
 class PointToPointMetricDigester(PointToPointMetric):
 
@@ -55,14 +56,16 @@ class PointToPointMetricDigester(PointToPointMetric):
             `compute_from_digest` method.
         """
         digests = (
-            pytdigest.TDigest.of_centroids(np.array(centroid), compression=self._tdigest_compression)
+            pytdigest.TDigest.of_centroids(
+                np.array(centroid), compression=self._tdigest_compression
+            )
             for centroid in centroids
         )
         digest = reduce(add, digests)
 
         return self.compute_from_digest(digest)
 
-    def compute_from_digest(self, digest):  #pragma: no cover
+    def compute_from_digest(self, digest):  # pragma: no cover
         raise NotImplementedError
 
 
@@ -130,7 +133,7 @@ class PointSigmaIQR(PointToPointMetricDigester):
         return sigma_iqr
 
     def compute_from_digest(self, digest):
-        x75, x25 = digest.inverse_cdf([0.75,0.25])
+        x75, x25 = digest.inverse_cdf([0.75, 0.25])
         iqr = x75 - x25
         sigma_iqr = iqr / 1.349
         return sigma_iqr
@@ -208,7 +211,7 @@ class PointOutlierRate(PointToPointMetricDigester):
 
     def compute_from_digest(self, digest):
         # this replaces the call to PointSigmaIQR().evaluate()
-        x75, x25 = digest.inverse_cdf([0.75,0.25])
+        x75, x25 = digest.inverse_cdf([0.75, 0.25])
         iqr = x75 - x25
         sigma_iqr = iqr / 1.349
 
@@ -218,8 +221,8 @@ class PointOutlierRate(PointToPointMetricDigester):
         # here we use the number of points in the centroids as an approximation
         # of ez.
         centroids = digest.get_centroids()
-        mask = np.fabs(centroids[:,0]) > cut_criterion
-        outlier = np.sum(centroids[mask,1])
+        mask = np.fabs(centroids[:, 0]) > cut_criterion
+        outlier = np.sum(centroids[mask, 1])
 
         # Since we use equal weights for all the values in the digest
         # digest.weight is the total number of values, and is stored as a float.
@@ -272,13 +275,23 @@ class PointSigmaMAD(PointToPointMetricDigester):
         this_max = digest.inverse_cdf(1)
         bins = np.linspace(this_min, this_max, self._num_bins)
         bin_cents = (bins[0:-1] + bins[1:]) / 2.0
-        this_pdf = digest.cdf(bins[1:]) - digest.cdf(bins[0:-1]) # len(this_pdf) = lots_of_bins - 1
-        bin_dist = np.fabs(bin_cents - this_median) # get the distance to the center for each bin in the hist
+        this_pdf = digest.cdf(bins[1:]) - digest.cdf(
+            bins[0:-1]
+        )  # len(this_pdf) = lots_of_bins - 1
+        bin_dist = np.fabs(
+            bin_cents - this_median
+        )  # get the distance to the center for each bin in the hist
 
-        sorted_bins_dist_idx = np.argsort(bin_dist) # sort the bins by dist to median
-        sorted_bins_dist = bin_dist[sorted_bins_dist_idx] # get the sorted distances
-        cumulative_sorted = this_pdf[sorted_bins_dist_idx].cumsum() # the cumulate PDF within the nearest bins
-        median_sorted_bin = np.searchsorted(cumulative_sorted, 0.5) # which bins are the nearest 50% of the PDF
-        dist_to_median = sorted_bins_dist[median_sorted_bin] # return the corresponding distance to the median
+        sorted_bins_dist_idx = np.argsort(bin_dist)  # sort the bins by dist to median
+        sorted_bins_dist = bin_dist[sorted_bins_dist_idx]  # get the sorted distances
+        cumulative_sorted = this_pdf[
+            sorted_bins_dist_idx
+        ].cumsum()  # the cumulate PDF within the nearest bins
+        median_sorted_bin = np.searchsorted(
+            cumulative_sorted, 0.5
+        )  # which bins are the nearest 50% of the PDF
+        dist_to_median = sorted_bins_dist[
+            median_sorted_bin
+        ]  # return the corresponding distance to the median
 
         return dist_to_median * SCALE_FACTOR

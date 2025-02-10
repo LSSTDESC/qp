@@ -9,7 +9,7 @@ from qp.utils.conversion_funcs import (
     extract_xy_sparse,
     extract_xy_vals,
 )
-from qp.utils.factory import add_class
+from qp.core.factory import add_class
 from qp.parameterizations.base_parameterization import Pdf_rows_gen
 from qp.plotting import get_axes_and_xlims, plot_pdf_on_axes
 from qp.utils.test_data import TEST_XVALS, XARRAY, XBINS, YARRAY

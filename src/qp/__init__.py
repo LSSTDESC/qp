@@ -13,8 +13,8 @@ from .parameterizations.analytic_parameterizations.mixmod_pdf import *
 from .parameterizations.sparse_interp.sparse_pdf import *
 from .parameterizations.analytic_parameterizations.scipy_dists_import import *
 from .parameterizations.packed_interp.packed_interp_pdf import *
-from .ensemble import Ensemble
-from .utils.factory import (
+from .core.ensemble import Ensemble
+from .core.factory import (
     instance,
     add_class,
     create,
@@ -29,7 +29,7 @@ from .utils.factory import (
     write_dict,
     read_dict,
 )
-from .lazy_modules import *
+from .core.lazy_modules import *
 
 from .utils import misc_utils
 
@@ -37,4 +37,4 @@ from .parameterizations.packed_interp import packing_utils
 
 from .utils import dict_utils
 
-from .utils import factory
+from .core import factory
