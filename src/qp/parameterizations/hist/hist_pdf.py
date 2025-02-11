@@ -5,15 +5,17 @@ import numpy as np
 
 from scipy.stats import rv_continuous
 
-from qp.parameterizations.base_parameterization import Pdf_rows_gen
-from qp.utils.conversion_funcs import extract_hist_values, extract_hist_samples
-from qp.plotting import get_axes_and_xlims, plot_pdf_histogram_on_axes
-from qp.utils.misc_utils import (
+from .hist_utils import (
     evaluate_hist_x_multi_y,
-    interpolate_multi_x_y,
-    interpolate_x_multi_y,
-    reshape_to_pdf_size,
+    extract_hist_values,
+    extract_hist_samples,
 )
+from qp.parameterizations.base_parameterization import Pdf_rows_gen
+from qp.plotting import get_axes_and_xlims, plot_pdf_histogram_on_axes
+from qp.utils.array_utils import reshape_to_pdf_size
+
+from ...utils.interp_funcs import interpolate_multi_x_y, interpolate_x_multi_y
+
 from qp.utils.test_data import XBINS, HIST_DATA, TEST_XVALS, NSAMPLES
 from qp.core.factory import add_class
 
@@ -34,7 +36,7 @@ class hist_gen(Pdf_rows_gen):
     Inside a given bin the pdf() will return the pdf value.
     Outside the range bins[0], bins[-1] the pdf() will return 0.
 
-    Inside a given bin the cdf() will use a linear interpolation accross the bin
+    Inside a given bin the cdf() will use a linear interpolation across the bin
     Outside the range bins[0], bins[-1] the cdf() will return (0 or 1), respectively
 
     The ppf() is computed by inverting the cdf().
@@ -161,7 +163,7 @@ class hist_gen(Pdf_rows_gen):
 
     @classmethod
     def plot_native(cls, pdf, **kwargs):
-        """Plot the PDF in a way that is particular to this type of distibution
+        """Plot the PDF in a way that is particular to this type of distribution
 
         For a histogram this shows the bin edges
         """

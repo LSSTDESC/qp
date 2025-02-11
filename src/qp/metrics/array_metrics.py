@@ -5,7 +5,7 @@ from scipy import stats
 from scipy.integrate import quad
 from scipy.optimize import minimize_scalar
 
-from qp.utils.misc_utils import safelog
+from .util_funcs import safelog
 
 
 def quick_anderson_ksamp(p_random_variables, q_random_variables, **kwargs):

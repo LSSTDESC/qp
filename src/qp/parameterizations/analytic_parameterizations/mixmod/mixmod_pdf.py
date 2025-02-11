@@ -5,15 +5,15 @@ import numpy as np
 from scipy import stats as sps
 from scipy.stats import rv_continuous
 
-from qp.utils.conversion_funcs import extract_mixmod_fit_samples
+from .mixmod_utils import extract_mixmod_fit_samples
 from qp.core.factory import add_class
 from qp.parameterizations.base_parameterization import Pdf_rows_gen
 from qp.utils.test_data import MEAN_MIXMOD, STD_MIXMOD, TEST_XVALS, WEIGHT_MIXMOD
-from qp.utils.misc_utils import (
+from qp.utils.array_utils import (
     get_eval_case,
-    interpolate_multi_x_y,
     reshape_to_pdf_size,
 )
+from ....utils.interp_funcs import interpolate_multi_x_y
 
 
 class mixmod_gen(Pdf_rows_gen):

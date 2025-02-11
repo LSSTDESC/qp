@@ -9,11 +9,8 @@ from .packing_utils import PackingType, pack_array, unpack_array
 from qp.parameterizations.base_parameterization import Pdf_rows_gen
 from qp.plotting import get_axes_and_xlims, plot_pdf_on_axes
 from qp.utils.test_data import TEST_XVALS, XBINS, YARRAY
-from qp.utils.misc_utils import (
-    interpolate_multi_x_y,
-    interpolate_x_multi_y,
-    reshape_to_pdf_size,
-)
+from qp.utils.array_utils import reshape_to_pdf_size
+from ...utils.interp_funcs import interpolate_multi_x_y, interpolate_x_multi_y
 
 
 def extract_and_pack_vals_at_x(in_dist, **kwargs):

@@ -10,7 +10,7 @@ from deprecated import deprecated
 from qp.metrics import array_metrics
 from qp.metrics.brier import Brier
 from qp.metrics.goodness_of_fit import goodness_of_fit_metrics
-from qp.utils.misc_utils import epsilon
+from .util_funcs import epsilon
 
 Grid = namedtuple(
     "Grid", ["grid_values", "cardinality", "resolution", "hist_bin_edges", "limits"]

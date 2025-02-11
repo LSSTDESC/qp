@@ -5,11 +5,11 @@ import os
 # from ...tests.qp import test_funcs
 from .version import __version__
 
-from .parameterizations.spline_pdf import *
-from .parameterizations.hist_pdf import *
-from .parameterizations.interp_pdf import *
+from .parameterizations.spline.spline_pdf import *
+from .parameterizations.hist.hist_pdf import *
+from .parameterizations.interp.interp_pdf import *
 from .parameterizations.quant.quant_pdf import *
-from .parameterizations.analytic_parameterizations.mixmod_pdf import *
+from .parameterizations.analytic_parameterizations.mixmod.mixmod_pdf import *
 from .parameterizations.sparse_interp.sparse_pdf import *
 from .parameterizations.analytic_parameterizations.scipy_dists_import import *
 from .parameterizations.packed_interp.packed_interp_pdf import *
@@ -31,7 +31,7 @@ from .core.factory import (
 )
 from .core.lazy_modules import *
 
-from .utils import misc_utils
+from .utils import array_utils
 
 from .parameterizations.packed_interp import packing_utils
 

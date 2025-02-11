@@ -4,21 +4,21 @@
 import numpy as np
 from scipy.stats import rv_continuous
 
-from qp.utils.conversion_funcs import (
+from .interp_utils import (
+    irreg_interp_extract_xy_vals,
     extract_vals_at_x,
     extract_xy_sparse,
-    extract_xy_vals,
+    normalize_interp1d,
 )
 from qp.core.factory import add_class
 from qp.parameterizations.base_parameterization import Pdf_rows_gen
 from qp.plotting import get_axes_and_xlims, plot_pdf_on_axes
 from qp.utils.test_data import TEST_XVALS, XARRAY, XBINS, YARRAY
-from qp.utils.misc_utils import (
+from qp.utils.array_utils import reshape_to_pdf_size
+from ...utils.interp_funcs import (
     interpolate_multi_x_multi_y,
     interpolate_multi_x_y,
     interpolate_x_multi_y,
-    normalize_interp1d,
-    reshape_to_pdf_size,
 )
 
 
@@ -45,7 +45,7 @@ class interp_gen(Pdf_rows_gen):
 
     The cdf() is constructed by integrating analytically computing the cumulative
     sum at the xvals grid points and interpolating between them.
-    This will give a slight discrepency with the true integral of the pdf(),
+    This will give a slight discrepancy with the true integral of the pdf(),
     bit is much, much faster to evaluate.
     Outside the range xvals[0], xvals[-1] the cdf() will return (0 or 1), respectively
 
@@ -116,7 +116,7 @@ class interp_gen(Pdf_rows_gen):
 
     @property
     def yvals(self):
-        """Return the y-valus used to do the interpolation"""
+        """Return the y-values used to do the interpolation"""
         return self._yvals
 
     def _pdf(self, x, row):
@@ -190,7 +190,7 @@ class interp_gen(Pdf_rows_gen):
 
     @classmethod
     def plot_native(cls, pdf, **kwargs):
-        """Plot the PDF in a way that is particular to this type of distibution
+        """Plot the PDF in a way that is particular to this type of distribution
 
         For a interpolated PDF this uses the interpolation points
         """
@@ -243,7 +243,7 @@ class interp_irregular_gen(Pdf_rows_gen):
 
     The cdf() is constructed by integrating analytically computing the cumulative
     sum at the xvals grid points and interpolating between them.
-    This will give a slight discrepency with the true integral of the pdf(),
+    This will give a slight discrepancy with the true integral of the pdf(),
     bit is much, much faster to evaluate.
     Outside the range xvals[:,0], xvals[:,-1] the cdf() will return (0 or 1), respectively
 
@@ -380,7 +380,7 @@ class interp_irregular_gen(Pdf_rows_gen):
         Add this classes mappings to the conversion dictionary
         """
         cls._add_creation_method(cls.create, None)
-        cls._add_extraction_method(extract_xy_vals, None)
+        cls._add_extraction_method(irreg_interp_extract_xy_vals, None)
         cls._add_extraction_method(extract_xy_sparse, None)
 
     @classmethod

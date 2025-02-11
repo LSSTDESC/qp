@@ -7,7 +7,7 @@ import sys
 import numpy as np
 from scipy.stats import rv_continuous
 
-from qp.utils.conversion_funcs import extract_quantiles
+from .quant_utils import extract_quantiles, pad_quantiles
 from qp.core.factory import add_class
 from qp.parameterizations.base_parameterization import Pdf_rows_gen
 from qp.plotting import get_axes_and_xlims, plot_pdf_quantiles_on_axes
@@ -19,63 +19,10 @@ from . import (
     PiecewiseLinear,
 )
 from qp.utils.test_data import QLOCS, QUANTS, TEST_XVALS
-from qp.utils.misc_utils import (
-    interpolate_multi_x_y,
-    interpolate_x_multi_y,
-    reshape_to_pdf_size,
-)
+from qp.utils.array_utils import reshape_to_pdf_size
+from ...utils.interp_funcs import interpolate_multi_x_y, interpolate_x_multi_y
 
 epsilon = sys.float_info.epsilon
-
-
-def pad_quantiles(quants, locs):
-    """Pad the quantiles and locations used to build a quantile representation
-
-    Parameters
-    ---------
-    quants : array_like
-        The quantiles used to build the CDF
-    locs : array_like
-        The locations at which those quantiles are reached
-
-    Returns
-    -------
-    quants : array_like
-        The quantiles used to build the CDF
-    locs : array_like
-        The locations at which those quantiles are reached
-    """
-    n_out = n_vals = quants.size
-    if quants[0] > sys.float_info.epsilon:
-        offset_lo = 1
-        pad_lo = True
-        n_out += 1
-    else:
-        offset_lo = 0
-        pad_lo = False
-    if quants[-1] < 1.0:
-        pad_hi = True
-        n_out += 1
-    else:
-        pad_hi = False
-    if n_out == n_vals:
-        return quants, locs
-    quants_out = np.zeros((n_out), quants.dtype)
-    locs_out = np.zeros((locs.shape[0], n_out), quants.dtype)
-    quants_out[offset_lo : n_vals + offset_lo] = quants
-    locs_out[:, offset_lo : n_vals + offset_lo] = locs
-    if pad_lo:
-        locs_out[:, 0] = locs[:, 0] - quants[0] * (locs[:, 1] - locs[:, 0]) / (
-            quants[1] - quants[0]
-        )
-
-    if pad_hi:
-        quants_out[-1] = 1.0
-        locs_out[:, -1] = locs[:, -1] - (1.0 - quants[-1]) * (
-            locs[:, -2] - locs[:, -1]
-        ) / (quants[-1] - quants[-2])
-
-    return quants_out, locs_out
 
 
 DEFAULT_PDF_CONSTRUCTOR = "piecewise_linear"
@@ -270,7 +217,7 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
 
     @classmethod
     def plot_native(cls, pdf, **kwargs):
-        """Plot the PDF in a way that is particular to this type of distibution
+        """Plot the PDF in a way that is particular to this type of distribution
 
         For a quantile this shows the quantiles points
         """

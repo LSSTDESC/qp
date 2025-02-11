@@ -7,12 +7,12 @@ from scipy.interpolate import splev, splint, splrep
 from scipy.special import errstate  # pylint: disable=no-name-in-module
 from scipy.stats import rv_continuous
 
-from qp.utils.conversion_funcs import extract_samples, extract_xy_vals
+from .spline_utils import extract_samples, extract_xy_vals, build_kdes, evaluate_kdes
 from qp.core.factory import add_class
 from qp.parameterizations.base_parameterization import Pdf_rows_gen
 from qp.plotting import get_axes_and_xlims, plot_pdf_on_axes
 from qp.utils.test_data import SAMPLES, TEST_XVALS, XARRAY, YARRAY
-from qp.utils.misc_utils import build_kdes, evaluate_kdes, reshape_to_pdf_size
+from qp.utils.array_utils import reshape_to_pdf_size
 
 
 def normalize_spline(xvals, yvals, limits, **kwargs):
@@ -68,7 +68,7 @@ def build_splines(xvals, yvals):
     sply : array-like
         Spline knot yvalues
     spln : array-like
-        Spline knot order paramters
+        Spline knot order parameters
     """
     l_x = []
     l_y = []
@@ -94,7 +94,7 @@ class spline_gen(Pdf_rows_gen):
 
     sply:  (npdf, n) spline-knot y-values
 
-    spln:  (npdf) spline-knot order paramters
+    spln:  (npdf) spline-knot order parameters
 
     The pdf() for the ith pdf will return the result of
     scipy.interpolate.splev(x, splx[i], sply[i], spln[i))
