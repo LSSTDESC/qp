@@ -5,13 +5,13 @@ import os
 import numpy as np
 from tables_io import io
 
-from qp.utils.dict_utils import (
+from ..utils.dict_utils import (
     check_array_shapes,
     compare_dicts,
     concatenate_dicts,
     slice_dict,
 )
-from qp.metrics import quick_moment
+from ..metrics import quick_moment
 
 # import psutil
 # import timeit

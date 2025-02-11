@@ -10,14 +10,14 @@ from .hist_utils import (
     extract_hist_values,
     extract_hist_samples,
 )
-from qp.parameterizations.base_parameterization import Pdf_rows_gen
-from qp.plotting import get_axes_and_xlims, plot_pdf_histogram_on_axes
-from qp.utils.array_utils import reshape_to_pdf_size
+from ...parameterizations.base_parameterization import Pdf_rows_gen
+from ...plotting import get_axes_and_xlims, plot_pdf_histogram_on_axes
+from ...utils.array_utils import reshape_to_pdf_size
 
 from ...utils.interp_funcs import interpolate_multi_x_y, interpolate_x_multi_y
 
-from qp.utils.test_data import XBINS, HIST_DATA, TEST_XVALS, NSAMPLES
-from qp.core.factory import add_class
+from ...utils.test_data import XBINS, HIST_DATA, TEST_XVALS, NSAMPLES
+from ...core.factory import add_class
 
 
 class hist_gen(Pdf_rows_gen):

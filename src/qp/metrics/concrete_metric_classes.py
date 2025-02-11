@@ -2,13 +2,13 @@
 
 import numpy as np
 
-from qp.metrics.base_metric_classes import (
+from .base_metric_classes import (
     MetricOutputType,
     DistToDistMetric,
     DistToPointMetric,
     SingleEnsembleMetric,
 )
-from qp.metrics.metrics import (
+from .metrics import (
     calculate_brier,
     calculate_brier_for_accumulation,
     calculate_goodness_of_fit,
@@ -18,9 +18,9 @@ from qp.metrics.metrics import (
     calculate_rmse,
     calculate_rbpe,
 )
-from qp.metrics.pit import PIT
+from .pit import PIT
 
-from qp.core.lazy_modules import pytdigest
+from ..core.lazy_modules import pytdigest
 from functools import reduce
 from operator import add
 

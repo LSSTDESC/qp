@@ -6,10 +6,10 @@ from scipy import stats as sps
 from scipy.stats import rv_continuous
 
 from .mixmod_utils import extract_mixmod_fit_samples
-from qp.core.factory import add_class
-from qp.parameterizations.base_parameterization import Pdf_rows_gen
-from qp.utils.test_data import MEAN_MIXMOD, STD_MIXMOD, TEST_XVALS, WEIGHT_MIXMOD
-from qp.utils.array_utils import (
+from ....core.factory import add_class
+from ...base_parameterization import Pdf_rows_gen
+from ....utils.test_data import MEAN_MIXMOD, STD_MIXMOD, TEST_XVALS, WEIGHT_MIXMOD
+from ....utils.array_utils import (
     get_eval_case,
     reshape_to_pdf_size,
 )

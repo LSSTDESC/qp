@@ -1,11 +1,11 @@
 import numpy as np
-from qp.metrics.base_metric_classes import (
+from .base_metric_classes import (
     MetricOutputType,
     PointToPointMetric,
 )
 from functools import reduce
 from operator import add
-from qp.core.lazy_modules import pytdigest
+from ..core.lazy_modules import pytdigest
 
 
 class PointToPointMetricDigester(PointToPointMetric):

@@ -1,6 +1,6 @@
 import numpy as np
 
-from qp.utils.array_utils import (
+from ...utils.array_utils import (
     get_bin_indices,
     get_eval_case,
     CASE_PRODUCT,

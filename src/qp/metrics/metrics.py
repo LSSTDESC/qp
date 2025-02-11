@@ -7,9 +7,9 @@ from functools import partial
 import numpy as np
 from deprecated import deprecated
 
-from qp.metrics import array_metrics
-from qp.metrics.brier import Brier
-from qp.metrics.goodness_of_fit import goodness_of_fit_metrics
+from . import array_metrics
+from .brier import Brier
+from .goodness_of_fit import goodness_of_fit_metrics
 from .util_funcs import epsilon
 
 Grid = namedtuple(
