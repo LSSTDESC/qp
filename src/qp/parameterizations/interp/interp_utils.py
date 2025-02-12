@@ -2,7 +2,7 @@ import numpy as np
 from scipy import integrate as sciint
 from scipy import interpolate as sciinterp
 
-from ...utils.conversion_funcs import extract_xy_vals
+from ...utils.conversion import extract_xy_vals
 from ..sparse_interp.sparse_rep import (
     build_sparse_representation,
     decode_sparse_indices,

@@ -6,9 +6,11 @@ import sys
 
 import numpy as np
 from scipy.stats import rv_continuous
+from typing import Mapping, Optional
 
 from .quant_utils import extract_quantiles, pad_quantiles
 from ...core.factory import add_class
+from ...core.ensemble import Ensemble
 from ..base import Pdf_rows_gen
 from ...plotting import get_axes_and_xlims, plot_pdf_quantiles_on_axes
 from . import (
@@ -19,8 +21,8 @@ from . import (
     PiecewiseLinear,
 )
 from ...test_data import QLOCS, QUANTS, TEST_XVALS
-from ...utils.array_funcs import reshape_to_pdf_size
-from ...utils.interp_funcs import interpolate_multi_x_y, interpolate_x_multi_y
+from ...utils.array import reshape_to_pdf_size
+from ...utils.interpolation import interpolate_multi_x_y, interpolate_x_multi_y
 
 epsilon = sys.float_info.epsilon
 
@@ -32,6 +34,29 @@ PDF_CONSTRUCTORS = {
     "piecewise_linear": PiecewiseLinear,
     "piecewise_constant": PiecewiseConstant,
 }
+
+
+def quant(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+    """Creates an Ensemble of distributions parameterized as quantiles.
+
+    Input data format:
+    data = {'quants': values, 'locs': values}
+    Can optionally include 'pdf_constructor_name' as a key.
+
+    Parameters
+    ----------
+    data : Mapping
+        The dictionary of data for the distributions.
+    ancil : Optional[Mapping], optional
+        A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
+
+    Returns
+    -------
+    Ensemble
+        An Ensemble object containing all of the given distributions.
+    """
+
+    return Ensemble(quant_gen, data, ancil)
 
 
 class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes

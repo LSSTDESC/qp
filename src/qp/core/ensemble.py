@@ -6,7 +6,7 @@ import numpy as np
 import tables_io
 from tables_io import hdf5
 
-from ..utils.dict_funcs import (
+from ..utils.dictionary import (
     check_array_shapes,
     compare_dicts,
     concatenate_dicts,

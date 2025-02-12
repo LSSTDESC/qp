@@ -33,7 +33,7 @@ class InfrastructureTestCase(unittest.TestCase):
     def test_slice_dict():
         """Test the slice_dict method"""
         orig_dict = dict(loc=test_data.LOC, scale=test_data.SCALE, scalar=1)
-        sliced = qp.dict_funcs.slice_dict(orig_dict, 1)
+        sliced = qp.dictionary.slice_dict(orig_dict, 1)
         assert sliced["loc"] == test_data.LOC[1]
         assert sliced["scale"] == test_data.SCALE[1]
         assert sliced["scalar"] == 1
@@ -42,20 +42,20 @@ class InfrastructureTestCase(unittest.TestCase):
     def test_print_dict_shape():
         """Test the print_dict_shape method"""
         test_dict = dict(loc=test_data.LOC, scale=test_data.SCALE)
-        qp.dict_funcs.print_dict_shape(test_dict)
+        qp.dictionary.print_dict_shape(test_dict)
 
     @staticmethod
     def test_get_val_or_default():
         """Test the get_val_or_default method"""
         test_dict = dict(key=1)
         test_dict[None] = 2
-        assert qp.dict_funcs.get_val_or_default(test_dict, "key") == 1
-        assert qp.dict_funcs.get_val_or_default(test_dict, "nokey") == 2
-        assert qp.dict_funcs.get_val_or_default(test_dict, None) == 2
-        assert qp.dict_funcs.set_val_or_default(test_dict, "key", 5) == 1
+        assert qp.dictionary.get_val_or_default(test_dict, "key") == 1
+        assert qp.dictionary.get_val_or_default(test_dict, "nokey") == 2
+        assert qp.dictionary.get_val_or_default(test_dict, None) == 2
+        assert qp.dictionary.set_val_or_default(test_dict, "key", 5) == 1
 
         test_dict.pop(None)
-        assert qp.dict_funcs.get_val_or_default(test_dict, "nokey") is None
+        assert qp.dictionary.get_val_or_default(test_dict, "nokey") is None
 
     def test_is_qp_file(self):
         fname = "norm_ensemble.hdf5"

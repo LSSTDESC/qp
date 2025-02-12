@@ -17,7 +17,7 @@ from tables_io.types import NUMPY_DICT
 
 from .ensemble import Ensemble
 
-from ..utils.dict_funcs import compare_dicts, concatenate_dicts
+from ..utils.dictionary import compare_dicts, concatenate_dicts
 
 from ..parameterizations.base import Pdf_gen_wrap
 

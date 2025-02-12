@@ -24,8 +24,8 @@ from numpy import asarray
 from scipy.stats import rv_continuous
 from scipy.stats._distn_infrastructure import rv_continuous_frozen
 
-from ..utils.array_funcs import reshape_to_pdf_size, reshape_to_pdf_shape
-from ..utils.dict_funcs import get_val_or_default, set_val_or_default, pretty_print
+from ..utils.array import reshape_to_pdf_size, reshape_to_pdf_shape
+from ..utils.dictionary import get_val_or_default, set_val_or_default, pretty_print
 from ..plotting import plot_dist_pdf
 
 

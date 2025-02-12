@@ -4,6 +4,7 @@
 import numpy as np
 
 from scipy.stats import rv_continuous
+from typing import Mapping, Optional
 
 from .hist_utils import (
     evaluate_hist_x_multi_y,
@@ -12,12 +13,36 @@ from .hist_utils import (
 )
 from ..base import Pdf_rows_gen
 from ...plotting import get_axes_and_xlims, plot_pdf_histogram_on_axes
-from ...utils.array_funcs import reshape_to_pdf_size
+from ...utils.array import reshape_to_pdf_size
 
-from ...utils.interp_funcs import interpolate_multi_x_y, interpolate_x_multi_y
+from ...utils.interpolation import interpolate_multi_x_y, interpolate_x_multi_y
 
 from ...test_data import XBINS, HIST_DATA, TEST_XVALS, NSAMPLES
 from ...core.factory import add_class
+from ...core.ensemble import Ensemble
+
+
+def hist(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+    """Creates an Ensemble of distributions parameterized as histograms.
+
+    Input data format:
+    data = {'bins': array_like, 'pdfs': array_like}, where bins are the bin edges, and so should be of shape (n+1,), and data is the value in those bins, so should have length of n and shape (npdfs, n), where npdfs is the number of distributions, or pdfs. The value of 'pdfs' can have multiple rows, where each row is a distribution.
+
+
+    Parameters
+    ----------
+    data : Mapping
+        The dictionary of data for the distributions.
+    ancil : Optional[Mapping], optional
+        A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
+
+    Returns
+    -------
+    Ensemble
+        An Ensemble object containing all of the given distributions.
+    """
+
+    return Ensemble(hist_gen, data, ancil)
 
 
 class hist_gen(Pdf_rows_gen):

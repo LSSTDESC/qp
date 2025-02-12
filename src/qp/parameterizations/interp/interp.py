@@ -3,6 +3,7 @@
 
 import numpy as np
 from scipy.stats import rv_continuous
+from typing import Mapping, Optional
 
 from .interp_utils import (
     irreg_interp_extract_xy_vals,
@@ -11,15 +12,61 @@ from .interp_utils import (
     normalize_interp1d,
 )
 from ...core.factory import add_class
+from ...core.ensemble import Ensemble
 from ..base import Pdf_rows_gen
 from ...plotting import get_axes_and_xlims, plot_pdf_on_axes
 from ...test_data import TEST_XVALS, XARRAY, XBINS, YARRAY
-from ...utils.array_funcs import reshape_to_pdf_size
-from ...utils.interp_funcs import (
+from ...utils.array import reshape_to_pdf_size
+from ...utils.interpolation import (
     interpolate_multi_x_multi_y,
     interpolate_multi_x_y,
     interpolate_x_multi_y,
 )
+
+
+def interp(data: Mapping, ancil: Optional[Mapping]) -> Ensemble:
+    """Creates an Ensemble of distributions parameterized as interpolations.
+
+    Input data:
+    data = {'xvals': values, 'yvals': values} where
+    xvals:  (n) x values
+    yvals:  (npdf, n) y values
+    and n is the number of x values.
+
+    Parameters
+    ----------
+    data : Mapping
+        The dictionary of data for the distributions.
+    ancil : Optional[Mapping]
+        A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions
+
+    Returns
+    -------
+    Ensemble
+        An Ensemble object containing all of the given distributions.
+    """
+
+    return Ensemble(interp_gen, data, ancil)
+
+
+# TODO: Figure out how to handle this
+def interp_irregular(data: Mapping, ancil: Optional[Mapping]) -> Ensemble:
+    """_summary_
+
+    Parameters
+    ----------
+    data : Mapping
+        _description_
+    ancil : Optional[Mapping]
+        _description_
+
+    Returns
+    -------
+    Ensemble
+        _description_
+    """
+
+    return Ensemble(interp_irregular_gen, data, ancil)
 
 
 class interp_gen(Pdf_rows_gen):

@@ -3,7 +3,7 @@ from typing import List
 import numpy as np
 
 from .abstract_pdf_constructor import AbstractQuantilePdfConstructor
-from ...utils.interp_funcs import interpolate_multi_x_multi_y
+from ...utils.interpolation import interpolate_multi_x_multi_y
 
 
 class PiecewiseLinear(AbstractQuantilePdfConstructor):

@@ -4,16 +4,47 @@
 import numpy as np
 from scipy import stats as sps
 from scipy.stats import rv_continuous
+from typing import Mapping, Optional
 
 from .mixmod_utils import extract_mixmod_fit_samples
 from ....core.factory import add_class
 from ...base import Pdf_rows_gen
 from ....test_data import MEAN_MIXMOD, STD_MIXMOD, TEST_XVALS, WEIGHT_MIXMOD
-from ....utils.array_funcs import (
+from ....utils.array import (
     get_eval_case,
     reshape_to_pdf_size,
 )
-from ....utils.interp_funcs import interpolate_multi_x_y
+from ....utils.interpolation import interpolate_multi_x_y
+from ....core.ensemble import Ensemble
+
+
+def mixmod(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+    """Creates an Ensemble of distributions parameterized as Gaussian Mixture models.
+
+    Input data format:
+    data = {'means': value, 'stds': value, 'weights': value}, where
+    means:  (npdf, ncomp) means of the Gaussians
+    stds:  (npdf, ncomp) standard deviations of the Gaussians
+    weights: (npdf, ncomp) weights for the Gaussians
+
+    npdf = the number of distributions
+    ncomp = the number of Gaussians in the mixture model
+
+
+    Parameters
+    ----------
+    data : Mapping
+        The dictionary of data for the distributions.
+    ancil : Optional[Mapping], optional
+        A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
+
+    Returns
+    -------
+    Ensemble
+        An Ensemble object containing all of the given distributions.
+    """
+
+    return Ensemble(mixmod_gen, data, ancil)
 
 
 class mixmod_gen(Pdf_rows_gen):

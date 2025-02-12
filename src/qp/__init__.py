@@ -31,10 +31,10 @@ from .core.factory import (
 )
 from .core.lazy_modules import *
 
-from .utils import array_funcs
+from .utils import array
 
 from .parameterizations.packed_interp import packing_utils
 
-from .utils import dict_funcs
+from .utils import dictionary
 
 from .core import factory

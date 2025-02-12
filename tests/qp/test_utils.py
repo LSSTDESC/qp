@@ -27,19 +27,15 @@ class UtilsTestCase(unittest.TestCase):
         """Test the utils.profile function"""
         npdf = 100
         x_bins = test_data.XBINS
-        x_cents = qp.array_funcs.edge_to_center(x_bins)
+        x_cents = qp.array.edge_to_center(x_bins)
         nbin = x_cents.size
         x_data = (np.ones((npdf, 1)) * x_cents).T
         c_vals = np.linspace(0.5, 2.5, nbin)
         y_data = np.expand_dims(c_vals, -1) * (
             0.95 + 0.1 * np.random.uniform(size=(nbin, npdf))
         )
-        pf_1 = qp.array_funcs.profile(
-            x_data.flatten(), y_data.flatten(), x_bins, std=False
-        )
-        pf_2 = qp.array_funcs.profile(
-            x_data.flatten(), y_data.flatten(), x_bins, std=True
-        )
+        pf_1 = qp.array.profile(x_data.flatten(), y_data.flatten(), x_bins, std=False)
+        pf_2 = qp.array.profile(x_data.flatten(), y_data.flatten(), x_bins, std=True)
         test_funcs.assert_all_close(
             pf_1[0], c_vals, atol=0.02, test_name="profile_mean"
         )

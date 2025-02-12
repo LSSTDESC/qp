@@ -1,7 +1,7 @@
 import numpy as np
 from scipy import stats as sps
 
-from ...utils.conversion_funcs import extract_xy_vals
+from ...utils.conversion import extract_xy_vals
 
 # Conversion utility functions
 

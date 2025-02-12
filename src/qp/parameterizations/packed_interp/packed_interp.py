@@ -3,14 +3,45 @@
 
 import numpy as np
 from scipy.stats import rv_continuous
+from typing import Mapping, Optional
 
 from ...core.factory import add_class
+from ...core.ensemble import Ensemble
 from .packing_utils import PackingType, pack_array, unpack_array
 from ..base import Pdf_rows_gen
 from ...plotting import get_axes_and_xlims, plot_pdf_on_axes
 from ...test_data import TEST_XVALS, XBINS, YARRAY
-from ...utils.array_funcs import reshape_to_pdf_size
-from ...utils.interp_funcs import interpolate_multi_x_y, interpolate_x_multi_y
+from ...utils.array import reshape_to_pdf_size
+from ...utils.interpolation import interpolate_multi_x_y, interpolate_x_multi_y
+
+
+def packed_interp(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+    """Creates an Ensemble of distributions parameterized as interpolation that are stored as packed integers.
+
+    Input data format:
+    data = {'xvals': values, 'ypacked': values, 'ymax': values}
+
+    xvals : array_like
+          The x-values used to do the interpolation
+    ypacked : array_like
+        The packed version of the y-values used to do the interpolation
+    ymax : array_like
+        The maximum y-values for each pdf
+
+    Parameters
+    ----------
+    data : Mapping
+        The dictionary of data for the distributions.
+    ancil : Optional[Mapping], optional
+        A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
+
+    Returns
+    -------
+    Ensemble
+        An Ensemble object containing all of the given distributions.
+    """
+
+    return Ensemble(packed_interp_gen, data, ancil)
 
 
 def extract_and_pack_vals_at_x(in_dist, **kwargs):

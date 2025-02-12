@@ -6,13 +6,43 @@ from scipy.integrate import quad
 from scipy.interpolate import splev, splint, splrep
 from scipy.special import errstate  # pylint: disable=no-name-in-module
 from scipy.stats import rv_continuous
+from typing import Mapping, Optional
 
 from .spline_utils import extract_samples, extract_xy_vals, build_kdes, evaluate_kdes
 from ...core.factory import add_class
+from ...core.ensemble import Ensemble
 from ..base import Pdf_rows_gen
 from ...plotting import get_axes_and_xlims, plot_pdf_on_axes
 from ...test_data import SAMPLES, TEST_XVALS, XARRAY, YARRAY
-from ...utils.array_funcs import reshape_to_pdf_size
+from ...utils.array import reshape_to_pdf_size
+
+
+def spline(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+    """Creates an Ensemble of distributions parameterized as interpolations, constructed from a sparse representation.
+
+    Input data format:
+    data = {'splx': values, 'sply': values, 'spln': values}
+    splx:  (npdf, n) spline-knot x-values
+
+    sply:  (npdf, n) spline-knot y-values
+
+    spln:  (npdf) spline-knot order parameters
+
+
+    Parameters
+    ----------
+    data : Mapping
+        The dictionary of data for the distributions.
+    ancil : Optional[Mapping], optional
+        A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
+
+    Returns
+    -------
+    Ensemble
+        An Ensemble object containing all of the given distributions.
+    """
+
+    return Ensemble(spline_gen, data, ancil)
 
 
 def normalize_spline(xvals, yvals, limits, **kwargs):

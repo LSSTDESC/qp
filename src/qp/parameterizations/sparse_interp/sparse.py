@@ -7,11 +7,36 @@ import numpy as np
 from scipy.stats import rv_continuous
 from scipy import integrate as sciint
 from scipy import interpolate as sciinterp
+from typing import Mapping, Optional
+
 from . import sparse_rep
 from ...core.factory import add_class
+from ...core.ensemble import Ensemble
 from ..interp.interp import interp_gen
 from .sparse_utils import extract_sparse_from_xy
 from ...test_data import TEST_XVALS, NPDF
+
+
+def sparse_interp(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+    """Creates an Ensemble of distributions parameterized as interpolations, constructed from a sparse representation.
+
+    Input data format:
+    data = {}
+
+    Parameters
+    ----------
+    data : Mapping
+        The dictionary of data for the distributions.
+    ancil : Optional[Mapping], optional
+        A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
+
+    Returns
+    -------
+    Ensemble
+        An Ensemble object containing all of the given distributions.
+    """
+
+    return Ensemble(sparse_gen, data, ancil)
 
 
 class sparse_gen(interp_gen):
