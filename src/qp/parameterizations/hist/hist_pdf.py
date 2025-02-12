@@ -12,7 +12,7 @@ from .hist_utils import (
 )
 from ...parameterizations.base_parameterization import Pdf_rows_gen
 from ...plotting import get_axes_and_xlims, plot_pdf_histogram_on_axes
-from ...utils.array_utils import reshape_to_pdf_size
+from ...utils.array_funcs import reshape_to_pdf_size
 
 from ...utils.interp_funcs import interpolate_multi_x_y, interpolate_x_multi_y
 

@@ -12,7 +12,7 @@ from ...core.factory import add_class
 from ..base_parameterization import Pdf_rows_gen
 from ...plotting import get_axes_and_xlims, plot_pdf_on_axes
 from ...utils.test_data import SAMPLES, TEST_XVALS, XARRAY, YARRAY
-from ...utils.array_utils import reshape_to_pdf_size
+from ...utils.array_funcs import reshape_to_pdf_size
 
 
 def normalize_spline(xvals, yvals, limits, **kwargs):

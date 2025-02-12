@@ -1,7 +1,7 @@
 import sys
 import numpy as np
 
-from ...utils.array_utils import (
+from ...utils.array_funcs import (
     get_eval_case,
     CASE_2D,
     CASE_FLAT,

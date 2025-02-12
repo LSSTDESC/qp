@@ -5,7 +5,7 @@ import os
 import numpy as np
 from tables_io import io
 
-from ..utils.dict_utils import (
+from ..utils.dict_funcs import (
     check_array_shapes,
     compare_dicts,
     concatenate_dicts,

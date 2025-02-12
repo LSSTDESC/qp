@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.interpolate import interp1d
 
-from .array_utils import get_eval_case, CASE_PRODUCT, CASE_FACTOR, CASE_2D, CASE_FLAT
+from .array_funcs import get_eval_case, CASE_PRODUCT, CASE_FACTOR, CASE_2D, CASE_FLAT
 
 
 def interpolate_multi_x_y(x, row, xvals, yvals, **kwargs):

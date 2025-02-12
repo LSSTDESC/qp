@@ -14,7 +14,7 @@ from ...core.factory import add_class
 from ..base_parameterization import Pdf_rows_gen
 from ...plotting import get_axes_and_xlims, plot_pdf_on_axes
 from ...utils.test_data import TEST_XVALS, XARRAY, XBINS, YARRAY
-from ...utils.array_utils import reshape_to_pdf_size
+from ...utils.array_funcs import reshape_to_pdf_size
 from ...utils.interp_funcs import (
     interpolate_multi_x_multi_y,
     interpolate_multi_x_y,
