@@ -16,7 +16,7 @@ from ...utils.array_funcs import reshape_to_pdf_size
 
 from ...utils.interp_funcs import interpolate_multi_x_y, interpolate_x_multi_y
 
-from ...utils.test_data import XBINS, HIST_DATA, TEST_XVALS, NSAMPLES
+from .....tests.qp.test_data import XBINS, HIST_DATA, TEST_XVALS, NSAMPLES
 from ...core.factory import add_class
 
 

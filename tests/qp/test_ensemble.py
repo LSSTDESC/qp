@@ -9,7 +9,7 @@ import unittest
 import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal
 import qp
-from qp.utils import test_data
+from tests.qp import test_data
 from qp.plotting import init_matplotlib
 from .test_funcs import assert_all_close, assert_all_small, build_ensemble
 
@@ -219,7 +219,8 @@ class EnsembleTestCase(unittest.TestCase):
     def test_iterator(self):
         """Test the iterated read"""
         QP_DIR = os.path.abspath(os.path.dirname(qp.__file__))
-        data_file = os.path.join(QP_DIR, "data", "test.hdf5")
+        TEST_DIR = "./tests/qp/"
+        data_file = os.path.join(TEST_DIR, "test_data", "test.hdf5")
         ens = qp.read(data_file)
         data_length = qp.data_length(data_file)
         assert data_length == ens.npdf

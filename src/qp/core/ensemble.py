@@ -1,4 +1,4 @@
-"""Implemenation of an ensemble of distributions"""
+"""Implementation of an ensemble of distributions"""
 
 import os
 
@@ -54,7 +54,7 @@ class Ensemble:
         Returns
         -------
         pdf : `scipy.rv_frozen`
-            The distribution for the requeseted element or slide
+            The distribution for the requested element or slide
         """
         red_data = {}
         md = self.metadata()
@@ -101,7 +101,7 @@ class Ensemble:
 
     @property
     def frozen(self):
-        """Return the `scipy.stats.rv_frozen` object that encapsultes the distributions for this ensemble"""
+        """Return the `scipy.stats.rv_frozen` object that encapsulates the distributions for this ensemble"""
         return self._frozen
 
     @property
@@ -142,7 +142,7 @@ class Ensemble:
         Returns
         -------
         ens : `qp.Ensemble`
-            Ensemble of pdfs yype class_to using the data from this object
+            Ensemble of pdfs type class_to using the data from this object
         """
         kwds = kwargs.copy()
         method = kwds.pop("method", None)
@@ -247,7 +247,7 @@ class Ensemble:
         self._ancil = ancil
 
     def add_to_ancil(self, to_add):  # pragma: no cover
-        """Add additionaly columns to the ancillary data dict
+        """Add additionally columns to the ancillary data dict
 
         Parameters
         ----------
@@ -334,7 +334,7 @@ class Ensemble:
 
         Notes
         -----
-        This first comparse grid to the cached value, if they match it returns
+        This first compares grid to the cached value, if they match it returns
         the cached value
         """
         if self._gridded is None or not np.array_equal(self._gridded[0], grid):
@@ -352,7 +352,7 @@ class Ensemble:
         -----
         This will actually write two files, one for the metadata and one for the object data
 
-        This uses `tables_io` to write the data, so any filesuffix that works for
+        This uses `tables_io` to write the data, so any file suffix that works for
         `tables_io` will work here.
         """
         basename, ext = os.path.splitext(filename)
@@ -361,7 +361,7 @@ class Ensemble:
 
     def pdf(self, x):
         """
-        Evaluates the probablity density function for the whole ensemble
+        Evaluates the probability density function for the whole ensemble
 
         Parameters
         ----------
@@ -375,7 +375,7 @@ class Ensemble:
 
     def logpdf(self, x):
         """
-        Evaluates the log of the probablity density function for the whole ensemble
+        Evaluates the log of the probability density function for the whole ensemble
 
         Parameters
         ----------
@@ -389,7 +389,7 @@ class Ensemble:
 
     def cdf(self, x):
         """
-        Evaluates the cumalative distribution function for the whole ensemble
+        Evaluates the cumulative distribution function for the whole ensemble
 
         Parameters
         ----------
@@ -403,7 +403,7 @@ class Ensemble:
 
     def logcdf(self, x):
         """
-        Evaluates the log of the cumalative distribution function for the whole ensemble
+        Evaluates the log of the cumulative distribution function for the whole ensemble
 
         Parameters
         ----------
@@ -474,7 +474,7 @@ class Ensemble:
 
     def rvs(self, size=None, random_state=None):
         """
-        Generate samples from this ensmeble
+        Generate samples from this ensemble
 
         Parameters
         ----------
@@ -490,7 +490,7 @@ class Ensemble:
 
     def stats(self, moments="mv"):
         """
-        Retrun the stats for this ensemble
+        Return the stats for this ensemble
 
         Parameters
         ----------
@@ -511,7 +511,7 @@ class Ensemble:
         return self._frozen.mean()
 
     def var(self):
-        """Return the variences for this ensemble"""
+        """Return the variances for this ensemble"""
         return self._frozen.var()
 
     def std(self):
@@ -535,7 +535,7 @@ class Ensemble:
     #    return self._frozen.logpmf(k)
 
     def interval(self, alpha):
-        """Return the intervals corresponding to a confidnce level of alpha for this ensemble"""
+        """Return the intervals corresponding to a confidence level of alpha for this ensemble"""
         return self._frozen.interval(alpha)
 
     def histogramize(self, bins):

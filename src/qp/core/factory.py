@@ -4,6 +4,7 @@ import sys
 import os
 
 from collections import OrderedDict
+from typing_extensions import Mapping, Union, Optional, Tuple, Iterator
 
 import numpy as np
 
@@ -100,7 +101,9 @@ class Factory(OrderedDict):
         setattr(self, "%s_gen" % the_class.name, the_class)
         setattr(self, the_class.name, the_class.create)
 
-    def create(self, class_name, data, method=None):
+    def create(
+        self, class_name: str, data: Mapping, method: Optional[str] = None
+    ) -> Ensemble:
         """Make an ensemble of a particular type of distribution
 
         Parameters
@@ -123,7 +126,7 @@ class Factory(OrderedDict):
         ctor_func = the_class.creation_method(method)
         return Ensemble(ctor_func, data)
 
-    def from_tables(self, tables):
+    def from_tables(self, tables: Mapping):
         """Build this ensemble from a tables
 
         Parameters
@@ -153,7 +156,7 @@ class Factory(OrderedDict):
             data = reader_convert(data)
         return Ensemble(ctor_func, data=data, ancil=ancil_table)
 
-    def read_metadata(self, filename):
+    def read_metadata(self, filename: str):
         """Read an ensemble's metadata from a file, without loading the full data.
 
         Parameters
@@ -163,7 +166,7 @@ class Factory(OrderedDict):
         tables = io.read(filename, NUMPY_DICT, keys=["meta"])
         return tables["meta"]
 
-    def is_qp_file(self, filename):
+    def is_qp_file(self, filename: str) -> bool:
         """Test if a file is a qp file
 
         Parameters
@@ -186,7 +189,7 @@ class Factory(OrderedDict):
             print(f"This is not a qp file because {msg}")
         return False
 
-    def read(self, filename):
+    def read(self, filename: str) -> Ensemble:
         """Read this ensemble from a file
 
         Parameters
@@ -212,7 +215,7 @@ class Factory(OrderedDict):
 
         return self.from_tables(tables)
 
-    def data_length(self, filename):
+    def data_length(self, filename: str) -> int:
         """Get the size of data
 
         Parameters
@@ -227,7 +230,13 @@ class Factory(OrderedDict):
         num_rows = io.getGroupInputDataLength(f)
         return num_rows
 
-    def iterator(self, filename, chunk_size=100_000, rank=0, parallel_size=1):
+    def iterator(
+        self,
+        filename: str,
+        chunk_size: int = 100_000,
+        rank: int = 0,
+        parallel_size: int = 1,
+    ) -> Iterator[int, int, Ensemble]:
         """Return an iterator for chunked read
 
         Parameters
@@ -314,7 +323,7 @@ class Factory(OrderedDict):
             cl.print_method_maps(stream)
 
     @staticmethod
-    def concatenate(ensembles):
+    def concatenate(ensembles: list[Ensemble]) -> Ensemble:
         """Concatenate a list of ensembles
 
         Parameters
@@ -358,7 +367,7 @@ class Factory(OrderedDict):
         return Ensemble(gen_func, data, ancil)
 
     @staticmethod
-    def write_dict(filename, ensemble_dict, **kwargs):
+    def write_dict(filename: str, ensemble_dict: Mapping[Ensemble], **kwargs):
         output_tables = {}
         for key, val in ensemble_dict.items():
             # check that val is a qp.Ensemble
@@ -371,7 +380,7 @@ class Factory(OrderedDict):
         io.writeDictsToHdf5(output_tables, filename, **kwargs)
 
     @staticmethod
-    def read_dict(filename):
+    def read_dict(filename: str):
         """Assume that filename is an HDF5 file, containing multiple qp.Ensembles
         that have been stored at nparrays."""
         results = {}

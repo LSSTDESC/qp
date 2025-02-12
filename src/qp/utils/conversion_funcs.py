@@ -13,16 +13,13 @@ from ..parameterizations.sparse_interp.sparse_rep import (
 )
 
 
-def extract_xy_vals(in_dist, **kwargs):
+def extract_xy_vals(in_dist, xvals):
     """Convert using a set of x and y values.
 
     Parameters
     ----------
     in_dist : `qp.Ensemble`
         Input distributions
-
-    Other Parameters
-    ----------------
     xvals : `np.array`
         Locations at which the pdf is evaluated
 
@@ -31,9 +28,7 @@ def extract_xy_vals(in_dist, **kwargs):
     data : `dict`
         The extracted data
     """
-    xvals = kwargs.pop("xvals", None)
-    if xvals is None:  # pragma: no cover
-        raise ValueError("To convert using extract_xy_vals you must specify xvals")
+
     yvals = in_dist.pdf(xvals)
     expand_x = np.ones(yvals.shape) * np.squeeze(xvals)
     return dict(xvals=expand_x, yvals=yvals)

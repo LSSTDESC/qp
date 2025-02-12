@@ -7,8 +7,24 @@ from ...utils.conversion_funcs import extract_xy_vals
 
 
 def spline_extract_xy_vals(in_dist, **kwargs):
-    """Wrapper for extract_xy_vals"""
-    return extract_xy_vals(in_dist, **kwargs)
+    """Wrapper for extract_xy_vals. Convert using a set of x and y values.
+
+    Parameters
+    ----------
+    in_dist : `qp.Ensemble`
+        Input distributions
+    xvals : `np.array`
+        Locations at which the pdf is evaluated
+
+    Returns
+    -------
+    data : `dict`
+        The extracted data"""
+
+    xvals = kwargs.pop("xvals", None)
+    if xvals is None:  # pragma: no cover
+        raise ValueError("To convert using extract_xy_vals you must specify xvals")
+    return extract_xy_vals(in_dist, xvals)
 
 
 def extract_samples(in_dist, **kwargs):

@@ -13,9 +13,24 @@ from ..sparse_interp.sparse_rep import (
 
 
 def irreg_interp_extract_xy_vals(in_dist, **kwargs):
-    """Wrapper for extract_xy_vals"""
+    """Wrapper for extract_xy_vals. Convert using a set of x and y values.
 
-    return extract_xy_vals(in_dist, **kwargs)
+    Parameters
+    ----------
+    in_dist : `qp.Ensemble`
+        Input distributions
+    xvals : `np.array`
+        Locations at which the pdf is evaluated
+
+    Returns
+    -------
+    data : `dict`
+        The extracted data"""
+
+    xvals = kwargs.pop("xvals", None)
+    if xvals is None:  # pragma: no cover
+        raise ValueError("To convert using extract_xy_vals you must specify xvals")
+    return extract_xy_vals(in_dist, xvals)
 
 
 def extract_vals_at_x(in_dist, **kwargs):

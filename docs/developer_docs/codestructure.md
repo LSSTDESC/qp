@@ -15,9 +15,6 @@ qp
 │   ├── ensemble.py
 │   ├── factory.py
 │   └── lazy_modules.py
-├── data # contains sample data for tests (to be moved to tests)
-│   ├── CFHTLens_sample.P.npy
-│   └── test.hdf5
 ├── metrics # this module contains functions to calculate metrics on qp objects
 │   ├── __init__.py
 │   ├── array_metrics.py
@@ -55,11 +52,11 @@ qp
 │   │   └── packing_utils.py
 │   ├── quant # quantile parameterization
 │   │   ├── __init__.py
-│   │   ├── abstract_pdf_constructor.py
-│   │   ├── cdf_spline_derivative.py
-│   │   ├── dual_spline_average.py
-│   │   ├── piecewise_constant.py
-│   │   ├── piecewise_linear.py
+│   │   ├── abstract_pdf_constructor.py # base constructor class
+│   │   ├── cdf_spline_derivative.py # constructor class
+│   │   ├── dual_spline_average.py # constructor class
+│   │   ├── piecewise_constant.py # constructor class
+│   │   ├── piecewise_linear.py # default constructor class
 │   │   ├── quant_pdf.py
 │   │   └── quant_utils.py
 │   ├── sparse_interp # sparse parameterization
@@ -74,11 +71,10 @@ qp
 ├── plotting.py # creates plots
 ├── utils # utility functions used throughout qp
 │   ├── __init__.py
-│   ├── array_utils.py # performing array operations
+│   ├── array_funcs.py # performing array operations
 │   ├── conversion_funcs.py # utilities for converting between parameterizations and unused functions
-│   ├── dict_utils.py # performing dictionary operations
+│   ├── dict_funcs.py # performing dictionary operations
 │   ├── interp_funcs.py # interpolation functions
-│   └── test_data.py # generates test data (to be moved)
 └── version.py
 
 ```
