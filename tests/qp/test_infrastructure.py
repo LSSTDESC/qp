@@ -6,7 +6,7 @@ import os
 import unittest
 
 import qp
-from tests.qp import test_data
+from qp import test_data
 from .test_funcs import build_ensemble
 
 

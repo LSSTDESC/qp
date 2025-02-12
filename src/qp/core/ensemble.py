@@ -3,7 +3,8 @@
 import os
 
 import numpy as np
-from tables_io import io
+import tables_io
+from tables_io import hdf5
 
 from ..utils.dict_funcs import (
     check_array_shapes,
@@ -353,11 +354,11 @@ class Ensemble:
         This will actually write two files, one for the metadata and one for the object data
 
         This uses `tables_io` to write the data, so any file suffix that works for
-        `tables_io` will work here.
+        `tables_io` will work here.g
         """
         basename, ext = os.path.splitext(filename)
         tables = self.build_tables()
-        io.write(tables, basename, ext[1:])
+        tables_io.write(tables, basename, ext[1:])
 
     def pdf(self, x):
         """
@@ -656,7 +657,7 @@ class Ensemble:
             Optional MPI communicator to allow parallel writing
         """
         kwds = self._get_allocation_kwds(npdf)
-        group, fout = io.initializeHdf5Write(filename, comm=comm, **kwds)
+        group, fout = hdf5.initialize_HDF5_write(filename, comm=comm, **kwds)
         return group, fout
 
     def writeHdf5Chunk(self, fname, start, end):
@@ -673,7 +674,7 @@ class Ensemble:
         """
         odict = self.build_tables().copy()
         odict.pop("meta")
-        io.writeDictToHdf5Chunk(fname, odict, start, end)
+        hdf5.write_dict_to_HDF5_chunk(fname, odict, start, end)
 
     def finalizeHdf5Write(self, filename):
         """write ensemble metadata to the output file
@@ -684,7 +685,7 @@ class Ensemble:
             file or group
         """
         mdata = self.metadata()
-        io.finalizeHdf5Write(filename, "meta", **mdata)
+        hdf5.finalize_HDF5_write(filename, "meta", **mdata)
 
     # def stack(self, loc, using, vb=True):
     #     """

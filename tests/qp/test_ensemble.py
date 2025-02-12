@@ -9,7 +9,7 @@ import unittest
 import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal
 import qp
-from tests.qp import test_data
+from qp import test_data
 from qp.plotting import init_matplotlib
 from .test_funcs import assert_all_close, assert_all_small, build_ensemble
 

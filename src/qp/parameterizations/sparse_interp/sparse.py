@@ -9,9 +9,9 @@ from scipy import integrate as sciint
 from scipy import interpolate as sciinterp
 from . import sparse_rep
 from ...core.factory import add_class
-from ..interp.interp_pdf import interp_gen
+from ..interp.interp import interp_gen
 from .sparse_utils import extract_sparse_from_xy
-from .....tests.qp.test_data import TEST_XVALS, NPDF
+from ...test_data import TEST_XVALS, NPDF
 
 
 class sparse_gen(interp_gen):

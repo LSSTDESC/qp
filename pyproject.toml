@@ -19,14 +19,14 @@ dynamic = ["version"]
 dependencies = [
     "numpy",
     "scipy",
-    "tables-io",
+    "tables-io@git+https://github.com/sidratresearch/tables_io@dev-working",
     "deprecated",
 ]
 
 # On a mac, install optional dependencies with `pip install '.[dev]'` (include the single quotes)
 [project.optional-dependencies]
 dev = [
-    "tables-io[full]",
+    "tables-io@git+https://github.com/sidratresearch/tables_io@dev-working",
     "matplotlib",
     "scikit-learn",
     "pytest",

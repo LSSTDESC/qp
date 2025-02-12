@@ -7,7 +7,7 @@ import unittest
 import numpy as np
 
 import qp
-from tests.qp import test_data
+from qp import test_data
 from tests.qp import test_funcs
 
 

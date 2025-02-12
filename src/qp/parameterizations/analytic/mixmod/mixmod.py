@@ -7,8 +7,8 @@ from scipy.stats import rv_continuous
 
 from .mixmod_utils import extract_mixmod_fit_samples
 from ....core.factory import add_class
-from ...base_parameterization import Pdf_rows_gen
-from ......tests.qp.test_data import MEAN_MIXMOD, STD_MIXMOD, TEST_XVALS, WEIGHT_MIXMOD
+from ...base import Pdf_rows_gen
+from ....test_data import MEAN_MIXMOD, STD_MIXMOD, TEST_XVALS, WEIGHT_MIXMOD
 from ....utils.array_funcs import (
     get_eval_case,
     reshape_to_pdf_size,

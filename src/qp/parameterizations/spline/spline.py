@@ -9,9 +9,9 @@ from scipy.stats import rv_continuous
 
 from .spline_utils import extract_samples, extract_xy_vals, build_kdes, evaluate_kdes
 from ...core.factory import add_class
-from ..base_parameterization import Pdf_rows_gen
+from ..base import Pdf_rows_gen
 from ...plotting import get_axes_and_xlims, plot_pdf_on_axes
-from .....tests.qp.test_data import SAMPLES, TEST_XVALS, XARRAY, YARRAY
+from ...test_data import SAMPLES, TEST_XVALS, XARRAY, YARRAY
 from ...utils.array_funcs import reshape_to_pdf_size
 
 

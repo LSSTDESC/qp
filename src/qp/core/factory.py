@@ -4,20 +4,22 @@ import sys
 import os
 
 from collections import OrderedDict
-from typing_extensions import Mapping, Union, Optional, Tuple, Iterator
+from collections.abc import Iterator
+from typing_extensions import Mapping, Union, Optional, Tuple
 
 import numpy as np
 
 from scipy import stats as sps
 
-from tables_io import io
+import tables_io
+from tables_io import hdf5
 from tables_io.types import NUMPY_DICT
 
 from .ensemble import Ensemble
 
 from ..utils.dict_funcs import compare_dicts, concatenate_dicts
 
-from ..parameterizations.base_parameterization import Pdf_gen_wrap
+from ..parameterizations.base import Pdf_gen_wrap
 
 
 class Factory(OrderedDict):
@@ -102,7 +104,7 @@ class Factory(OrderedDict):
         setattr(self, the_class.name, the_class.create)
 
     def create(
-        self, class_name: str, data: Mapping, method: Optional[str] = None
+        self, class_name, data: Mapping, method: Optional[str] = None
     ) -> Ensemble:
         """Make an ensemble of a particular type of distribution
 
@@ -120,6 +122,11 @@ class Factory(OrderedDict):
         ens : `qp.Ensemble`
             The newly created ensemble
         """
+
+        # handle if class creation function is given instead of string
+        if not isinstance(class_name, str):
+            class_name = class_name.__name__
+
         if class_name not in self:  # pragma: no cover
             raise KeyError("Class named %s is not in factory" % class_name)
         the_class = self[class_name]
@@ -163,7 +170,7 @@ class Factory(OrderedDict):
         ----------
         filename : `str`
         """
-        tables = io.read(filename, NUMPY_DICT, keys=["meta"])
+        tables = tables_io.read(filename, NUMPY_DICT, keys=["meta"])
         return tables["meta"]
 
     def is_qp_file(self, filename: str) -> bool:
@@ -181,7 +188,7 @@ class Factory(OrderedDict):
         """
         try:
             # If this isn't a table-like file with a 'meta' table this will throw an exception
-            tables = io.readNative(filename, keys=["meta"])
+            tables = tables_io.read_native(filename, keys=["meta"])
             # If the 'meta' tables doesn't have 'pdf_name' or it is empty this will throw an exception or fail
             return len(tables["meta"]["pdf_name"]) > 0
         except Exception as msg:
@@ -209,7 +216,7 @@ class Factory(OrderedDict):
             keys = None
             allow_missing_keys = False
 
-        tables = io.read(
+        tables = tables_io.read(
             filename, NUMPY_DICT, keys=keys, allow_missing_keys=allow_missing_keys
         )  # pylint: disable=no-member
 
@@ -226,8 +233,8 @@ class Factory(OrderedDict):
         -------
         nrows : `int`
         """
-        f, _ = io.readHdf5Group(filename, "data")
-        num_rows = io.getGroupInputDataLength(f)
+        f, _ = hdf5.read_HDF5_group(filename, "data")
+        num_rows = hdf5.get_group_input_data_length(f)
         return num_rows
 
     def iterator(
@@ -249,7 +256,7 @@ class Factory(OrderedDict):
         if extension not in [".hdf5"]:  # pragma: no cover
             raise TypeError("Can only use qp.iterator on hdf5 files")
 
-        metadata = io.readHdf5ToDict(filename, "meta")
+        metadata = hdf5.read_HDF5_to_dict(filename, "meta")
         pdf_name = metadata.pop("pdf_name")[0].decode()
         _pdf_version = metadata.pop("pdf_version")[0]
         if pdf_name not in self:  # pragma: no cover
@@ -258,21 +265,21 @@ class Factory(OrderedDict):
         # reader_convert = the_class.reader_method(pdf_version)
         ctor_func = the_class.creation_method(None)
 
-        f, infp = io.readHdf5Group(filename, "data")
+        f, infp = hdf5.read_HDF5_group(filename, "data")
         try:
-            ancil_f, ancil_infp = io.readHdf5Group(filename, "ancil")
+            ancil_f, ancil_infp = hdf5.read_HDF5_group(filename, "ancil")
         except KeyError:  # pragma: no cover
             ancil_f, ancil_infp = (None, None)
-        num_rows = io.getGroupInputDataLength(f)
-        ranges = io.data_ranges_by_rank(num_rows, chunk_size, parallel_size, rank)
+        num_rows = hdf5.get_group_input_data_length(f)
+        ranges = hdf5.data_ranges_by_rank(num_rows, chunk_size, parallel_size, rank)
         data = self._build_data_dict(metadata, {})
         ancil_data = OrderedDict()
         for start, end in ranges:
             for key, val in f.items():
-                data[key] = io.readHdf5DatasetToArray(val, start, end)
+                data[key] = hdf5.read_HDF5_dataset_to_array(val, start, end)
             if ancil_f is not None:
                 for key, val in ancil_f.items():
-                    ancil_data[key] = io.readHdf5DatasetToArray(val, start, end)
+                    ancil_data[key] = hdf5.read_HDF5_dataset_to_array(val, start, end)
             yield start, end, Ensemble(ctor_func, data=data, ancil=ancil_data)
         infp.close()
         if ancil_infp is not None:
@@ -367,7 +374,7 @@ class Factory(OrderedDict):
         return Ensemble(gen_func, data, ancil)
 
     @staticmethod
-    def write_dict(filename: str, ensemble_dict: Mapping[Ensemble], **kwargs):
+    def write_dict(filename: str, ensemble_dict: Mapping[str, Ensemble], **kwargs):
         output_tables = {}
         for key, val in ensemble_dict.items():
             # check that val is a qp.Ensemble
@@ -377,7 +384,7 @@ class Factory(OrderedDict):
                 )  # pragma: no cover
 
             output_tables[key] = val.build_tables()
-        io.writeDictsToHdf5(output_tables, filename, **kwargs)
+        hdf5.write_dicts_to_HDF5(output_tables, filename, **kwargs)
 
     @staticmethod
     def read_dict(filename: str):
@@ -387,21 +394,21 @@ class Factory(OrderedDict):
 
         # retrieve all the top level groups. Assume each top level group
         # corresponds to an ensemble.
-        top_level_groups = io.readHdf5GroupNames(filename)
+        top_level_groups = hdf5.read_HDF5_group_names(filename)
 
         # for each top level group, convert the subgroups (data, meta, ancil) into
         # a dictionary of dictionaries and pass the result to `from_tables`.
         for top_level_group in top_level_groups:
             tables = {}
-            keys = io.readHdf5GroupNames(filename, top_level_group)
+            keys = hdf5.read_HDF5_group_names(filename, top_level_group)
             for key_name in keys:
                 # retrieve the hdf5 group object
-                group_object, _ = io.readHdf5Group(
+                group_object, _ = hdf5.read_HDF5_group(
                     filename, f"{top_level_group}/{key_name}"
                 )
 
                 # use the hdf5 group object to gather data into a dictionary
-                tables[key_name] = io.readHdf5GroupToDict(group_object)
+                tables[key_name] = hdf5.read_HDF5_group_to_dict(group_object)
 
             results[top_level_group] = from_tables(tables)
 

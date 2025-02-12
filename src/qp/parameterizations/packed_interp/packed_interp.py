@@ -6,9 +6,9 @@ from scipy.stats import rv_continuous
 
 from ...core.factory import add_class
 from .packing_utils import PackingType, pack_array, unpack_array
-from ..base_parameterization import Pdf_rows_gen
+from ..base import Pdf_rows_gen
 from ...plotting import get_axes_and_xlims, plot_pdf_on_axes
-from .....tests.qp.test_data import TEST_XVALS, XBINS, YARRAY
+from ...test_data import TEST_XVALS, XBINS, YARRAY
 from ...utils.array_funcs import reshape_to_pdf_size
 from ...utils.interp_funcs import interpolate_multi_x_y, interpolate_x_multi_y
 

@@ -7,7 +7,7 @@ import numpy as np
 
 from qp.core.ensemble import Ensemble
 from qp.plotting import plot_native, plot, plot_pdf_samples_on_axes
-from tests.qp.test_data import NPDF
+from qp.test_data import NPDF
 from qp.core.factory import read, read_metadata, convert
 
 
