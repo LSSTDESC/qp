@@ -18,18 +18,17 @@ from ....utils.interpolation import interpolate_multi_x_y
 from ....core.ensemble import Ensemble
 
 
-def mixmod(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+def mixmod_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
     """Creates an Ensemble of distributions parameterized as Gaussian Mixture models.
 
     Input data format:
-    data = {'means': value, 'stds': value, 'weights': value}, where
-    means:  (npdf, ncomp) means of the Gaussians
-    stds:  (npdf, ncomp) standard deviations of the Gaussians
-    weights: (npdf, ncomp) weights for the Gaussians
+    data = {`means`: values, `stds`: values, `weights`: values}, where
+    The shape of all the values will be (`npdf`, `ncomp`), where:
 
-    npdf = the number of distributions
-    ncomp = the number of Gaussians in the mixture model
+    `npdf` = the number of distributions
+    `ncomp` = the number of Gaussians in the mixture model
 
+    Weights should sum up to one. If not, the weights are interpreted as relative weights.
 
     Parameters
     ----------
@@ -42,9 +41,23 @@ def mixmod(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
     -------
     Ensemble
         An Ensemble object containing all of the given distributions.
+
+    Example
+    -------
+
+    To create an Ensemble of two distributions with associated ids:
+
+    >>> import qp
+    >>> data = {'means': np.array([[0.35, 0.55],[0.23,0.81]]), 'stds': np.array([[0.2, 0.25],[0.21, 0.19]]), 'weights': np.array([[0.4, 0.6],[0.3,0.7]])}
+    >>> ancil = {'ids': [200, 205]}
+    >>> ens = qp.mixmod_ensemble(data, ancil)
+    >>> ens.metadata()
+    {'pdf_name': array([b'mixmod'], dtype='|S6'), 'pdf_version': array([0])}
+
+
     """
 
-    return Ensemble(mixmod_gen, data, ancil)
+    return Ensemble(mixmod, data, ancil)
 
 
 class mixmod_gen(Pdf_rows_gen):

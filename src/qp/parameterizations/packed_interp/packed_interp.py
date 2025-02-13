@@ -15,11 +15,12 @@ from ...utils.array import reshape_to_pdf_size
 from ...utils.interpolation import interpolate_multi_x_y, interpolate_x_multi_y
 
 
-def packed_interp(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+# TODO: fix the example and docstrings for this function once I know how
+def packed_interp_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
     """Creates an Ensemble of distributions parameterized as interpolation that are stored as packed integers.
 
     Input data format:
-    data = {'xvals': values, 'ypacked': values, 'ymax': values}
+    data = {`xvals`: values, `ypacked`: values, `ymax`: values}
 
     xvals : array_like
           The x-values used to do the interpolation
@@ -39,9 +40,26 @@ def packed_interp(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
     -------
     Ensemble
         An Ensemble object containing all of the given distributions.
+
+    Example
+    -------
+
+    To create an Ensemble of two distributions with associated ids:
+
+    >>> import qp
+    >>> import numpy as np
+    >>> data = {'xvals': np.array([0,0.5,1,1.5,2]), 'yvals': np.array([[0.01, 0.2,0.3,0.2,0.01],[0.09,0.25,0.2,0.1,0.01]])}
+    >>> ancil = {'ids':[5,8]}
+    >>> ens = qp.interp_ensemble(data,ancil)
+    >>> ens.metadata()
+    {'pdf_name': array([b'interp'], dtype='|S6'),
+     'pdf_version': array([0]),
+     'xvals': array([[0. , 0.5, 1. , 1.5, 2. ]])}
+
+
     """
 
-    return Ensemble(packed_interp_gen, data, ancil)
+    return Ensemble(packed_interp, data, ancil)
 
 
 def extract_and_pack_vals_at_x(in_dist, **kwargs):

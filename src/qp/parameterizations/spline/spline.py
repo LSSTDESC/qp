@@ -17,16 +17,13 @@ from ...test_data import SAMPLES, TEST_XVALS, XARRAY, YARRAY
 from ...utils.array import reshape_to_pdf_size
 
 
-def spline(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
-    """Creates an Ensemble of distributions parameterized as interpolations, constructed from a sparse representation.
+def spline_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+    """Creates an Ensemble of distributions parameterized as via a set of splines.
 
     Input data format:
-    data = {'splx': values, 'sply': values, 'spln': values}
-    splx:  (npdf, n) spline-knot x-values
-
-    sply:  (npdf, n) spline-knot y-values
-
-    spln:  (npdf) spline-knot order parameters
+    data = {`splx`: values, `sply`: values, `spln`: values}.
+    The shape of the arrays `splx` and `sply` should be (npdfs, n), where npdfs is the number of distributions and n is the number of values per distribution.
+    The shape of `spln` (the order parameters) is just npdfs.
 
 
     Parameters
@@ -40,9 +37,26 @@ def spline(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
     -------
     Ensemble
         An Ensemble object containing all of the given distributions.
+
+    Example
+    -------
+
+    To create an Ensemble with two distributions and their associated ids:
+
+    >>> import qp
+    >>> import numpy as np
+    >>> data = {'splx': np.array([[-0.3,-0.1,0.1,0.3,0.5],[-0.3,-0.1,0.1,0.3,0.5]]),'sply':np.array([[2.89003419e-07, 7.35852472e+00,
+    ...          3.74859497e-01,  1.65796839e+00,  0.00000000e+00],[3.0e-2,1.0e-1,9.2e-1,2.1e-1,4.2e-3]]), 'spln': np.array([3,2])}
+    >>> ancil = {'ids':[12,14]}
+    >>> ens = qp.spline_ensemble(data,ancil)
+    >>> ens.metadata()
+    {'pdf_name': array([b'spline'], dtype='|S6'), 'pdf_version': array([0])}
+
+
+
     """
 
-    return Ensemble(spline_gen, data, ancil)
+    return Ensemble(spline, data, ancil)
 
 
 def normalize_spline(xvals, yvals, limits, **kwargs):

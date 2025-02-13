@@ -105,6 +105,7 @@ class Factory(OrderedDict):
         setattr(self, "%s_gen" % the_class.name, the_class)
         setattr(self, the_class.name, the_class.create)
 
+        # set a function to create an ensemble with this paramterization in the analytic module
         def create_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
             """Creates an Ensemble of distribution(s) in the given parameterization.
 
@@ -132,8 +133,6 @@ class Factory(OrderedDict):
             """
 
             return Ensemble(the_class.create, data, ancil)
-
-        create_ensemble.__doc__ = create_ensemble.__doc__ + the_class.__doc__
 
         setattr(
             analytic,

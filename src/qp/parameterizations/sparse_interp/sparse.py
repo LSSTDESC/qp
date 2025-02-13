@@ -17,7 +17,8 @@ from .sparse_utils import extract_sparse_from_xy
 from ...test_data import TEST_XVALS, NPDF
 
 
-def sparse_interp(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+# TODO: fill out docstring once I know how
+def sparse_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
     """Creates an Ensemble of distributions parameterized as interpolations, constructed from a sparse representation.
 
     Input data format:
@@ -36,7 +37,7 @@ def sparse_interp(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
         An Ensemble object containing all of the given distributions.
     """
 
-    return Ensemble(sparse_gen, data, ancil)
+    return Ensemble(sparse, data, ancil)
 
 
 class sparse_gen(interp_gen):
