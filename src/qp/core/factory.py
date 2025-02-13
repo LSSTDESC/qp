@@ -20,6 +20,7 @@ from .ensemble import Ensemble
 from ..utils.dictionary import compare_dicts, concatenate_dicts
 
 from ..parameterizations.base import Pdf_gen_wrap
+from ..parameterizations import analytic
 
 
 class Factory(OrderedDict):
@@ -65,9 +66,10 @@ class Factory(OrderedDict):
             version=0,
             freeze=Pdf_gen_wrap._my_freeze,
             _other_init=scipy_class.__init__,
+            __doc__=scipy_class.__doc__,
         )
         the_class = type(class_name, (Pdf_gen_wrap, scipy_class), override_dict)
-        self.add_class(the_class)
+        self.add_scipy_class(the_class)
 
     def _load_scipy_classes(self):
         """Build qp classes from all the scipy classes"""
@@ -76,6 +78,68 @@ class Factory(OrderedDict):
             attr = getattr(sps, name)
             if isinstance(attr, sps.rv_continuous):
                 self._make_scipy_wrapped_class(name, type(attr))
+
+    def add_scipy_class(self, the_class):
+        """Add a class to the factory
+
+        Parameters
+        ----------
+        the_class : class
+            The class we are adding, must inherit from Pdf_Gen
+        """
+        # if not isinstance(the_class, Pdf_gen): #pragma: no cover
+        #    raise TypeError("Can only add sub-classes of Pdf_Gen to factory")
+        if not hasattr(the_class, "name"):  # pragma: no cover
+            raise AttributeError(
+                "Can not add class %s to factory because it doesn't have a name attribute"
+                % the_class
+            )
+        if the_class.name in self:  # pragma: no cover
+            raise KeyError(
+                "Class named %s is already in factory, point to %s"
+                % (the_class.name, self[the_class.name])
+            )
+        the_class.add_method_dicts()
+        the_class.add_mappings()
+        self[the_class.name] = the_class
+        setattr(self, "%s_gen" % the_class.name, the_class)
+        setattr(self, the_class.name, the_class.create)
+
+        def create_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+            """Creates an Ensemble of distribution(s) in the given parameterization.
+
+            Input data format:
+            data = {'arg1': values, 'arg2': values ...} where `arg1`, `arg2`... are the arguments for the parameterization.
+            The length of the values should be the number of distributions being created in the Ensemble, with a minimum value of 1.
+
+
+            Parameters
+            ----------
+            data : Mapping
+                The dictionary of data for the distributions.
+            ancil : Optional[Mapping], optional
+                A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
+
+            Returns
+            -------
+            Ensemble
+                An Ensemble object containing all of the given distributions.
+
+            Example
+            -------
+
+            example using norm here
+            """
+
+            return Ensemble(the_class.create, data, ancil)
+
+        create_ensemble.__doc__ = create_ensemble.__doc__ + the_class.__doc__
+
+        setattr(
+            analytic,
+            the_class.name,
+            create_ensemble,
+        )
 
     def add_class(self, the_class):
         """Add a class to the factory

@@ -11,7 +11,7 @@ from .parameterizations.interp.interp import *
 from .parameterizations.quant.quant import *
 from .parameterizations.analytic.mixmod.mixmod import mixmod_gen
 from .parameterizations.sparse_interp.sparse import *
-from .parameterizations.analytic.scipy_dists_import import *
+from .parameterizations.analytic.scipy_testdata import *
 from .parameterizations.packed_interp.packed_interp import *
 from .core.ensemble import Ensemble
 from .core.factory import (

@@ -123,7 +123,7 @@ class Pdf_gen:
     @classmethod
     def create_gen(cls, **kwds):
         """Create and return a `scipy.stats.rv_continuous` object using the
-        keyword arguemntets provided"""
+        keyword arguments provided"""
         kwds_copy = kwds.copy()
         name = kwds_copy.pop("name", "dist")
         return (cls(name=name), kwds_copy)
@@ -131,7 +131,7 @@ class Pdf_gen:
     @classmethod
     def create(cls, **kwds):
         """Create and return a `scipy.stats.rv_frozen` object using the
-        keyword arguemntets provided"""
+        keyword arguments provided"""
         # pylint: disable=not-callable
         obj, kwds_freeze = cls.create_gen(**kwds)
         return obj(**kwds_freeze)
@@ -350,7 +350,7 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
     @classmethod
     def create_gen(cls, **kwds):
         """Create and return a `scipy.stats.rv_continuous` object using the
-        keyword arguemntets provided"""
+        keyword arguments provided"""
         return (cls(**kwds), {})
 
     def _scipy_version_warning(self):

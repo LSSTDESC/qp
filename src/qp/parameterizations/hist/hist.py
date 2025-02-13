@@ -40,6 +40,13 @@ def hist(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
     -------
     Ensemble
         An Ensemble object containing all of the given distributions.
+
+    Example
+    -------
+
+    >>> import qp
+
+
     """
 
     return Ensemble(hist_gen, data, ancil)
