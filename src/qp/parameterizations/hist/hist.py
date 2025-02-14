@@ -183,7 +183,9 @@ class hist_gen(Pdf_rows_gen):
         cls._add_extraction_method(extract_hist_samples, "samples")
 
     @classmethod
-    def create_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+    def create_ensemble(
+        self, data: Mapping, ancil: Optional[Mapping] = None
+    ) -> Ensemble:
         """Creates an Ensemble of distributions parameterized as histograms.
 
         Input data format:
@@ -211,7 +213,7 @@ class hist_gen(Pdf_rows_gen):
         >>> import numpy as np
         >>> data = {'bins': [0,1,2,3,4,5], 'pdfs': np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])}
         >>> ancil = {'ids': [105, 108]}
-        >>> ens = qp.hist_ensemble(data,ancil)
+        >>> ens = qp.hist.create_ensemble(data,ancil)
         >>> ens.metadata()
         {'pdf_name': array([b'hist'], dtype='|S4'),
         'pdf_version': array([0]),
@@ -219,7 +221,7 @@ class hist_gen(Pdf_rows_gen):
 
         """
 
-        return Ensemble(hist, data, ancil)
+        return Ensemble(self, data, ancil)
 
     @classmethod
     def make_test_data(cls):

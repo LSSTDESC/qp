@@ -208,7 +208,7 @@ class interp_gen(Pdf_rows_gen):
         cls._add_extraction_method(extract_vals_at_x, None)
 
     @classmethod
-    def create_ensemble(data: Mapping, ancil: Optional[Mapping]) -> Ensemble:
+    def create_ensemble(self, data: Mapping, ancil: Optional[Mapping]) -> Ensemble:
         """Creates an Ensemble of distributions parameterized as interpolations.
 
         Input data:
@@ -237,7 +237,7 @@ class interp_gen(Pdf_rows_gen):
         >>> import numpy as np
         >>> data = {'xvals': np.array([0,0.5,1,1.5,2]), 'yvals': np.array([[0.01, 0.2,0.3,0.2,0.01],[0.09,0.25,0.2,0.1,0.01]])}
         >>> ancil = {'ids':[5,8]}
-        >>> ens = qp.interp_ensemble(data,ancil)
+        >>> ens = qp.interp.create_ensemble(data,ancil)
         >>> ens.metadata()
         {'pdf_name': array([b'interp'], dtype='|S6'),
         'pdf_version': array([0]),
@@ -245,7 +245,7 @@ class interp_gen(Pdf_rows_gen):
 
         """
 
-        return Ensemble(interp, data, ancil)
+        return Ensemble(self, data, ancil)
 
     @classmethod
     def make_test_data(cls):
@@ -260,7 +260,7 @@ class interp_gen(Pdf_rows_gen):
         )
 
 
-interp = interp_gen.create
+interp = interp_gen
 
 
 class interp_irregular_gen(Pdf_rows_gen):
@@ -426,7 +426,7 @@ class interp_irregular_gen(Pdf_rows_gen):
         cls._add_extraction_method(extract_xy_sparse, None)
 
     @classmethod
-    def create_ensemble(data: Mapping, ancil: Optional[Mapping]) -> Ensemble:
+    def create_ensemble(self, data: Mapping, ancil: Optional[Mapping]) -> Ensemble:
         """Creates an Ensemble of distributions parameterized as interpolations.
 
         Input data:
@@ -457,14 +457,14 @@ class interp_irregular_gen(Pdf_rows_gen):
         >>> import numpy as np
         >>> data = {'xvals': np.array([[0,0.5,1,1.5,2],[0.5,0.75,1,1.25,1.5]]), 'yvals': np.array([[0.01, 0.2,0.3,0.2,0.01],[0.09,0.25,0.2,0.1,0.01]])}
         >>> ancil = {'ids':[5,8]}
-        >>> ens = qp.interp_irregular_ensemble(data,ancil)
+        >>> ens = qp.interp_irregular.create_ensemble(data,ancil)
         >>> ens.metadata()
         {'pdf_name': array([b'interp_irregular'], dtype='|S16'),
         'pdf_version': array([0])}
 
         """
 
-        return Ensemble(interp_irregular, data, ancil)
+        return Ensemble(self, data, ancil)
 
     @classmethod
     def make_test_data(cls):
@@ -479,7 +479,6 @@ class interp_irregular_gen(Pdf_rows_gen):
         )
 
 
-interp = interp_gen
 interp_irregular = interp_irregular_gen
 add_class(interp_gen)
 add_class(interp_irregular_gen)

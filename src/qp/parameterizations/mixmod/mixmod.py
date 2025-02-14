@@ -183,7 +183,9 @@ class mixmod_gen(Pdf_rows_gen):
         cls._add_extraction_method(extract_mixmod_fit_samples, None)
 
     @classmethod
-    def create_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+    def create_ensemble(
+        self, data: Mapping, ancil: Optional[Mapping] = None
+    ) -> Ensemble:
         """Creates an Ensemble of distributions parameterized as Gaussian Mixture models.
 
         Input data format:
@@ -215,14 +217,14 @@ class mixmod_gen(Pdf_rows_gen):
         >>> import qp
         >>> data = {'means': np.array([[0.35, 0.55],[0.23,0.81]]), 'stds': np.array([[0.2, 0.25],[0.21, 0.19]]), 'weights': np.array([[0.4, 0.6],[0.3,0.7]])}
         >>> ancil = {'ids': [200, 205]}
-        >>> ens = qp.mixmod_ensemble(data, ancil)
+        >>> ens = qp.mixmod.create_ensemble(data, ancil)
         >>> ens.metadata()
         {'pdf_name': array([b'mixmod'], dtype='|S6'), 'pdf_version': array([0])}
 
 
         """
 
-        return Ensemble(mixmod, data, ancil)
+        return Ensemble(self, data, ancil)
 
     @classmethod
     def make_test_data(cls):

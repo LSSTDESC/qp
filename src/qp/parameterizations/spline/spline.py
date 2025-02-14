@@ -261,7 +261,9 @@ class spline_gen(Pdf_rows_gen):
         cls._add_extraction_method(extract_samples, "samples")
 
     @classmethod
-    def create_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+    def create_ensemble(
+        self, data: Mapping, ancil: Optional[Mapping] = None
+    ) -> Ensemble:
         """Creates an Ensemble of distributions parameterized as via a set of splines.
 
         Input data format:
@@ -295,13 +297,13 @@ class spline_gen(Pdf_rows_gen):
         ...         'sply':np.array([[2.89003419e-07, 7.35852472e+00, 3.74859497e-01,  1.65796839e+00,  0.00000000e+00],
         ...         [3.0e-2,1.0e-1,9.2e-1,2.1e-1,4.2e-3]]), 'spln': np.array([3,2])}
         >>> ancil = {'ids':[12,14]}
-        >>> ens = qp.spline_ensemble(data,ancil)
+        >>> ens = qp.spline.create_ensemble(data,ancil)
         >>> ens.metadata()
         {'pdf_name': array([b'spline'], dtype='|S6'), 'pdf_version': array([0])}
 
         """
 
-        return Ensemble(spline, data, ancil)
+        return Ensemble(self, data, ancil)
 
     @classmethod
     def make_test_data(cls):

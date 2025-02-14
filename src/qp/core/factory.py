@@ -98,7 +98,7 @@ class Factory(OrderedDict):
             >>> import qp
             >>> data = {'loc': np.array([[0.45],[0.55]]) , 'scale': np.array([[0.2],[0.15]])}
             >>> ancil = {'ids': [20,25]}
-            >>> ens = qp.analytic.norm(data,ancil)
+            >>> ens = qp.stats.norm.create_ensemble(data,ancil)
             >>> ens.metadata()
             {'pdf_name': array([b'norm'], dtype='|S4'), 'pdf_version': array([0])}
 
@@ -111,7 +111,6 @@ class Factory(OrderedDict):
             "create_ensemble",
             create_ensemble,
         )
-        print(f"added method to {the_class.name}")
 
         self.add_scipy_class(the_class)
 
@@ -149,7 +148,6 @@ class Factory(OrderedDict):
 
         setattr(self, "%s_gen" % the_class.name, the_class)
         setattr(self, the_class.name, the_class)
-        print(f"added {the_class.name}")
 
     def add_class(self, the_class):
         """Add a class to the factory

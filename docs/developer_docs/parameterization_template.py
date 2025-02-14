@@ -1,45 +1,12 @@
 """This is a template that developers can copy for creating new parameterizations"""
 
+from scipy.stats import rv_continuous
 from typing import Mapping, Optional
+
+# these imports will work when this file is placed in a folder in the parameterizations folder
+from ..base import Pdf_rows_gen
 from ...core.factory import add_class
 from ...core.ensemble import Ensemble
-
-
-def hist_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
-    """Creates an Ensemble of distributions parameterized as [parameterization type].
-
-    Input data format:
-    data = {'arg1': array_like, 'arg2': array_like}, where args are the necessary inputs for the parameterization.
-
-
-    Parameters
-    ----------
-    data : Mapping
-        The dictionary of data for the distributions.
-    ancil : Optional[Mapping], optional
-        A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
-
-    Returns
-    -------
-    Ensemble
-        An Ensemble object containing all of the given distributions.
-
-    Example
-    -------
-
-    To create an Ensemble with two distributions and an 'ancil' table that provides ids for the distributions, you can use the following code:
-
-    >>> import qp
-    >>> import numpy as np
-    >>> data = {test data}
-    >>> ancil = {'ids': test ids }
-    >>> ens = qp.[parameterization]_ensemble(data,ancil)
-    >>> ens.metadata()
-    [output here]
-
-    """
-
-    return Ensemble(hist, data, ancil)
 
 
 class parameterization_gen(Pdf_rows_gen):
@@ -98,22 +65,23 @@ class parameterization_gen(Pdf_rows_gen):
         self._addobjdata("arg2", self._arg2)
 
     @property
-    def arg1(self):
+    def arg1(self):  # property that allows access to the 'metadata' field
         """Return arg1"""
         return self._arg1
 
     @property
-    def arg2(self):
+    def arg2(self):  # property that allows access to the 'data' field
         """Return arg2"""
         return self._arg2
 
     def _pdf(self, x, row):
+        """Function to evaluate the pdf"""
         # pylint: disable=arguments-differ
-        return function_to_calculate_pdf.ravel()
+        return function_to_evaluate_pdf.ravel()
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
-        return function_to_calculate_cdf.ravel()
+        return function_to_evaluate_cdf.ravel()
 
     def _updated_ctor_param(self):
         """
@@ -147,6 +115,43 @@ class parameterization_gen(Pdf_rows_gen):
             raise ValueError("required argument 'arg1' not included in kwargs")
         narg1 = len(kwargs["arg1"].flatten())
         return dict(pdfs=((npdf, nbins - 1), "f4"))
+
+    @classmethod
+    def create_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+        """Creates an Ensemble of distributions parameterized as [parameterization type].
+
+        Input data format:
+        data = {'arg1': array_like, 'arg2': array_like}, where args are the necessary inputs for the parameterization.
+
+
+        Parameters
+        ----------
+        data : Mapping
+            The dictionary of data for the distributions.
+        ancil : Optional[Mapping], optional
+            A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
+
+        Returns
+        -------
+        Ensemble
+            An Ensemble object containing all of the given distributions.
+
+        Example
+        -------
+
+        To create an Ensemble with two distributions and an 'ancil' table that provides ids for the distributions, you can use the following code:
+
+        >>> import qp
+        >>> import numpy as np
+        >>> data = {test data}
+        >>> ancil = {'ids': test ids }
+        >>> ens = qp.[parameterization]_ensemble(data,ancil)
+        >>> ens.metadata()
+        [output here]
+
+        """
+
+        return Ensemble(parameterization, data, ancil)
 
     #
     # Optional methods
@@ -189,5 +194,5 @@ class parameterization_gen(Pdf_rows_gen):
         )
 
 
-hist = hist_gen.create
-add_class(hist_gen)
+parameterization = parameterization_gen.create
+add_class(parameterization_gen)

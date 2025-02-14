@@ -96,7 +96,9 @@ class sparse_gen(interp_gen):
 
     # TODO: fill out docstring once I know how
     @classmethod
-    def create_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+    def create_ensemble(
+        self, data: Mapping, ancil: Optional[Mapping] = None
+    ) -> Ensemble:
         """Creates an Ensemble of distributions parameterized as interpolations, constructed from a sparse representation.
 
         Input data format:
@@ -115,7 +117,7 @@ class sparse_gen(interp_gen):
             An Ensemble object containing all of the given distributions.
         """
 
-        return Ensemble(sparse, data, ancil)
+        return Ensemble(self, data, ancil)
 
     @staticmethod
     def build_test_data():
@@ -159,6 +161,6 @@ class sparse_gen(interp_gen):
         )
 
 
-sparse = sparse_gen.create
+sparse = sparse_gen
 
 add_class(sparse_gen)

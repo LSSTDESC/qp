@@ -273,7 +273,9 @@ class packed_interp_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attr
 
     # TODO: fix the example and docstrings for this function once I know how
     @classmethod
-    def create_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+    def create_ensemble(
+        self, data: Mapping, ancil: Optional[Mapping] = None
+    ) -> Ensemble:
         """Creates an Ensemble of distributions parameterized as interpolation that are stored as packed integers.
 
         Input data format:
@@ -307,7 +309,7 @@ class packed_interp_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attr
         >>> import numpy as np
         >>> data = {'xvals': np.array([0,0.5,1,1.5,2]), 'yvals': np.array([[0.01, 0.2,0.3,0.2,0.01],[0.09,0.25,0.2,0.1,0.01]])}
         >>> ancil = {'ids':[5,8]}
-        >>> ens = qp.interp_ensemble(data,ancil)
+        >>> ens = qp.interp.create_ensemble(data,ancil)
         >>> ens.metadata()
         {'pdf_name': array([b'interp'], dtype='|S6'),
         'pdf_version': array([0]),
@@ -316,7 +318,7 @@ class packed_interp_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attr
 
         """
 
-        return Ensemble(packed_interp, data, ancil)
+        return Ensemble(self, data, ancil)
 
     @classmethod
     def make_test_data(cls):

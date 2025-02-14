@@ -241,7 +241,9 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
         cls._add_extraction_method(extract_quantiles, None)
 
     @classmethod
-    def create_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+    def create_ensemble(
+        self, data: Mapping, ancil: Optional[Mapping] = None
+    ) -> Ensemble:
         """Creates an Ensemble of distributions parameterized as quantiles.
 
         Input data format:
@@ -274,7 +276,7 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
         >>> import numpy as np
         >>> data = {'quants': np.array([0.0001,0.25,0.5,0.75,0.9999]), 'locs': np.array([[0.0001,0.1,0.3,0.5,0.75],[0.01,0.05,0.15,0.3,0.5]]),'pdf_constructor_name':'dual_spline_average'}
         >>> ancil = {'ids':[11,18]}
-        >>> ens = qp.quant_ensemble(data,ancil)
+        >>> ens = qp.quant.create_ensemble(data,ancil)
         >>> ens.metadata()
         {'pdf_name': array([b'quant'], dtype='|S5'),
         'pdf_version': array([0]),
@@ -284,7 +286,7 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
         'check_input': array([ True])}
         """
 
-        return Ensemble(quant, data, ancil)
+        return Ensemble(self, data, ancil)
 
 
 quant = quant_gen
