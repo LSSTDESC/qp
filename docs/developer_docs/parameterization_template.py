@@ -1,5 +1,6 @@
 """This is a template that developers can copy for creating new parameterizations"""
 
+import numpy as np
 from scipy.stats import rv_continuous
 from typing import Mapping, Optional
 
@@ -29,9 +30,9 @@ class parameterization_gen(Pdf_rows_gen):
 
     _support_mask = rv_continuous._support_mask
 
-    def __init__(self, arg1, arg2, *args, **kwargs):
+    def __init__(self, arg1: np.array, arg2: np.array, *args, **kwargs):
         """
-        Create a new distribution using the given data
+        Create a new distribution using the given data. [details]
 
         Parameters
         ----------
@@ -51,16 +52,18 @@ class parameterization_gen(Pdf_rows_gen):
             # skip normalization
             pass
 
-        # some code to initialize the data
+        # initialize the data
         self._arg1 = arg1
         self._arg2 = arg2
 
-        # Get the number of distributions, or shape of the data
+        # Get the shape of the data
         # and pass it to the base constructor to set up other attributes
         kwargs["shape"] = arg2.shape[:-1]
         super().__init__(*args, **kwargs)
 
         # define data and metadata
+        # metadata is shared across all distributions
+        # data is quantities defined for each distribution
         self._addmetadata("arg1", self._arg1)
         self._addobjdata("arg2", self._arg2)
 
@@ -74,18 +77,24 @@ class parameterization_gen(Pdf_rows_gen):
         """Return arg2"""
         return self._arg2
 
+    # TODO: add expected return format?
     def _pdf(self, x, row):
-        """Function to evaluate the pdf"""
         # pylint: disable=arguments-differ
+
+        # put here functionality to evalulate the pdf
         return function_to_evaluate_pdf.ravel()
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
+
+        # put here functionality to evaluate the cdf
         return function_to_evaluate_cdf.ravel()
 
-    def _updated_ctor_param(self):
+    def _updated_ctor_param(self) -> Mapping:
         """
-        Set the arguments as additional constructor arguments.
+        Sets the arguments as additional constructor arguments. This function is needed
+        by scipy in order to copy distributions, and makes a dictionary of all parameters
+        necessary to construct the distribution.
         """
         dct = super()._updated_ctor_param()
         dct["arg1"] = self._arg1
@@ -95,29 +104,84 @@ class parameterization_gen(Pdf_rows_gen):
     @classmethod
     def add_mappings(cls):
         """
-        Add this classes mappings to the conversion dictionary
+        Adds this class' mappings to the conversion dictionary. Specifically, this should include at
+        least a creation method and a function to extract the necessary values from the distribution
+        to provide to the creation method.
+
         """
+        # ---------------------------------------------------------------------
+        # Add the creation function
+        # ---------------------------------------------------------------------
+        # This should always be cls.create, and with a key of `None` to make it
+        # the default.
         cls._add_creation_method(cls.create, None)
-        # since the key given is None, this will be the default conversion function
-        cls._add_extraction_method(func_to_convert_default, None)
+
+        # You may add additional creation methods here, but they need to have a
+        # specific key so they can be referred to when converting
+        #
+        # Uncomment the line below to add additional creation method:
+        # cls._add_creation_method(creation_method_function, "method_key")
+
+        # ---------------------------------------------------------------------
+        # Add the extraction function(s)
+        # ---------------------------------------------------------------------
+        #
+        # At least one extraction method is required
+        # The key for this extraction method should be `None`
+        # to make it the default. To add an extraction method,
+        # uncomment the line of code below and change `func_to_convert_default`
+        # to a useable function, either in parameterization_utils.py, or
+        # in utils.conversion.py
+
+        # Line to uncomment:
+        # cls._add_extraction_method(func_to_convert_default, None)
+
         # You can optionally provide additional conversion methods
-        # if you do, they need to have a specific key
-        cls._add_extraction_method(other_func_to_convert, "samples")
+        # These need to have a specific key so the user can refer to
+        # them when converting. Uncomment the line below and change the
+        # function and key to appropriate values
+
+        # Line to uncomment:
+        # cls._add_extraction_method(other_func_to_convert, "method_key")
 
     @classmethod
-    def get_allocation_kwds(cls, npdf, **kwargs):
-        """Return kwds necessary to create 'empty' hdf5 file with npdf entries
-        for iterative writeout.  We only need to allocate the objdata columns, as
-        the metadata can be written when we finalize the file.
+    def get_allocation_kwds(cls, npdf: int, **kwargs) -> Mapping:
+        """Return the kwds necessary to create an `empty` HDF5 file with ``npdf`` entries
+        for iterative write. We only need to allocate the data columns, as
+        the metadata will be written when we finalize the file.
+
+        The number of data columns is calculated based on the length or
+        shape of the metadata. For example, the number of columns is ``nbins-1``
+        for a histogram.
+
+        Parameters
+        ----------
+        npdf : int
+            number of *total* distributions that will be written out
+        kwargs :
+            The keys needed to construct the shape of the data to be written.
+
+        Returns
+        -------
+        Mapping
+            A dictionary with a key for the objdata, a tuple with the shape of that data,
+            and the data type of the data.
+
+        Raises
+        ------
+        ValueError
+            Raises an error if the required kwarg is not provided.
         """
-        # TODO: I'm not actually sure this documentation is correct -- it looks like they're requiring the metadata but not the objdata
-        if "arg1" not in kwargs:  # pragma: no cover
+
+        if "arg1" not in kwargs:
             raise ValueError("required argument 'arg1' not included in kwargs")
         narg1 = len(kwargs["arg1"].flatten())
-        return dict(pdfs=((npdf, nbins - 1), "f4"))
+        return dict(pdfs=((npdf, narg1), "f4"))
 
     @classmethod
-    def create_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+    def create_ensemble(
+        self, data: Mapping, ancil: Optional[Mapping] = None
+    ) -> Ensemble:
         """Creates an Ensemble of distributions parameterized as [parameterization type].
 
         Input data format:
@@ -145,13 +209,13 @@ class parameterization_gen(Pdf_rows_gen):
         >>> import numpy as np
         >>> data = {test data}
         >>> ancil = {'ids': test ids }
-        >>> ens = qp.[parameterization]_ensemble(data,ancil)
+        >>> ens = qp.[parameterization].create_ensemble(data,ancil)
         >>> ens.metadata()
         [output here]
 
         """
 
-        return Ensemble(parameterization, data, ancil)
+        return Ensemble(self, data, ancil)
 
     #
     # Optional methods
@@ -160,39 +224,26 @@ class parameterization_gen(Pdf_rows_gen):
     def _ppf():
         pass
 
+    def _sf():
+        pass
+
+    def _isf():
+        pass
+
+    def _rvs():
+        pass
+
     @classmethod
     def plot_native(cls, pdf, **kwargs):
         """Plot the PDF in a way that is particular to this type of distribution
 
         For a histogram this shows the bin edges
         """
-        axes, _, kw = get_axes_and_xlims(**kwargs)
-        vals = pdf.dist.pdfs[pdf.kwds["row"]]
-        return plot_pdf_histogram_on_axes(axes, hist=(pdf.dist.bins, vals), **kw)
-
-    @classmethod
-    def make_test_data(cls):
-        """Make data for unit tests"""
-        cls.test_data = dict(
-            hist=dict(
-                gen_func=hist,
-                ctor_data=dict(bins=XBINS, pdfs=HIST_DATA),
-                convert_data=dict(bins=XBINS),
-                atol_diff=1e-1,
-                atol_diff2=1e-1,
-                test_xvals=TEST_XVALS,
-            ),
-            hist_samples=dict(
-                gen_func=hist,
-                ctor_data=dict(bins=XBINS, pdfs=HIST_DATA),
-                convert_data=dict(bins=XBINS, method="samples", size=NSAMPLES),
-                atol_diff=1e-1,
-                atol_diff2=1e-1,
-                test_xvals=TEST_XVALS,
-                do_samples=True,
-            ),
-        )
+        # add any plotting functions you create for this to plotting.py
+        pass
 
 
-parameterization = parameterization_gen.create
-add_class(parameterization_gen)
+parameterization = (
+    parameterization_gen.create
+)  # alias the class to just the parameterization name
+add_class(parameterization_gen)  # register the class with the factory

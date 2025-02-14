@@ -31,7 +31,7 @@ class Factory(OrderedDict):
         self._load_scipy_classes()
 
     @staticmethod
-    def _build_data_dict(md_table, data_table):
+    def _build_data_dict(md_table: Mapping, data_table: Mapping) -> Mapping:
         """Convert the tables to a dictionary that can be used to build an Ensemble"""
         data_dict = {}
 
@@ -112,7 +112,7 @@ class Factory(OrderedDict):
             create_ensemble,
         )
 
-        self.add_scipy_class(the_class)
+        self.add_class(the_class)
 
     def _load_scipy_classes(self):
         """Build qp classes from all the scipy classes"""
@@ -121,33 +121,6 @@ class Factory(OrderedDict):
             attr = getattr(sps, name)
             if isinstance(attr, sps.rv_continuous):
                 self._make_scipy_wrapped_class(name, type(attr))
-
-    def add_scipy_class(self, the_class):
-        """Add a class to the factory
-
-        Parameters
-        ----------
-        the_class : class
-            The class we are adding, must inherit from Pdf_Gen
-        """
-        # if not isinstance(the_class, Pdf_gen): #pragma: no cover
-        #    raise TypeError("Can only add sub-classes of Pdf_Gen to factory")
-        if not hasattr(the_class, "name"):  # pragma: no cover
-            raise AttributeError(
-                "Can not add class %s to factory because it doesn't have a name attribute"
-                % the_class
-            )
-        if the_class.name in self:  # pragma: no cover
-            raise KeyError(
-                "Class named %s is already in factory, point to %s"
-                % (the_class.name, self[the_class.name])
-            )
-        the_class.add_method_dicts()
-        the_class.add_mappings()
-        self[the_class.name] = the_class
-
-        setattr(self, "%s_gen" % the_class.name, the_class)
-        setattr(self, the_class.name, the_class)
 
     def add_class(self, the_class):
         """Add a class to the factory
@@ -176,23 +149,32 @@ class Factory(OrderedDict):
         setattr(self, the_class.name, the_class)
 
     def create(
-        self, class_name, data: Mapping, method: Optional[str] = None
+        self,
+        class_name,
+        data: Mapping,
+        method: Optional[str] = None,
     ) -> Ensemble:
-        """Make an ensemble of a particular type of distribution
+        """Make an Ensemble of a particular type of distribution. The ``data``
+        dictionary will need different keys depending on what parameterization
+        you have chosen.
+
+        If you are unsure of which keys are required, try
+        ``qp.parameterization.create_ensemble?`` which describes the necessary
+        inputs (and the function can also be used to create an Ensemble).
 
         Parameters
         ----------
-        class_name : `str`
-            The name of the class to make
+        class_name : `str` or `class`
+            The name of the parameterization to make a distribution from.
         data : `dict`
-            Values passed to class create function
+            Dictionary of values passed to the parameterization create function.
         method : `str` [`None`]
             Used to select which creation method to invoke
 
         Returns
         -------
         ens : `qp.Ensemble`
-            The newly created ensemble
+            The newly created Ensemble
         """
 
         # handle if class creation function is given instead of string
@@ -205,12 +187,15 @@ class Factory(OrderedDict):
         ctor_func = the_class.creation_method(method)
         return Ensemble(ctor_func, data)
 
-    def from_tables(self, tables: Mapping):
-        """Build this ensemble from a tables
+    def from_tables(self, tables: Mapping) -> Ensemble:
+        """Build this ensemble from a dictionary of tables, where the metadata has key ``meta``,
+        the data has key ``data``. If there is an ancillary data table, it should have the
+        key ``ancil``.
 
         Parameters
         ----------
-        tables: `dict`
+        tables: `Mapping`
+            The dictionary of tables to turn into an Ensemble.
 
         Notes
         -----
@@ -235,7 +220,7 @@ class Factory(OrderedDict):
             data = reader_convert(data)
         return Ensemble(ctor_func, data=data, ancil=ancil_table)
 
-    def read_metadata(self, filename: str):
+    def read_metadata(self, filename: str) -> Mapping:
         """Read an ensemble's metadata from a file, without loading the full data.
 
         Parameters
@@ -357,7 +342,7 @@ class Factory(OrderedDict):
         if ancil_infp is not None:
             ancil_infp.close()
 
-    def convert(self, in_dist, class_name, **kwds):
+    def convert(self, in_dist: Ensemble, class_name: str, **kwds) -> Ensemble:
         """Read an ensemble to a different representation
 
         Parameters
@@ -459,7 +444,7 @@ class Factory(OrderedDict):
         hdf5.write_dicts_to_HDF5(output_tables, filename, **kwargs)
 
     @staticmethod
-    def read_dict(filename: str):
+    def read_dict(filename: str) -> Mapping[str, Mapping]:
         """Assume that filename is an HDF5 file, containing multiple qp.Ensembles
         that have been stored at nparrays."""
         results = {}

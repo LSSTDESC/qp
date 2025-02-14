@@ -173,7 +173,7 @@ class interp_gen(Pdf_rows_gen):
         return dct
 
     @classmethod
-    def get_allocation_kwds(cls, npdf, **kwargs):
+    def get_allocation_kwds(cls, npdf: int, **kwargs):
         """Return the keywords necessary to create an 'empty' hdf5 file with npdf entries
         for iterative file writeout.  We only need to allocate the objdata columns, as
         the metadata can be written when we finalize the file.
