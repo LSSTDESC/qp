@@ -7,57 +7,15 @@ from scipy.stats import rv_continuous
 from typing import Mapping, Optional
 
 from .mixmod_utils import extract_mixmod_fit_samples
-from ....core.factory import add_class
-from ...base import Pdf_rows_gen
-from ....test_data import MEAN_MIXMOD, STD_MIXMOD, TEST_XVALS, WEIGHT_MIXMOD
-from ....utils.array import (
+from ...core.factory import add_class
+from ..base import Pdf_rows_gen
+from ...test_data import MEAN_MIXMOD, STD_MIXMOD, TEST_XVALS, WEIGHT_MIXMOD
+from ...utils.array import (
     get_eval_case,
     reshape_to_pdf_size,
 )
-from ....utils.interpolation import interpolate_multi_x_y
-from ....core.ensemble import Ensemble
-
-
-def mixmod_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
-    """Creates an Ensemble of distributions parameterized as Gaussian Mixture models.
-
-    Input data format:
-    data = {`means`: values, `stds`: values, `weights`: values}, where
-    The shape of all the values will be (`npdf`, `ncomp`), where:
-
-    `npdf` = the number of distributions
-    `ncomp` = the number of Gaussians in the mixture model
-
-    Weights should sum up to one. If not, the weights are interpreted as relative weights.
-
-    Parameters
-    ----------
-    data : Mapping
-        The dictionary of data for the distributions.
-    ancil : Optional[Mapping], optional
-        A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
-
-    Returns
-    -------
-    Ensemble
-        An Ensemble object containing all of the given distributions.
-
-    Example
-    -------
-
-    To create an Ensemble of two distributions with associated ids:
-
-    >>> import qp
-    >>> data = {'means': np.array([[0.35, 0.55],[0.23,0.81]]), 'stds': np.array([[0.2, 0.25],[0.21, 0.19]]), 'weights': np.array([[0.4, 0.6],[0.3,0.7]])}
-    >>> ancil = {'ids': [200, 205]}
-    >>> ens = qp.mixmod_ensemble(data, ancil)
-    >>> ens.metadata()
-    {'pdf_name': array([b'mixmod'], dtype='|S6'), 'pdf_version': array([0])}
-
-
-    """
-
-    return Ensemble(mixmod, data, ancil)
+from ...utils.interpolation import interpolate_multi_x_y
+from ...core.ensemble import Ensemble
 
 
 class mixmod_gen(Pdf_rows_gen):
@@ -225,6 +183,48 @@ class mixmod_gen(Pdf_rows_gen):
         cls._add_extraction_method(extract_mixmod_fit_samples, None)
 
     @classmethod
+    def create_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+        """Creates an Ensemble of distributions parameterized as Gaussian Mixture models.
+
+        Input data format:
+        data = {`means`: values, `stds`: values, `weights`: values}, where
+        The shape of all the values will be (`npdf`, `ncomp`), where:
+
+        `npdf` = the number of distributions
+        `ncomp` = the number of Gaussians in the mixture model
+
+        Weights should sum up to one. If not, the weights are interpreted as relative weights.
+
+        Parameters
+        ----------
+        data : Mapping
+            The dictionary of data for the distributions.
+        ancil : Optional[Mapping], optional
+            A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
+
+        Returns
+        -------
+        Ensemble
+            An Ensemble object containing all of the given distributions.
+
+        Example
+        -------
+
+        To create an Ensemble of two distributions with associated ids:
+
+        >>> import qp
+        >>> data = {'means': np.array([[0.35, 0.55],[0.23,0.81]]), 'stds': np.array([[0.2, 0.25],[0.21, 0.19]]), 'weights': np.array([[0.4, 0.6],[0.3,0.7]])}
+        >>> ancil = {'ids': [200, 205]}
+        >>> ens = qp.mixmod_ensemble(data, ancil)
+        >>> ens.metadata()
+        {'pdf_name': array([b'mixmod'], dtype='|S6'), 'pdf_version': array([0])}
+
+
+        """
+
+        return Ensemble(mixmod, data, ancil)
+
+    @classmethod
     def make_test_data(cls):
         """Make data for unit tests"""
         cls.test_data = dict(
@@ -240,6 +240,6 @@ class mixmod_gen(Pdf_rows_gen):
         )
 
 
-mixmod = mixmod_gen.create
+mixmod = mixmod_gen
 
 add_class(mixmod_gen)

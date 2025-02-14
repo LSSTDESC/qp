@@ -2,127 +2,25 @@
 """
 
 import numpy as np
-from scipy.integrate import quad
 from scipy.interpolate import splev, splint, splrep
 from scipy.special import errstate  # pylint: disable=no-name-in-module
 from scipy.stats import rv_continuous
 from typing import Mapping, Optional
 
-from .spline_utils import extract_samples, extract_xy_vals, build_kdes, evaluate_kdes
+from .spline_utils import (
+    extract_samples,
+    extract_xy_vals,
+    build_kdes,
+    evaluate_kdes,
+    normalize_spline,
+    build_splines,
+)
 from ...core.factory import add_class
 from ...core.ensemble import Ensemble
 from ..base import Pdf_rows_gen
 from ...plotting import get_axes_and_xlims, plot_pdf_on_axes
 from ...test_data import SAMPLES, TEST_XVALS, XARRAY, YARRAY
 from ...utils.array import reshape_to_pdf_size
-
-
-def spline_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
-    """Creates an Ensemble of distributions parameterized as via a set of splines.
-
-    Input data format:
-    data = {`splx`: values, `sply`: values, `spln`: values}.
-    The shape of the arrays `splx` and `sply` should be (npdfs, n), where npdfs is the number of distributions and n is the number of values per distribution.
-    The shape of `spln` (the order parameters) is just npdfs.
-
-
-    Parameters
-    ----------
-    data : Mapping
-        The dictionary of data for the distributions.
-    ancil : Optional[Mapping], optional
-        A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
-
-    Returns
-    -------
-    Ensemble
-        An Ensemble object containing all of the given distributions.
-
-    Example
-    -------
-
-    To create an Ensemble with two distributions and their associated ids:
-
-    >>> import qp
-    >>> import numpy as np
-    >>> data = {'splx': np.array([[-0.3,-0.1,0.1,0.3,0.5],[-0.3,-0.1,0.1,0.3,0.5]]),'sply':np.array([[2.89003419e-07, 7.35852472e+00,
-    ...          3.74859497e-01,  1.65796839e+00,  0.00000000e+00],[3.0e-2,1.0e-1,9.2e-1,2.1e-1,4.2e-3]]), 'spln': np.array([3,2])}
-    >>> ancil = {'ids':[12,14]}
-    >>> ens = qp.spline_ensemble(data,ancil)
-    >>> ens.metadata()
-    {'pdf_name': array([b'spline'], dtype='|S6'), 'pdf_version': array([0])}
-
-
-
-    """
-
-    return Ensemble(spline, data, ancil)
-
-
-def normalize_spline(xvals, yvals, limits, **kwargs):
-    """
-    Normalize a set of 1D interpolators
-
-    Parameters
-    ----------
-    xvals : array-like
-        X-values used for the spline
-    yvals : array-like
-        Y-values used for the spline
-    limits : tuple (2)
-        Lower and Upper limits of integration
-
-    Keywords
-    --------
-    Passed to the `scipy.quad` intergation function
-
-    Returns
-    -------
-    ynorm: array-like
-        Normalized y-vals
-    """
-
-    def row_integral(irow):
-        def spl(xv):
-            return splev(xv, splrep(xvals[irow], yvals[irow]))
-
-        return quad(spl, limits[0], limits[1], **kwargs)[0]
-
-    vv = np.vectorize(row_integral)
-    with errstate(all="ignore"):
-        integrals = vv(np.arange(xvals.shape[0]))
-    return (yvals.T / integrals).T
-
-
-def build_splines(xvals, yvals):
-    """
-    Build a set of 1D spline representations
-
-    Parameters
-    ----------
-    xvals : array-like
-        X-values used for the spline
-    yvals : array-like
-        Y-values used for the spline
-
-    Returns
-    -------
-    splx : array-like
-        Spline knot xvalues
-    sply : array-like
-        Spline knot yvalues
-    spln : array-like
-        Spline knot order parameters
-    """
-    l_x = []
-    l_y = []
-    l_n = []
-    for xrow, yrow in zip(xvals, yvals):
-        rep = splrep(xrow, yrow)
-        l_x.append(rep[0])
-        l_y.append(rep[1])
-        l_n.append(rep[2])
-    return np.vstack(l_x), np.vstack(l_y), np.vstack(l_n)
 
 
 class spline_gen(Pdf_rows_gen):
@@ -363,6 +261,49 @@ class spline_gen(Pdf_rows_gen):
         cls._add_extraction_method(extract_samples, "samples")
 
     @classmethod
+    def create_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+        """Creates an Ensemble of distributions parameterized as via a set of splines.
+
+        Input data format:
+        data = {`splx`: values, `sply`: values, `spln`: values}.
+        The shape of the arrays `splx` and `sply` should be (npdfs, n), where npdfs is the number of distributions
+        and n is the number of values per distribution.
+        The shape of `spln` (the order parameters) is just npdfs.
+
+
+        Parameters
+        ----------
+        data : Mapping
+            The dictionary of data for the distributions.
+        ancil : Optional[Mapping], optional
+            A dictionary of metadata for the distributions, where any arrays have the same length as the number of
+            distributions, by default None
+
+        Returns
+        -------
+        Ensemble
+            An Ensemble object containing all of the given distributions.
+
+        Example
+        -------
+
+        To create an Ensemble with two distributions and their associated ids:
+
+        >>> import qp
+        >>> import numpy as np
+        >>> data = {'splx': np.array([[-0.3,-0.1,0.1,0.3,0.5],[-0.3,-0.1,0.1,0.3,0.5]]),
+        ...         'sply':np.array([[2.89003419e-07, 7.35852472e+00, 3.74859497e-01,  1.65796839e+00,  0.00000000e+00],
+        ...         [3.0e-2,1.0e-1,9.2e-1,2.1e-1,4.2e-3]]), 'spln': np.array([3,2])}
+        >>> ancil = {'ids':[12,14]}
+        >>> ens = qp.spline_ensemble(data,ancil)
+        >>> ens.metadata()
+        {'pdf_name': array([b'spline'], dtype='|S6'), 'pdf_version': array([0])}
+
+        """
+
+        return Ensemble(spline, data, ancil)
+
+    @classmethod
     def make_test_data(cls):
         """Make data for unit tests"""
         SPLX, SPLY, SPLN = cls.build_normed_splines(XARRAY, YARRAY)
@@ -390,7 +331,7 @@ class spline_gen(Pdf_rows_gen):
         )
 
 
-spline = spline_gen.create
+spline = spline_gen
 spline_from_xy = spline_gen.create_from_xy_vals
 spline_from_samples = spline_gen.create_from_samples
 

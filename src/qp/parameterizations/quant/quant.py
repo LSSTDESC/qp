@@ -36,52 +36,6 @@ PDF_CONSTRUCTORS = {
 }
 
 
-def quant_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
-    """Creates an Ensemble of distributions parameterized as quantiles.
-
-    Input data format:
-    data = {`quants`: values, `locs`: values}
-    The shape of quants should be n, where n is the number of quants. The shape of locs should be (npdfs, n), where npdfs is the number of distributions.
-    If you would like to use a constructor function other than the default, `piecewise_linear`,
-    you can include {`pdf_constructor_name`: value} in the data dictionary, where value is the string name of the constructor.
-
-    The options are: `piecewise_linear`, `piecewise_constant`, `dual_spline_average` and 'cdf_spline_derivative`.
-
-
-    Parameters
-    ----------
-    data : Mapping
-        The dictionary of data for the distributions.
-    ancil : Optional[Mapping], optional
-        A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
-
-    Returns
-    -------
-    Ensemble
-        An Ensemble object containing all of the given distributions.
-
-    Example
-    -------
-
-    To create an Ensemble with two distributions and associated ids, using the `dual_spline_average` constructor:
-
-    >>> import qp
-    >>> import numpy as np
-    >>> data = {'quants': np.array([0.0001,0.25,0.5,0.75,0.9999]), 'locs': np.array([[0.0001,0.1,0.3,0.5,0.75],[0.01,0.05,0.15,0.3,0.5]]),'pdf_constructor_name':'dual_spline_average'}
-    >>> ancil = {'ids':[11,18]}
-    >>> ens = qp.quant_ensemble(data,ancil)
-    >>> ens.metadata()
-    {'pdf_name': array([b'quant'], dtype='|S5'),
-     'pdf_version': array([0]),
-     'quants': array([[0.000e+00, 1.000e-04, 2.500e-01, 5.000e-01, 7.500e-01, 9.999e-01,
-             1.000e+00]]),
-     'pdf_constructor_name': array(['dual_spline_average'], dtype='<U19'),
-     'check_input': array([ True])}
-    """
-
-    return Ensemble(quant, data, ancil)
-
-
 class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
     """Quantile based distribution, where the PDF is defined piecewise from the quantiles
 
@@ -286,8 +240,54 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
         cls._add_creation_method(cls.create, None)
         cls._add_extraction_method(extract_quantiles, None)
 
+    @classmethod
+    def create_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+        """Creates an Ensemble of distributions parameterized as quantiles.
 
-quant = quant_gen.create
+        Input data format:
+        data = {`quants`: values, `locs`: values}
+        The shape of quants should be n, where n is the number of quants. The shape of locs should be (npdfs, n), where npdfs is the number of distributions.
+        If you would like to use a constructor function other than the default, `piecewise_linear`,
+        you can include {`pdf_constructor_name`: value} in the data dictionary, where value is the string name of the constructor.
+
+        The options are: `piecewise_linear`, `piecewise_constant`, `dual_spline_average` and 'cdf_spline_derivative`.
+
+
+        Parameters
+        ----------
+        data : Mapping
+            The dictionary of data for the distributions.
+        ancil : Optional[Mapping], optional
+            A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
+
+        Returns
+        -------
+        Ensemble
+            An Ensemble object containing all of the given distributions.
+
+        Example
+        -------
+
+        To create an Ensemble with two distributions and associated ids, using the `dual_spline_average` constructor:
+
+        >>> import qp
+        >>> import numpy as np
+        >>> data = {'quants': np.array([0.0001,0.25,0.5,0.75,0.9999]), 'locs': np.array([[0.0001,0.1,0.3,0.5,0.75],[0.01,0.05,0.15,0.3,0.5]]),'pdf_constructor_name':'dual_spline_average'}
+        >>> ancil = {'ids':[11,18]}
+        >>> ens = qp.quant_ensemble(data,ancil)
+        >>> ens.metadata()
+        {'pdf_name': array([b'quant'], dtype='|S5'),
+        'pdf_version': array([0]),
+        'quants': array([[0.000e+00, 1.000e-04, 2.500e-01, 5.000e-01, 7.500e-01, 9.999e-01,
+                1.000e+00]]),
+        'pdf_constructor_name': array(['dual_spline_average'], dtype='<U19'),
+        'check_input': array([ True])}
+        """
+
+        return Ensemble(quant, data, ancil)
+
+
+quant = quant_gen
 
 quant_gen.test_data = dict(
     quant=dict(

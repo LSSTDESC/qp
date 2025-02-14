@@ -17,29 +17,6 @@ from .sparse_utils import extract_sparse_from_xy
 from ...test_data import TEST_XVALS, NPDF
 
 
-# TODO: fill out docstring once I know how
-def sparse_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
-    """Creates an Ensemble of distributions parameterized as interpolations, constructed from a sparse representation.
-
-    Input data format:
-    data = {}
-
-    Parameters
-    ----------
-    data : Mapping
-        The dictionary of data for the distributions.
-    ancil : Optional[Mapping], optional
-        A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
-
-    Returns
-    -------
-    Ensemble
-        An Ensemble object containing all of the given distributions.
-    """
-
-    return Ensemble(sparse, data, ancil)
-
-
 class sparse_gen(interp_gen):
     """Sparse based distribution. The final behavior is similar to interp_gen, but the constructor
     takes a sparse representation to build the interpolator.
@@ -116,6 +93,29 @@ class sparse_gen(interp_gen):
         """
         cls._add_creation_method(cls.create, None)
         cls._add_extraction_method(extract_sparse_from_xy, None)
+
+    # TODO: fill out docstring once I know how
+    @classmethod
+    def create_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+        """Creates an Ensemble of distributions parameterized as interpolations, constructed from a sparse representation.
+
+        Input data format:
+        data = {}
+
+        Parameters
+        ----------
+        data : Mapping
+            The dictionary of data for the distributions.
+        ancil : Optional[Mapping], optional
+            A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
+
+        Returns
+        -------
+        Ensemble
+            An Ensemble object containing all of the given distributions.
+        """
+
+        return Ensemble(sparse, data, ancil)
 
     @staticmethod
     def build_test_data():

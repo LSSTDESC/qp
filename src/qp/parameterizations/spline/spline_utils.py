@@ -1,7 +1,77 @@
 import numpy as np
 from scipy import stats as sps
+from scipy.integrate import quad
+from scipy.interpolate import splev, splrep
+from scipy.special import errstate  # pylint: disable=no-name-in-module
 
 from ...utils.conversion import extract_xy_vals
+
+
+def normalize_spline(xvals, yvals, limits, **kwargs):
+    """
+    Normalize a set of 1D interpolators
+
+    Parameters
+    ----------
+    xvals : array-like
+        X-values used for the spline
+    yvals : array-like
+        Y-values used for the spline
+    limits : tuple (2)
+        Lower and Upper limits of integration
+
+    Keywords
+    --------
+    Passed to the `scipy.quad` integration function
+
+    Returns
+    -------
+    ynorm: array-like
+        Normalized y-vals
+    """
+
+    def row_integral(irow):
+        def spl(xv):
+            return splev(xv, splrep(xvals[irow], yvals[irow]))
+
+        return quad(spl, limits[0], limits[1], **kwargs)[0]
+
+    vv = np.vectorize(row_integral)
+    with errstate(all="ignore"):
+        integrals = vv(np.arange(xvals.shape[0]))
+    return (yvals.T / integrals).T
+
+
+def build_splines(xvals, yvals):
+    """
+    Build a set of 1D spline representations
+
+    Parameters
+    ----------
+    xvals : array-like
+        X-values used for the spline
+    yvals : array-like
+        Y-values used for the spline
+
+    Returns
+    -------
+    splx : array-like
+        Spline knot xvalues
+    sply : array-like
+        Spline knot yvalues
+    spln : array-like
+        Spline knot order parameters
+    """
+    l_x = []
+    l_y = []
+    l_n = []
+    for xrow, yrow in zip(xvals, yvals):
+        rep = splrep(xrow, yrow)
+        l_x.append(rep[0])
+        l_y.append(rep[1])
+        l_n.append(rep[2])
+    return np.vstack(l_x), np.vstack(l_y), np.vstack(l_n)
+
 
 # Conversion utility functions
 

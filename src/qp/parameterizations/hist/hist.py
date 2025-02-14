@@ -22,45 +22,6 @@ from ...core.factory import add_class
 from ...core.ensemble import Ensemble
 
 
-def hist_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
-    """Creates an Ensemble of distributions parameterized as histograms.
-
-    Input data format:
-    data = {'bins': array_like, 'pdfs': array_like}, where bins are the bin edges, and so should be of shape (n+1,), and data is the value in those bins, so should have length of n and shape (npdfs, n), where npdfs is the number of distributions. The value of 'pdfs' can have multiple rows, where each row is a distribution.
-
-
-    Parameters
-    ----------
-    data : Mapping
-        The dictionary of data for the distributions.
-    ancil : Optional[Mapping], optional
-        A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
-
-    Returns
-    -------
-    Ensemble
-        An Ensemble object containing all of the given distributions.
-
-    Example
-    -------
-
-    To create an Ensemble with two distributions and an 'ancil' table that provides ids for the distributions, you can use the following code:
-
-    >>> import qp
-    >>> import numpy as np
-    >>> data = {'bins': [0,1,2,3,4,5], 'pdfs': np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])}
-    >>> ancil = {'ids': [105, 108]}
-    >>> ens = qp.hist_ensemble(data,ancil)
-    >>> ens.metadata()
-    {'pdf_name': array([b'hist'], dtype='|S4'),
-     'pdf_version': array([0]),
-     'bins': array([[0, 1, 2, 3, 4, 5]])}
-
-    """
-
-    return Ensemble(hist, data, ancil)
-
-
 class hist_gen(Pdf_rows_gen):
     """Histogram based distribution
 
@@ -222,6 +183,45 @@ class hist_gen(Pdf_rows_gen):
         cls._add_extraction_method(extract_hist_samples, "samples")
 
     @classmethod
+    def create_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+        """Creates an Ensemble of distributions parameterized as histograms.
+
+        Input data format:
+        data = {'bins': array_like, 'pdfs': array_like}, where bins are the bin edges, and so should be of shape (n+1,), and data is the value in those bins, so should have length of n and shape (npdfs, n), where npdfs is the number of distributions. The value of 'pdfs' can have multiple rows, where each row is a distribution.
+
+
+        Parameters
+        ----------
+        data : Mapping
+            The dictionary of data for the distributions.
+        ancil : Optional[Mapping], optional
+            A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
+
+        Returns
+        -------
+        Ensemble
+            An Ensemble object containing all of the given distributions.
+
+        Example
+        -------
+
+        To create an Ensemble with two distributions and an 'ancil' table that provides ids for the distributions, you can use the following code:
+
+        >>> import qp
+        >>> import numpy as np
+        >>> data = {'bins': [0,1,2,3,4,5], 'pdfs': np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])}
+        >>> ancil = {'ids': [105, 108]}
+        >>> ens = qp.hist_ensemble(data,ancil)
+        >>> ens.metadata()
+        {'pdf_name': array([b'hist'], dtype='|S4'),
+        'pdf_version': array([0]),
+        'bins': array([[0, 1, 2, 3, 4, 5]])}
+
+        """
+
+        return Ensemble(hist, data, ancil)
+
+    @classmethod
     def make_test_data(cls):
         """Make data for unit tests"""
         cls.test_data = dict(
@@ -245,5 +245,5 @@ class hist_gen(Pdf_rows_gen):
         )
 
 
-hist = hist_gen.create
+hist = hist_gen
 add_class(hist_gen)

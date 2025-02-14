@@ -15,53 +15,6 @@ from ...utils.array import reshape_to_pdf_size
 from ...utils.interpolation import interpolate_multi_x_y, interpolate_x_multi_y
 
 
-# TODO: fix the example and docstrings for this function once I know how
-def packed_interp_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
-    """Creates an Ensemble of distributions parameterized as interpolation that are stored as packed integers.
-
-    Input data format:
-    data = {`xvals`: values, `ypacked`: values, `ymax`: values}
-
-    xvals : array_like
-          The x-values used to do the interpolation
-    ypacked : array_like
-        The packed version of the y-values used to do the interpolation
-    ymax : array_like
-        The maximum y-values for each pdf
-
-    Parameters
-    ----------
-    data : Mapping
-        The dictionary of data for the distributions.
-    ancil : Optional[Mapping], optional
-        A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
-
-    Returns
-    -------
-    Ensemble
-        An Ensemble object containing all of the given distributions.
-
-    Example
-    -------
-
-    To create an Ensemble of two distributions with associated ids:
-
-    >>> import qp
-    >>> import numpy as np
-    >>> data = {'xvals': np.array([0,0.5,1,1.5,2]), 'yvals': np.array([[0.01, 0.2,0.3,0.2,0.01],[0.09,0.25,0.2,0.1,0.01]])}
-    >>> ancil = {'ids':[5,8]}
-    >>> ens = qp.interp_ensemble(data,ancil)
-    >>> ens.metadata()
-    {'pdf_name': array([b'interp'], dtype='|S6'),
-     'pdf_version': array([0]),
-     'xvals': array([[0. , 0.5, 1. , 1.5, 2. ]])}
-
-
-    """
-
-    return Ensemble(packed_interp, data, ancil)
-
-
 def extract_and_pack_vals_at_x(in_dist, **kwargs):
     """Convert using a set of x and packed y values
 
@@ -318,6 +271,53 @@ class packed_interp_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attr
         cls._add_creation_method(cls.create, None)
         cls._add_extraction_method(extract_and_pack_vals_at_x, None)
 
+    # TODO: fix the example and docstrings for this function once I know how
+    @classmethod
+    def create_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+        """Creates an Ensemble of distributions parameterized as interpolation that are stored as packed integers.
+
+        Input data format:
+        data = {`xvals`: values, `ypacked`: values, `ymax`: values}
+
+        xvals : array_like
+            The x-values used to do the interpolation
+        ypacked : array_like
+            The packed version of the y-values used to do the interpolation
+        ymax : array_like
+            The maximum y-values for each pdf
+
+        Parameters
+        ----------
+        data : Mapping
+            The dictionary of data for the distributions.
+        ancil : Optional[Mapping], optional
+            A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
+
+        Returns
+        -------
+        Ensemble
+            An Ensemble object containing all of the given distributions.
+
+        Example
+        -------
+
+        To create an Ensemble of two distributions with associated ids:
+
+        >>> import qp
+        >>> import numpy as np
+        >>> data = {'xvals': np.array([0,0.5,1,1.5,2]), 'yvals': np.array([[0.01, 0.2,0.3,0.2,0.01],[0.09,0.25,0.2,0.1,0.01]])}
+        >>> ancil = {'ids':[5,8]}
+        >>> ens = qp.interp_ensemble(data,ancil)
+        >>> ens.metadata()
+        {'pdf_name': array([b'interp'], dtype='|S6'),
+        'pdf_version': array([0]),
+        'xvals': array([[0. , 0.5, 1. , 1.5, 2. ]])}
+
+
+        """
+
+        return Ensemble(packed_interp, data, ancil)
+
     @classmethod
     def make_test_data(cls):
         """Make data for unit tests"""
@@ -361,6 +361,6 @@ class packed_interp_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attr
         )
 
 
-packed_interp = packed_interp_gen.create
+packed_interp = packed_interp_gen
 
 add_class(packed_interp_gen)

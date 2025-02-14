@@ -10,7 +10,7 @@ class PackingType(enum.Enum):
 
 
 def linear_pack_from_rowmax(input_array):
-    """Pack an array into 8bit unsigned integers, using the maximum of each row as a refrence
+    """Pack an array into 8bit unsigned integers, using the maximum of each row as a reference
 
     This packs the values onto a linear grid for each row, running from 0 to row_max
 
@@ -31,7 +31,7 @@ def linear_pack_from_rowmax(input_array):
 
 
 def linear_unpack_from_rowmax(packed_array, row_max):
-    """Unpack an array into 8bit unsigned integers, using the maximum of each row as a refrence
+    """Unpack an array into 8bit unsigned integers, using the maximum of each row as a reference
 
     Parameters
     ----------
@@ -51,7 +51,7 @@ def linear_unpack_from_rowmax(packed_array, row_max):
 
 
 def log_pack_from_rowmax(input_array, log_floor=-3.0):
-    """Pack an array into 8bit unsigned integers, using the maximum of each row as a refrence
+    """Pack an array into 8bit unsigned integers, using the maximum of each row as a reference
 
     This packs the values onto a log grid for each row, running from row_max / 10**log_floor to row_max
 
@@ -85,7 +85,7 @@ def log_pack_from_rowmax(input_array, log_floor=-3.0):
 
 
 def log_unpack_from_rowmax(packed_array, row_max, log_floor=-3.0):
-    """Unpack an array into 8bit unsigned integers, using the maximum of each row as a refrence
+    """Unpack an array into 8bit unsigned integers, using the maximum of each row as a reference
 
     Parameters
     ----------
@@ -116,7 +116,7 @@ def pack_array(packing_type, input_array, **kwargs):
     Parameters
     ----------
     packing_type : PackingType
-        Enum specifing the type of packing to use
+        Enum specifying the type of packing to use
     input_array : array_like
         The values we are packing
 
@@ -128,7 +128,7 @@ def pack_array(packing_type, input_array, **kwargs):
     if packing_type == PackingType.log_from_rowmax:
         return log_pack_from_rowmax(input_array, kwargs.get("log_floor", -3))
     raise ValueError(
-        f"Packing for packing type {packing_type} is not implemetned"
+        f"Packing for packing type {packing_type} is not implemented"
     )  # pragma: no cover
 
 
@@ -138,7 +138,7 @@ def unpack_array(packing_type, packed_array, **kwargs):
     Parameters
     ----------
     packing_type : PackingType
-        Enum specifing the type of packing to use
+        Enum specifying the type of packing to use
     packed_array : array_like
         The packed values
 
@@ -153,5 +153,5 @@ def unpack_array(packing_type, packed_array, **kwargs):
             log_floor=kwargs.get("log_floor", -3),
         )
     raise ValueError(
-        f"Unpacking for packing type {packing_type} is not implemetned"
+        f"Unpacking for packing type {packing_type} is not implemented"
     )  # pragma: no cover

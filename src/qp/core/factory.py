@@ -20,7 +20,6 @@ from .ensemble import Ensemble
 from ..utils.dictionary import compare_dicts, concatenate_dicts
 
 from ..parameterizations.base import Pdf_gen_wrap
-from ..parameterizations import analytic
 
 
 class Factory(OrderedDict):
@@ -69,6 +68,51 @@ class Factory(OrderedDict):
             __doc__=scipy_class.__doc__,
         )
         the_class = type(class_name, (Pdf_gen_wrap, scipy_class), override_dict)
+
+        # set a function to create an ensemble with this parameterization in the analytic module
+        def create_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
+            """Creates an Ensemble of distribution(s) in the given parameterization.
+
+            Input data format:
+            data = {'arg1': values, 'arg2': values ...} where `arg1`, `arg2`... are the arguments for the parameterization.
+            The length of the values should be the number of distributions being created in the Ensemble, with a minimum value of 1.
+
+
+            Parameters
+            ----------
+            data : Mapping
+                The dictionary of data for the distributions.
+            ancil : Optional[Mapping], optional
+                A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
+
+            Returns
+            -------
+            Ensemble
+                An Ensemble object containing all of the given distributions.
+
+            Example
+            -------
+
+            To create an Ensemble with two Gaussian distributions and their associated ids:
+
+            >>> import qp
+            >>> data = {'loc': np.array([[0.45],[0.55]]) , 'scale': np.array([[0.2],[0.15]])}
+            >>> ancil = {'ids': [20,25]}
+            >>> ens = qp.analytic.norm(data,ancil)
+            >>> ens.metadata()
+            {'pdf_name': array([b'norm'], dtype='|S4'), 'pdf_version': array([0])}
+
+            """
+
+            return Ensemble(the_class, data, ancil)
+
+        setattr(
+            the_class,
+            "create_ensemble",
+            create_ensemble,
+        )
+        print(f"added method to {the_class.name}")
+
         self.add_scipy_class(the_class)
 
     def _load_scipy_classes(self):
@@ -102,43 +146,10 @@ class Factory(OrderedDict):
         the_class.add_method_dicts()
         the_class.add_mappings()
         self[the_class.name] = the_class
+
         setattr(self, "%s_gen" % the_class.name, the_class)
-        setattr(self, the_class.name, the_class.create)
-
-        # set a function to create an ensemble with this paramterization in the analytic module
-        def create_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
-            """Creates an Ensemble of distribution(s) in the given parameterization.
-
-            Input data format:
-            data = {'arg1': values, 'arg2': values ...} where `arg1`, `arg2`... are the arguments for the parameterization.
-            The length of the values should be the number of distributions being created in the Ensemble, with a minimum value of 1.
-
-
-            Parameters
-            ----------
-            data : Mapping
-                The dictionary of data for the distributions.
-            ancil : Optional[Mapping], optional
-                A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
-
-            Returns
-            -------
-            Ensemble
-                An Ensemble object containing all of the given distributions.
-
-            Example
-            -------
-
-            example using norm here
-            """
-
-            return Ensemble(the_class.create, data, ancil)
-
-        setattr(
-            analytic,
-            the_class.name,
-            create_ensemble,
-        )
+        setattr(self, the_class.name, the_class)
+        print(f"added {the_class.name}")
 
     def add_class(self, the_class):
         """Add a class to the factory
@@ -164,7 +175,7 @@ class Factory(OrderedDict):
         the_class.add_mappings()
         self[the_class.name] = the_class
         setattr(self, "%s_gen" % the_class.name, the_class)
-        setattr(self, the_class.name, the_class.create)
+        setattr(self, the_class.name, the_class)
 
     def create(
         self, class_name, data: Mapping, method: Optional[str] = None

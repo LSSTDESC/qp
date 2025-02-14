@@ -24,87 +24,6 @@ from ...utils.interpolation import (
 )
 
 
-def interp_ensemble(data: Mapping, ancil: Optional[Mapping]) -> Ensemble:
-    """Creates an Ensemble of distributions parameterized as interpolations.
-
-    Input data:
-    data = {`xvals`: values, `yvals`: values}
-    The shape of `xvals` is (n), where n is the number of x values given.
-    The shape of `yvals` is then (npdfs, n), where npdfs is the number of distributions.
-
-    Parameters
-    ----------
-    data : Mapping
-        The dictionary of data for the distributions.
-    ancil : Optional[Mapping]
-        A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions
-
-    Returns
-    -------
-    Ensemble
-        An Ensemble object containing all of the given distributions.
-
-    Example
-    -------
-
-    To create an ensemble with two distributions and their associated ids:
-
-    >>> import qp
-    >>> import numpy as np
-    >>> data = {'xvals': np.array([0,0.5,1,1.5,2]), 'yvals': np.array([[0.01, 0.2,0.3,0.2,0.01],[0.09,0.25,0.2,0.1,0.01]])}
-    >>> ancil = {'ids':[5,8]}
-    >>> ens = qp.interp_ensemble(data,ancil)
-    >>> ens.metadata()
-    {'pdf_name': array([b'interp'], dtype='|S6'),
-     'pdf_version': array([0]),
-     'xvals': array([[0. , 0.5, 1. , 1.5, 2. ]])}
-
-    """
-
-    return Ensemble(interp, data, ancil)
-
-
-def interp_irregular_ensemble(data: Mapping, ancil: Optional[Mapping]) -> Ensemble:
-    """Creates an Ensemble of distributions parameterized as interpolations.
-
-    Input data:
-    data = {`xvals`: values, `yvals`: values}
-
-    The shape of `values` is (npdfs, n) for both `xvals` and `yvals`, where npdfs is the number of distributions and n is the number of points for each distribution.
-
-
-
-    Parameters
-    ----------
-    data : Mapping
-        The dictionary of data for the distributions.
-    ancil : Optional[Mapping]
-        A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions.
-
-    Returns
-    -------
-    Ensemble
-        An Ensemble object containing all of the given distributions.
-
-    Example
-    -------
-
-    To create an Ensemble with two distributions and their associated ids:
-
-    >>> import qp
-    >>> import numpy as np
-    >>> data = {'xvals': np.array([[0,0.5,1,1.5,2],[0.5,0.75,1,1.25,1.5]]), 'yvals': np.array([[0.01, 0.2,0.3,0.2,0.01],[0.09,0.25,0.2,0.1,0.01]])}
-    >>> ancil = {'ids':[5,8]}
-    >>> ens = qp.interp_irregular_ensemble(data,ancil)
-    >>> ens.metadata()
-    {'pdf_name': array([b'interp_irregular'], dtype='|S16'),
-     'pdf_version': array([0])}
-
-    """
-
-    return Ensemble(interp_irregular, data, ancil)
-
-
 class interp_gen(Pdf_rows_gen):
     """Interpolator based distribution
 
@@ -289,6 +208,46 @@ class interp_gen(Pdf_rows_gen):
         cls._add_extraction_method(extract_vals_at_x, None)
 
     @classmethod
+    def create_ensemble(data: Mapping, ancil: Optional[Mapping]) -> Ensemble:
+        """Creates an Ensemble of distributions parameterized as interpolations.
+
+        Input data:
+        data = {`xvals`: values, `yvals`: values}
+        The shape of `xvals` is (n), where n is the number of x values given.
+        The shape of `yvals` is then (npdfs, n), where npdfs is the number of distributions.
+
+        Parameters
+        ----------
+        data : Mapping
+            The dictionary of data for the distributions.
+        ancil : Optional[Mapping]
+            A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions
+
+        Returns
+        -------
+        Ensemble
+            An Ensemble object containing all of the given distributions.
+
+        Example
+        -------
+
+        To create an ensemble with two distributions and their associated ids:
+
+        >>> import qp
+        >>> import numpy as np
+        >>> data = {'xvals': np.array([0,0.5,1,1.5,2]), 'yvals': np.array([[0.01, 0.2,0.3,0.2,0.01],[0.09,0.25,0.2,0.1,0.01]])}
+        >>> ancil = {'ids':[5,8]}
+        >>> ens = qp.interp_ensemble(data,ancil)
+        >>> ens.metadata()
+        {'pdf_name': array([b'interp'], dtype='|S6'),
+        'pdf_version': array([0]),
+        'xvals': array([[0. , 0.5, 1. , 1.5, 2. ]])}
+
+        """
+
+        return Ensemble(interp, data, ancil)
+
+    @classmethod
     def make_test_data(cls):
         """Make data for unit tests"""
         cls.test_data = dict(
@@ -467,6 +426,47 @@ class interp_irregular_gen(Pdf_rows_gen):
         cls._add_extraction_method(extract_xy_sparse, None)
 
     @classmethod
+    def create_ensemble(data: Mapping, ancil: Optional[Mapping]) -> Ensemble:
+        """Creates an Ensemble of distributions parameterized as interpolations.
+
+        Input data:
+        data = {`xvals`: values, `yvals`: values}
+
+        The shape of `values` is (npdfs, n) for both `xvals` and `yvals`, where npdfs is the number of distributions and n is the number of points for each distribution.
+
+
+
+        Parameters
+        ----------
+        data : Mapping
+            The dictionary of data for the distributions.
+        ancil : Optional[Mapping]
+            A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions.
+
+        Returns
+        -------
+        Ensemble
+            An Ensemble object containing all of the given distributions.
+
+        Example
+        -------
+
+        To create an Ensemble with two distributions and their associated ids:
+
+        >>> import qp
+        >>> import numpy as np
+        >>> data = {'xvals': np.array([[0,0.5,1,1.5,2],[0.5,0.75,1,1.25,1.5]]), 'yvals': np.array([[0.01, 0.2,0.3,0.2,0.01],[0.09,0.25,0.2,0.1,0.01]])}
+        >>> ancil = {'ids':[5,8]}
+        >>> ens = qp.interp_irregular_ensemble(data,ancil)
+        >>> ens.metadata()
+        {'pdf_name': array([b'interp_irregular'], dtype='|S16'),
+        'pdf_version': array([0])}
+
+        """
+
+        return Ensemble(interp_irregular, data, ancil)
+
+    @classmethod
     def make_test_data(cls):
         """Make data for unit tests"""
         cls.test_data = dict(
@@ -479,6 +479,7 @@ class interp_irregular_gen(Pdf_rows_gen):
         )
 
 
-interp_irregular = interp_irregular_gen.create
+interp = interp_gen
+interp_irregular = interp_irregular_gen
 add_class(interp_gen)
 add_class(interp_irregular_gen)

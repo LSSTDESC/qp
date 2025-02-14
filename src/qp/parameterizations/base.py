@@ -1,4 +1,4 @@
-"""This module implements continous distributions generators that inherit from the
+"""This module implements continuous distributions generators that inherit from the
 `scipy.stats.rv_continuous` class
 
 If you would like to add a sub-class, please read the instructions on subclassing
@@ -143,7 +143,7 @@ class Pdf_gen:
 
     @classmethod
     def plot_native(cls, pdf, **kwargs):
-        """Plot the PDF in a way that is particular to this type of distibution
+        """Plot the PDF in a way that is particular to this type of distribution
 
         This defaults to plotting it as a curve, but this can be overwritten
         """
@@ -158,7 +158,7 @@ class Pdf_gen:
 
 
 class rv_frozen_func(rv_continuous_frozen):
-    """Trivial extention of `scipy.stats.rv_frozen`
+    """Trivial extension of `scipy.stats.rv_frozen`
     that includes the number of PDFs it represents
     """
 
@@ -219,10 +219,10 @@ class rv_frozen_func(rv_continuous_frozen):
 
 
 class rv_frozen_rows(rv_continuous_frozen):
-    """Trivial extention of `scipy.stats.rv_frozen`
+    """Trivial extension of `scipy.stats.rv_frozen`
     that to use when we want to have a collection
     of distribution of objects such as histograms or splines,
-    where each object represents a single distribtuion
+    where each object represents a single distribution
     """
 
     def __init__(self, dist, shape, *args, **kwds):
@@ -275,7 +275,7 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
     """Class extend `scipy.stats.rv_continuous` with
     information needed for `qp` when we want to have a collection
     of distribution of objects such as histograms or splines,
-    where each object represents a single distribtuion
+    where each object represents a single distribution
 
     """
 
@@ -368,7 +368,7 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
         """Returns the moments request moments for all the PDFs.
 
         This used to call a hacked version `Pdf_gen._moment_fix` which can handle cases of multiple PDFs.
-        Now it prints a deprication warning for scipy < 1.8
+        Now it prints a depreciation warning for scipy < 1.8
 
         Parameters
         ----------

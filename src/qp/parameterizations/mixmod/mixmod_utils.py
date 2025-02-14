@@ -1,5 +1,5 @@
 import numpy as np
-from ....core.lazy_modules import mixture
+from ...core.lazy_modules import mixture
 
 
 def extract_mixmod_fit_samples(in_dist, **kwargs):

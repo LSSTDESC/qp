@@ -5,6 +5,7 @@ import os
 import numpy as np
 import tables_io
 from tables_io import hdf5
+from typing import Mapping, Optional
 
 from ..utils.dictionary import (
     check_array_shapes,
@@ -13,6 +14,7 @@ from ..utils.dictionary import (
     slice_dict,
 )
 from ..metrics import quick_moment
+from ..parameterizations.base import Pdf_gen
 
 # import psutil
 # import timeit
@@ -21,19 +23,21 @@ from ..metrics import quick_moment
 class Ensemble:
     """An object comprised of many qp.PDF objects to efficiently perform operations on all of them"""
 
-    def __init__(self, gen_func, data, ancil=None):
+    def __init__(
+        self, the_class: Pdf_gen, data: Mapping, ancil: Optional[Mapping] = None
+    ):
         """Class constructor
 
         Parameters
         ----------
-        gen_func : `function`
-            Function that creates generic distribution object
+        the_class : a subclass of `Pdf_gen`
+            The class to use to parameterize the distributions
         data : `dict`
             Dictionary with data used to construct the ensemble
 
         """
         # start_time = timeit.default_timer()
-        self._gen_func = gen_func
+        self._gen_func = the_class.create
         self._frozen = self._gen_func(**data)
         self._gen_obj = self._frozen.dist
         self._gen_class = type(self._gen_obj)
