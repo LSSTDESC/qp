@@ -10,6 +10,32 @@ from ...core.factory import add_class
 from ...core.ensemble import Ensemble
 
 
+# ---------------------------------------------------------------------
+# How to use this template
+# ---------------------------------------------------------------------
+#
+# This template is meant to provide you with a starting point when
+# creating a new parameterization. In this template, `[]`` indicates text
+# that should be replaced with the relevant text for this parameterization.
+# For example [parameterization] indicates that you should replace the entire
+# square brackets and text within with the name of the parameterization you
+# are creating.
+#
+# The uncommented code provided within this template should
+# not need to be altered except as directed in comments above the code,
+# usually just indicating to replace variable names as necessary. The
+# template also provides some code lines that can be uncommented and altered
+# as instructed.
+#
+# Start by copying this template to a new folder named after your new
+# parameterization type in the parameterizations folder. Within this folder,
+# you should have the following files at a minimum:
+# - __init__.py
+# - [paramterization].py file
+# - [parameterization]_utils.py
+
+
+# -> replace `parameterization` in the class name with your chosen parameterization name
 class parameterization_gen(Pdf_rows_gen):
     """[Description goes here]
 
@@ -25,7 +51,7 @@ class parameterization_gen(Pdf_rows_gen):
 
     # pylint: disable=protected-access
 
-    name = "parameterization"
+    name = "[parameterization]"
     version = 0
 
     _support_mask = rv_continuous._support_mask
@@ -36,20 +62,29 @@ class parameterization_gen(Pdf_rows_gen):
 
         Parameters
         ----------
-        arg1 : array_like
+        [arg1] : array_like
           [description]
 
-        arg2 : array_like
+        [arg2] : array_like
           [description]
         """
 
-        # this should be included at some point in the initialization to check if the input data is normalized
+        # ---------------------------------------------------------------------
+        # The init function
+        # ---------------------------------------------------------------------
+        # Replace `arg1` and `arg2` in this function (and those throughout)
+        # with appropriate variable names for your coordinates and data arguments.
+        # Additional arguments can be added as necessary.
+
+        # This code block checks if the input data is normalized
+        # When the `check_input` argument is True or is not given
         check_input = kwargs.pop("check_input", True)
         if check_input:
-            # normalize the distribution here
+            # -> Add code here to normalize the distribution
             pass
         else:
-            # skip normalization
+            # -> Add code here that will set up the variables
+            # but skip the normalization
             pass
 
         # initialize the data
@@ -67,28 +102,64 @@ class parameterization_gen(Pdf_rows_gen):
         self._addmetadata("arg1", self._arg1)
         self._addobjdata("arg2", self._arg2)
 
+    # ---------------------------------------------------------------------
+    # Functions that allow access to the data as attributes
+    # ---------------------------------------------------------------------
+    # Here we have properties for the two arguments, `arg1` and `arg2` that
+    # we created. Add more functions if your parameterization has more
+    # arguments.
+
+    # property that allows access to the 'metadata' field
+    # -> Replace `arg1` with the appropriate metadata variable
     @property
-    def arg1(self):  # property that allows access to the 'metadata' field
+    def arg1(self):
         """Return arg1"""
         return self._arg1
 
+    # property that allows access to the 'data' field
+    # -> Replace `arg2` with the appropriate data variable
     @property
-    def arg2(self):  # property that allows access to the 'data' field
+    def arg2(self):
         """Return arg2"""
         return self._arg2
 
-    # TODO: add expected return format?
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
 
-        # put here functionality to evalulate the pdf
-        return function_to_evaluate_pdf.ravel()
+        # ---------------------------------------------------------------------
+        # The pdf evaluation function
+        # ---------------------------------------------------------------------
+        # This typically takes the form of a function from the
+        # [paramterization]_utils.py file, where the output
+        # is typically a 2D array of shape (npdf, n)
+        # .ravel() is necessary to ensure that the array is 1D
+        # when passed into scipy's rv_continuous pdf function
+
+        # -> Uncomment the line below and replace the function with
+        # the relevant function and arguments, then delete the additional
+        # return statement
+        #
+        # return function_to_evaluate_pdf.ravel()
+        return
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
 
-        # put here functionality to evaluate the cdf
-        return function_to_evaluate_cdf.ravel()
+        # ---------------------------------------------------------------------
+        # The cdf evaluation function
+        # ---------------------------------------------------------------------
+        # This typically takes the form of a function from the
+        # [paramterization]_utils.py file, where the output
+        # is typically a 2D array of shape (npdf, n)
+        # .ravel() is necessary to ensure that the array is 1D
+        # when passed into scipy's rv_continuous cdf function
+
+        # -> Uncomment the line below and replace the function with
+        # the relevant function and arguments, then delete the additional
+        # return statement
+        #
+        # return function_to_evaluate_cdf.ravel()
+        return
 
     def _updated_ctor_param(self) -> Mapping:
         """
@@ -106,7 +177,8 @@ class parameterization_gen(Pdf_rows_gen):
         """
         Adds this class' mappings to the conversion dictionary. Specifically, this should include at
         least a creation method and a function to extract the necessary values from the distribution
-        to provide to the creation method.
+        to provide to the creation method. Together these functions should allow conversion from any
+        other parameterization to this one.
 
         """
         # ---------------------------------------------------------------------
@@ -126,22 +198,21 @@ class parameterization_gen(Pdf_rows_gen):
         # Add the extraction function(s)
         # ---------------------------------------------------------------------
         #
-        # At least one extraction method is required
-        # The key for this extraction method should be `None`
-        # to make it the default. To add an extraction method,
-        # uncomment the line of code below and change `func_to_convert_default`
-        # to a useable function, either in parameterization_utils.py, or
-        # in utils.conversion.py
+        # At least one extraction method is required. The key for this
+        # extraction method should be `None` to make it the default.
 
-        # Line to uncomment:
+        # -> To add an extraction method, uncomment the line of code below
+        # and change `func_to_convert_default` to a useable function, either
+        # in parameterization_utils.py, or in utils.conversion.py
+        #
         # cls._add_extraction_method(func_to_convert_default, None)
 
         # You can optionally provide additional conversion methods
         # These need to have a specific key so the user can refer to
-        # them when converting. Uncomment the line below and change the
-        # function and key to appropriate values
-
-        # Line to uncomment:
+        # them when converting.
+        # -> Uncomment the line below and change the function and key
+        # to appropriate values
+        #
         # cls._add_extraction_method(other_func_to_convert, "method_key")
 
     @classmethod
@@ -150,14 +221,14 @@ class parameterization_gen(Pdf_rows_gen):
         for iterative write. We only need to allocate the data columns, as
         the metadata will be written when we finalize the file.
 
-        The number of data columns is calculated based on the length or
-        shape of the metadata. For example, the number of columns is ``nbins-1``
+        The number of data columns is calculated based on the length or shape of the
+        metadata, ``n``. For example, the number of columns is ``nbins-1``
         for a histogram.
 
         Parameters
         ----------
         npdf : int
-            number of *total* distributions that will be written out
+            Total number of distributions that will be written out
         kwargs :
             The keys needed to construct the shape of the data to be written.
 
@@ -165,7 +236,8 @@ class parameterization_gen(Pdf_rows_gen):
         -------
         Mapping
             A dictionary with a key for the objdata, a tuple with the shape of that data,
-            and the data type of the data.
+            and the data type of the data as a string.
+            i.e. ``{objdata_key = (npdf, n), "f4"}``
 
         Raises
         ------
@@ -173,8 +245,15 @@ class parameterization_gen(Pdf_rows_gen):
             Raises an error if the required kwarg is not provided.
         """
 
+        # Checks that the required keyword is present in the function call
+        # -> In the lines below fill out `arg1` with the appropriate
+        # metadata key
         if "arg1" not in kwargs:
             raise ValueError("required argument 'arg1' not included in kwargs")
+
+        # Gets the shape of the coordinates/metadata. The line below is a
+        # sample of how to do it, but you may need to modify as necessary.
+        # -> Replace `arg1` and rename `narg1` below
         narg1 = len(kwargs["arg1"].flatten())
         return dict(pdfs=((npdf, narg1), "f4"))
 
@@ -182,10 +261,10 @@ class parameterization_gen(Pdf_rows_gen):
     def create_ensemble(
         self, data: Mapping, ancil: Optional[Mapping] = None
     ) -> Ensemble:
-        """Creates an Ensemble of distributions parameterized as [parameterization type].
+        """Creates an Ensemble of distributions parameterized as [parameterization].
 
         Input data format:
-        data = {'arg1': array_like, 'arg2': array_like}, where args are the necessary inputs for the parameterization.
+        data = {'[arg1]': array_like, '[arg2]': array_like}, where args are the necessary inputs for the parameterization.
 
 
         Parameters
@@ -207,8 +286,8 @@ class parameterization_gen(Pdf_rows_gen):
 
         >>> import qp
         >>> import numpy as np
-        >>> data = {test data}
-        >>> ancil = {'ids': test ids }
+        >>> data = {[test data]}
+        >>> ancil = {'ids': [test ids] }
         >>> ens = qp.[parameterization].create_ensemble(data,ancil)
         >>> ens.metadata()
         [output here]
@@ -217,9 +296,15 @@ class parameterization_gen(Pdf_rows_gen):
 
         return Ensemble(self, data, ancil)
 
-    #
+    # ---------------------------------------------------------------------
     # Optional methods
-    #
+    # ---------------------------------------------------------------------
+    # These are methods that will be calculated using scipy's underlying
+    # functions, if no method is included for them here. You should only
+    # add a method for one of these functions if it will speed up the
+    # calculations or otherwise improve upon scipy's functionality.
+
+    # -> Delete these functions if not using
 
     def _ppf():
         pass
@@ -233,17 +318,30 @@ class parameterization_gen(Pdf_rows_gen):
     def _rvs():
         pass
 
+    # ---------------------------------------------------------------------
+    # Optional plotting method
+    # ---------------------------------------------------------------------
+    # Set a native plotting method that allows users to quickly plot pdfs
+    # of your parameterization.
+    # -> Delete the method below if not used
+
     @classmethod
     def plot_native(cls, pdf, **kwargs):
-        """Plot the PDF in a way that is particular to this type of distribution
-
-        For a histogram this shows the bin edges
+        """Plot the PDF in a way that is particular to this type of distribution.
+        [specific description of the plot for this parameterization]
         """
-        # add any plotting functions you create for this to plotting.py
+        # -> Add any plotting functions you create for this to the
+        # [parameterization]_utils.py file. You should return the axes
+        # with the plot already created on them
         pass
 
 
-parameterization = (
-    parameterization_gen.create
-)  # alias the class to just the parameterization name
-add_class(parameterization_gen)  # register the class with the factory
+# ---------------------------------------------------------------------
+# Set alias and add class to factory
+# ---------------------------------------------------------------------
+# -> Replace `parameterization` in the lines below with the name of your parameterization
+parameterization = parameterization_gen
+
+# Register the class with the factory
+# -> Replace `parameterization` with the name of your parameterization
+add_class(parameterization_gen)
