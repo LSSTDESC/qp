@@ -161,8 +161,9 @@ class Factory(OrderedDict):
         dictionary will need different keys depending on what parameterization
         you have chosen.
 
-        If you are unsure of which keys are required, try
-        ``qp.parameterization.create_ensemble?`` which describes the necessary
+        If you are unsure which keys are required, try
+        ``qp.[parameterization].create_ensemble?``, where [parameterization] is the
+        class of ensemble you wish to create. This will output a docstring with the necessary
         inputs (and this function can also be used to create an Ensemble).
 
         Parameters
@@ -396,8 +397,9 @@ class Factory(OrderedDict):
     def convert(self, in_dist: Ensemble, class_name: str, **kwds) -> Ensemble:
         """Convert an ensemble to a different parameterization. Keyword arguments are
         required to convert to a different parameterization, but the specific keyword
-        arguments required will vary.
-
+        arguments required will vary. To check the available conversion methods
+        and their associated arguments refer to the docstrings for ``qp.class_name``
+        of the parameterization you are converting to.
 
 
         Parameters

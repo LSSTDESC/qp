@@ -22,7 +22,43 @@ from ..parameterizations.base import Pdf_gen
 
 
 class Ensemble:
-    """An object comprised of many qp distribution objects to efficiently perform operations on all of them."""
+    """An object comprised of one or more qp distributions with the same parameterization.
+
+    This object has three main data components, the last of which is optional:
+    1. The metadata: this contains information about the parameterization, and
+        the coordinates of the parameterization.
+    2. The object data: this contains the data that is unique to each distribution,
+        for example the values that correspond to the coordinates.
+    3. The ancillary data (optional): this contains data points where there is one data point
+        for each distribution in the ensemble. There can be many of these columns or
+        arrays in the ancillary data table.
+
+
+    Parameters
+    ----------
+    the_class : a subclass of `Pdf_gen`
+        The class to use to parameterize the distributions
+    data : `dict`
+        Dictionary with data used to construct the ensemble. The keys required
+        vary for different parameterizations.
+    ancil : `dict`, optional
+        Dictionary with ancillary data, by default None
+    method : `str`, optional
+        The key for the creation method to use, by default None
+
+
+    Attributes
+    ----------
+    gen_func
+
+    Methods
+    -------
+    metadata()
+        Returns the metadata of the ensemble
+    objdata()
+        Returns the object data of the ensemble
+
+    """
 
     def __init__(
         self,
@@ -31,14 +67,29 @@ class Ensemble:
         ancil: Optional[Mapping] = None,
         method: Optional[str] = None,
     ):
-        """Class constructor
+        """Class constructor. The requirements are the class object that the ensemble is
+        to be parameterized as, and the data dictionary.
+
+        The data dictionary will need different keys depending on what parameterization
+        you have chosen. If you are unsure which keys are required, try
+        ``qp.[parameterization].create_ensemble?``, where [parameterization] is the
+        class of ensemble you wish to create. This will output a docstring with which
+        describes the necessary inputs (and this function can also be used to create an
+        ensemble instead).
+
+        An ancillary data dictionary can also be provided upon creation. This dictionary
+        should contain arrays that are the same length as the number of distributions in the
+        ensemble. Essentially, this should include arrays of data where each value in the array
+        corresponds to a distribution.
+
 
         Parameters
         ----------
         the_class : a subclass of `Pdf_gen`
             The class to use to parameterize the distributions
         data : `dict`
-            Dictionary with data used to construct the ensemble
+            Dictionary with data used to construct the ensemble. The keys required
+            vary for different parameterizations.
         ancil : `dict`
             Dictionary with ancillary data, by default None
         method : `str`
@@ -141,7 +192,9 @@ class Ensemble:
         return self._ancil
 
     def convert_to(self, to_class: Pdf_gen, **kwargs):
-        """Convert this ensemble to the given parameterization class.
+        """Convert this ensemble to the given parameterization class. To see
+        the available conversion methods for the your chosen parameterizatipn
+        and their required arguments, check the docstrings for ``qp.to_class``.
 
         Parameters
         ----------
@@ -158,7 +211,7 @@ class Ensemble:
         Returns
         -------
         ens : `qp.Ensemble`
-            Ensemble of pdfs type class_to using the data from this object
+            Ensemble of distributions of type class_to using the data from this object
         """
         kwds = kwargs.copy()
         method = kwds.pop("method", None)
@@ -851,48 +904,3 @@ class Ensemble:
         """
         mdata = self.metadata()
         hdf5.finalize_HDF5_write(filename, "meta", **mdata)
-
-    # def stack(self, loc, using, vb=True):
-    #     """
-    #     Produces an average of the PDFs in the ensemble
-    #
-    #     Parameters
-    #     ----------
-    #     loc: ndarray, float or float
-    #         location(s) at which to evaluate the PDFs
-    #     using: string
-    #         which parametrization to use for the approximation
-    #     vb: boolean
-    #         report on progress
-    #
-    #     Returns
-    #     -------
-    #     self.stacked: tuple, ndarray, float
-    #         pair of arrays for locations where approximations were evaluated
-    #         and the values of the stacked PDFs at those points
-    #
-    #     Notes
-    #     -----
-    #     Stacking refers to taking the sum of PDFs evaluated on a shared grid and
-    #     normalizing it such that it integrates to unity.  This is equivalent to
-    #     calculating an average probability (based on the PDFs in the ensemble) over the grid.
-    #     This probably should be done in a script and not by qp!  The right way to do it would be to call
-    #     qp.Ensemble.evaluate() and sum those outputs appropriately.
-    #     TO DO: make this do something more efficient for mixmod, grid, histogram, samples
-    #     TO DO: enable stacking on irregular grid
-    #     """
-    #     loc_range = max(loc) - min(loc)
-    #     delta = loc_range / len(loc)
-    #     evaluated = self.evaluate(loc, using=using, norm=True, vb=vb)
-    #     stack = np.mean(evaluated[1], axis=0)
-    #     stack /= np.sum(stack) * delta
-    #     assert(np.isclose(np.sum(stack) * delta, 1.))
-    #     self.stacked[using] = (evaluated[0], stack)
-    #     return self.stacked
-
-
-# Note: A copious quantity of commented code has been removed in this commit!
-# For future reference, it can still be found here:
-#  https://github.com/aimalz/qp/blob/d8d145af9514e29c76e079e869b8b4923f592f40/qp/ensemble.py
-# Critical additions still remain.  Metrics of individual qp.PDF objects collected in aggregate
-# over a qp.Ensemble are still desired.

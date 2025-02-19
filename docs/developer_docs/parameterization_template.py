@@ -15,11 +15,11 @@ from ...core.ensemble import Ensemble
 # ---------------------------------------------------------------------
 #
 # This template is meant to provide you with a starting point when
-# creating a new parameterization. In this template, `[]`` indicates text
-# that should be replaced with the relevant text for this parameterization.
-# For example [parameterization] indicates that you should replace the entire
-# square brackets and text within with the name of the parameterization you
-# are creating.
+# creating a new parameterization. In this template, square brackets like these
+# [] indicate text that should be replaced with the relevant text for this
+# parameterization. For example, [parameterization] indicates that you should
+# replace the entire square brackets and text within with the name of the
+# parameterization you are creating.
 #
 # The uncommented code provided within this template should
 # not need to be altered except as directed in comments above the code,
@@ -35,15 +35,47 @@ from ...core.ensemble import Ensemble
 # - [parameterization]_utils.py
 
 
-# -> replace `parameterization` in the class name with your chosen parameterization name
+# -> Replace `parameterization` in the class name with your chosen parameterization name
+#    and fill out the relevant information in the class docstring below
 class parameterization_gen(Pdf_rows_gen):
-    """[Description goes here]
+    """[One sentence Description goes here]
 
+    [ any further description needed here]
 
-    [Describe arguments and their structure]
+    By default, the input distribution is normalized. If the input data is
+    already normalized, you can use the optional parameter ``check_input = False``
+    to skip the normalization process.
+
+    Parameters
+    ----------
+
+    Attributes
+    ----------
+    [arg1] : [dtype]
+        [description]
+    [arg2] : [dtype]
+        [description]
+
+    Methods
+    -------
+    create_ensemble(data,ancil)
+        Create an ensemble with this parameterization.
 
     Notes
     -----
+
+    Converting to this parameterization:
+
+    This table contains the available methods to convert to this parameterization,
+    their required arguments, and their method keys. If the key is `None`, this is
+    the default conversion method.
+    +----------+-----------+------------+
+    | Function | Arguments | Method key |
+    +----------+-----------+------------+
+    |          |           |            |
+    +----------+-----------+------------+
+
+    Implementation notes:
 
     [any notes/caveats on how specific distributions are calculated]
 
@@ -64,17 +96,19 @@ class parameterization_gen(Pdf_rows_gen):
         ----------
         [arg1] : array_like
           [description]
-
         [arg2] : array_like
           [description]
+        check_input : bool, optional
+            If True, normalizes the input distribution. If False, assumes the
+            given distribution is already normalized. By default True.
         """
 
         # ---------------------------------------------------------------------
         # The init function
         # ---------------------------------------------------------------------
-        # Replace `arg1` and `arg2` in this function (and those throughout)
-        # with appropriate variable names for your coordinates and data arguments.
-        # Additional arguments can be added as necessary.
+        # -> Replace `arg1` and `arg2` in this function (and those throughout)
+        #    with appropriate variable names for your coordinates and data arguments.
+        #    Additional arguments can be added as necessary.
 
         # This code block checks if the input data is normalized
         # When the `check_input` argument is True or is not given
@@ -84,7 +118,7 @@ class parameterization_gen(Pdf_rows_gen):
             pass
         else:
             # -> Add code here that will set up the variables
-            # but skip the normalization
+            #    but skip the normalization
             pass
 
         # initialize the data
@@ -136,8 +170,8 @@ class parameterization_gen(Pdf_rows_gen):
         # when passed into scipy's rv_continuous pdf function
 
         # -> Uncomment the line below and replace the function with
-        # the relevant function and arguments, then delete the additional
-        # return statement
+        #    the relevant function and arguments, then delete the additional
+        #    return statement
         #
         # return function_to_evaluate_pdf.ravel()
         return
@@ -149,14 +183,14 @@ class parameterization_gen(Pdf_rows_gen):
         # The cdf evaluation function
         # ---------------------------------------------------------------------
         # This typically takes the form of a function from the
-        # [paramterization]_utils.py file, where the output
+        # [parameterization]_utils.py file, where the output
         # is typically a 2D array of shape (npdf, n)
         # .ravel() is necessary to ensure that the array is 1D
         # when passed into scipy's rv_continuous cdf function
 
         # -> Uncomment the line below and replace the function with
-        # the relevant function and arguments, then delete the additional
-        # return statement
+        #    the relevant function and arguments, then delete the additional
+        #    return statement
         #
         # return function_to_evaluate_cdf.ravel()
         return
@@ -168,6 +202,8 @@ class parameterization_gen(Pdf_rows_gen):
         necessary to construct the distribution.
         """
         dct = super()._updated_ctor_param()
+
+        # -> replace `arg1` and `arg2` with your arguments and add any additional ones necessary
         dct["arg1"] = self._arg1
         dct["arg2"] = self._arg2
         return dct
@@ -191,8 +227,8 @@ class parameterization_gen(Pdf_rows_gen):
         # You may add additional creation methods here, but they need to have a
         # specific key so they can be referred to when converting
         #
-        # Uncomment the line below to add additional creation method:
-        # cls._add_creation_method(creation_method_function, "method_key")
+        # -> Uncomment the line below to add additional creation method:
+        #    cls._add_creation_method(creation_method_function, "method_key")
 
         # ---------------------------------------------------------------------
         # Add the extraction function(s)
@@ -202,8 +238,8 @@ class parameterization_gen(Pdf_rows_gen):
         # extraction method should be `None` to make it the default.
 
         # -> To add an extraction method, uncomment the line of code below
-        # and change `func_to_convert_default` to a useable function, either
-        # in parameterization_utils.py, or in utils.conversion.py
+        #    and change `func_to_convert_default` to a useable function,
+        #    either in parameterization_utils.py, or in utils.conversion.py
         #
         # cls._add_extraction_method(func_to_convert_default, None)
 
@@ -211,7 +247,7 @@ class parameterization_gen(Pdf_rows_gen):
         # These need to have a specific key so the user can refer to
         # them when converting.
         # -> Uncomment the line below and change the function and key
-        # to appropriate values
+        #    to appropriate values
         #
         # cls._add_extraction_method(other_func_to_convert, "method_key")
 
@@ -247,7 +283,7 @@ class parameterization_gen(Pdf_rows_gen):
 
         # Checks that the required keyword is present in the function call
         # -> In the lines below fill out `arg1` with the appropriate
-        # metadata key
+        #    metadata key
         if "arg1" not in kwargs:
             raise ValueError("required argument 'arg1' not included in kwargs")
 
@@ -304,36 +340,38 @@ class parameterization_gen(Pdf_rows_gen):
     # add a method for one of these functions if it will speed up the
     # calculations or otherwise improve upon scipy's functionality.
 
-    # -> Delete these functions if not using
+    # -> Uncomment any method below if using
 
-    def _ppf():
-        pass
+    # def _ppf():
+    #     pass
 
-    def _sf():
-        pass
+    # def _sf():
+    #     pass
 
-    def _isf():
-        pass
+    # def _isf():
+    #     pass
 
-    def _rvs():
-        pass
+    # def _rvs():
+    #     pass
 
     # ---------------------------------------------------------------------
     # Optional plotting method
     # ---------------------------------------------------------------------
-    # Set a native plotting method that allows users to quickly plot pdfs
+    # Set a native plotting method that allows users to quickly plot PDFs
     # of your parameterization.
-    # -> Delete the method below if not used
+    # -> Uncomment the method below if used
 
-    @classmethod
-    def plot_native(cls, pdf, **kwargs):
-        """Plot the PDF in a way that is particular to this type of distribution.
-        [specific description of the plot for this parameterization]
-        """
-        # -> Add any plotting functions you create for this to the
-        # [parameterization]_utils.py file. You should return the axes
-        # with the plot already created on them
-        pass
+    # @classmethod
+    # def plot_native(cls, pdf, **kwargs):
+    #     """Plot the PDF in a way that is particular to this type of distribution.
+    #     [specific description of the plot for this parameterization]
+    #     """
+    #     # -> Add any plotting functions you create for this to the
+    #     #    `plotting.py`` file in the `utils`` folder.
+
+    #     # You should return the axes with the plot already created on them
+    #     # as the return statement of the function.
+    #     pass
 
 
 # ---------------------------------------------------------------------

@@ -5,6 +5,7 @@ import numpy as np
 
 from scipy.stats import rv_continuous
 from typing import Mapping, Optional
+from numpy.typing import ArrayLike
 
 from .hist_utils import (
     evaluate_hist_x_multi_y,
@@ -23,27 +24,64 @@ from ...core.ensemble import Ensemble
 
 
 class hist_gen(Pdf_rows_gen):
-    """Histogram based distribution
+    """Implements a distribution parameterized as a histogram.
+
+    By default, the input distribution is normalized. If the input data is
+    already normalized, you can use the optional parameter ``check_input = False``
+    to skip the normalization process.
+
+    Parameters
+    ----------
+    bins : arraylike
+        The array containing the (n+1) bin boundaries
+    pdfs : arraylike
+        The array containing the (npdf, n) bin values
+    check_input : bool, optional
+        If True, normalizes the input distribution. If False, assumes the
+        given distribution is already normalized. By default True.
+
+
+    Attributes
+    ----------
+    bins : ndarray
+        The array containing the (n+1) bin boundaries
+    pdfs : ndarray
+        The array containing the (npdf, n) PDF values in the bins
+
+
+    Methods
+    -------
+    create_ensemble(data,ancil)
+        Create an ensemble with this parameterization.
 
     Notes
     -----
-    This implements a PDF using a set of histogramed values.
 
-    The relevant data members are:
+    Converting to this parameterization:
 
-    bins:  n+1 bin edges (shared for all PDFs)
+    This table contains the available methods to convert to this parameterization,
+    their required arguments, and their method keys. If the key is `None`, this is
+    the default conversion method.
 
-    pdfs:  (npdf, n) bin values
+    +------------------------+-----------------------------------------------------+------------+
+    | Function               | Arguments                                           | Method key |
+    +------------------------+-----------------------------------------------------+------------+
+    | `extract_hist_values`  | bins (array of bin edges)                           | None       |
+    +------------------------+-----------------------------------------------------+------------+
+    | `extract_hist_samples` | bins (array of bin edges),                          | samples    |
+    |                        | size (int, optional, number of samples to generate) |            |
+    +------------------------+-----------------------------------------------------+------------+
 
-    Inside a given bin the pdf() will return the pdf value.
-    Outside the range bins[0], bins[-1] the pdf() will return 0.
+    Implementation notes:
 
-    Inside a given bin the cdf() will use a linear interpolation across the bin
-    Outside the range bins[0], bins[-1] the cdf() will return (0 or 1), respectively
+    Inside a given bin `pdf()` will return the hist_gen.pdfs value.
+    Outside the range of the given bins `pdf()` will return 0.
 
-    The ppf() is computed by inverting the cdf().
-    ppf(0) will return bins[0]
-    ppf(1) will return bins[-1]
+    Inside a given bin `cdf()` will use a linear interpolation across the bin.
+    Outside the range of the given bins `cdf()` will return (0 or 1), respectively.
+
+    The percentage point function `ppf()` will return bins[0] at 0, and
+    will return bins[-1] at 1.
     """
 
     # pylint: disable=protected-access
@@ -55,15 +93,17 @@ class hist_gen(Pdf_rows_gen):
 
     def __init__(self, bins, pdfs, *args, **kwargs):
         """
-        Create a new distribution using the given histogram
+        Create a new distribution using the given histogram.
 
         Parameters
         ----------
         bins : array_like
           The array containing the (n+1) bin boundaries
-
         pdfs : array_like
           The array containing the (npdf, n) bin values
+        check_input : bool, optional
+            If True, normalizes the input distribution. If False, assumes the
+            given distribution is already normalized. By default True.
         """
         self._hbins = np.asarray(bins)
         self._nbins = self._hbins.size - 1
