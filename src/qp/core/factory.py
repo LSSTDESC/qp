@@ -19,7 +19,7 @@ from .ensemble import Ensemble
 
 from ..utils.dictionary import compare_dicts, concatenate_dicts
 
-from ..parameterizations.base import Pdf_gen_wrap
+from ..parameterizations.base import Pdf_gen_wrap, Pdf_gen
 
 
 class Factory(OrderedDict):
@@ -32,7 +32,8 @@ class Factory(OrderedDict):
 
     @staticmethod
     def _build_data_dict(md_table: Mapping, data_table: Mapping) -> Mapping:
-        """Convert the tables to a dictionary that can be used to build an Ensemble"""
+        """Convert the metadata and data tables to a single dictionary that can be used as input to
+        build an Ensemble."""
         data_dict = {}
 
         for col, col_data in md_table.items():
@@ -57,7 +58,7 @@ class Factory(OrderedDict):
                 data_dict[col] = col_data
         return data_dict
 
-    def _make_scipy_wrapped_class(self, class_name, scipy_class):
+    def _make_scipy_wrapped_class(self, class_name: str, scipy_class):
         """Build a qp class from a scipy class"""
         # pylint: disable=protected-access
         override_dict = dict(
@@ -69,7 +70,6 @@ class Factory(OrderedDict):
         )
         the_class = type(class_name, (Pdf_gen_wrap, scipy_class), override_dict)
 
-        # set a function to create an ensemble with this parameterization in the analytic module
         def create_ensemble(data: Mapping, ancil: Optional[Mapping] = None) -> Ensemble:
             """Creates an Ensemble of distribution(s) in the given parameterization.
 
@@ -115,20 +115,23 @@ class Factory(OrderedDict):
         self.add_class(the_class)
 
     def _load_scipy_classes(self):
-        """Build qp classes from all the scipy classes"""
+        """Build qp classes from all the scipy.stats classes"""
         names = sps.__all__
         for name in names:
             attr = getattr(sps, name)
             if isinstance(attr, sps.rv_continuous):
                 self._make_scipy_wrapped_class(name, type(attr))
 
-    def add_class(self, the_class):
-        """Add a class to the factory
+    def add_class(self, the_class: Pdf_gen):
+        """Add a parameterization class to the factory dictionary, so that it is
+        included in the set of known parameterization classes. It includes an
+        entry both for the actual class name, which ends in ``_gen``, and the
+        parameterization name that is also aliased to the class.
 
         Parameters
         ----------
-        the_class : class
-            The class we are adding, must inherit from Pdf_Gen
+        the_class : Pdf_gen-based class
+            The parameterization class we are adding, which must inherit from Pdf_gen.
         """
         # if not isinstance(the_class, Pdf_gen): #pragma: no cover
         #    raise TypeError("Can only add sub-classes of Pdf_Gen to factory")
@@ -160,7 +163,7 @@ class Factory(OrderedDict):
 
         If you are unsure of which keys are required, try
         ``qp.parameterization.create_ensemble?`` which describes the necessary
-        inputs (and the function can also be used to create an Ensemble).
+        inputs (and this function can also be used to create an Ensemble).
 
         Parameters
         ----------
@@ -169,12 +172,19 @@ class Factory(OrderedDict):
         data : `dict`
             Dictionary of values passed to the parameterization create function.
         method : `str` [`None`]
-            Used to select which creation method to invoke
+            Used to select which creation method to invoke if there are multiple.
 
         Returns
         -------
         ens : `qp.Ensemble`
             The newly created Ensemble
+
+        Example
+        -------
+
+        >>> import qp
+        >>> qp.create('hist', data=data)
+
         """
 
         # handle if class creation function is given instead of string
@@ -184,23 +194,28 @@ class Factory(OrderedDict):
         if class_name not in self:  # pragma: no cover
             raise KeyError("Class named %s is not in factory" % class_name)
         the_class = self[class_name]
-        ctor_func = the_class.creation_method(method)
-        return Ensemble(ctor_func, data)
+        # ctor_func = the_class.creation_method(method)
+        return Ensemble(the_class, data, method=method)
 
     def from_tables(self, tables: Mapping) -> Ensemble:
-        """Build this ensemble from a dictionary of tables, where the metadata has key ``meta``,
-        the data has key ``data``. If there is an ancillary data table, it should have the
+        """Build this Ensemble from a dictionary of tables, where the metadata has key ``meta``,
+        and the data has key ``data``. If there is an ancillary data table, it should have the
         key ``ancil``.
+
+        The function will create the ensemble with the parameterization given in the ``meta``
+        table, and will use any other information in the ``meta`` table necessary to figure out
+        how to construct the ensemble (i.e. construction method).
 
         Parameters
         ----------
         tables: `Mapping`
             The dictionary of tables to turn into an Ensemble.
 
-        Notes
-        -----
-        This will use information in the meta data table to figure out how to construct the data
-        need to build the ensemble.
+        Returns
+        -------
+        ens : Ensemble
+            The ensemble constructed from the data in the tables.
+
         """
         md_table = tables["meta"]
         data_table = tables["data"]
@@ -215,28 +230,36 @@ class Factory(OrderedDict):
 
         the_class = self[pdf_name]
         reader_convert = the_class.reader_method(pdf_version)
-        ctor_func = the_class.creation_method(None)
+        # ctor_func = the_class.creation_method(None)
         if reader_convert is not None:  # pragma: no cover
             data = reader_convert(data)
-        return Ensemble(ctor_func, data=data, ancil=ancil_table)
+        return Ensemble(the_class, data=data, ancil=ancil_table)
 
     def read_metadata(self, filename: str) -> Mapping:
         """Read an ensemble's metadata from a file, without loading the full data.
+        The file must have multiple tables, one of which is called ``meta``.
 
         Parameters
         ----------
         filename : `str`
+            The full path to the file.
+
+        Returns
+        -------
+        meta : Mapping
+            Returns the metadata table as a dictionary of numpy arrays.
         """
         tables = tables_io.read(filename, NUMPY_DICT, keys=["meta"])
         return tables["meta"]
 
     def is_qp_file(self, filename: str) -> bool:
-        """Test if a file is a qp file
+        """Test if a file is a qp file. Must have at least a table called ``meta`` in the
+        file, and that ``meta`` table must have a property ``pdf_name``.
 
         Parameters
         ----------
         filename : `str`
-            File to test
+            Path to file to test.
 
         Returns
         -------
@@ -254,16 +277,21 @@ class Factory(OrderedDict):
         return False
 
     def read(self, filename: str) -> Ensemble:
-        """Read this ensemble from a file
+        """Read this ensemble from a file. The file must be a qp file.
+
+        The function will create the ensemble with the parameterization given in the metadata
+        table, and will use any other information in the metadata table necessary to figure out
+        how to construct the ensemble (i.e. construction method).
 
         Parameters
         ----------
         filename : `str`
+            Path to the file.
 
-        Notes
-        -----
-        This will use information in the meta data to figure out how to construct the data
-        need to build the ensemble.
+        Returns
+        -------
+        ens : Ensemble
+            The ensemble constructed from the data in the file.
         """
         _, ext = os.path.splitext(filename)
         if ext in [".pq"]:
@@ -280,15 +308,18 @@ class Factory(OrderedDict):
         return self.from_tables(tables)
 
     def data_length(self, filename: str) -> int:
-        """Get the size of data
+        """Get the size of data in a file. The file must be a qp file, which means
+        it must have a ``meta`` table and a ``data`` table.
 
         Parameters
         ----------
         filename : `str`
+            The path to the file with the data.
 
         Returns
         -------
         nrows : `int`
+            The length of the data, or the number of distributions in the data.
         """
         f, _ = hdf5.read_HDF5_group(filename, "data")
         num_rows = hdf5.get_group_input_data_length(f)
@@ -301,13 +332,33 @@ class Factory(OrderedDict):
         rank: int = 0,
         parallel_size: int = 1,
     ) -> Iterator[int, int, Ensemble]:
-        """Return an iterator for chunked read
+        """Iterates through a given qp file and yields a chunk of the ensemble data at a time.
+        This means that the returned Ensemble contains the distributions from the returned start
+        index to the returned stop index. If there is an ancillary data table, the Ensemble will
+        also contain any ancillary data for those distributions.
 
         Parameters
         ----------
-        filename : `str`
+        filename : str
+            The path to the file to iterate through.
+        chunk_size : int, optional
+            The size of chunks to yield, by default 100_000
+        rank : int, optional
+            The process rank, if run in MPI, by default 0
+        parallel_size : int, optional
+            The number of processes, if run in MPI, by default 1
 
-        chunk_size : `int`
+        Yields
+        ------
+        Iterator[int, int, Ensemble]
+            the start index, ending index, and an Ensemble with distributions between those two indices
+
+        Raises
+        ------
+        TypeError
+            Raised if this function is run with files that are not ``hdf5`` files.
+        KeyError
+            Raised if the ``pdf_name`` in the file is not one of the available parameterizations.
         """
         extension = os.path.splitext(filename)[1]
         if extension not in [".hdf5"]:  # pragma: no cover
@@ -320,7 +371,7 @@ class Factory(OrderedDict):
             raise KeyError("Class named %s is not in factory" % pdf_name)
         the_class = self[pdf_name]
         # reader_convert = the_class.reader_method(pdf_version)
-        ctor_func = the_class.creation_method(None)
+        # ctor_func = the_class.creation_method(None)
 
         f, infp = hdf5.read_HDF5_group(filename, "data")
         try:
@@ -337,20 +388,26 @@ class Factory(OrderedDict):
             if ancil_f is not None:
                 for key, val in ancil_f.items():
                     ancil_data[key] = hdf5.read_HDF5_dataset_to_array(val, start, end)
-            yield start, end, Ensemble(ctor_func, data=data, ancil=ancil_data)
+            yield start, end, Ensemble(the_class, data=data, ancil=ancil_data)
         infp.close()
         if ancil_infp is not None:
             ancil_infp.close()
 
     def convert(self, in_dist: Ensemble, class_name: str, **kwds) -> Ensemble:
-        """Read an ensemble to a different representation
+        """Convert an ensemble to a different parameterization. Keyword arguments are
+        required to convert to a different parameterization, but the specific keyword
+        arguments required will vary.
+
+
 
         Parameters
         ----------
         in_dist : `qp.Ensemble`
-            Input distributions
+            The input Ensemble object to convert.
         class_name : `str`
-            Representation to convert to
+            Name of the representation to convert to as a string
+        kwds : Mapping
+            The arguments required to convert to a function of the given type.
 
         Returns
         -------
@@ -388,12 +445,13 @@ class Factory(OrderedDict):
 
     @staticmethod
     def concatenate(ensembles: list[Ensemble]) -> Ensemble:
-        """Concatenate a list of ensembles
+        """Concatenate a list of Ensembles into one Ensemble. The
+        Ensembles must be of the same parameterization.
 
         Parameters
         ----------
         ensembles : `list`
-            The ensembles we are concatenating
+            The list of ensembles we are concatenating
 
         Returns
         -------
@@ -405,12 +463,12 @@ class Factory(OrderedDict):
         metadata_list = []
         objdata_list = []
         ancil_list = []
-        gen_func = None
+        gen_class = None
         for ensemble in ensembles:
             metadata_list.append(ensemble.metadata())
             objdata_list.append(ensemble.objdata())
-            if gen_func is None:
-                gen_func = ensemble.gen_func
+            if gen_class is None:
+                gen_class = ensemble.gen_class
             if ancil_list is not None:
                 if ensemble.ancil is None:
                     ancil_list = None
@@ -428,10 +486,28 @@ class Factory(OrderedDict):
             if k in ["pdf_name", "pdf_version"]:
                 continue
             data[k] = np.squeeze(v)
-        return Ensemble(gen_func, data, ancil)
+        return Ensemble(gen_class, data, ancil)
 
     @staticmethod
     def write_dict(filename: str, ensemble_dict: Mapping[str, Ensemble], **kwargs):
+        """Writes out a dictionary of qp Ensembles to an ``HDF5`` file. Each Ensemble
+        in the dictionary will be written to a group, and within each Ensemble group there
+        will be subgroups for the metadata, data, and (optional) ancillary data tables.
+
+        Parameters
+        ----------
+        filename : str
+            The file path to write to.
+        ensemble_dict : Mapping[str, Ensemble]
+            The dictionary of Ensembles to write.
+        kwargs :
+            Keyword arguments that are passed to the tables_io write_dicts_to_HDF5 function
+
+        Raises
+        ------
+        ValueError
+            Raised if the dictionary contains any values that are not Ensembles.
+        """
         output_tables = {}
         for key, val in ensemble_dict.items():
             # check that val is a qp.Ensemble
@@ -444,9 +520,21 @@ class Factory(OrderedDict):
         hdf5.write_dicts_to_HDF5(output_tables, filename, **kwargs)
 
     @staticmethod
-    def read_dict(filename: str) -> Mapping[str, Mapping]:
-        """Assume that filename is an HDF5 file, containing multiple qp.Ensembles
-        that have been stored at nparrays."""
+    def read_dict(filename: str) -> Mapping[str, Ensemble]:
+        """Reads in one or more Ensembles from an ``HDF5`` file to a dictionary of Ensembles.
+        The file should contain one top-level group per ensemble. Each Ensemble group should
+        have subgroups that are the metadata, data, and (optional) ancillary data tables.
+
+        Parameters
+        ----------
+        filename : str
+            The path to the ``HDF5`` file to read in.
+
+        Returns
+        -------
+        Mapping[str, Ensemble]
+            A dictionary with the Ensembles contained in the file.
+        """
         results = {}
 
         # retrieve all the top level groups. Assume each top level group

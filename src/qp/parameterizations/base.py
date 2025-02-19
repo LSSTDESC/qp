@@ -20,6 +20,7 @@ import sys
 
 import numpy as np
 from numpy import asarray
+from typing import Mapping, Optional, Union
 
 from scipy.stats import rv_continuous
 from scipy.stats._distn_infrastructure import rv_continuous_frozen
@@ -185,7 +186,7 @@ class rv_frozen_func(rv_continuous_frozen):
 
     @property
     def ndim(self):
-        """Return the number of dimensions of PDFs in this ensemble"""
+        """Return the number of dimensions of PDFs in this object"""
         return self._ndim
 
     @property
