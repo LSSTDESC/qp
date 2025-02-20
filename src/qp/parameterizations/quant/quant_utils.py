@@ -42,7 +42,15 @@ def extract_quantiles(in_dist, **kwargs):
 
 
 def pad_quantiles(quants, locs):
-    """Pad the quantiles and locations used to build a quantile representation
+    """Pad the quantiles and locations used to build a quantile representation.
+    Ensuring 0 and 1 are part of quantiles.
+    Extrapolates loc at 0 by taking a linear extrapolation from the first two points
+    and following to where it intersects 0
+    Extrapolates loc at 1 by taking a linear extrapolation from the last two points
+    and following to where it intersects 1
+
+    This will add additional data points to the quants and locs
+
 
     Parameters
     ---------

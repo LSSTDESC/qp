@@ -125,9 +125,7 @@ class Pdf_gen:
     def create_gen(cls, **kwds):
         """Create and return a `scipy.stats.rv_continuous` object using the
         keyword arguments provided"""
-        kwds_copy = kwds.copy()
-        name = kwds_copy.pop("name", "dist")
-        return (cls(name=name), kwds_copy)
+        return (cls(**kwds), {})
 
     @classmethod
     def create(cls, **kwds):
@@ -135,7 +133,7 @@ class Pdf_gen:
         keyword arguments provided"""
         # pylint: disable=not-callable
         obj, kwds_freeze = cls.create_gen(**kwds)
-        return obj(**kwds_freeze)
+        return obj()
 
     @classmethod
     def plot(cls, pdf, **kwargs):
@@ -348,12 +346,6 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
         """
         return rv_frozen_rows(self, self._shape, *args, **kwds)
 
-    @classmethod
-    def create_gen(cls, **kwds):
-        """Create and return a `scipy.stats.rv_continuous` object using the
-        keyword arguments provided"""
-        return (cls(**kwds), {})
-
     def _scipy_version_warning(self):
         import scipy  # pylint: disable=import-outside-toplevel
 
@@ -412,6 +404,22 @@ class Pdf_gen_wrap(Pdf_gen):
             The frozen distribution.
         """
         return rv_frozen_func(self, *args, **kwds)
+
+    @classmethod
+    def create_gen(cls, **kwds):
+        """Create and return a `scipy.stats.rv_continuous` object using the
+        keyword arguments provided"""
+        kwds_copy = kwds.copy()
+        name = kwds_copy.pop("name", "dist")
+        return (cls(name=name), kwds_copy)
+
+    @classmethod
+    def create(cls, **kwds):
+        """Create and return a `scipy.stats.rv_frozen` object using the
+        keyword arguments provided"""
+        # pylint: disable=not-callable
+        obj, kwds_freeze = cls.create_gen(**kwds)
+        return obj(**kwds_freeze)
 
     @classmethod
     def get_allocation_kwds(cls, npdf, **kwargs):

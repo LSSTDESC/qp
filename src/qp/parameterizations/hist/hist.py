@@ -93,7 +93,14 @@ class hist_gen(Pdf_rows_gen):
 
     _support_mask = rv_continuous._support_mask
 
-    def __init__(self, bins: ArrayLike, pdfs: ArrayLike, *args, **kwargs):
+    def __init__(
+        self,
+        bins: ArrayLike,
+        pdfs: ArrayLike,
+        check_input: bool = True,
+        *args,
+        **kwargs,
+    ):
         """
         Create a new distribution using the given histogram.
 
@@ -118,8 +125,9 @@ class hist_gen(Pdf_rows_gen):
                 % (self._nbins, np.shape(pdfs)[-1])
             )
 
-        check_input = kwargs.pop("check_input", True)
-        if check_input:
+        # check_input = kwargs.pop("check_input", True)
+        self._check_input = check_input
+        if self._check_input:
             pdfs_2d = reshape_to_pdf_size(pdfs, -1)
             sums = np.sum(pdfs_2d * self._hbin_widths, axis=1)
             self._hpdfs = (pdfs_2d.T / sums).T
@@ -196,6 +204,7 @@ class hist_gen(Pdf_rows_gen):
         dct = super()._updated_ctor_param()
         dct["bins"] = self._hbins
         dct["pdfs"] = self._hpdfs
+        dct["check_input"] = self._check_input
         return dct
 
     @classmethod

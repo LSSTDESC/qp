@@ -334,6 +334,17 @@ class parameterization_gen(Pdf_rows_gen):
 
         return Ensemble(self, data, ancil)
 
+    def norm():
+
+        # TODO: fill out this documentation
+
+        # if normalization makes sense for your input put function
+        # to do this here
+
+        # if normalization doesn't make sense
+        # put function that raises an error if called
+        pass
+
     # ---------------------------------------------------------------------
     # Optional methods
     # ---------------------------------------------------------------------
