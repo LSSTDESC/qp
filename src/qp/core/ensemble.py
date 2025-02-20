@@ -577,7 +577,7 @@ class Ensemble:
 
     def rvs(
         self,
-        size: Optional[int] = None,
+        size: int,
         random_state: Union[None, int, np.random.Generator] = None,
     ) -> ArrayLike:
         """
@@ -587,8 +587,8 @@ class Ensemble:
 
         Parameters
         ----------
-        size: `int`, optional
-            Number of samples to return, by default None
+        size: `int`
+            Number of samples to return
         random_state : `int`, `np.random.Generator`, `None`, optional
             The random state to use. Can be provided with a random seed for consistency. By default None.
 

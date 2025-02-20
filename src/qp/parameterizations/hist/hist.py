@@ -251,6 +251,11 @@ class hist_gen(Pdf_rows_gen):
         number of distributions. The value of 'pdfs' can have multiple rows, where
         each row is a distribution.
 
+        You can also add `check_input` as a key to the dictionary. By default
+        this is True, but if your input is already normalized, you can pass
+        `check_input` as False.
+
+
 
         Parameters
         ----------
