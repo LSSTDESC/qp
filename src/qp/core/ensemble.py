@@ -195,6 +195,8 @@ class Ensemble:
         """Convert this ensemble to the given parameterization class. To see
         the available conversion methods for the your chosen parameterizatipn
         and their required arguments, check the docstrings for ``qp.to_class``.
+        If the parameterization class doesn't have a conversion methods table,
+        then it will not be possible to convert to that class.
 
         Parameters
         ----------
@@ -349,8 +351,9 @@ class Ensemble:
         they must also have the same bins.
 
         Both ensembles must have an ancillary data dictionary in order for them
-        to be appended to each other. If one ensemble has an ancillary data dictionary
-        and the other does not, this will set the ancillary data dictionary to `None`.
+        to be appended to each other. If one ensemble has an ancillary data
+        dictionary and the other does not, this will set the ancillary data
+        dictionary to `None`.
 
         Parameters
         ----------
@@ -801,7 +804,11 @@ class Ensemble:
         grid_to_n = grid**n
         return quick_moment(P_eval, grid_to_n, dx)
 
-    def plot(self, key: Union[int, slice] = 0, **kwargs):
+    def plot(
+        self,
+        key: Union[int, slice] = 0,
+        **kwargs,
+    ):
         """Plot the selected distribution as a curve.
 
         Parameters
@@ -809,18 +816,28 @@ class Ensemble:
         key : `int` or `slice`
             The index or slice of the distribution or distributions from this ensemble
             to plot, by default 0.
+
+        Other Parameters
+        ----------------
+        axes : `matplotlib.axes`
+            The axes to plot on. Either this or xlim must be provided.
+        xlim : (float, float)
+            The x-axis limits. Either this or axes must be provided.
         kwargs :
-            The keyword arguments to pass to the parameterization's plotting method.
+            Any keyword arguments to pass to matplotlib's axes.plot() method.
 
         Returns
         -------
-        axes :
+        axes : `matplotlib.axes`
             The plot axes
         """
         return self._gen_class.plot(self[key], **kwargs)
 
     def plot_native(self, key: Union[int, slice] = 0, **kwargs):
-        """Plot the selected distribution as a curve.
+        """Plot the selected distribution as a curve. To find what arguments are
+        required for specific parameterizations, you can check the docstrings
+        of qp.[parameterization].plot_native, where [parameterization] is the parameterization
+        class for the current ensemble.
 
         Parameters
         ----------

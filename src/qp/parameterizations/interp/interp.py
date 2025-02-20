@@ -25,7 +25,45 @@ from ...utils.interpolation import (
 
 
 class interp_gen(Pdf_rows_gen):
-    """Interpolator based distribution
+    """Implements distributions parameterized as interpolated sets of values.
+
+    more details
+
+
+    Parameters
+    ---------
+    xvals : array_like
+        The n x-values used to do the interpolation
+    yvals : array_like
+        The y-values used to do the interpolation, shape (npdf,n)
+
+    Attributes
+    ----------
+
+    Methods
+    -------
+
+
+    Notes
+    -----
+
+    Converting to this parameterization:
+
+    This table contains the available methods to convert to this parameterization,
+    their required arguments, and their method keys. If the key is `None`, this is
+    the default conversion method.
+
+    +-------------------+-----------+------------+
+    | Function          | Arguments | Method key |
+    +-------------------+-----------+------------+
+    | extract_vals_at_x | xvals     | None       |
+    +-------------------+-----------+------------+
+
+    Implementation notes:
+
+
+    OLD CLASS DOCSTRING
+    Interpolator based distribution
 
     Notes
     -----
@@ -214,14 +252,16 @@ class interp_gen(Pdf_rows_gen):
         Input data:
         data = {`xvals`: values, `yvals`: values}
         The shape of `xvals` is (n), where n is the number of x values given.
-        The shape of `yvals` is then (npdfs, n), where npdfs is the number of distributions.
+        The shape of `yvals` is then (npdfs, n), where npdfs is the number of
+        distributions.
 
         Parameters
         ----------
         data : Mapping
             The dictionary of data for the distributions.
         ancil : Optional[Mapping]
-            A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions
+            A dictionary of metadata for the distributions, where any arrays
+            have the same length as the number of distributions
 
         Returns
         -------
@@ -235,7 +275,8 @@ class interp_gen(Pdf_rows_gen):
 
         >>> import qp
         >>> import numpy as np
-        >>> data = {'xvals': np.array([0,0.5,1,1.5,2]), 'yvals': np.array([[0.01, 0.2,0.3,0.2,0.01],[0.09,0.25,0.2,0.1,0.01]])}
+        >>> data = {'xvals': np.array([0,0.5,1,1.5,2]),
+        ...         'yvals': np.array([[0.01, 0.2,0.3,0.2,0.01],[0.09,0.25,0.2,0.1,0.01]])}
         >>> ancil = {'ids':[5,8]}
         >>> ens = qp.interp.create_ensemble(data,ancil)
         >>> ens.metadata()

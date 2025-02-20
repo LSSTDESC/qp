@@ -3,6 +3,7 @@
 import numpy as np
 from scipy.stats import rv_continuous
 from typing import Mapping, Optional
+from numpy.typing import ArrayLike
 
 # these imports will work when this file is placed in a folder in the parameterizations folder
 from ..base import Pdf_rows_gen
@@ -60,6 +61,7 @@ class parameterization_gen(Pdf_rows_gen):
     -------
     create_ensemble(data,ancil)
         Create an ensemble with this parameterization.
+    [add any additional optional methods here, i.e. plot_native]
 
     Notes
     -----
@@ -88,7 +90,7 @@ class parameterization_gen(Pdf_rows_gen):
 
     _support_mask = rv_continuous._support_mask
 
-    def __init__(self, arg1: np.array, arg2: np.array, *args, **kwargs):
+    def __init__(self, arg1: ArrayLike, arg2: ArrayLike, *args, **kwargs):
         """
         Create a new distribution using the given data. [details]
 
@@ -365,6 +367,9 @@ class parameterization_gen(Pdf_rows_gen):
     # def plot_native(cls, pdf, **kwargs):
     #     """Plot the PDF in a way that is particular to this type of distribution.
     #     [specific description of the plot for this parameterization]
+    #
+    #     Parameters
+    #     ----------
     #     """
     #     # -> Add any plotting functions you create for this to the
     #     #    `plotting.py`` file in the `utils`` folder.

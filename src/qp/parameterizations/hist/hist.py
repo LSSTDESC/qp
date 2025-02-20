@@ -24,7 +24,7 @@ from ...core.ensemble import Ensemble
 
 
 class hist_gen(Pdf_rows_gen):
-    """Implements a distribution parameterized as a histogram.
+    """Implements distributions parameterized as histograms.
 
     By default, the input distribution is normalized. If the input data is
     already normalized, you can use the optional parameter ``check_input = False``
@@ -32,27 +32,29 @@ class hist_gen(Pdf_rows_gen):
 
     Parameters
     ----------
-    bins : arraylike
+    bins : `arraylike`
         The array containing the (n+1) bin boundaries
-    pdfs : arraylike
+    pdfs : `arraylike`
         The array containing the (npdf, n) bin values
-    check_input : bool, optional
+    check_input : `bool`, optional
         If True, normalizes the input distribution. If False, assumes the
         given distribution is already normalized. By default True.
 
 
     Attributes
     ----------
-    bins : ndarray
+    bins : `ndarray`
         The array containing the (n+1) bin boundaries
-    pdfs : ndarray
+    pdfs : `ndarray`
         The array containing the (npdf, n) PDF values in the bins
 
 
     Methods
     -------
     create_ensemble(data,ancil)
-        Create an ensemble with this parameterization.
+        Create an Ensemble with this parameterization.
+    plot_native(xlim,axes,**kwargs)
+        Create a plot of a distribution with this parameterization.
 
     Notes
     -----
@@ -74,7 +76,7 @@ class hist_gen(Pdf_rows_gen):
 
     Implementation notes:
 
-    Inside a given bin `pdf()` will return the hist_gen.pdfs value.
+    Inside a given bin `pdf()` will return the `hist_gen.pdfs` value.
     Outside the range of the given bins `pdf()` will return 0.
 
     Inside a given bin `cdf()` will use a linear interpolation across the bin.
@@ -91,17 +93,17 @@ class hist_gen(Pdf_rows_gen):
 
     _support_mask = rv_continuous._support_mask
 
-    def __init__(self, bins, pdfs, *args, **kwargs):
+    def __init__(self, bins: ArrayLike, pdfs: ArrayLike, *args, **kwargs):
         """
         Create a new distribution using the given histogram.
 
         Parameters
         ----------
-        bins : array_like
+        bins : `array_like`
           The array containing the (n+1) bin boundaries
-        pdfs : array_like
+        pdfs : `array_like`
           The array containing the (npdf, n) bin values
-        check_input : bool, optional
+        check_input : `bool`, optional
             If True, normalizes the input distribution. If False, assumes the
             given distribution is already normalized. By default True.
         """
@@ -207,7 +209,21 @@ class hist_gen(Pdf_rows_gen):
     def plot_native(cls, pdf, **kwargs):
         """Plot the PDF in a way that is particular to this type of distribution
 
-        For a histogram this shows the bin edges
+        For a histogram this shows the bin edges.
+
+        Parameters
+        ----------
+        axes : `matplotlib.axes`
+            The axes to plot on. Either this or xlim must be provided.
+        xlim : (float, float)
+            The x-axis limits. Either this or axes must be provided.
+        kwargs :
+            Any keyword arguments to pass to matplotlib's axes.hist() method.
+
+        Returns
+        -------
+        axes : `matplotlib.axes`
+            The plot axes.
         """
         axes, _, kw = get_axes_and_xlims(**kwargs)
         vals = pdf.dist.pdfs[pdf.kwds["row"]]
@@ -229,7 +245,11 @@ class hist_gen(Pdf_rows_gen):
         """Creates an Ensemble of distributions parameterized as histograms.
 
         Input data format:
-        data = {'bins': array_like, 'pdfs': array_like}, where bins are the bin edges, and so should be of shape (n+1,), and data is the value in those bins, so should have length of n and shape (npdfs, n), where npdfs is the number of distributions. The value of 'pdfs' can have multiple rows, where each row is a distribution.
+        data = {'bins': array_like, 'pdfs': array_like}, where bins are the bin
+        edges, and so should be of shape (n+1,), and data is the value in those
+        bins, so should have length of n and shape (npdfs, n), where npdfs is the
+        number of distributions. The value of 'pdfs' can have multiple rows, where
+        each row is a distribution.
 
 
         Parameters
@@ -237,7 +257,8 @@ class hist_gen(Pdf_rows_gen):
         data : Mapping
             The dictionary of data for the distributions.
         ancil : Optional[Mapping], optional
-            A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
+            A dictionary of metadata for the distributions, where any arrays have
+            the same length as the number of distributions, by default None
 
         Returns
         -------
@@ -247,11 +268,13 @@ class hist_gen(Pdf_rows_gen):
         Example
         -------
 
-        To create an Ensemble with two distributions and an 'ancil' table that provides ids for the distributions, you can use the following code:
+        To create an Ensemble with two distributions and an 'ancil' table that
+        provides ids for the distributions, you can use the following code:
 
         >>> import qp
         >>> import numpy as np
-        >>> data = {'bins': [0,1,2,3,4,5], 'pdfs': np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])}
+        >>> data = {'bins': [0,1,2,3,4,5],'pdfs': np.array([[0,0.1,0.1,0.4,0.2],
+        ...         [0.05,0.09,0.2,0.3,0.15]])}
         >>> ancil = {'ids': [105, 108]}
         >>> ens = qp.hist.create_ensemble(data,ancil)
         >>> ens.metadata()

@@ -399,7 +399,9 @@ class Factory(OrderedDict):
         required to convert to a different parameterization, but the specific keyword
         arguments required will vary. To check the available conversion methods
         and their associated arguments refer to the docstrings for ``qp.class_name``
-        of the parameterization you are converting to.
+        of the parameterization you are converting to. If the class does not
+        have a conversion methods table, then it will not be possible to convert
+        to that parameterization.
 
 
         Parameters
@@ -415,6 +417,7 @@ class Factory(OrderedDict):
         -------
         ens : `qp.Ensemble`
             The ensemble we converted to
+
         """
         kwds_copy = kwds.copy()
         method = kwds_copy.pop("method", None)
