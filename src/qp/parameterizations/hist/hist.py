@@ -7,6 +7,8 @@ from scipy.stats import rv_continuous
 from typing import Mapping, Optional
 from numpy.typing import ArrayLike
 
+import warnings
+
 from .hist_utils import (
     evaluate_hist_x_multi_y,
     extract_hist_values,
@@ -97,7 +99,8 @@ class hist_gen(Pdf_rows_gen):
         self,
         bins: ArrayLike,
         pdfs: ArrayLike,
-        check_input: bool = True,
+        norm: bool = True,
+        warn: bool = True,
         *args,
         **kwargs,
     ):
@@ -116,23 +119,43 @@ class hist_gen(Pdf_rows_gen):
         """
         self._hbins = np.asarray(bins)
         self._nbins = self._hbins.size - 1
-        self._hbin_widths = self._hbins[1:] - self._hbins[:-1]
-        self._xmin = self._hbins[0]
-        self._xmax = self._hbins[-1]
+
+        # raise warnings if input data is not finite or pdfs are not positive
+        if warn:
+            if not np.all(np.isfinite(self._hbins)):
+                warnings.warn(
+                    "The given bins contain non-finite values", RuntimeWarning
+                )
+            if not np.all(np.isfinite(pdfs)):
+                warnings.warn(
+                    "The given pdfs contain non-finite values", RuntimeWarning
+                )
+            if np.any(pdfs < 0):
+                warnings.warn("The given pdfs contain negative values", RuntimeWarning)
+
+        # check data shapes make sense
         if np.shape(pdfs)[-1] != self._nbins:  # pragma: no cover
             raise ValueError(
                 "Number of bins (%i) != number of values (%i)"
                 % (self._nbins, np.shape(pdfs)[-1])
             )
 
+        self._hbin_widths = self._hbins[1:] - self._hbins[:-1]
+        self._xmin = self._hbins[0]
+        self._xmax = self._hbins[-1]
+
         # check_input = kwargs.pop("check_input", True)
-        self._check_input = check_input
-        if self._check_input:
-            pdfs_2d = reshape_to_pdf_size(pdfs, -1)
-            sums = np.sum(pdfs_2d * self._hbin_widths, axis=1)
-            self._hpdfs = (pdfs_2d.T / sums).T
-        else:  # pragma: no cover
-            self._hpdfs = reshape_to_pdf_size(pdfs, -1)
+        self._hpdfs = reshape_to_pdf_size(pdfs, -1)
+
+        self._norm = norm
+        if self._norm:
+            self._hpdfs = self.normalize()
+        # if self._norm:
+        #     pdfs_2d = reshape_to_pdf_size(pdfs, -1)
+        #     sums = np.sum(pdfs_2d * self._hbin_widths, axis=1)
+        #     self._hpdfs = (pdfs_2d.T / sums).T
+        # else:  # pragma: no cover
+        #     self._hpdfs = reshape_to_pdf_size(pdfs, -1)
         self._hcdfs = None
         # Set support
         kwargs["shape"] = pdfs.shape[:-1]
@@ -146,6 +169,28 @@ class hist_gen(Pdf_rows_gen):
         self._hcdfs = np.ndarray(copy_shape)
         self._hcdfs[:, 0] = 0.0
         self._hcdfs[:, 1:] = np.cumsum(self._hpdfs * self._hbin_widths, axis=1)
+
+    def normalize(self) -> np.ndarray:
+        """Normalizes the input distribution values.
+
+        Returns
+        -------
+        np.ndarray
+            An (npdf, n) array of pdf values in the n bins for the npdf distributions
+
+        Raises
+        ------
+        ValueError
+            Raised if the sum under the distribution <= 0.
+        """
+        pdfs_2d = self._hpdfs
+        sums = np.sum(pdfs_2d * self._hbin_widths, axis=1)
+        if np.any(sums <= 0):
+            indices = np.where(sums < 0)
+            raise ValueError(
+                f"The sum of the pdfs is <= 0 for distributions at index = {indices[0]}, so the distribution(s) cannot be properly normalized."
+            )
+        return (pdfs_2d.T / sums).T
 
     @property
     def bins(self):
@@ -204,7 +249,7 @@ class hist_gen(Pdf_rows_gen):
         dct = super()._updated_ctor_param()
         dct["bins"] = self._hbins
         dct["pdfs"] = self._hpdfs
-        dct["check_input"] = self._check_input
+        dct["norm"] = self._norm
         return dct
 
     @classmethod

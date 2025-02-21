@@ -252,13 +252,13 @@ class Ensemble:
         self._samples = None
 
     def update_objdata(self, data: Mapping, ancil: Optional[Mapping] = None):
-        """Updates the metadata and data in the frozen distribution, and sets
+        """Updates the data in the frozen distribution, and sets
         the ancillary data table if given.
 
         Parameters
         ----------
         data : `dict`
-            Dictionary with data used to construct the ensemble
+            Dictionary with the object data that will be used to reconstruct the ensemble
         ancil : `Mapping`
             Optional dictionary that contains data for each of the distributions
             in the ensemble, by default None.
@@ -391,6 +391,23 @@ class Ensemble:
         if self.ancil is not None:
             dd["ancil"] = self.ancil
         return dd
+
+    def norm(self) -> np.ndarray:
+        """Normalizes the input distribution data if it represents a PDF
+        and can be normalized.
+
+        Returns
+        -------
+        _type_
+            _description_
+        """
+
+        # get normalized data values
+        normed = self._gen_obj.normalize()
+
+        # update ensemble objdata with normalized values
+        d_keys = list(self.objdata().keys())
+        self.update_objdata(data={d_keys[0]: normed}, ancil=self.ancil)
 
     def mode(self, grid: ArrayLike) -> ArrayLike:
         """Return the mode of each ensemble distribution, evaluated on the given grid.
