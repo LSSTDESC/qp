@@ -38,22 +38,27 @@ class hist_gen(Pdf_rows_gen):
         The array containing the (n+1) bin boundaries
     pdfs : `arraylike`
         The array containing the (npdf, n) bin values
-    check_input : `bool`, optional
+    norm : `bool`, optional
         If True, normalizes the input distribution. If False, assumes the
         given distribution is already normalized. By default True.
+    warn : `bool`, optional
+            If True, raises warnings if input is not valid PDF data (i.e. if
+            data is negative). If False, no warnings are raised. By default True.
 
 
     Attributes
     ----------
     bins : `ndarray`
-        The array containing the (n+1) bin boundaries
+        The array containing the (n+1) bin boundaries used to construct the
+        distribution
     pdfs : `ndarray`
-        The array containing the (npdf, n) PDF values in the bins
+        The array containing the (npdf, n) PDF values in the bins used to
+        construct the distribution
 
 
     Methods
     -------
-    create_ensemble(data,ancil)
+    create_ensemble(bins,pdfs,ancil)
         Create an Ensemble with this parameterization.
     plot_native(xlim,axes,**kwargs)
         Create a plot of a distribution with this parameterization.
@@ -113,25 +118,36 @@ class hist_gen(Pdf_rows_gen):
           The array containing the (n+1) bin boundaries
         pdfs : `array_like`
           The array containing the (npdf, n) bin values
-        check_input : `bool`, optional
+        norm : `bool`, optional
             If True, normalizes the input distribution. If False, assumes the
             given distribution is already normalized. By default True.
+        warn : `bool`, optional
+            If True, raises warnings if input is not valid PDF data (i.e. if
+            data is negative). If False, no warnings are raised. By default True.
         """
         self._hbins = np.asarray(bins)
         self._nbins = self._hbins.size - 1
 
         # raise warnings if input data is not finite or pdfs are not positive
-        if warn:
+        self._warn = warn
+        if self._warn:
             if not np.all(np.isfinite(self._hbins)):
                 warnings.warn(
-                    "The given bins contain non-finite values", RuntimeWarning
+                    f"The given bins contain non-finite values - {self._hbins}",
+                    RuntimeWarning,
                 )
             if not np.all(np.isfinite(pdfs)):
+                indices = np.where(np.isfinite(pdfs) != True)
                 warnings.warn(
-                    "The given pdfs contain non-finite values", RuntimeWarning
+                    f"There are non-finite values in the pdfs for the distributions: {indices[0]}",
+                    RuntimeWarning,
                 )
             if np.any(pdfs < 0):
-                warnings.warn("The given pdfs contain negative values", RuntimeWarning)
+                indices = np.where(pdfs < 0)
+                warnings.warn(
+                    f"There are negative values in the pdfs for the distributions: {indices[0]}",
+                    RuntimeWarning,
+                )
 
         # check data shapes make sense
         if np.shape(pdfs)[-1] != self._nbins:  # pragma: no cover
@@ -144,18 +160,13 @@ class hist_gen(Pdf_rows_gen):
         self._xmin = self._hbins[0]
         self._xmax = self._hbins[-1]
 
-        # check_input = kwargs.pop("check_input", True)
         self._hpdfs = reshape_to_pdf_size(pdfs, -1)
 
+        # normalize the input data if norm is True
         self._norm = norm
         if self._norm:
             self._hpdfs = self.normalize()
-        # if self._norm:
-        #     pdfs_2d = reshape_to_pdf_size(pdfs, -1)
-        #     sums = np.sum(pdfs_2d * self._hbin_widths, axis=1)
-        #     self._hpdfs = (pdfs_2d.T / sums).T
-        # else:  # pragma: no cover
-        #     self._hpdfs = reshape_to_pdf_size(pdfs, -1)
+
         self._hcdfs = None
         # Set support
         kwargs["shape"] = pdfs.shape[:-1]
@@ -186,7 +197,7 @@ class hist_gen(Pdf_rows_gen):
         pdfs_2d = self._hpdfs
         sums = np.sum(pdfs_2d * self._hbin_widths, axis=1)
         if np.any(sums <= 0):
-            indices = np.where(sums < 0)
+            indices = np.where(sums <= 0)
             raise ValueError(
                 f"The sum of the pdfs is <= 0 for distributions at index = {indices[0]}, so the distribution(s) cannot be properly normalized."
             )
@@ -250,10 +261,37 @@ class hist_gen(Pdf_rows_gen):
         dct["bins"] = self._hbins
         dct["pdfs"] = self._hpdfs
         dct["norm"] = self._norm
+        dct["warn"] = self._warn
         return dct
 
     @classmethod
     def get_allocation_kwds(cls, npdf, **kwargs):
+        """Return the kwds necessary to create an `empty` HDF5 file with ``npdf`` entries
+        for iterative write. We only need to allocate the data columns, as
+        the metadata will be written when we finalize the file.
+
+        The number of data columns is calculated based on the length or shape of the
+        metadata, ``n``. For example, the number of columns is ``nbins-1``
+        for a histogram.
+
+        Parameters
+        ----------
+        npdf : int
+            Total number of distributions that will be written out
+        kwargs :
+            The keys needed to construct the shape of the data to be written.
+
+        Returns
+        -------
+        Mapping
+            A dictionary with a key for the objdata, a tuple with the shape of that data,
+            and the data type of the data as a string.
+            i.e. ``{objdata_key = (npdf, n), "f4"}``
+
+        Raises
+        ------
+        ValueError
+            Raises an error if the bins is not provided."""
         if "bins" not in kwargs:  # pragma: no cover
             raise ValueError("required argument 'bins' not included in kwargs")
         nbins = len(kwargs["bins"].flatten())
@@ -294,30 +332,31 @@ class hist_gen(Pdf_rows_gen):
 
     @classmethod
     def create_ensemble(
-        self, data: Mapping, ancil: Optional[Mapping] = None
+        self,
+        bins: ArrayLike,
+        pdfs: ArrayLike,
+        norm: bool = True,
+        warn: bool = True,
+        ancil: Optional[Mapping] = None,
     ) -> Ensemble:
         """Creates an Ensemble of distributions parameterized as histograms.
-
-        Input data format:
-        data = {'bins': array_like, 'pdfs': array_like}, where bins are the bin
-        edges, and so should be of shape (n+1,), and data is the value in those
-        bins, so should have length of n and shape (npdfs, n), where npdfs is the
-        number of distributions. The value of 'pdfs' can have multiple rows, where
-        each row is a distribution.
-
-        You can also add `check_input` as a key to the dictionary. By default
-        this is True, but if your input is already normalized, you can pass
-        `check_input` as False.
-
 
 
         Parameters
         ----------
-        data : Mapping
-            The dictionary of data for the distributions.
+        bins : `array_like`
+          The array containing the (n+1) bin boundaries
+        pdfs : `array_like`
+          The array containing the (npdf, n) bin values
+        norm : `bool`, optional
+            If True, normalizes the input distribution. If False, assumes the
+            given distribution is already normalized. By default True.
+        warn : `bool`, optional
+            If True, raises warnings if input is not valid PDF data (i.e. if
+            data is negative). If False, no warnings are raised. By default True.
         ancil : Optional[Mapping], optional
             A dictionary of metadata for the distributions, where any arrays have
-            the same length as the number of distributions, by default None
+            length npdf, by default None
 
         Returns
         -------
@@ -332,10 +371,10 @@ class hist_gen(Pdf_rows_gen):
 
         >>> import qp
         >>> import numpy as np
-        >>> data = {'bins': [0,1,2,3,4,5],'pdfs': np.array([[0,0.1,0.1,0.4,0.2],
-        ...         [0.05,0.09,0.2,0.3,0.15]])}
+        >>> bins= [0,1,2,3,4,5]
+        >>> pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])
         >>> ancil = {'ids': [105, 108]}
-        >>> ens = qp.hist.create_ensemble(data,ancil)
+        >>> ens = qp.hist.create_ensemble(bins,pdfs,ancil=ancil)
         >>> ens.metadata()
         {'pdf_name': array([b'hist'], dtype='|S4'),
         'pdf_version': array([0]),
@@ -343,6 +382,7 @@ class hist_gen(Pdf_rows_gen):
 
         """
 
+        data = {"bins": bins, "pdfs": pdfs, "norm": norm, "warn": warn}
         return Ensemble(self, data, ancil)
 
     @classmethod

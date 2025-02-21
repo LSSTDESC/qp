@@ -4,6 +4,7 @@ import numpy as np
 from scipy.stats import rv_continuous
 from typing import Mapping, Optional
 from numpy.typing import ArrayLike
+import warnings
 
 # these imports will work when this file is placed in a folder in the parameterizations folder
 from ..base import Pdf_rows_gen
@@ -56,6 +57,12 @@ class parameterization_gen(Pdf_rows_gen):
         [description]
     [arg2] : [dtype]
         [description]
+    [warn] : `bool`, optional
+            If True, raises warnings if input is not valid input data (i.e. if
+            data is negative). If False, no warnings are raised. By default True.
+    [[norm] : bool, optional
+        If True, normalizes the input distribution. If False, assumes the
+        given distribution is already normalized. By default True.]
 
     Methods
     -------
@@ -90,7 +97,9 @@ class parameterization_gen(Pdf_rows_gen):
 
     _support_mask = rv_continuous._support_mask
 
-    def __init__(self, arg1: ArrayLike, arg2: ArrayLike, *args, **kwargs):
+    def __init__(
+        self, arg1: ArrayLike, arg2: ArrayLike, warn: bool = True, *args, **kwargs
+    ):
         """
         Create a new distribution using the given data. [details]
 
@@ -100,9 +109,12 @@ class parameterization_gen(Pdf_rows_gen):
           [description]
         [arg2] : array_like
           [description]
-        check_input : bool, optional
+        [warn] : `bool`, optional
+            If True, raises warnings if input is not valid input data (i.e. if
+            data is negative). If False, no warnings are raised. By default True.
+        [[norm] : bool, optional
             If True, normalizes the input distribution. If False, assumes the
-            given distribution is already normalized. By default True.
+            given distribution is already normalized. By default True.]
         """
 
         # ---------------------------------------------------------------------
@@ -111,21 +123,35 @@ class parameterization_gen(Pdf_rows_gen):
         # -> Replace `arg1` and `arg2` in this function (and those throughout)
         #    with appropriate variable names for your coordinates and data arguments.
         #    Additional arguments can be added as necessary.
-
-        # This code block checks if the input data is normalized
-        # When the `check_input` argument is True or is not given
-        check_input = kwargs.pop("check_input", True)
-        if check_input:
-            # -> Add code here to normalize the distribution
-            pass
-        else:
-            # -> Add code here that will set up the variables
-            #    but skip the normalization
-            pass
+        # -> norm is an optional argument that you can include if the input data
+        #    for this parameterization is a PDF (i.e. if it's normalizable.) If
+        #    you include this parameter, add it to the init arguments and uncomment
+        #    the optional normalize function below.
 
         # initialize the data
         self._arg1 = arg1
         self._arg2 = arg2
+
+        # Set warn value and test for warnings as necessary
+        self._warn = warn
+        # -> Change relevant values below and add any additional warnings as necessary
+        if self._warn:
+            if not np.all(np.isfinite(self._arg1)):
+                warnings.warn(
+                    f"The given [arg1] contain non-finite values - {self._arg1}",
+                    RuntimeWarning,
+                )
+            if not np.all(np.isfinite(self._arg2)):
+                indices = np.where(np.isfinite(self._arg2) != True)
+                warnings.warn(
+                    f"There are non-finite values in [arg2] for the distributions: {indices[0]}",
+                    RuntimeWarning,
+                )
+
+        # -> Uncomment code below to check if the input data is normalized
+        # self._norm = norm
+        # if self._norm:
+        #     self._arg2 = self.normalize()
 
         # Get the shape of the data
         # and pass it to the base constructor to set up other attributes
@@ -208,6 +234,7 @@ class parameterization_gen(Pdf_rows_gen):
         # -> replace `arg1` and `arg2` with your arguments and add any additional ones necessary
         dct["arg1"] = self._arg1
         dct["arg2"] = self._arg2
+        dct["warn"] = self._warn
         return dct
 
     @classmethod
@@ -297,20 +324,27 @@ class parameterization_gen(Pdf_rows_gen):
 
     @classmethod
     def create_ensemble(
-        self, data: Mapping, ancil: Optional[Mapping] = None
+        self,
+        arg1: ArrayLike,
+        arg2: ArrayLike,
+        warn: bool = True,
+        ancil: Optional[Mapping] = None,
     ) -> Ensemble:
         """Creates an Ensemble of distributions parameterized as [parameterization].
-
-        Input data format:
-        data = {'[arg1]': array_like, '[arg2]': array_like}, where args are the necessary inputs for the parameterization.
 
 
         Parameters
         ----------
-        data : Mapping
-            The dictionary of data for the distributions.
+        [arg1] : array_like
+          [description]
+        [arg2] : array_like
+          [description]
+        [warn] : `bool`, optional
+            If True, raises warnings if input is not valid input data (i.e. if
+            data is negative). If False, no warnings are raised. By default True.
         ancil : Optional[Mapping], optional
-            A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
+            A dictionary of metadata for the distributions, where any arrays have the
+            same length as the number of distributions, by default None
 
         Returns
         -------
@@ -323,27 +357,32 @@ class parameterization_gen(Pdf_rows_gen):
         To create an Ensemble with two distributions and an 'ancil' table that provides ids for the distributions, you can use the following code:
 
         >>> import qp
-        >>> import numpy as np
-        >>> data = {[test data]}
         >>> ancil = {'ids': [test ids] }
-        >>> ens = qp.[parameterization].create_ensemble(data,ancil)
+        >>> ens = qp.[parameterization].create_ensemble(arg1, arg2,ancil=ancil)
         >>> ens.metadata()
         [output here]
 
         """
 
+        # pack up the data in to a dictionary to be passed to Ensemble
+        # -> add norm below, in the docstring, and in the function call if your
+        #    parameterization has a normalization function
+        data = {"arg1": arg1, "arg2": arg2, "warn": warn}
         return Ensemble(self, data, ancil)
 
-    def norm():
+    # ---------------------------------------------------------------------
+    # Optional normalization method
+    # ---------------------------------------------------------------------
+    # This optional method is meant to be used to normalize the distribution
+    # data both when initializing the Ensemble and after it has been initialized.
+    # -> If your parameterization input data can be normalized, uncomment the
+    #    block of code below and add code to normalize the data (in this template
+    #    arg2).
+    # def normalize(self):
 
-        # TODO: fill out this documentation
-
-        # if normalization makes sense for your input put function
-        # to do this here
-
-        # if normalization doesn't make sense
-        # put function that raises an error if called
-        pass
+    #     # -> add some operations on object data to normalize here
+    #     normed = self._arg2
+    #     return normed
 
     # ---------------------------------------------------------------------
     # Optional methods

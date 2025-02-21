@@ -7,6 +7,8 @@ import sys
 import numpy as np
 from scipy.stats import rv_continuous
 from typing import Mapping, Optional
+from numpy.typing import ArrayLike
+import warnings
 
 from .quant_utils import extract_quantiles, pad_quantiles
 from ...core.factory import add_class
@@ -39,8 +41,48 @@ PDF_CONSTRUCTORS = {
 class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
     """Quantile based distribution, where the PDF is defined piecewise from the quantiles
 
+    Parameters
+    ----------
+    quants : array_like
+        The quantiles of the CDF, of shape n
+    locs : array_like
+        The locations at which those quantiles are reached, of shape (npdf, n)
+    pdf_constructor_name : str, optional
+        The constructor or interpolator to use to create the PDF, by default "piecewise_linear".
+    ensure_extent : bool, optional
+        If True, will ensure that the quants start at 0 and end at 1 by adding
+        data points at both ends until this is true. locs are extrapolated linearly
+        from input data. By default True.
+    warn : bool, optional
+        If True, raises warnings if input is not valid data (i.e. if
+        data is not finite). If False, no warnings are raised. By default True.
+
+    Attributes
+    ----------
+    quants : array_like
+        The quantiles used to build the CDF, of shape n
+    locs : array_like
+        The locations at which those quantiles are reached, of shape (npdf, n)
+    pdf_constructor_name : str
+        The constructor or interpolator used to create the PDF
+    pdf_constructor : AbstractPDFConstructor
+        The class used to construct this Ensemble
+
+    Methods
+    -------
+    create_ensemble(quants,locs,pdf_constructor_name,ancil)
+        Create an Ensemble with this parameterization.
+    plot_native(xlim,axes,**kwargs)
+        Create a plot of a distribution with this parameterization.
+
     Notes
     -----
+
+    Converting to this parameterization:
+
+
+    Implementation notes:
+
     This implements a CDF by interpolating a set of quantile values
 
     It simply takes a set of x and y values and uses `scipy.interpolate.interp1d` to
@@ -54,24 +96,56 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
 
     _support_mask = rv_continuous._support_mask
 
-    def __init__(self, quants, locs, *args, **kwargs):
+    def __init__(
+        self,
+        quants: ArrayLike,
+        locs: ArrayLike,
+        pdf_constructor_name: str = DEFAULT_PDF_CONSTRUCTOR,
+        ensure_extent: bool = True,
+        warn: bool = True,
+        *args,
+        **kwargs,
+    ):
         """
         Create a new distribution using the given values
 
         Parameters
         ----------
         quants : array_like
-           The quantiles used to build the CDF
+           The quantiles of the CDF, of shape n
         locs : array_like
-           The locations at which those quantiles are reached
+           The locations at which those quantiles are reached, of shape (npdf, n)
+        pdf_constructor_name : str, optional
+            The constructor to use to create the PDF, by default "piecewise_linear".
+        ensure_extent : bool, optional
+            If True, will ensure that the quants start at 0 and end at 1 by adding
+            data points at both ends until this is true. locs are extrapolated linearly
+            from input data. By default True.
+        warn : bool, optional
+            If True, raises warnings if input is not valid data (i.e. if
+            data is not finite). If False, no warnings are raised. By default True.
         """
 
         self._xmin = np.min(locs)
         self._xmax = np.max(locs)
 
         locs_2d = reshape_to_pdf_size(locs, -1)
-        self._check_input = kwargs.pop("check_input", True)
-        if self._check_input:
+
+        self._validate_input(quants, locs_2d)
+
+        # check locs are finite
+        self._warn = warn
+        if self._warn:
+            if not np.all(np.isfinite(locs_2d)):
+                indices = np.where(np.isfinite(locs_2d) != True)
+                warnings.warn(
+                    f"There are non-finite values in the locs for the distributions: {indices[0]}",
+                    RuntimeWarning,
+                )
+
+        # TODO: should we ensure that quants and locs are ok after padding?
+        self._ensure_extent = ensure_extent
+        if self._ensure_extent:
             quants, locs_2d = pad_quantiles(quants, locs_2d)
 
         self._quants = np.asarray(quants)
@@ -83,9 +157,7 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
             )
         self._locs = locs_2d
 
-        self._pdf_constructor_name = str(
-            kwargs.pop("pdf_constructor_name", DEFAULT_PDF_CONSTRUCTOR)
-        )
+        self._pdf_constructor_name = pdf_constructor_name
         self._pdf_constructor = None
         self._instantiate_pdf_constructor()
 
@@ -94,8 +166,25 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
 
         self._addmetadata("quants", self._quants)
         self._addmetadata("pdf_constructor_name", self._pdf_constructor_name)
-        self._addmetadata("check_input", self._check_input)
+        self._addmetadata("ensure_extent", self._ensure_extent)
         self._addobjdata("locs", self._locs)
+
+    def _validate_input(self, quants, locs):
+        """Ensures that given input matches criteria for a valid CDF."""
+
+        if np.any(quants < 0) or np.any(quants > 1):
+            raise ValueError(
+                f"Invalid quants: One or more of the given quants either negative or >1: {quants}"
+            )
+        if not np.all(np.diff(quants) >= 0):
+            raise ValueError(
+                f"Invalid quants: \n There are decreasing values, quants must be given in order from 0 to 1 : {quants}"
+            )
+        if not np.all(np.diff(locs) >= 0):
+            indices = np.where(np.diff(locs) < 0)
+            raise ValueError(
+                f"Invalid locs: \n There are decreasing values in the locs given for the distributions at the following indices: {indices}"
+            )
 
     @property
     def quants(self):
@@ -201,14 +290,38 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
         dct["quants"] = self._quants
         dct["locs"] = self._locs
         dct["pdf_constructor_name"] = self._pdf_constructor_name
-        dct["check_input"] = self._check_input
+        dct["ensure_extent"] = self._ensure_extent
+        dct["warn"] = self._warn
         return dct
 
     @classmethod
     def get_allocation_kwds(cls, npdf, **kwargs):
-        """Return kwds necessary to create 'empty' hdf5 file with npdf entries
-        for iterative writeout.  We only need to allocate the objdata columns, as
-        the metadata can be written when we finalize the file.
+        """Return the kwds necessary to create an `empty` HDF5 file with ``npdf`` entries
+        for iterative write. We only need to allocate the data columns, as
+        the metadata will be written when we finalize the file.
+
+        The number of data columns is calculated based on the length or shape of the
+        metadata, ``n``. For example, the number of columns is ``nbins-1``
+        for a histogram.
+
+        Parameters
+        ----------
+        npdf : int
+            Total number of distributions that will be written out
+        kwargs :
+            The keys needed to construct the shape of the data to be written.
+
+        Returns
+        -------
+        Mapping
+            A dictionary with a key for the objdata, a tuple with the shape of that data,
+            and the data type of the data as a string.
+            i.e. ``{objdata_key = (npdf, n), "f4"}``
+
+        Raises
+        ------
+        ValueError
+            Raises an error if the required kwarg quants is not provided.
         """
         try:
             quants = kwargs["quants"]
@@ -221,7 +334,21 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
     def plot_native(cls, pdf, **kwargs):
         """Plot the PDF in a way that is particular to this type of distribution
 
-        For a quantile this shows the quantiles points
+        For a quantile this shows the quantiles points.
+
+        Parameters
+        ----------
+        axes : `matplotlib.axes`
+            The axes to plot on. Either this or xlim must be provided.
+        xlim : (float, float)
+            The x-axis limits. Either this or axes must be provided.
+        kwargs :
+            Any keyword arguments to pass to matplotlib's axes.hist() method.
+
+        Returns
+        -------
+        axes : `matplotlib.axes`
+            The plot axes.
         """
         axes, xlim, kw = get_axes_and_xlims(**kwargs)
         xvals = np.linspace(xlim[0], xlim[1], kw.pop("npts", 101))
@@ -242,25 +369,41 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
 
     @classmethod
     def create_ensemble(
-        self, data: Mapping, ancil: Optional[Mapping] = None
+        self,
+        quants: ArrayLike,
+        locs: ArrayLike,
+        pdf_constructor_name: str = DEFAULT_PDF_CONSTRUCTOR,
+        ensure_extent: bool = True,
+        warn: bool = True,
+        ancil: Optional[Mapping] = None,
     ) -> Ensemble:
         """Creates an Ensemble of distributions parameterized as quantiles.
 
-        Input data format:
-        data = {`quants`: values, `locs`: values}
-        The shape of quants should be n, where n is the number of quants. The shape of locs should be (npdfs, n), where npdfs is the number of distributions.
-        If you would like to use a constructor function other than the default, `piecewise_linear`,
-        you can include {`pdf_constructor_name`: value} in the data dictionary, where value is the string name of the constructor.
 
-        The options are: `piecewise_linear`, `piecewise_constant`, `dual_spline_average` and 'cdf_spline_derivative`.
+        The options for pdf_constructor_name are: `piecewise_linear`, `piecewise_constant`,
+        `dual_spline_average` and 'cdf_spline_derivative`.
 
 
         Parameters
         ----------
-        data : Mapping
-            The dictionary of data for the distributions.
+        quants : array_like
+           The quantiles used to build the CDF, shape n
+        locs : array_like
+           The locations at which those quantiles are reached, shape (npdfs, n),
+           where npdfs is the number of distributions.
+        pdf_constructor_name : str, optional
+            The constructor to use to create the PDF, by default "piecewise_linear".
+        ensure_extent : bool, optional
+            If True, will ensure that the quants start at 0 and end at 1 by adding
+            data points at both ends until this is true. locs are extrapolated linearly
+            from input data. By default True.
+        warn : bool, optional
+            If True, raises warnings if input is not valid (i.e. if
+            locs are not finite values). If False, no warnings are raised.
+            By default True.
         ancil : Optional[Mapping], optional
-            A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
+            A dictionary of metadata for the distributions, where any arrays have
+            the same length as the number of distributions, by default None
 
         Returns
         -------
@@ -270,13 +413,16 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
         Example
         -------
 
-        To create an Ensemble with two distributions and associated ids, using the `dual_spline_average` constructor:
+        To create an Ensemble with two distributions and associated ids, using the
+        `dual_spline_average` constructor:
 
         >>> import qp
         >>> import numpy as np
-        >>> data = {'quants': np.array([0.0001,0.25,0.5,0.75,0.9999]), 'locs': np.array([[0.0001,0.1,0.3,0.5,0.75],[0.01,0.05,0.15,0.3,0.5]]),'pdf_constructor_name':'dual_spline_average'}
+        >>> quants = np.array([0.0001,0.25,0.5,0.75,0.9999])
+        >>> locs = np.array([[0.0001,0.1,0.3,0.5,0.75],[0.01,0.05,0.15,0.3,0.5]])
+        >>> pdf_constructor_name = 'dual_spline_average'
         >>> ancil = {'ids':[11,18]}
-        >>> ens = qp.quant.create_ensemble(data,ancil)
+        >>> ens = qp.quant.create_ensemble(quants,locs,pdf_constructor_name,ancil=ancil)
         >>> ens.metadata()
         {'pdf_name': array([b'quant'], dtype='|S5'),
         'pdf_version': array([0]),
@@ -285,7 +431,13 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
         'pdf_constructor_name': array(['dual_spline_average'], dtype='<U19'),
         'check_input': array([ True])}
         """
-
+        data = {
+            "quants": quants,
+            "locs": locs,
+            "pdf_constructor_name": pdf_constructor_name,
+            "ensure_extent": ensure_extent,
+            "warn": warn,
+        }
         return Ensemble(self, data, ancil)
 
 

@@ -403,7 +403,12 @@ class Ensemble:
         """
 
         # get normalized data values
-        normed = self._gen_obj.normalize()
+        try:
+            normed = self._gen_obj.normalize()
+        except AttributeError as err:
+            raise AttributeError(
+                "This parameterization does not have a normalization function."
+            ) from err
 
         # update ensemble objdata with normalized values
         d_keys = list(self.objdata().keys())
