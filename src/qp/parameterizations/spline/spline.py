@@ -6,6 +6,7 @@ from scipy.interpolate import splev, splint, splrep
 from scipy.special import errstate  # pylint: disable=no-name-in-module
 from scipy.stats import rv_continuous
 from typing import Mapping, Optional
+from numpy.typing import ArrayLike
 
 from .spline_utils import (
     extract_samples,
@@ -55,26 +56,33 @@ class spline_gen(Pdf_rows_gen):
 
     _support_mask = rv_continuous._support_mask
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        splx: ArrayLike,
+        sply: ArrayLike,
+        spln: Optional[ArrayLike] = None,
+        *args,
+        **kwargs,
+    ):
         """
         Create a new distribution using the given histogram
 
-        Keywords
+        Parameters
         --------
         splx : array_like
           The x-values of the spline knots
         sply : array_like
           The y-values of the spline knots
-        spln : array_like
-          The order of the spline knots
+        spln : array_like, optional
+          The order of the spline knots, by default None
 
         Notes
         -----
         Either (splx, sply and spln) must be provided.
         """
-        splx = kwargs.pop("splx", None)
-        sply = kwargs.pop("sply", None)
-        spln = kwargs.pop("spln", None)
+        # splx = kwargs.pop("splx", None)
+        # sply = kwargs.pop("sply", None)
+        # spln = kwargs.pop("spln", None)
 
         if splx is None:  # pragma: no cover
             raise ValueError("splx must be provided")
@@ -262,7 +270,11 @@ class spline_gen(Pdf_rows_gen):
 
     @classmethod
     def create_ensemble(
-        self, data: Mapping, ancil: Optional[Mapping] = None
+        self,
+        splx: ArrayLike,
+        sply: ArrayLike,
+        spln: Optional[ArrayLike] = None,
+        ancil: Optional[Mapping] = None,
     ) -> Ensemble:
         """Creates an Ensemble of distributions parameterized as via a set of splines.
 
@@ -302,7 +314,7 @@ class spline_gen(Pdf_rows_gen):
         {'pdf_name': array([b'spline'], dtype='|S6'), 'pdf_version': array([0])}
 
         """
-
+        data = {"splx": splx, "sply": sply, "spln": spln}
         return Ensemble(self, data, ancil)
 
     @classmethod

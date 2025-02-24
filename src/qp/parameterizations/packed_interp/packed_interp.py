@@ -4,6 +4,7 @@
 import numpy as np
 from scipy.stats import rv_continuous
 from typing import Mapping, Optional
+from numpy.typing import ArrayLike
 
 from ...core.factory import add_class
 from ...core.ensemble import Ensemble
@@ -274,24 +275,25 @@ class packed_interp_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attr
     # TODO: fix the example and docstrings for this function once I know how
     @classmethod
     def create_ensemble(
-        self, data: Mapping, ancil: Optional[Mapping] = None
+        self,
+        xvals: ArrayLike,
+        ypacked: ArrayLike,
+        ymax: ArrayLike,
+        packing_type=PackingType.linear_from_rowmax,
+        log_floor=-3.0,
+        ancil: Optional[Mapping] = None,
     ) -> Ensemble:
         """Creates an Ensemble of distributions parameterized as interpolation that are stored as packed integers.
 
-        Input data format:
-        data = {`xvals`: values, `ypacked`: values, `ymax`: values}
-
-        xvals : array_like
-            The x-values used to do the interpolation
-        ypacked : array_like
-            The packed version of the y-values used to do the interpolation
-        ymax : array_like
-            The maximum y-values for each pdf
 
         Parameters
         ----------
-        data : Mapping
-            The dictionary of data for the distributions.
+        xvals : array_like
+          The x-values used to do the interpolation
+        ypacked : array_like
+          The packed version of the y-values used to do the interpolation
+        ymax : array_like
+          The maximum y-values for each pdf
         ancil : Optional[Mapping], optional
             A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
 
@@ -318,6 +320,13 @@ class packed_interp_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attr
 
         """
 
+        data = {
+            "xvals": xvals,
+            "ypacked": ypacked,
+            "ymax": ymax,
+            "packing_type": packing_type,
+            "log_floor": log_floor,
+        }
         return Ensemble(self, data, ancil)
 
     @classmethod

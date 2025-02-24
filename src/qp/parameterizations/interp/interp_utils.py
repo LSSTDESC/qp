@@ -140,4 +140,12 @@ def normalize_interp1d(xvals, yvals):
     integrals = np.sum(
         xvals[:, 1:] * yvals[:, 1:] - xvals[:, :-1] * yvals[:, 1:], axis=1
     )
+
+    # make sure that integrals are > 0
+    if np.any(integrals <= 0):
+        indices = np.where(integrals <= 0)
+        raise ValueError(
+            f"The integral is <= 0 for distributions at indices = {indices[0]}, so the distribution(s) cannot be properly normalized."
+        )
+
     return (yvals.T / integrals).T

@@ -22,6 +22,15 @@ def test_norm():
     x = np.linspace(0, 5, 10)
     y = np.array([0, 0.5, 1, 0.5, 0.5, 1.25, 1.5, 0.75, 0.5, 0.2])
     data = {"xvals": x, "yvals": y}
-    ens_i = qp.interp.create_ensemble(x, y)
+    ens_i = qp.interp_irregular.create_ensemble(x, y)
 
     ens_i.norm()
+
+
+def test_quant():
+    quants = np.linspace(0, 1, 5)
+    locs = np.linspace(-1, 1, 5)
+    pdf_constructor_name = "piecewise"
+    ens_q = qp.quant.create_ensemble(quants, locs, pdf_constructor_name)
+
+    assert ens_q.npdf == 1

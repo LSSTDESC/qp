@@ -5,6 +5,7 @@ import numpy as np
 from scipy import stats as sps
 from scipy.stats import rv_continuous
 from typing import Mapping, Optional
+from numpy.typing import ArrayLike
 
 from .mixmod_utils import extract_mixmod_fit_samples
 from ...core.factory import add_class
@@ -45,19 +46,24 @@ class mixmod_gen(Pdf_rows_gen):
 
     _support_mask = rv_continuous._support_mask
 
-    def __init__(self, means, stds, weights, *args, **kwargs):
+    def __init__(
+        self, means: ArrayLike, stds: ArrayLike, weights: ArrayLike, *args, **kwargs
+    ):
         """
-        Create a new distribution using the given histogram
+        Create a new distribution or distributions using a Gaussian Mixture Model.
+        There are ncomp Gaussians in the model, and npdf distributions contained
+        in the object.
 
         Parameters
         ----------
         means : array_like
-            The means of the Gaussians
+            The means of the Gaussians, with shape (npdf, ncomp)
         stds:  array_like
-            The standard deviations of the Gaussians
+            The standard deviations of the Gaussians, with shape (npdf, ncomp)
         weights : array_like
-            The weights to attach to the Gaussians. Weights should sum up to one.
-            If not, the weights are interpreted as relative weights.
+            The weights to attach to the Gaussians, with shape (npdf, ncomp).
+            Weights should sum up to one. If not, the weights are interpreted
+            as relative weights.
         """
         self._scipy_version_warning()
         self._means = reshape_to_pdf_size(means, -1)
@@ -153,16 +159,32 @@ class mixmod_gen(Pdf_rows_gen):
 
     @classmethod
     def get_allocation_kwds(cls, npdf, **kwargs):
-        """Return the keywords necessary to create an 'empty' hdf5 file with npdf entries
-        for iterative file writeout.  We only need to allocate the objdata columns, as
-        the metadata can be written when we finalize the file.
+        """Return the kwds necessary to create an `empty` HDF5 file with ``npdf`` entries
+        for iterative write. We only need to allocate the data columns, as
+        the metadata will be written when we finalize the file.
+
+        The number of data columns is calculated based on the length or shape of the
+        metadata, ``n``. For example, the number of columns is ``nbins-1``
+        for a histogram.
 
         Parameters
         ----------
-        npdf: int
-            number of *total* PDFs that will be written out
-        kwargs: dict
-            dictionary of kwargs needed to create the ensemble
+        npdf : int
+            Total number of distributions that will be written out
+        kwargs :
+            The keys needed to construct the shape of the data to be written.
+
+        Returns
+        -------
+        Mapping
+            A dictionary with a key for the objdata, a tuple with the shape of that data,
+            and the data type of the data as a string.
+            i.e. ``{objdata_key = (npdf, n), "f4"}``
+
+        Raises
+        ------
+        ValueError
+            Raises an error if the means are not provided.
         """
         if "means" not in kwargs:  # pragma: no cover
             raise ValueError("required argument means not included in kwargs")
@@ -184,23 +206,27 @@ class mixmod_gen(Pdf_rows_gen):
 
     @classmethod
     def create_ensemble(
-        self, data: Mapping, ancil: Optional[Mapping] = None
+        self,
+        means: ArrayLike,
+        stds: ArrayLike,
+        weights: ArrayLike,
+        ancil: Optional[Mapping] = None,
     ) -> Ensemble:
         """Creates an Ensemble of distributions parameterized as Gaussian Mixture models.
-
-        Input data format:
-        data = {`means`: values, `stds`: values, `weights`: values}, where
-        The shape of all the values will be (`npdf`, `ncomp`), where:
 
         `npdf` = the number of distributions
         `ncomp` = the number of Gaussians in the mixture model
 
-        Weights should sum up to one. If not, the weights are interpreted as relative weights.
-
         Parameters
         ----------
-        data : Mapping
-            The dictionary of data for the distributions.
+        means : array_like
+            The means of the Gaussians, with shape (npdf, ncomp)
+        stds:  array_like
+            The standard deviations of the Gaussians, with shape (npdf, ncomp)
+        weights : array_like
+            The weights to attach to the Gaussians, with shape (npdf, ncomp).
+            Weights should sum up to one. If not, the weights are interpreted
+            as relative weights.
         ancil : Optional[Mapping], optional
             A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
 
@@ -215,15 +241,17 @@ class mixmod_gen(Pdf_rows_gen):
         To create an Ensemble of two distributions with associated ids:
 
         >>> import qp
-        >>> data = {'means': np.array([[0.35, 0.55],[0.23,0.81]]), 'stds': np.array([[0.2, 0.25],[0.21, 0.19]]), 'weights': np.array([[0.4, 0.6],[0.3,0.7]])}
+        >>> means = np.array([[0.35, 0.55],[0.23,0.81]])
+        >>> stds = np.array([[0.2, 0.25],[0.21, 0.19]])
+        >>> weights = np.array([[0.4, 0.6],[0.3,0.7]])}
         >>> ancil = {'ids': [200, 205]}
-        >>> ens = qp.mixmod.create_ensemble(data, ancil)
+        >>> ens = qp.mixmod.create_ensemble(means, stds, weights, ancil)
         >>> ens.metadata()
         {'pdf_name': array([b'mixmod'], dtype='|S6'), 'pdf_version': array([0])}
 
 
         """
-
+        data = {"means": means, "stds": stds, "weights": weights}
         return Ensemble(self, data, ancil)
 
     @classmethod

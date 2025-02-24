@@ -8,6 +8,7 @@ from scipy.stats import rv_continuous
 from scipy import integrate as sciint
 from scipy import interpolate as sciinterp
 from typing import Mapping, Optional
+from numpy.typing import ArrayLike
 
 from . import sparse_rep
 from ...core.factory import add_class
@@ -97,7 +98,7 @@ class sparse_gen(interp_gen):
     # TODO: fill out docstring once I know how
     @classmethod
     def create_ensemble(
-        self, data: Mapping, ancil: Optional[Mapping] = None
+        self, sparse_indices, xvals, mu, sig, dims, ancil: Optional[Mapping] = None
     ) -> Ensemble:
         """Creates an Ensemble of distributions parameterized as interpolations, constructed from a sparse representation.
 
@@ -116,7 +117,13 @@ class sparse_gen(interp_gen):
         Ensemble
             An Ensemble object containing all of the given distributions.
         """
-
+        data = {
+            "sparse_indices": sparse_indices,
+            "xvals": xvals,
+            "mu": mu,
+            "sig": sig,
+            "dims": dims,
+        }
         return Ensemble(self, data, ancil)
 
     @staticmethod
