@@ -45,8 +45,8 @@ class EnsembleTestCase(unittest.TestCase):
         readens = qp.read(f"testwrite_{ens_type}.hdf5")
         assert sum(readens.ancil["ones"]) == mpi_size * ens.npdf
         assert len(readens.ancil["zmode"]) == mpi_size * ens.npdf
-        assert readens.metadata().keys() == ens.metadata().keys()
-        assert readens.objdata().keys() == ens.objdata().keys()
+        assert readens.metadata.keys() == ens.metadata.keys()
+        assert readens.objdata.keys() == ens.objdata.keys()
 
         test_grid = np.linspace(-3, 3, 100)
         itr = qp.iterator(f"testwrite_{ens_type}.hdf5", 10, mpi_rank, mpi_size)

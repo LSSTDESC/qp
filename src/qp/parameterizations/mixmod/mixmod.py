@@ -246,7 +246,7 @@ class mixmod_gen(Pdf_rows_gen):
         >>> weights = np.array([[0.4, 0.6],[0.3,0.7]])}
         >>> ancil = {'ids': [200, 205]}
         >>> ens = qp.mixmod.create_ensemble(means, stds, weights, ancil)
-        >>> ens.metadata()
+        >>> ens.metadata
         {'pdf_name': array([b'mixmod'], dtype='|S6'), 'pdf_version': array([0])}
 
 

@@ -99,7 +99,7 @@ class Factory(OrderedDict):
             >>> data = {'loc': np.array([[0.45],[0.55]]) , 'scale': np.array([[0.2],[0.15]])}
             >>> ancil = {'ids': [20,25]}
             >>> ens = qp.stats.norm.create_ensemble(data,ancil)
-            >>> ens.metadata()
+            >>> ens.metadata
             {'pdf_name': array([b'norm'], dtype='|S4'), 'pdf_version': array([0])}
 
             """
@@ -470,8 +470,8 @@ class Factory(OrderedDict):
         ancil_list = []
         gen_class = None
         for ensemble in ensembles:
-            metadata_list.append(ensemble.metadata())
-            objdata_list.append(ensemble.objdata())
+            metadata_list.append(ensemble.metadata)
+            objdata_list.append(ensemble.objdata)
             if gen_class is None:
                 gen_class = ensemble.gen_class
             if ancil_list is not None:

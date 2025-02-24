@@ -154,7 +154,7 @@ def persist_func_test(ensemble, test_data):
         ensemble.write_to(filename)
         meta = read_metadata(filename)
         ens_r = read(filename)
-        meta2 = ens_r.metadata()
+        meta2 = ens_r.metadata
         # check that reading metadata and main file get same metadata items
         for k, _v in meta.items():
             # we can't actually do a better check than this because the build_tables

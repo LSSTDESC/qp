@@ -78,7 +78,7 @@ def extract_voigt_mixmod(in_dist, **kwargs):  # pragma: no cover
     data : `dict`
         The extracted data
     """
-    objdata = in_dist.objdata()
+    objdata = in_dist.objdata
     means = objdata["means"]
     stds = objdata["stds"]
     weights = objdata["weights"]
@@ -122,9 +122,9 @@ def extract_voigt_xy_sparse(in_dist, **kwargs):  # pragma: no cover
         The extracted data as shaped parameters means, stds, weights, gammas
     """
 
-    yvals = in_dist.objdata()["yvals"]
+    yvals = in_dist.objdata["yvals"]
 
-    default = in_dist.metadata()["xvals"][0]
+    default = in_dist.metadata["xvals"][0]
     z = kwargs.pop("xvals", default)
     nz = kwargs.pop("nz", 300)
 

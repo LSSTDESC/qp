@@ -14,7 +14,7 @@ def test_check_input():
     assert ens_h.npdf == 1
 
     ens_h.norm()
-    assert ens_h.objdata()["pdfs"][0, 1] != pdfs[1]
+    assert ens_h.objdata["pdfs"][0, 1] != pdfs[1]
     assert ens_h.ancil == ancil
 
 

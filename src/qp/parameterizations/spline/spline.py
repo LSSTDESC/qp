@@ -310,7 +310,7 @@ class spline_gen(Pdf_rows_gen):
         ...         [3.0e-2,1.0e-1,9.2e-1,2.1e-1,4.2e-3]]), 'spln': np.array([3,2])}
         >>> ancil = {'ids':[12,14]}
         >>> ens = qp.spline.create_ensemble(data,ancil)
-        >>> ens.metadata()
+        >>> ens.metadata
         {'pdf_name': array([b'spline'], dtype='|S6'), 'pdf_version': array([0])}
 
         """

@@ -141,8 +141,8 @@ class EnsembleTestCase(unittest.TestCase):
                 ens.writeHdf5Chunk(group, 0, ens.npdf)
                 ens.finalizeHdf5Write(fout)
                 readens = qp.read("testwrite.hdf5")
-                assert readens.metadata().keys() == ens.metadata().keys()
-                assert readens.objdata().keys() == ens.objdata().keys()
+                assert readens.metadata.keys() == ens.metadata.keys()
+                assert readens.objdata.keys() == ens.objdata.keys()
                 os.remove("testwrite.hdf5")
 
     @staticmethod
@@ -265,8 +265,8 @@ class EnsembleTestCase(unittest.TestCase):
         XVALS = np.linspace(0, 3, 100)
         for ens_type in ["hist", "interp"]:
             assert_array_equal(
-                input_dict[ens_type].metadata()["pdf_name"],
-                output_dict[ens_type].metadata()["pdf_name"],
+                input_dict[ens_type].metadata["pdf_name"],
+                output_dict[ens_type].metadata["pdf_name"],
             )
 
             assert_array_almost_equal(

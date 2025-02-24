@@ -428,7 +428,7 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
         >>> pdf_constructor_name = 'dual_spline_average'
         >>> ancil = {'ids':[11,18]}
         >>> ens = qp.quant.create_ensemble(quants,locs,pdf_constructor_name,ancil=ancil)
-        >>> ens.metadata()
+        >>> ens.metadata
         {'pdf_name': array([b'quant'], dtype='|S5'),
         'pdf_version': array([0]),
         'quants': array([[0.000e+00, 1.000e-04, 2.500e-01, 5.000e-01, 7.500e-01, 9.999e-01,

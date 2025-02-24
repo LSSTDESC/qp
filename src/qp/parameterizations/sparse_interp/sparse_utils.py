@@ -30,9 +30,9 @@ def extract_sparse_from_xy(in_dist, **kwargs):  # pragma: no cover
     This function will rebin to a grid more suited to the in_dist support by
     removing x-values corrsponding to y=0
     """
-    default = in_dist.objdata()["yvals"]
+    default = in_dist.objdata["yvals"]
     yvals = kwargs.pop("yvals", default)
-    default = in_dist.metadata()["xvals"][0]
+    default = in_dist.metadata["xvals"][0]
     xvals = kwargs.pop("xvals", default)
     nvals = kwargs.pop("nvals", 300)
     # rebin to a grid more suited to the in_dist support

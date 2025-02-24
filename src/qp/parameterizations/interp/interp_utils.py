@@ -86,8 +86,8 @@ def extract_xy_sparse(in_dist, **kwargs):  # pragma: no cover
     removing x-values corresponding to y=0
     """
 
-    yvals = in_dist.objdata()["yvals"]
-    default = in_dist.metadata()["xvals"][0]
+    yvals = in_dist.objdata["yvals"]
+    default = in_dist.metadata["xvals"][0]
     xvals = kwargs.pop("xvals", default)
     nvals = kwargs.pop("nvals", 300)
     # rebin to a grid more suited to the in_dist support

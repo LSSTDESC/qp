@@ -53,9 +53,9 @@ class Ensemble:
 
     Methods
     -------
-    metadata()
+    metadata
         Returns the metadata of the ensemble
-    objdata()
+    objdata
         Returns the object data of the ensemble
 
     """
@@ -124,12 +124,12 @@ class Ensemble:
             The ensemble for the requested distribution or slice of distributions
         """
         red_data = {}
-        md = self.metadata()
+        md = self.metadata
         md.pop("pdf_name")
         md.pop("pdf_version")
         for k, v in md.items():
             red_data[k] = np.squeeze(v)
-        dd = slice_dict(self.objdata(), key)
+        dd = slice_dict(self.objdata, key)
         for k, v in dd.items():
             if len(np.shape(v)) < 2:
                 red_data[k] = np.expand_dims(v, 0)
@@ -264,14 +264,15 @@ class Ensemble:
             in the ensemble, by default None.
         """
         new_data = {}
-        for k, v in self.metadata().items():
+        for k, v in self.metadata.items():
             if k in ["pdf_name", "pdf_version"]:
                 continue
             new_data[k] = np.squeeze(v)
-        new_data.update(self.objdata())
+        new_data.update(self.objdata)
         new_data.update(data)
         self.update(new_data, ancil)
 
+    @property
     def metadata(self) -> Mapping:
         """Return the metadata for this ensemble. Metadata are elements that are
         the same for all the distributions in the ensemble. These include the name
@@ -288,6 +289,7 @@ class Ensemble:
         dd.update(self._gen_obj.metadata)
         return dd
 
+    @property
     def objdata(self) -> Mapping:
         """Return the data for this ensemble. These are the elements that differ
         for each distribution in the ensemble. For example, the data points that
@@ -365,11 +367,9 @@ class Ensemble:
         KeyError:
             Raised if the two ensembles do not have matching metadata.
         """
-        if not compare_dicts(
-            [self.metadata(), other_ens.metadata()]
-        ):  # pragma: no cover
+        if not compare_dicts([self.metadata, other_ens.metadata]):  # pragma: no cover
             raise KeyError("Metadata does not match, can not append")
-        full_objdata = concatenate_dicts([self.objdata(), other_ens.objdata()])
+        full_objdata = concatenate_dicts([self.objdata, other_ens.objdata])
         if self._ancil is not None and other_ens.ancil is not None:  # pragma: no cover
             full_ancil = concatenate_dicts([self.ancil, other_ens.ancil])
         else:
@@ -387,7 +387,7 @@ class Ensemble:
             for object data, and optionally ``ancil`` for ancillary data.
 
         """
-        dd = dict(meta=self.metadata(), data=self.objdata())
+        dd = dict(meta=self.metadata, data=self.objdata)
         if self.ancil is not None:
             dd["ancil"] = self.ancil
         return dd
@@ -411,7 +411,7 @@ class Ensemble:
             ) from err
 
         # update ensemble objdata with normalized values
-        d_keys = list(self.objdata().keys())
+        d_keys = list(self.objdata.keys())
         self.update_objdata(data={d_keys[0]: normed}, ancil=self.ancil)
 
     def mode(self, grid: ArrayLike) -> ArrayLike:
@@ -941,5 +941,5 @@ class Ensemble:
         filename : h5py `File object` or `group`
             The file or group object to complete writing and close.
         """
-        mdata = self.metadata()
+        mdata = self.metadata
         hdf5.finalize_HDF5_write(filename, "meta", **mdata)

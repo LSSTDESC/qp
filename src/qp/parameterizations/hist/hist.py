@@ -375,7 +375,7 @@ class hist_gen(Pdf_rows_gen):
         >>> pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])
         >>> ancil = {'ids': [105, 108]}
         >>> ens = qp.hist.create_ensemble(bins,pdfs,ancil=ancil)
-        >>> ens.metadata()
+        >>> ens.metadata
         {'pdf_name': array([b'hist'], dtype='|S4'),
         'pdf_version': array([0]),
         'bins': array([[0, 1, 2, 3, 4, 5]])}
