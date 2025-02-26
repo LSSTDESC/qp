@@ -184,7 +184,15 @@ class Factory(OrderedDict):
         -------
 
         >>> import qp
-        >>> qp.create('hist', data=data)
+        >>> import numpy as np
+        >>> data = {'bins': [0,1,2,3,4,5],
+        ...         'pdfs': np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])}
+        >>> ens_h = qp.create('hist', data=data)
+        >>> ens.metadata
+        {'pdf_name': array([b'hist'], dtype='|S4'),
+        'pdf_version': array([0]),
+        'bins': array([[0, 1, 2, 3, 4, 5]])}
+
 
         """
 
@@ -216,6 +224,21 @@ class Factory(OrderedDict):
         -------
         ens : Ensemble
             The ensemble constructed from the data in the tables.
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> meta = {'pdf_name': np.array(['hist'.encode()]), 'pdf_version': np.array([0]),
+        ... 'bins':np.array([0,1,2,3,4,5])}
+        >>> data = {'pdfs': np.array([[0.  , 0.1 , 0.1 , 0.4 , 0.2 ],
+        ... [0.05, 0.09, 0.2 , 0.3 , 0.15]])}
+        >>> ens = qp.from_tables({'meta': meta, 'data': data})
+        >>> ens.metadata
+        {'pdf_name': array([b'hist'], dtype='|S4'),
+        'pdf_version': array([0]),
+        'bins': array([[0, 1, 2, 3, 4, 5]])}
 
         """
         md_table = tables["meta"]
@@ -261,6 +284,16 @@ class Factory(OrderedDict):
         -------
         meta : Mapping
             Returns the metadata table as a dictionary of numpy arrays.
+
+        Example
+        -------
+
+        >>> import qp
+        >>> qp.read_metadata("hist-ensemble.hdf5")
+        {'pdf_name': array([b'hist'], dtype='|S4'),
+        'pdf_version': array([0]),
+        'bins': array([[0, 1, 2, 3, 4, 5]])}
+
         """
         tables = tables_io.read(filename, NUMPY_DICT, keys=["meta"])
         return tables["meta"]
@@ -278,6 +311,14 @@ class Factory(OrderedDict):
         -------
         value : bool
             True if the file is a qp file
+
+        Example
+        -------
+
+        >>> import qp
+        >>> qp.is_qp_file("test-qpfile.hdf5")
+        True
+
         """
         try:
             # If this isn't a table-like file with a 'meta' table this will throw an exception
@@ -305,6 +346,13 @@ class Factory(OrderedDict):
         -------
         ens : Ensemble
             The ensemble constructed from the data in the file.
+
+        Example
+        -------
+
+        >>> import qp
+        >>> ens = qp.read("test-qpfile.hdf5")
+
         """
         _, ext = os.path.splitext(filename)
         if ext in [".pq"]:
@@ -333,6 +381,14 @@ class Factory(OrderedDict):
         -------
         nrows : `int`
             The length of the data, or the number of distributions in the data.
+
+        Example
+        -------
+
+        >>> import qp
+        >>> qp.data_length("hist-ensemble.hdf5")
+        2
+
         """
         f, _ = hdf5.read_HDF5_group(filename, "data")
         num_rows = hdf5.get_group_input_data_length(f)
@@ -372,6 +428,7 @@ class Factory(OrderedDict):
             Raised if this function is run with files that are not ``hdf5`` files.
         KeyError
             Raised if the ``pdf_name`` in the file is not one of the available parameterizations.
+
         """
         extension = os.path.splitext(filename)[1]
         if extension not in [".hdf5"]:  # pragma: no cover
@@ -430,6 +487,24 @@ class Factory(OrderedDict):
         ens : `qp.Ensemble`
             The ensemble we converted to
 
+        Example
+        -------
+
+        The following example demonstrates converting from a histogram parameterization
+        to an interpolation parameterization. The arguments given will not be the same
+        when converting between other parameterizations.
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]]))
+        >>> ens_i = qp.convert(ens_h, "interp", xvals=np.linspace(0,5,10))
+        >>> ens_i.metadata
+        {'pdf_name': array([b'interp'], dtype='|S6'),
+        'pdf_version': array([0]),
+        'xvals': array([0.        , 0.55555556, 1.11111111, 1.66666667, 2.22222222,
+        2.77777778, 3.33333333, 3.88888889, 4.44444444, 5.        ]))}
+
         """
         kwds_copy = kwds.copy()
         method = kwds_copy.pop("method", None)
@@ -474,6 +549,24 @@ class Factory(OrderedDict):
         -------
         ens : `qp.Ensemble`
             The output
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_1 = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([0,0.1,0.1,0.4,0.2]))
+        >>> ens_1.npdf
+        1
+        >>> ens_2 = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0.05,0.09,0.2,0.3,0.15]]))
+        >>> ens_2.npdf
+        1
+        >>> ens_all = qp.concatenate([ens_1, ens_2])
+        >>> ens_all.npdf
+        2
+
         """
         if not ensembles:  # pragma: no cover
             return None
@@ -524,6 +617,18 @@ class Factory(OrderedDict):
         ------
         ValueError
             Raised if the dictionary contains any values that are not Ensembles.
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([0,0.1,0.1,0.4,0.2]))
+        >>> ens_i = qp.interp.create_ensemble(xvals= np.array([0,1,2,3,4]),
+        ... yvals = np.array([[0.05,0.09,0.2,0.3,0.15]]))
+        >>> qp.write_dict("qp-ensembles.hdf5",{"ens_h": ens_h, "ens_i": ens_i})
+
         """
         output_tables = {}
         for key, val in ensemble_dict.items():
@@ -551,6 +656,13 @@ class Factory(OrderedDict):
         -------
         Mapping[str, Ensemble]
             A dictionary with the Ensembles contained in the file.
+
+        Example
+        -------
+
+        >>> import qp
+        >>> ens_dict = qp.read_dict("qp-ensembles.hdf5")
+
         """
         results = {}
 

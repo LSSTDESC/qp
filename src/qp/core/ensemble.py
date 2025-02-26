@@ -225,6 +225,21 @@ class Ensemble:
         -------
         ens : `qp.Ensemble`
             Ensemble of distributions of type class_to using the data from this object
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]]))
+        >>> ens_i = ens_h.convert_to(qp.interp, xvals=np.linspace(0,5,10))
+        >>> ens_i.metadata
+        {'pdf_name': array([b'interp'], dtype='|S6'),
+        'pdf_version': array([0]),
+        'xvals': array([0.        , 0.55555556, 1.11111111, 1.66666667, 2.22222222,
+        2.77777778, 3.33333333, 3.88888889, 4.44444444, 5.        ]))}
+
         """
         kwds = kwargs.copy()
         method = kwds.pop("method", None)
@@ -255,6 +270,20 @@ class Ensemble:
         ancil : `Mapping`
             Optional dictionary that contains data for each of the distributions
             in the ensemble, by default None.
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([0,0.1,0.1,0.4,0.2]))
+        >>> ens_h.update(data={'bins': np.array([1,2,3,4,5]), 'pdfs': np.array([0.1,0.1,0.4,0.2])})
+        >>> ens_h.metadata
+        {'pdf_name': array([b'hist'], dtype='|S4'),
+        'pdf_version': array([0]),
+        'bins': array([[1, 2, 3, 4, 5]])}
+
         """
         self._frozen = self._gen_func(**data)
         self._gen_obj = self._frozen.dist
@@ -273,6 +302,18 @@ class Ensemble:
         ancil : `Mapping`
             Optional dictionary that contains data for each of the distributions
             in the ensemble, by default None.
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([0,0.1,0.1,0.4,0.2]))
+        >>> ens_h.update_objdata(data={'pdfs': np.array([0.05,0.09,0.2,0.3,0.15])})
+        >>> ens_h.objdata
+        {'pdfs': array([[0.06329114, 0.11392405, 0.25316456, 0.37974684, 0.18987342]])}
+
         """
         new_data = {}
         for k, v in self.metadata.items():
@@ -311,6 +352,12 @@ class Ensemble:
         objdata : `dict`
             The object data
 
+        Notes
+        -----
+
+        If the distribution normalized the data (which many do by default), this
+        will return the normalized data and not the original input data.
+
         """
 
         dd = {}
@@ -329,19 +376,34 @@ class Ensemble:
         ancil : `dict`
             The ancillary data dictionary.
 
-        Notes
-        -----
-        Raises IndexError if the length of the arrays in ancil does not match
-        the number of PDFs in the Ensemble
+        Raises
+        ------
+        IndexError
+            If the length of the arrays in ancil does not match the number of
+            distributions in the Ensemble.
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]]))
+        >>> ancil = {'ids': np.array([5,7])}
+        >>> ens_h.set_ancil(ancil)
+        >>> ens_h.ancil
+        {'ids': array([5, 7])}
+
         """
         check_array_shapes(ancil, self.npdf)
         self._ancil = ancil
 
     def add_to_ancil(self, to_add: Mapping):  # pragma: no cover
-        """Add additional columns to the ancillary data dictionary.
+        """Add additional columns to the ancillary data dictionary. The
+        ancil dictionary must already exist. If it does not, use `set_ancil`.
+
         If any of these columns have the same name as already existing
         ancillary data columns, the new columns will overwrite the old ones.
-
 
 
         Parameters
@@ -349,10 +411,26 @@ class Ensemble:
         to_add : `dict`
             The columns to add to the ancillary data dict
 
-        Notes
-        -----
-        Raises IndexError if the length of the arrays in to_add does not match
-        the number of distributions in the Ensembles
+
+        Raises
+        ------
+        IndexError
+            If the length of the arrays in to_add does not match the number of
+            distributions in the Ensembles
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ancil = {'ids': np.array([5,7])}
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]]), ancil=ancil)
+        >>> ens_h.add_to_ancil({'means':np.array([0.2,0.25])})
+        >>> ens_h.ancil
+        {'ids': array([5, 7]), 'means': array[0.2,0.25]}
+
+
         """
         check_array_shapes(to_add, self.npdf)
         self._ancil.update(to_add)
@@ -375,8 +453,22 @@ class Ensemble:
 
         Raises
         ------
-        KeyError:
+        KeyError
             Raised if the two ensembles do not have matching metadata.
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_1 = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([0,0.1,0.1,0.4,0.2]))
+        >>> ens_2 = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([0.5,0.15,0.25,0.45,0.1]))
+        >>> ens_1.append(ens_2)
+        >>> ens_1.npdf
+        2
+
         """
         if not compare_dicts([self.metadata, other_ens.metadata]):  # pragma: no cover
             raise KeyError("Metadata does not match, can not append")
@@ -403,14 +495,14 @@ class Ensemble:
             dd["ancil"] = self.ancil
         return dd
 
-    def norm(self) -> np.ndarray:
+    def norm(self):
         """Normalizes the input distribution data if it represents a PDF
         and can be normalized.
 
-        Returns
-        -------
-        _type_
-            _description_
+        Raises
+        ------
+        AttributeError
+            Raised if the parameterization doesn't have a normalization method.
         """
 
         # get normalized data values
@@ -475,12 +567,21 @@ class Ensemble:
         ----------
         filename : `str`
 
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_1 = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([0,0.1,0.1,0.4,0.2]))
+        >>> ens_1.write_to("hist-ensemble.hdf5")
+
         """
         basename, ext = os.path.splitext(filename)
         tables = self.build_tables()
         tables_io.write(tables, basename, ext[1:])
 
-    def pdf(self, x: Union[float, ArrayLike]) -> Union[float, ArrayLike]:
+    def pdf(self, x: Union[float, ArrayLike]) -> np.ndarray:
         """
         Evaluates the probability density function (PDF) for the whole ensemble
 
@@ -491,13 +592,26 @@ class Ensemble:
 
         Returns
         -------
-        pdf :  `float` or `arraylike`
+        pdf :  `np.ndarray`
             The PDF value(s) at the given location(s).
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])
+        >>> ens_h.pdf(np.linspace(3,6,6))
+        array([[0.5       , 0.5       , 0.25      , 0.25      , 0.        ,
+                0.        ],
+               [0.37974684, 0.37974684, 0.18987342, 0.18987342, 0.        ,
+                0.        ]])
 
         """
         return self._frozen.pdf(x)
 
-    def logpdf(self, x: Union[float, ArrayLike]) -> Union[float, ArrayLike]:
+    def logpdf(self, x: Union[float, ArrayLike]) -> np.ndarray:
         """
         Evaluates the log of the probability density function (PDF) for the whole ensemble
 
@@ -508,12 +622,26 @@ class Ensemble:
 
         Returns
         -------
-        logpdf : `float` or `arraylike`
+        logpdf : `np.ndarray`
             The log of the PDF at the given location(s)
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])
+        >>> ens_h.logpdf(np.linspace(3,6,6))
+        array([[-0.69314718, -0.69314718, -1.38629436, -1.38629436,        -inf,
+               -inf],
+              [-0.96825047, -0.96825047, -1.66139765, -1.66139765,        -inf,
+               -inf]])
+
         """
         return self._frozen.logpdf(x)
 
-    def cdf(self, x: Union[float, ArrayLike]) -> Union[float, ArrayLike]:
+    def cdf(self, x: Union[float, ArrayLike]) -> np.ndarray:
         """
         Evaluates the cumulative distribution function (CDF) for the whole ensemble
 
@@ -524,12 +652,26 @@ class Ensemble:
 
         Returns
         -------
-        cdf : `float` or `arraylike`
+        cdf : `np.ndarray`
             The CDF at the given location(s)
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])
+        >>> ens_h.cdf(np.linspace(3,6,6))
+        array([[0.25      , 0.55      , 0.8       , 0.95      , 1.        ,
+                1.        ],
+               [0.43037975, 0.65822785, 0.84810127, 0.96202532, 1.        ,
+                1.        ]])
+
         """
         return self._frozen.cdf(x)
 
-    def logcdf(self, x: Union[float, ArrayLike]) -> Union[float, ArrayLike]:
+    def logcdf(self, x: Union[float, ArrayLike]) -> np.ndarray:
         """
         Evaluates the log of the cumulative distribution function (CDF) for the whole ensemble
 
@@ -540,12 +682,26 @@ class Ensemble:
 
         Returns
         -------
-        cdf : `float` or `arraylike`
+        cdf : `np.ndarray`
             The log of the CDF at the given location(s)
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])
+        >>> ens_h.logcdf(np.linspace(3,6,6))
+        array([[-1.38629436, -0.597837  , -0.22314355, -0.05129329,  0.        ,
+                0.        ],
+               [-0.84308733, -0.41820413, -0.16475523, -0.03871451,  0.        ,
+                0.        ]])
+
         """
         return self._frozen.logcdf(x)
 
-    def ppf(self, q: Union[float, ArrayLike]) -> Union[float, ArrayLike]:
+    def ppf(self, q: Union[float, ArrayLike]) -> np.ndarray:
         """
         Evaluates the percentage point function (PPF) for the whole ensemble.
 
@@ -556,12 +712,24 @@ class Ensemble:
 
         Returns
         -------
-        ppf : `float` or `arraylike`
+        ppf : `np.ndarray`
             The PPF at the given location(s)
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])
+        >>> ens_h.ppf(0.5)
+        array([[3.5       ],
+               [3.18333333]])
+
         """
         return self._frozen.ppf(q)
 
-    def sf(self, q: Union[float, ArrayLike]) -> Union[float, ArrayLike]:
+    def sf(self, q: Union[float, ArrayLike]) -> np.ndarray:
         """
         Evaluates the survival fraction (SF) of the distribution for the whole ensemble.
 
@@ -572,12 +740,24 @@ class Ensemble:
 
         Returns
         -------
-        sf : `float` or `arraylike`
+        sf : `np.ndarray`
             The SF at the given location(s)
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])
+        >>> ens_h.sf(0.5)
+        array([[1.        ],
+               [0.96835443]])
+
         """
         return self._frozen.sf(q)
 
-    def logsf(self, q: Union[float, ArrayLike]) -> Union[float, ArrayLike]:
+    def logsf(self, q: Union[float, ArrayLike]) -> np.ndarray:
         """Evaluates the log of the survival function (SF) of the distribution for the whole ensemble.
 
         Parameters
@@ -587,12 +767,24 @@ class Ensemble:
 
         Returns
         -------
-        sf : `float` or `arraylike`
+        sf : `np.ndarray`
             The log of the SF at the given location(s)
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])
+        >>> ens_h.logsf(0.5)
+        array([[ 0.        ],
+               [-0.03215711]])
+
         """
         return self._frozen.logsf(q)
 
-    def isf(self, q: Union[float, ArrayLike]) -> Union[float, ArrayLike]:
+    def isf(self, q: Union[float, ArrayLike]) -> np.ndarray:
         """
         Evaluates the inverse of the survival fraction of the distribution for the whole ensemble.
 
@@ -603,32 +795,55 @@ class Ensemble:
 
         Returns
         -------
-        sf : `float` or `arraylike`
+        sf : `np.ndarray`
             The inverse of the survival fraction at the given location(s)
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])
+        >>> ens_h.isf(0.5)
+        array([[3.5       ],
+               [3.18333333]])
+
         """
         return self._frozen.isf(q)
 
     def rvs(
         self,
-        size: int,
+        size: int = 1,
         random_state: Union[None, int, np.random.Generator] = None,
     ) -> ArrayLike:
         """
         Generate samples from the distributions in this ensemble. The returned samples
         are of shape (npdf, size), where size is the number of samples per distribution.
-        If no size is given, it defaults to 1.
 
         Parameters
         ----------
         size: `int`
-            Number of samples to return
+            Number of samples to return, by default 1.
         random_state : `int`, `np.random.Generator`, `None`, optional
             The random state to use. Can be provided with a random seed for consistency. By default None.
 
         Returns
         -------
         samples : `arraylike`
-            The array of samples for each distribution in the ensemble.
+            The array of samples for each distribution in the ensemble, shape (npdf,size)
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])
+        >>> ens_h.rvs(size=2)
+        array([[3.12956247, 3.72090937],
+               [4.96783836, 3.24016123]])
+
         """
         return self._frozen.rvs(
             size=(self._frozen.npdf, size), random_state=random_state
@@ -651,6 +866,20 @@ class Ensemble:
         -------
         stats : sequence
             A sequence of arrays of the moments requested, where the shape of the arrays is (npdf, 1)
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])
+        >>> ens_h.stats()
+        (array([[3.375     ],
+                [3.01898734]]),
+         array([[0.859375  ],
+                [1.23698125]]))
+
         """
         return self._frozen.stats(moments=moments)
 
@@ -661,6 +890,18 @@ class Ensemble:
         -------
         medians : `arraylike`
             The median for each distribution, the shape of the array is (npdf, 1)
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])
+        >>> ens_h.median()
+        array([[3.5       ],
+               [3.18333333]])
+
         """
         return self._frozen.median()
 
@@ -671,6 +912,18 @@ class Ensemble:
         -------
         means : `arraylike`
             The mean for each distribution, the shape of the array is (npdf, 1)
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])
+        >>> ens_h.mean()
+        array([[3.375     ],
+               [3.01898734]])
+
         """
         return self._frozen.mean()
 
@@ -681,6 +934,18 @@ class Ensemble:
         -------
         variances : `arraylike`
             The variance for each distribution, the shape of the array is (npdf, 1)
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])
+        >>> ens_h.var()
+        array([[0.859375  ],
+               [1.23698125]])
+
         """
         return self._frozen.var()
 
@@ -691,6 +956,18 @@ class Ensemble:
         -------
         stds : `arraylike`
             The standard deviations for each distribution, the shape of the array is (npdf, 1)
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])
+        >>> ens_h.std()
+        array([[0.92702481],
+               [1.11219659]])
+
         """
         return self._frozen.std()
 
@@ -706,6 +983,18 @@ class Ensemble:
         -------
         moments : `arraylike`
             The nth moment for each distribution, the shape of the array is (npdf, 1)
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])
+        >>> ens_h.moment(2)
+        array([[12.25      ],
+               [10.35126582]])
+
         """
         return self._frozen.moment(n)
 
@@ -716,6 +1005,19 @@ class Ensemble:
         -------
         entropy : `arraylike`
             The entropy for each distribution, the shape of the array is (npdf, 1)
+
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])
+        >>> ens_h.entropy()
+        array([[1.21300757],
+               [1.45307405]])
+
         """
         return self._frozen.entropy()
 
@@ -743,6 +1045,19 @@ class Ensemble:
             A tuple of the arrays containing the intervals for each distribution, where the
             shape of the arrays is (npdf, len(alpha))
 
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])
+        >>> ens_h.interval(alpha=[0,0.5,0.9])
+        (array([[1.4       , 3.        , 3.5       ],
+                [0.79      , 2.2875    , 3.18333333]]),
+         array([[3.5       , 4.        , 4.8       ],
+                [3.18333333, 3.84166667, 4.73666667]]))
+
         """
         return self._frozen.interval(alpha)
 
@@ -760,6 +1075,18 @@ class Ensemble:
         histogram: `tuple[ndarray]`
             The first array in the tuple is the bin edges that were input. The second
             array in the tuple is an (npdf, N) array of the values in the bins.
+
+        Example
+        -------
+
+        >>> import qp
+        >>> import numpy as np
+        >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
+        ... pdfs = np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])
+        >>> ens_h.histogramize(bins=np.array([1,2,3,4,5]))
+        (array([1, 2, 3, 4, 5]),
+         array([[0.125     , 0.125     , 0.5       , 0.25      ],
+                [0.11392405, 0.25316456, 0.37974684, 0.18987342]]))
         """
         return self._frozen.histogramize(bins)
 
@@ -767,7 +1094,8 @@ class Ensemble:
         self, limits: tuple[Union[float, ArrayLike], Union[float, ArrayLike]]
     ) -> ArrayLike:
         """
-        Computes the integral under the distributions in the ensemble between the given limits.
+        Computes the integral under the PDFs of the distributions in the ensemble
+        between the given limits.
 
         Parameters
         ----------
