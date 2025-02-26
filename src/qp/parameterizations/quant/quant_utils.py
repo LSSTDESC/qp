@@ -23,7 +23,7 @@ def extract_quantiles(in_dist, **kwargs):
 
     Other Parameters
     ----------------
-    quantiles : `np.array`
+    quants : `np.array`
         Quantile values to use
 
     Returns

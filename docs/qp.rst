@@ -13,12 +13,12 @@ these approximations.
 Ensemble and Factory
 ====================
 
-.. automodule:: qp.ensemble
+.. automodule:: qp.core.ensemble
     :members:
     :undoc-members:
 
     
-.. automodule:: qp.factory
+.. automodule:: qp.core.factory
     :members:
     :undoc-members:
        
@@ -85,15 +85,6 @@ Gaussian mixture model based
     :undoc-members:
     :exclude-members: test_data
 
-		      
-		      
-`scipy` distributions
----------------------
-
-.. automodule :: qp.parameterizations.scipy_pdfs
-    :members:
-    :undoc-members:
-
 
               
 Quantification Metrics
@@ -114,21 +105,35 @@ Quantification Metrics
 .. autoclass:: PIT
     :members:
 
+
 Utility functions
 =================
 
-`qp.conversion_funcs`
-----------------------
-       
-.. automodule:: qp.conversion_funcs
+`qp.utils.array`: Array utility functions
+-----------------------------------------
+
+.. automodule:: qp.utils.array
     :members:
     :undoc-members:
 
+`qp.utils.conversion`: Conversion utility functions
+---------------------------------------------------
        
-`qp.utils`: PDF evaluation and construction utility functions
--------------------------------------------------------------
+.. automodule:: qp.utils.conversion
+    :members:
+    :undoc-members:
 
-.. automodule:: qp.utils
+`qp.utils.dictionary`: Multi-level dictionary manipulation
+----------------------------------------------------------
+
+.. automodule:: qp.utils.dictionary
+    :members:
+    :undoc-members:
+       
+`qp.utils.interpolation`: PDF evaluation and construction utility functions
+----------------------------------------------------------------------------
+
+.. automodule:: qp.utils.interpolation
     :members:
     :undoc-members:
 
@@ -140,17 +145,10 @@ Infrastructure and Core functionality
 `qp.pdf_gen`: `scipy.stats` interface
 -------------------------------------
 
-.. automodule:: qp.parameterizations.base_parameterization
+.. automodule:: qp.parameterizations.base
     :members:
     :undoc-members:
 
-       
-`qp.dict_utils` tools for multi-level dictionary manipulation
--------------------------------------------------------------
-    
-.. automodule:: qp.dict_utils
-    :members:
-    :undoc-members:
 
 
 `qp.plotting`: Tools for PDF plotting

@@ -1,4 +1,4 @@
-"""This module implements a factory that manages different types of PDFs"""
+"""This module implements a factory that manages different types of Ensembles"""
 
 import sys
 import os
@@ -23,7 +23,7 @@ from ..parameterizations.base import Pdf_gen_wrap, Pdf_gen
 
 
 class Factory(OrderedDict):
-    """Factory that creates and manages PDFs"""
+    """Factory that creates and manages Ensembles of distributions."""
 
     def __init__(self):
         """C'tor"""
@@ -228,6 +228,18 @@ class Factory(OrderedDict):
         pdf_version = data.pop("pdf_version")
         if pdf_name not in self:  # pragma: no cover
             raise KeyError("Class named %s is not in factory" % pdf_name)
+
+        # make sure old files are compatible
+        if pdf_name == "quant":
+            check_input = data.pop("check_input", None)
+            if not check_input == None:
+                # replace with ensure extent
+                data["ensure_extent"] = check_input
+        elif pdf_name == "hist" or pdf_name == "interp":
+            check_input = data.pop("check_input", None)
+            if not check_input == None:
+                # replace with norm
+                data["norm"] = check_input
 
         the_class = self[pdf_name]
         reader_convert = the_class.reader_method(pdf_version)

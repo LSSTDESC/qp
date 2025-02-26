@@ -102,13 +102,14 @@ class sparse_gen(interp_gen):
     ) -> Ensemble:
         """Creates an Ensemble of distributions parameterized as interpolations, constructed from a sparse representation.
 
-        Input data format:
-        data = {}
 
         Parameters
         ----------
-        data : Mapping
-            The dictionary of data for the distributions.
+        sparse_indices:
+        xvals :
+        mu :
+        sig :
+        dims :
         ancil : Optional[Mapping], optional
             A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
 

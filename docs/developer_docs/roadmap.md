@@ -10,4 +10,4 @@
 
 ## Moving forward
 
-- separate out irregular interp and interp parameterizations into separate folders
+- separate out `irregular_interp` and `interp` parameterizations into separate folders

@@ -20,17 +20,31 @@ from ...core.ensemble import Ensemble
 
 
 class mixmod_gen(Pdf_rows_gen):
-    """Mixture model based distribution
+    """Parameterizes distributions using a Gaussian Mixture model.
+
+    Parameters
+    ----------
+    means : array_like
+        The means of the Gaussians, with shape (npdf, ncomp)
+    stds:  array_like
+        The standard deviations of the Gaussians, with shape (npdf, ncomp)
+    weights : array_like
+        The weights to attach to the Gaussians, with shape (npdf, ncomp).
+        Weights should sum up to one. If not, the weights are interpreted
+        as relative weights.
+
 
     Notes
     -----
-    This implements a PDF using a Gaussian Mixture model
 
-    The relevant data members are:
+    Converting to this parameterization:
+    +----------------------------+--------------------------------------------+------------+
+    | Function                   | Arguments                                  | Method key |
+    +----------------------------+--------------------------------------------+------------+
+    | extract_mixmod_fit_samples | ncomps=3, nsamples=1000, random_state=None | None       |
+    +----------------------------+--------------------------------------------+------------+
 
-    means:  (npdf, ncomp) means of the Gaussians
-    stds:  (npdf, ncomp) standard deviations of the Gaussians
-    weights: (npdf, ncomp) weights for the Gaussians
+    Implementation Notes:
 
     The pdf() and cdf() are exact, and are computed as a weighted sum of
     the pdf() and cdf() of the component Gaussians.

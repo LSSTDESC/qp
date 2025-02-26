@@ -278,17 +278,15 @@ class spline_gen(Pdf_rows_gen):
     ) -> Ensemble:
         """Creates an Ensemble of distributions parameterized as via a set of splines.
 
-        Input data format:
-        data = {`splx`: values, `sply`: values, `spln`: values}.
-        The shape of the arrays `splx` and `sply` should be (npdfs, n), where npdfs is the number of distributions
-        and n is the number of values per distribution.
-        The shape of `spln` (the order parameters) is just npdfs.
-
 
         Parameters
         ----------
-        data : Mapping
-            The dictionary of data for the distributions.
+        splx : array_like
+          The x-values of the spline knots
+        sply : array_like
+          The y-values of the spline knots
+        spln : array_like, optional
+          The order of the spline knots, by default None
         ancil : Optional[Mapping], optional
             A dictionary of metadata for the distributions, where any arrays have the same length as the number of
             distributions, by default None
@@ -298,20 +296,6 @@ class spline_gen(Pdf_rows_gen):
         Ensemble
             An Ensemble object containing all of the given distributions.
 
-        Example
-        -------
-
-        To create an Ensemble with two distributions and their associated ids:
-
-        >>> import qp
-        >>> import numpy as np
-        >>> data = {'splx': np.array([[-0.3,-0.1,0.1,0.3,0.5],[-0.3,-0.1,0.1,0.3,0.5]]),
-        ...         'sply':np.array([[2.89003419e-07, 7.35852472e+00, 3.74859497e-01,  1.65796839e+00,  0.00000000e+00],
-        ...         [3.0e-2,1.0e-1,9.2e-1,2.1e-1,4.2e-3]]), 'spln': np.array([3,2])}
-        >>> ancil = {'ids':[12,14]}
-        >>> ens = qp.spline.create_ensemble(data,ancil)
-        >>> ens.metadata
-        {'pdf_name': array([b'spline'], dtype='|S6'), 'pdf_version': array([0])}
 
         """
         data = {"splx": splx, "sply": sply, "spln": spln}

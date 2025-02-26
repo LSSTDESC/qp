@@ -1,4 +1,4 @@
-"""Implementation of an ensemble of distributions"""
+"""Implementation of an Ensemble of distributions."""
 
 import os
 
@@ -22,9 +22,11 @@ from ..parameterizations.base import Pdf_gen
 
 
 class Ensemble:
-    """An object comprised of one or more qp distributions with the same parameterization.
+    """An object comprised of one or more distributions with the same parameterization.
 
-    This object has three main data components, the last of which is optional:
+
+    The Ensemble allows you to perform operations on the group of parameterizations as a whole.
+    An Ensemble has three main data components, the last of which is optional:
     1. The metadata: this contains information about the parameterization, and
         the coordinates of the parameterization.
     2. The object data: this contains the data that is unique to each distribution,
@@ -47,16 +49,23 @@ class Ensemble:
         The key for the creation method to use, by default None
 
 
-    Attributes
-    ----------
-    gen_func
+    Notes
+    -----
 
-    Methods
+
+    Example
     -------
-    metadata
-        Returns the metadata of the ensemble
-    objdata
-        Returns the object data of the ensemble
+
+    >>> import qp
+    >>> import numpy as np
+    >>> data = {'bins': [0,1,2,3,4,5],
+    ...         'pdfs': np.array([[0,0.1,0.1,0.4,0.2],[0.05,0.09,0.2,0.3,0.15]])
+    >>> ancil = {'ids': [105, 108]}}
+    >>> ens = qp.Ensemble(qp.hist,data,ancil)
+    >>> ens.metadata
+    {'pdf_name': array([b'hist'], dtype='|S4'),
+    'pdf_version': array([0]),
+    'bins': array([[0, 1, 2, 3, 4, 5]])}
 
     """
 
@@ -97,9 +106,7 @@ class Ensemble:
 
         """
         # start_time = timeit.default_timer()
-        self._gen_func = the_class.creation_method(
-            method
-        )  # TODO: figure out if this is better than .create
+        self._gen_func = the_class.creation_method(method)
         self._frozen = self._gen_func(**data)
         self._gen_obj = self._frozen.dist
         self._gen_class = type(self._gen_obj)
@@ -109,6 +116,10 @@ class Ensemble:
 
         self._gridded = None
         self._samples = None
+
+    def __repr__(self):
+        class_name = type(self).__name__
+        return f"{class_name}(the_class={self._gen_class},data=dict(meta={self.metadata},objdata={self.objdata}),ancil={self.ancil})"
 
     def __getitem__(self, key: Union[int, slice]):
         """Build a `qp.Ensemble` object for a sub-set of the distributions in this ensemble
@@ -240,7 +251,7 @@ class Ensemble:
         Parameters
         ----------
         data : `Mapping`
-            Dictionary with data used to construct the ensemble
+            Dictionary with data used to construct the ensemble, including metadata.
         ancil : `Mapping`
             Optional dictionary that contains data for each of the distributions
             in the ensemble, by default None.

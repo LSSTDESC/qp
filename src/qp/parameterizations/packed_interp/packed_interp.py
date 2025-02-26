@@ -88,6 +88,10 @@ class packed_interp_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attr
           The packed version of the y-values used to do the interpolation
         ymax : array_like
           The maximum y-values for each pdf
+        packing_type: PackingType
+            By default `PackingType.linear_from_rowmax`
+        log_floor: float
+            By default -3
         """
         if np.size(xvals) != np.shape(ypacked)[-1]:  # pragma: no cover
             raise ValueError(
@@ -272,7 +276,6 @@ class packed_interp_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attr
         cls._add_creation_method(cls.create, None)
         cls._add_extraction_method(extract_and_pack_vals_at_x, None)
 
-    # TODO: fix the example and docstrings for this function once I know how
     @classmethod
     def create_ensemble(
         self,
@@ -294,6 +297,11 @@ class packed_interp_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attr
           The packed version of the y-values used to do the interpolation
         ymax : array_like
           The maximum y-values for each pdf
+        packing_type: PackingType
+            By default `PackingType.linear_from_rowmax`
+        log_floor: float
+            By default -3
+
         ancil : Optional[Mapping], optional
             A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
 
@@ -301,21 +309,6 @@ class packed_interp_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attr
         -------
         Ensemble
             An Ensemble object containing all of the given distributions.
-
-        Example
-        -------
-
-        To create an Ensemble of two distributions with associated ids:
-
-        >>> import qp
-        >>> import numpy as np
-        >>> data = {'xvals': np.array([0,0.5,1,1.5,2]), 'yvals': np.array([[0.01, 0.2,0.3,0.2,0.01],[0.09,0.25,0.2,0.1,0.01]])}
-        >>> ancil = {'ids':[5,8]}
-        >>> ens = qp.interp.create_ensemble(data,ancil)
-        >>> ens.metadata
-        {'pdf_name': array([b'interp'], dtype='|S6'),
-        'pdf_version': array([0]),
-        'xvals': array([[0. , 0.5, 1. , 1.5, 2. ]])}
 
 
         """

@@ -38,9 +38,9 @@ class Pdf_gen:
     -----
     Metadata are elements that are the same for all the PDFs
     These include the name and version of the PDF generation class, and
-    possible data such as the bin edges used for histogram representations
+    possible coordinate data such as the bin edges used for histogram representations.
 
-    Object data are elements that differ for each PDFs
+    Object data are elements that differ for each of the PDFs.
     """
 
     _reader_map = {}
@@ -274,7 +274,7 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
     """Class extend `scipy.stats.rv_continuous` with
     information needed for `qp` when we want to have a collection
     of distribution of objects such as histograms or splines,
-    where each object represents a single distribution
+    where each object represents a single distribution.
 
     """
 

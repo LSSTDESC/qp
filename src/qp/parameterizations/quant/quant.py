@@ -1,4 +1,4 @@
-"""This module implements a PDT distribution sub-class using interpolated quantiles
+"""This module implements a distribution parameterization sub-class using interpolated quantiles
 """
 
 import logging
@@ -39,7 +39,8 @@ PDF_CONSTRUCTORS = {
 
 
 class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
-    """Quantile based distribution, where the PDF is defined piecewise from the quantiles
+    """Quantile based distribution, where the PDF is defined from the quantiles.
+
 
     Parameters
     ----------
@@ -59,14 +60,10 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
 
     Attributes
     ----------
-    quants : array_like
-        The quantiles used to build the CDF, of shape n
-    locs : array_like
-        The locations at which those quantiles are reached, of shape (npdf, n)
-    pdf_constructor_name : str
-        The constructor or interpolator used to create the PDF
-    pdf_constructor : AbstractPDFConstructor
-        The class used to construct this Ensemble
+    quants
+    locs
+    pdf_constructor_name
+    pdf_constructor
 
     Methods
     -------
@@ -79,14 +76,23 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
     -----
 
     Converting to this parameterization:
-
+    +-------------------+-----------+------------+
+    | Function          | Arguments | Method key |
+    +-------------------+-----------+------------+
+    | extract_quantiles | quants    | None       |
+    +-------------------+-----------+------------+
 
     Implementation notes:
 
     This implements a CDF by interpolating a set of quantile values
 
-    It simply takes a set of x and y values and uses `scipy.interpolate.interp1d` to
-    build the CDF
+    It takes a set of quants and locs values and uses `scipy.interpolate.interp1d` to
+    build the CDF.
+
+    It has multiple PDF constructors to get the PDF from the quantiles. The default
+    is the `piecewise_linear` method, which takes the numerical derivative of the
+    CDF and interpolates between those points.
+
     """
 
     # pylint: disable=protected-access
@@ -131,6 +137,7 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
 
         locs_2d = reshape_to_pdf_size(locs, -1)
 
+        # make sure input makes sense for a CDF
         self._validate_input(quants, locs_2d)
 
         # check locs are finite
@@ -170,7 +177,7 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
         super().__init__(*args, **kwargs)
 
         self._addmetadata("quants", self._quants)
-        self._addmetadata("pdf_constructor_name", self._pdf_constructor_name)
+        self._addmetadata("pdf_constructor_name", self._pdf_constructor_name.encode())
         self._addmetadata("ensure_extent", self._ensure_extent)
         self._addobjdata("locs", self._locs)
 
@@ -347,6 +354,11 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
             The axes to plot on. Either this or xlim must be provided.
         xlim : (float, float)
             The x-axis limits. Either this or axes must be provided.
+
+        Other Parameters
+        ----------------
+        npts : int, optional
+            The number of x values to create within the limits, by default 101
         kwargs :
             Any keyword arguments to pass to matplotlib's axes.hist() method.
 
@@ -433,7 +445,7 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
         'pdf_version': array([0]),
         'quants': array([[0.000e+00, 1.000e-04, 2.500e-01, 5.000e-01, 7.500e-01, 9.999e-01,
                 1.000e+00]]),
-        'pdf_constructor_name': array(['dual_spline_average'], dtype='<U19'),
+        'pdf_constructor_name': array(['dual_spline_average'], dtype='|S19'),
         'check_input': array([ True])}
         """
         data = {

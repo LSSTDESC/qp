@@ -1,4 +1,4 @@
-"""This module implements a PDT distribution sub-class using histograms
+"""This module implements a distribution parameterization sub-class using histograms
 """
 
 import numpy as np
@@ -29,7 +29,7 @@ class hist_gen(Pdf_rows_gen):
     """Implements distributions parameterized as histograms.
 
     By default, the input distribution is normalized. If the input data is
-    already normalized, you can use the optional parameter ``check_input = False``
+    already normalized, you can use the optional parameter ``norm = False``
     to skip the normalization process.
 
     Parameters
@@ -48,12 +48,8 @@ class hist_gen(Pdf_rows_gen):
 
     Attributes
     ----------
-    bins : `ndarray`
-        The array containing the (n+1) bin boundaries used to construct the
-        distribution
-    pdfs : `ndarray`
-        The array containing the (npdf, n) PDF values in the bins used to
-        construct the distribution
+    bins
+    pdfs
 
 
     Methods

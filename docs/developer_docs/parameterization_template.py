@@ -109,10 +109,10 @@ class parameterization_gen(Pdf_rows_gen):
           [description]
         [arg2] : array_like
           [description]
-        [warn] : `bool`, optional
+        warn : `bool`, optional
             If True, raises warnings if input is not valid input data (i.e. if
             data is negative). If False, no warnings are raised. By default True.
-        [[norm] : bool, optional
+        [norm : bool, optional
             If True, normalizes the input distribution. If False, assumes the
             given distribution is already normalized. By default True.]
         """

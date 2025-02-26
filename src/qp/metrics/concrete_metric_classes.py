@@ -20,7 +20,7 @@ from .metrics import (
 )
 from .pit import PIT
 
-from ..core.lazy_modules import pytdigest
+from .lazy_modules import pytdigest
 from functools import reduce
 from operator import add
 

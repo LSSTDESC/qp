@@ -1,4 +1,4 @@
-"""This module implements a PDT distribution sub-class using interpolated grids
+"""This module implements a distribution parameterization sub-class using interpolated grids
 """
 
 import numpy as np
@@ -29,7 +29,8 @@ from ...utils.interpolation import (
 class interp_gen(Pdf_rows_gen):
     """Implements distributions parameterized as interpolated sets of values.
 
-    more details
+    All distributions share the same x values. Interpolation is performed using
+    `scipy.interpolate.interp1d`.
 
 
     Parameters
@@ -47,10 +48,8 @@ class interp_gen(Pdf_rows_gen):
 
     Attributes
     ----------
-    xvals:
-        The n x-values used to do the interpolation
+    xvals
     yvals
-        The (npdf, n) y-values used to do the interpolation
 
     Methods
     -------
@@ -77,23 +76,23 @@ class interp_gen(Pdf_rows_gen):
 
     Implementation notes:
 
-    This version use the same xvals for all the the PDFs, which
-    allows for much faster evaluation than irreg_interp_gen, and reduces the memory
-    usage by a factor of 2.
+    This uses the same xvals for all the the PDFs, unlike `irreg_interp_gen` which
+    has a different set of xvals for each distribution.
+    `interp` therefore allows for much faster evaluation than `irreg_interp_gen`,
+    and reduces the memory usage by a factor of 2.
 
-    Inside the range xvals[0], xvals[-1] it simply takes a set of x and y values
+    Inside the range of given xvals it takes a set of x and y values
     and uses `scipy.interpolate.interp1d` to build the PDF.
-    Outside the range xvals[0], xvals[-1] the pdf() will return 0.
+    Outside the range of given xvals the `pdf()` will return 0.
 
-    The cdf() is constructed by integrating analytically computing the cumulative
-    sum at the xvals grid points and interpolating between them.
-    This will give a slight discrepancy with the true integral of the pdf(),
+    The `cdf()` is constructed by integrating analytically -- computing the cumulative
+    sum at the given xvals and interpolating between them.
+    This will give a slight discrepancy with the true integral of the `pdf()`,
     but is much, much faster to evaluate.
-    Outside the range xvals[0], xvals[-1] the cdf() will return (0 or 1), respectively
+    Outside the range of given xvals the `cdf()` will return 0 or 1, respectively
 
-    The ppf() is computed by inverting the cdf().
-    ppf(0) will return xvals[0]
-    ppf(1) will return xvals[-1]
+    The `ppf()` is computed by inverting the `cdf()`. `ppf(0)` will return `xvals[0]`
+    and `ppf(1)` will return `xvals[-1]`
     """
 
     # pylint: disable=protected-access
