@@ -119,7 +119,10 @@ class Ensemble:
 
     def __repr__(self):
         class_name = type(self).__name__
-        return f"{class_name}(the_class={self._gen_class},data=dict(meta={self.metadata},objdata={self.objdata}),ancil={self.ancil})"
+        return f"{class_name}(the_class={self._gen_class.__name__},shape={self.shape})"
+
+    def __len__(self):
+        return self.npdf
 
     def __getitem__(self, key: Union[int, slice]):
         """Build a `qp.Ensemble` object for a sub-set of the distributions in this ensemble

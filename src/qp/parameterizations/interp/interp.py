@@ -134,6 +134,12 @@ class interp_gen(Pdf_rows_gen):
             )
         self._xvals = np.asarray(xvals)
 
+        # make sure that the xvals are sorted
+        if not np.all(np.diff(self._xvals) >= 0):
+            raise ValueError(
+                f"Invalid xvals: The given xvals are not sorted: {self._xvals}"
+            )
+
         # raise warnings if input data is not finite or pdfs are not positive
         self._warn = warn
         if self._warn:
@@ -157,7 +163,7 @@ class interp_gen(Pdf_rows_gen):
         # Set support
         self._xmin = self._xvals[0]
         self._xmax = self._xvals[-1]
-        kwargs["shape"] = np.shape(yvals)[:-1]
+        kwargs["shape"] = np.shape(yvals)
 
         self._yvals = reshape_to_pdf_size(yvals, -1)
 
@@ -184,6 +190,13 @@ class interp_gen(Pdf_rows_gen):
             axis=1,
         )
 
+        # raise an error if the sum is 0 or negative
+        if np.any(self._ycumul[:, -1] <= 0):
+            indices = np.where(self._ycumul[:, -1] <= 0)
+            raise ValueError(
+                f"The distribution(s) cannot be properly normalized, the integral is <= 0 for distributions at indices = {indices[0]}"
+            )
+
     def normalize(self) -> np.ndarray:
         """Normalizes the input distribution values.
 
@@ -197,19 +210,9 @@ class interp_gen(Pdf_rows_gen):
         ValueError
             Raised if the sum under the distribution <= 0.
         """
-        # make sure that the xvals are sorted
-        if not np.all(np.diff(self._xvals) >= 0):
-            raise ValueError(
-                f"The given xvals are not sorted, they must be sorted to normalize: {self._xvals}"
-            )
 
         self._compute_ycumul()
-        # raise an error if the sum is 0 or negative
-        if np.any(self._ycumul[:, -1] <= 0):
-            indices = np.where(self._ycumul[:, -1] <= 0)
-            raise ValueError(
-                f"The integral is <= 0 for distributions at indices = {indices[0]}, so the distribution(s) cannot be properly normalized."
-            )
+
         new_yvals = (self._yvals.T / self._ycumul[:, -1]).T
         self._ycumul = (self._ycumul.T / self._ycumul[:, -1]).T
         return new_yvals

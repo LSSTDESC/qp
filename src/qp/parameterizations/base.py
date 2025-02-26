@@ -176,10 +176,12 @@ class rv_frozen_func(rv_continuous_frozen):
         bc = np.broadcast(array_list)
         ss = bc.shape
         if len(ss) < 2:
-            self._shape = 1
+            # self._shape = 1
+            self._shape = ss[1:]
         else:
-            self._shape = ss[1:-1]
-        self._npdf = np.prod(self._shape).astype(int)
+            # self._shape = ss[1:-1]
+            self._shape = ss[1:]
+        self._npdf = np.prod(self._shape[:-1]).astype(int)
         self._ndim = np.size(self._shape)
 
     @property
@@ -214,7 +216,7 @@ class rv_frozen_func(rv_continuous_frozen):
         """
         cdf_vals = reshape_to_pdf_size(self.cdf(bins), -1)
         bin_vals = cdf_vals[:, 1:] - cdf_vals[:, 0:-1]
-        return (bins, reshape_to_pdf_shape(bin_vals, self._shape, bins.size - 1))
+        return (bins, reshape_to_pdf_shape(bin_vals, self._shape[:-1], bins.size - 1))
 
 
 class rv_frozen_rows(rv_continuous_frozen):
@@ -227,11 +229,12 @@ class rv_frozen_rows(rv_continuous_frozen):
     def __init__(self, dist, shape, *args, **kwds):
         """C'tor"""
         self._shape = shape
-        self._npdf = np.prod(shape).astype(int)
+        self._npdf = np.prod(shape[:-1]).astype(int)
         self._ndim = np.size(shape)
         if self._npdf is not None:
             kwds.setdefault(
-                "row", np.expand_dims(np.arange(self._npdf).reshape(self._shape), -1)
+                "row",
+                np.expand_dims(np.arange(self._npdf).reshape(self._shape[:-1]), -1),
             )
         super().__init__(dist, *args, **kwds)
 
@@ -267,7 +270,7 @@ class rv_frozen_rows(rv_continuous_frozen):
         """
         cdf_vals = reshape_to_pdf_size(self.cdf(bins), -1)
         bin_vals = cdf_vals[:, 1:] - cdf_vals[:, 0:-1]
-        return (bins, reshape_to_pdf_shape(bin_vals, self._shape, bins.size - 1))
+        return (bins, reshape_to_pdf_shape(bin_vals, self._shape[:-1], bins.size - 1))
 
 
 class Pdf_rows_gen(rv_continuous, Pdf_gen):
@@ -281,7 +284,7 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
     def __init__(self, *args, **kwargs):
         """C'tor"""
         self._shape = kwargs.pop("shape", (1))
-        self._npdf = np.prod(self._shape).astype(int)
+        self._npdf = np.prod(self._shape[:-1]).astype(int)
         super().__init__(*args, **kwargs)
 
     @property
@@ -344,7 +347,7 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
         rv_frozen : rv_frozen instance
             The frozen distribution.
         """
-        return rv_frozen_rows(self, self._shape, *args, **kwds)
+        return rv_frozen_rows(self, self._shape[:-1], *args, **kwds)
 
     def _scipy_version_warning(self):
         import scipy  # pylint: disable=import-outside-toplevel

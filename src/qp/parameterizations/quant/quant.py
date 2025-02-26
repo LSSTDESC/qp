@@ -150,7 +150,6 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
                     RuntimeWarning,
                 )
 
-        # TODO: should we ensure that quants and locs are ok after padding?
         self._ensure_extent = ensure_extent
         if self._ensure_extent:
             quants, locs_2d = pad_quantiles(quants, locs_2d)
@@ -173,7 +172,7 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
         self._pdf_constructor = None
         self._instantiate_pdf_constructor()
 
-        kwargs["shape"] = locs.shape[:-1]
+        kwargs["shape"] = locs.shape
         super().__init__(*args, **kwargs)
 
         self._addmetadata("quants", self._quants)
@@ -195,7 +194,7 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
         if not np.all(np.diff(locs) >= 0):
             indices = np.where(np.diff(locs) < 0)
             raise ValueError(
-                f"Invalid locs: \n There are decreasing values in the locs given for the distributions at the following indices: {indices}"
+                f"Invalid locs: \n The given data does not produce a 1 to 1 CDF for the distributions at the following indices: {indices}"
             )
 
     @property

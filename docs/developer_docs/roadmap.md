@@ -11,3 +11,4 @@
 ## Moving forward
 
 - separate out `irregular_interp` and `interp` parameterizations into separate folders
+- possibly change `npdf` to `ndist`, part of larger change away from calling individual distribution objects PDFs

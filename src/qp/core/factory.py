@@ -156,6 +156,7 @@ class Factory(OrderedDict):
         class_name,
         data: Mapping,
         method: Optional[str] = None,
+        ancil: Optional[Mapping] = None,
     ) -> Ensemble:
         """Make an Ensemble of a particular type of distribution. The ``data``
         dictionary will need different keys depending on what parameterization
@@ -204,7 +205,7 @@ class Factory(OrderedDict):
             raise KeyError("Class named %s is not in factory" % class_name)
         the_class = self[class_name]
         # ctor_func = the_class.creation_method(method)
-        return Ensemble(the_class, data, method=method)
+        return Ensemble(the_class, data, method=method, ancil=ancil)
 
     def from_tables(self, tables: Mapping) -> Ensemble:
         """Build this Ensemble from a dictionary of tables, where the metadata has key ``meta``,

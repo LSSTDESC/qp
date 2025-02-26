@@ -124,6 +124,12 @@ class hist_gen(Pdf_rows_gen):
         self._hbins = np.asarray(bins)
         self._nbins = self._hbins.size - 1
 
+        # make sure that the bins are sorted
+        if not np.all(np.diff(self._hbins) >= 0):
+            raise ValueError(
+                f"Invalid bins: The given bins are not sorted: {self._hbins}"
+            )
+
         # raise warnings if input data is not finite or pdfs are not positive
         self._warn = warn
         if self._warn:
@@ -165,7 +171,7 @@ class hist_gen(Pdf_rows_gen):
 
         self._hcdfs = None
         # Set support
-        kwargs["shape"] = pdfs.shape[:-1]
+        kwargs["shape"] = pdfs.shape
         super().__init__(*args, **kwargs)
         self._addmetadata("bins", self._hbins)
         self._addobjdata("pdfs", self._hpdfs)
@@ -195,7 +201,7 @@ class hist_gen(Pdf_rows_gen):
         if np.any(sums <= 0):
             indices = np.where(sums <= 0)
             raise ValueError(
-                f"The sum of the pdfs is <= 0 for distributions at index = {indices[0]}, so the distribution(s) cannot be properly normalized."
+                f"The distribution(s) cannot be properly normalized, the sum of the pdfs is <= 0 for distributions at index = {indices[0]} "
             )
         return (pdfs_2d.T / sums).T
 
