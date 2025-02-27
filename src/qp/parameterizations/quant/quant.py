@@ -172,7 +172,7 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
         self._pdf_constructor = None
         self._instantiate_pdf_constructor()
 
-        kwargs["shape"] = locs.shape
+        kwargs["shape"] = self._locs.shape  # locs.shape
         super().__init__(*args, **kwargs)
 
         self._addmetadata("quants", self._quants)

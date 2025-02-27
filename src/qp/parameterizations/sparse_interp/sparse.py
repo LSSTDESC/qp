@@ -95,7 +95,6 @@ class sparse_gen(interp_gen):
         cls._add_creation_method(cls.create, None)
         cls._add_extraction_method(extract_sparse_from_xy, None)
 
-    # TODO: fill out docstring once I know how
     @classmethod
     def create_ensemble(
         self, sparse_indices, xvals, mu, sig, dims, ancil: Optional[Mapping] = None

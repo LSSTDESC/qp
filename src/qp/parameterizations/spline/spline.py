@@ -94,10 +94,12 @@ class spline_gen(Pdf_rows_gen):
         # kwargs['b'] = self.b = np.max(splx)
         self._xmin = np.min(splx)
         self._xmax = np.max(splx)
-        kwargs["shape"] = splx.shape[:-1]
+        # kwargs["shape"] = splx.shape[:-1]
         self._splx = reshape_to_pdf_size(splx, -1)
         self._sply = reshape_to_pdf_size(sply, -1)
         self._spln = reshape_to_pdf_size(spln, -1)
+
+        kwargs["shape"] = self._splx.shape
         super().__init__(*args, **kwargs)
         self._addobjdata("splx", self._splx)
         self._addobjdata("sply", self._sply)

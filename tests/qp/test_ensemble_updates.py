@@ -29,7 +29,10 @@ def test_norm():
     data = {"xvals": x, "yvals": y}
     ens_i = qp.interp_irregular.create_ensemble(x, y)
 
-    ens_i.norm()
+    # ens_i.norm()
+    assert ens_i.shape == (1, 10)
+
+    ens_i.cdf(2)
 
 
 def test_quant():

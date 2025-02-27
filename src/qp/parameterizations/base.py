@@ -347,7 +347,7 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
         rv_frozen : rv_frozen instance
             The frozen distribution.
         """
-        return rv_frozen_rows(self, self._shape[:-1], *args, **kwds)
+        return rv_frozen_rows(self, self._shape, *args, **kwds)
 
     def _scipy_version_warning(self):
         import scipy  # pylint: disable=import-outside-toplevel

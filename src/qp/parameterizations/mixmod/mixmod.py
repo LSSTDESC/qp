@@ -83,7 +83,7 @@ class mixmod_gen(Pdf_rows_gen):
         self._means = reshape_to_pdf_size(means, -1)
         self._stds = reshape_to_pdf_size(stds, -1)
         self._weights = reshape_to_pdf_size(weights, -1)
-        kwargs["shape"] = means.shape
+        kwargs["shape"] = self._means.shape  # means.shape
         self._ncomps = means.shape[-1]
         super().__init__(*args, **kwargs)
         if np.any(self._weights < 0):

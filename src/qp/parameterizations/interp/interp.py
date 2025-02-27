@@ -163,9 +163,10 @@ class interp_gen(Pdf_rows_gen):
         # Set support
         self._xmin = self._xvals[0]
         self._xmax = self._xvals[-1]
-        kwargs["shape"] = np.shape(yvals)
+        # kwargs["shape"] = np.shape(yvals)
 
         self._yvals = reshape_to_pdf_size(yvals, -1)
+        kwargs["shape"] = np.shape(self._yvals)
 
         # normalize the distribution if norm is True
         self._norm = norm
@@ -506,9 +507,16 @@ class interp_irregular_gen(Pdf_rows_gen):
                     RuntimeWarning,
                 )
 
+        # make sure that the xvals are sorted
+        if not np.all(np.diff(self._xvals) >= 0):
+            raise ValueError(
+                f"Invalid xvals: The given xvals are not sorted: {self._xvals}"
+            )
+
         self._xmin = np.min(self._xvals)
         self._xmax = np.max(self._xvals)
-        kwargs["shape"] = np.shape(xvals)[:-1]
+        # kwargs["shape"] = np.shape(xvals)[:-1]
+        kwargs["shape"] = np.shape(self._xvals)
 
         self._norm = norm
         self._yvals = reshape_to_pdf_size(yvals, -1)
@@ -528,6 +536,13 @@ class interp_irregular_gen(Pdf_rows_gen):
             - self._xvals[:, :-1] * self._yvals[:, 1:],
             axis=1,
         )
+
+        # make sure that integrals are > 0
+        if np.any(self._ycumul[:, -1] <= 0):
+            indices = np.where(self._ycumul[:, -1] <= 0)
+            raise ValueError(
+                f"The integral is <= 0 for distributions at indices = {indices[0]}, so the distribution(s) cannot be properly normalized."
+            )
 
     def normalize(self):
         """

@@ -103,7 +103,7 @@ class packed_interp_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attr
         # Set support
         self._xmin = self._xvals[0]
         self._xmax = self._xvals[-1]
-        kwargs["shape"] = np.shape(ypacked)[:-1]
+        # kwargs["shape"] = np.shape(ypacked)[:-1]
 
         self._yvals = None
         if isinstance(packing_type, PackingType):
@@ -113,6 +113,7 @@ class packed_interp_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attr
         self._log_floor = log_floor
         self._ymax = reshape_to_pdf_size(ymax, -1)
         self._ypacked = reshape_to_pdf_size(ypacked, -1)
+        kwargs["shape"] = np.shape(self._ypacked)
 
         check_input = kwargs.pop("check_input", True)
         if check_input:

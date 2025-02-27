@@ -171,7 +171,7 @@ class hist_gen(Pdf_rows_gen):
 
         self._hcdfs = None
         # Set support
-        kwargs["shape"] = pdfs.shape
+        kwargs["shape"] = self._hpdfs.shape  # pdfs.shape
         super().__init__(*args, **kwargs)
         self._addmetadata("bins", self._hbins)
         self._addobjdata("pdfs", self._hpdfs)

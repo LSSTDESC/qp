@@ -155,7 +155,7 @@ class parameterization_gen(Pdf_rows_gen):
 
         # Get the shape of the data
         # and pass it to the base constructor to set up other attributes
-        kwargs["shape"] = arg2.shape[:-1]
+        kwargs["shape"] = self._arg2.shape
         super().__init__(*args, **kwargs)
 
         # define data and metadata
