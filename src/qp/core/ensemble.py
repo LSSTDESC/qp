@@ -478,7 +478,7 @@ class Ensemble:
             full_ancil = None
         self.update_objdata(full_objdata, full_ancil)
 
-    def build_tables(self) -> Mapping:
+    def build_tables(self, encode: bool = True) -> Mapping:
         """Returns a dictionary of dictionaries of numpy arrays for the meta data,
         object data, and the ancillary data (if it exists) for this ensemble.
 
@@ -491,6 +491,7 @@ class Ensemble:
         """
         dd = dict(meta=self.metadata, data=self.objdata)
         if self.ancil is not None:
+            # add encode string function here
             dd["ancil"] = self.ancil
         return dd
 

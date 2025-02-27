@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - numpy>=1.21.0
+  - numpy>=2.0
   - tables-io
   - astropy
   - h5py>=2.9=*mpi_openmpi*

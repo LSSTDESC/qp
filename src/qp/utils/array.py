@@ -3,6 +3,7 @@
 import sys
 
 import numpy as np
+from typing import Mapping
 
 # epsilon = sys.float_info.epsilon
 # infty = sys.float_info.max * epsilon
@@ -209,3 +210,15 @@ def reshape_to_pdf_shape(vals, pdf_shape, per_pdf):
     """
     outshape = np.hstack([pdf_shape, per_pdf])
     return vals.reshape(outshape)
+
+
+def encode_strings(data: Mapping) -> Mapping:
+
+    converted_data = {}
+    for key, value in data:
+        try:
+            if value.dtype.kind == "U":
+                new_val = np.char.encode(value, "utf-8")
+        except:
+            # is not a numpy array
+            pass
