@@ -2,6 +2,8 @@
 
 This covers details of each of the parameterizations.
 
+- should include plots
+
 ## Histogram
 
 - figure of what an example of this parameterization looks like
@@ -42,4 +44,6 @@ This covers details of each of the parameterizations.
 ## Additional parameterizations
 
 - some additional parameterizations exist, you can see some documentation for them in the API (link)
+- link to list of scipy distributions that exist as well
+  - mention conversion to these distributions is not possible
 - you can also add your own parameterizations, see here for guidelines and how to get started (link)

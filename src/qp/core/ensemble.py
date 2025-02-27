@@ -49,10 +49,6 @@ class Ensemble:
         The key for the creation method to use, by default None
 
 
-    Notes
-    -----
-
-
     Example
     -------
 

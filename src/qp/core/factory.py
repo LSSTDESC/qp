@@ -153,7 +153,7 @@ class Factory(OrderedDict):
 
     def create(
         self,
-        class_name,
+        class_name: Union[str, Pdf_gen],
         data: Mapping,
         method: Optional[str] = None,
         ancil: Optional[Mapping] = None,
@@ -175,6 +175,8 @@ class Factory(OrderedDict):
             Dictionary of values passed to the parameterization create function.
         method : `str` [`None`]
             Used to select which creation method to invoke if there are multiple.
+        ancil : `dict`
+            Dictionary with ancillary data, by default None
 
         Returns
         -------

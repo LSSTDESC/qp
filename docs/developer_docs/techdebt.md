@@ -6,6 +6,10 @@
 
 - if you have done one of these things, remember to check it off this list
 
-Functions that exist but are not implemented
+## Functions that exist but are not implemented
 
-- Ensemble.mix_mod_fit - a docstring exists but the function is not implemented
+- `Ensemble.mix_mod_fit` - a docstring exists but the function is not implemented
+
+## Functionality that is partially supported
+
+- `add_reader_method` is an option, and is supported by `qp.read` in `factory.py`, but other functions that read data in (like `iterator` or `read_dict`) do not call this reader method, so if someone were to use the `reader_method` it would likely result in bugs at the moment. Support needs to be added to the other read functions, or the `reader_method` option could be removed.
