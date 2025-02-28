@@ -1,6 +1,7 @@
 """This module implements a distribution parameterization sub-class using interpolated quantiles
 """
 
+from __future__ import annotations
 import logging
 import sys
 

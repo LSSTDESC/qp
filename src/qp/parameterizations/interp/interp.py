@@ -1,6 +1,7 @@
 """This module implements a distribution parameterization sub-class using interpolated grids
 """
 
+from __future__ import annotations
 import numpy as np
 from scipy.stats import rv_continuous
 from typing import Mapping, Optional

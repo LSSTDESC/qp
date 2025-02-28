@@ -44,6 +44,9 @@ autosummary_generate = True
 autoclass_content = "class"
 autodoc_default_flags = ["members", "no-special-members"]
 autodoc_member_order = "bysource"
+autodoc_type_aliases = {
+    "ArrayLike": "ArrayLike",
+}
 
 
 # html_sidebars = {
