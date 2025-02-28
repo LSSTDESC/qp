@@ -1,5 +1,6 @@
 """This is a template that developers can copy for creating new parameterizations"""
 
+from __future__ import annotations
 import numpy as np
 from scipy.stats import rv_continuous
 from typing import Mapping, Optional

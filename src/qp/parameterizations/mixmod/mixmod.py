@@ -1,6 +1,7 @@
 """This module implements a PDT distribution sub-class using a Gaussian mixture model
 """
 
+from __future__ import annotations
 import numpy as np
 from scipy import stats as sps
 from scipy.stats import rv_continuous

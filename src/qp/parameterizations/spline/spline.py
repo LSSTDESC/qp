@@ -1,6 +1,7 @@
 """This module implements a PDT distribution sub-class using splines
 """
 
+from __future__ import annotations
 import numpy as np
 from scipy.interpolate import splev, splint, splrep
 from scipy.special import errstate  # pylint: disable=no-name-in-module

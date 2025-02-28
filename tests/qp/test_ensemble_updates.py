@@ -3,7 +3,7 @@ import qp
 import numpy as np
 
 
-def test_check_input():
+def test_norm():
     bins = np.linspace(-2, 2, 11)
     print(bins)
     pdfs = np.array(
@@ -46,9 +46,26 @@ def test_encode_decode_strings(tmp_path):
     assert new_ens.ancil["names"][0] == names[0]
 
 
+def test_xsamples():
+    """Test that the x_samples functionality is working properly"""
+    bins = np.linspace(-2, 2, 11)
+    pdfs = np.array(
+        [
+            [0, 0.5, 1, 0.5, 0.5, 1.25, 1.5, 0.75, 0.5, 0.2],
+            [0.05, 0.09, 0.15, 0.2, 0.3, 0.5, 0.25, 0.15, 0.1, 0.025],
+        ]
+    )
+
+    ens_h = qp.hist.create_ensemble(bins, pdfs)
+    xvals = ens_h.x_samples()
+
+    assert np.min(xvals) > np.min(bins)
+    assert len(bins) == (len(xvals) + 1)
+
+
 def test_norm():
     x = np.linspace(0, 5, 10)
-    y = np.array([0, 0.5, 1, 0.5, 0.5, 1.25, 1.5, 0.75, 0.5, 0.2])
+    y = np.array([[0, 0.5, 1, 0.5, 0.5, 1.25, 1.5, 0.75, 0.5, 0.2]])
     data = {"xvals": x, "yvals": y}
     ens_i = qp.interp_irregular.create_ensemble(x, y)
 

@@ -217,6 +217,10 @@ class hist_gen(Pdf_rows_gen):
         """Return the histogram bin values"""
         return self._hpdfs
 
+    def x_samples(self):
+        """Return a set of x values that can be used to plot all the PDFs."""
+        return (self._hbins[:-1] + self._hbins[1:]) / 2
+
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
         return evaluate_hist_x_multi_y(x, row, self._hbins, self._hpdfs).ravel()

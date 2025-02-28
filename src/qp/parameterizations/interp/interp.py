@@ -229,6 +229,10 @@ class interp_gen(Pdf_rows_gen):
         """Return the y-values used to do the interpolation"""
         return self._yvals
 
+    def x_samples(self):
+        """Return a set of x values that can be used to plot all the PDFs."""
+        return self._xvals
+
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
         return interpolate_x_multi_y(
@@ -583,6 +587,11 @@ class interp_irregular_gen(Pdf_rows_gen):
     def yvals(self):
         """Return the y-valus used to do the interpolation"""
         return self._yvals
+
+    def x_samples(self) -> np.ndarray:
+        """Return a set of x values that can be used to plot all the PDFs."""
+        dx = np.min(np.diff(self._yvals))
+        return np.arange(np.min(self._xvals), np.max(self._yvals), dx)
 
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ

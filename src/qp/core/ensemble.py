@@ -203,9 +203,45 @@ class Ensemble:
         """Return the ancillary data dictionary for this ensemble."""
         return self._ancil
 
+    def x_samples(
+        self, min: float = 0.0, max: float = 5.0, n: Optional[int] = 1000
+    ) -> np.ndarray:
+        """Return an array of x values that can be used to plot all the distributions
+        in the Ensemble.
+
+        This is meant to plot the characteristic distribution for an Ensemble of
+        discrete data. For example, for an ensemble of histograms that would be
+        the PDF, and for an ensemble of quantiles that would be the CDF.
+
+        Analytic parameterizations like `mixmod` or `norm` will just return a
+        `np.linspace(min,max,n)`, and it's recommended you input the values as
+        the defaults are the same for all analytic distributions.
+
+        Parameters
+        ----------
+        min : float, optional
+            The minimum x value to be used if the parameterization doesn't have an
+            x_samples method or is analytic, by default 0.
+        max : float, optional
+            The maximum x value to be used if the parameterization doesn't have an
+            x_samples method or is analytic, by default 5.
+        n : Optional[int], optional
+            The number of points to be used if the parameterization doesn't have an
+            x_samples method or is analytic, by default 1000
+
+        Returns
+        -------
+        np.ndarray
+            The array of points to use.
+        """
+        try:
+            return self.dist.x_samples()
+        except:
+            return np.linspace(min, max, n)
+
     def convert_to(self, to_class: Pdf_gen, **kwargs):
         """Convert this ensemble to the given parameterization class. To see
-        the available conversion methods for the your chosen parameterizatipn
+        the available conversion methods for the your chosen parameterization
         and their required arguments, check the docstrings for ``qp.to_class``.
         If the parameterization class doesn't have a conversion methods table,
         then it will not be possible to convert to that class.

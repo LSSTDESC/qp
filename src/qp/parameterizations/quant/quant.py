@@ -261,6 +261,10 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
             self._quants, self._locs
         )
 
+    def x_samples(self):
+        """Return a set of x values that can be used to plot all the CDFs."""
+        return np.linspace(np.min(self._quants), np.max(self._quants), self._shape[-1])
+
     def _pdf(self, x, *args):
         # We're not requiring that the output be normalized!
         # `util.normalize_interp1d` addresses _one_ of the ways that a reconstruction
