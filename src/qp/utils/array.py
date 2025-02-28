@@ -60,7 +60,7 @@ def bin_widths(edges):
 def get_bin_indices(bins, x):
     """Return the bin indexes for a set of values
 
-    If the bins are equal width this will use arithmatic,
+    If the bins are equal width this will use arithmetic,
     If the bins are not equal width this will use a binary search
     """
     widths = bin_widths(bins)
@@ -100,7 +100,7 @@ def get_eval_case(x, row):
 
     CASE_FLAT : x, row have shapes (n), (n) and do not factor
     CASE_FACTOR : x, row have shapes (n), (n) but can be factored to shapes (1, nx) and (npdf, 1)
-                  (i.e., they were flattend by scipy)
+                  (i.e., they were flattened by scipy)
     CASE_PRODUCT : x, row have shapes (1, nx) and (npdf, 1)
     CASE_2D : x, row have shapes (npdf, nx) and (npdf, nx)
     """
@@ -215,10 +215,35 @@ def reshape_to_pdf_shape(vals, pdf_shape, per_pdf):
 def encode_strings(data: Mapping) -> Mapping:
 
     converted_data = {}
-    for key, value in data:
+    for key, val in data.items():
+        new_val = val
         try:
-            if value.dtype.kind == "U":
-                new_val = np.char.encode(value, "utf-8")
+            # encode unicode strings as bytes to work with hdf5
+            if val.dtype.kind == "U":
+                new_val = np.strings.encode(val, "utf-8")
         except:
             # is not a numpy array
-            pass
+            # TODO: what do we do here? anything?
+            if isinstance(val[0], str):
+                new_val = np.strings.encode(val, "utf-8")
+
+        converted_data[key] = new_val
+
+    return converted_data
+
+
+def decode_strings(data: Mapping[str, np.ndarray]) -> Mapping:
+    converted_data = {}
+    for key, val in data.items():
+        new_val = val
+
+        try:
+            if val.dtype.kind == "S":
+                new_val = np.strings.decode(val, "utf-8")
+        except:
+            print("not a numpy array")
+            # TODO: figure out what to do here?
+
+        converted_data[key] = new_val
+
+    return converted_data

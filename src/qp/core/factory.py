@@ -18,6 +18,7 @@ from tables_io.types import NUMPY_DICT
 from .ensemble import Ensemble
 
 from ..utils.dictionary import compare_dicts, concatenate_dicts
+from ..utils.array import decode_strings
 
 from ..parameterizations.base import Pdf_gen_wrap, Pdf_gen
 
@@ -209,7 +210,9 @@ class Factory(OrderedDict):
         # ctor_func = the_class.creation_method(method)
         return Ensemble(the_class, data, method=method, ancil=ancil)
 
-    def from_tables(self, tables: Mapping) -> Ensemble:
+    def from_tables(
+        self, tables: Mapping, decode: bool = False, ext: str = None
+    ) -> Ensemble:
         """Build this Ensemble from a dictionary of tables, where the metadata has key ``meta``,
         and the data has key ``data``. If there is an ancillary data table, it should have the
         key ``ancil``.
@@ -222,6 +225,12 @@ class Factory(OrderedDict):
         ----------
         tables: `Mapping`
             The dictionary of tables to turn into an Ensemble.
+        decode : bool
+            If True and `ext` is 'hdf5', will decode any string type columns in `ancil`,
+            by default False.
+        ext : str, optional
+            If 'hdf5' and `decode` is True, will decode any string type columns in `ancil`,
+            by default None.
 
         Returns
         -------
@@ -247,6 +256,8 @@ class Factory(OrderedDict):
         md_table = tables["meta"]
         data_table = tables["data"]
         ancil_table = tables.get("ancil")
+        if decode == True and ext == "hdf5":
+            ancil_table = decode_strings(ancil_table)
 
         data = self._build_data_dict(md_table, data_table)
 
@@ -333,7 +344,7 @@ class Factory(OrderedDict):
             print(f"This is not a qp file because {msg}")
         return False
 
-    def read(self, filename: str) -> Ensemble:
+    def read(self, filename: str, fmt: Optional[str] = None) -> Ensemble:
         """Read this ensemble from a file. The file must be a qp file.
 
         The function will create the ensemble with the parameterization given in the metadata
@@ -344,6 +355,10 @@ class Factory(OrderedDict):
         ----------
         filename : `str`
             Path to the file.
+        fmt : `str` or `None`
+            File format, if `None` it will be taken from the file extension.
+            Allowed formats are: 'hdf5','h5','hf5','hd5','fits','fit','pq',
+            'parq','parquet'
 
         Returns
         -------
@@ -366,10 +381,18 @@ class Factory(OrderedDict):
             allow_missing_keys = False
 
         tables = tables_io.read(
-            filename, NUMPY_DICT, keys=keys, allow_missing_keys=allow_missing_keys
+            filename,
+            NUMPY_DICT,
+            fmt=fmt,
+            keys=keys,
+            allow_missing_keys=allow_missing_keys,
         )  # pylint: disable=no-member
 
-        return self.from_tables(tables)
+        if fmt is not None:
+            file_fmt = fmt
+        else:
+            file_fmt = ext[1:]
+        return self.from_tables(tables, decode=True, ext=file_fmt)
 
     def data_length(self, filename: str) -> int:
         """Get the size of data in a file. The file must be a qp file, which means
@@ -641,7 +664,7 @@ class Factory(OrderedDict):
                     "All values in ensemble_dict must be qp.Ensemble"
                 )  # pragma: no cover
 
-            output_tables[key] = val.build_tables()
+            output_tables[key] = val.build_tables(encode=True, ext="hdf5")
         hdf5.write_dicts_to_HDF5(output_tables, filename, **kwargs)
 
     @staticmethod
@@ -687,7 +710,7 @@ class Factory(OrderedDict):
                 # use the hdf5 group object to gather data into a dictionary
                 tables[key_name] = hdf5.read_HDF5_group_to_dict(group_object)
 
-            results[top_level_group] = from_tables(tables)
+            results[top_level_group] = from_tables(tables, decode=True, ext="hdf5")
 
         return results
 

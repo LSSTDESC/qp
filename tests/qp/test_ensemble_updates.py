@@ -23,6 +23,29 @@ def test_check_input():
     assert ens_h.ancil == ancil
 
 
+def test_encode_decode_strings(tmp_path):
+    """Tests that the encoding and decoding of string ancil data columns for HDF5 files works with
+    write_to and read."""
+    bins = np.linspace(-2, 2, 11)
+    pdfs = np.array(
+        [
+            [0, 0.5, 1, 0.5, 0.5, 1.25, 1.5, 0.75, 0.5, 0.2],
+            [0.05, 0.09, 0.15, 0.2, 0.3, 0.5, 0.25, 0.15, 0.1, 0.025],
+        ]
+    )
+    names = np.array(["gal1", "gal2"])
+    ancil = {"names": names}
+    ens_h = qp.hist.create_ensemble(bins, pdfs, ancil=ancil)
+
+    # write to file
+    file_path = tmp_path / "test-encode.hdf5"
+    ens_h.write_to(file_path)
+
+    # read from file
+    new_ens = qp.read(file_path)
+    assert new_ens.ancil["names"][0] == names[0]
+
+
 def test_norm():
     x = np.linspace(0, 5, 10)
     y = np.array([0, 0.5, 1, 0.5, 0.5, 1.25, 1.5, 0.75, 0.5, 0.2])

@@ -17,7 +17,7 @@ classifiers = [
 dynamic = ["version"]
 
 dependencies = [
-    "numpy",
+    "numpy>=2.0",
     "scipy",
     "tables-io@git+https://github.com/sidratresearch/tables_io@dev-working",
     "deprecated",

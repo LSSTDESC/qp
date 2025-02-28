@@ -14,6 +14,7 @@ from ..utils.dictionary import (
     concatenate_dicts,
     slice_dict,
 )
+from ..utils.array import encode_strings
 from ..metrics import quick_moment
 from ..parameterizations.base import Pdf_gen
 
@@ -115,7 +116,7 @@ class Ensemble:
 
     def __repr__(self):
         class_name = type(self).__name__
-        return f"{class_name}(the_class={self._gen_class.__name__},shape={self.shape})"
+        return f"{class_name}(the_class={self._gen_class.name},shape={self.shape})"
 
     def __len__(self):
         return self.npdf
@@ -478,9 +479,19 @@ class Ensemble:
             full_ancil = None
         self.update_objdata(full_objdata, full_ancil)
 
-    def build_tables(self, encode: bool = True) -> Mapping:
+    def build_tables(self, encode: bool = False, ext: Optional[str] = None) -> Mapping:
         """Returns a dictionary of dictionaries of numpy arrays for the meta data,
         object data, and the ancillary data (if it exists) for this ensemble.
+
+        Parameters
+        ----------
+        encode : bool
+            If True and `ext` is 'hdf5', will encode any string columns in the `ancil` table,
+            by default False.
+        ext : str, optional
+            If set to 'hdf5' when `encode` is True, will encode any string columns
+            in the `ancil` table, by default None.
+
 
         Returns
         -------
@@ -491,8 +502,12 @@ class Ensemble:
         """
         dd = dict(meta=self.metadata, data=self.objdata)
         if self.ancil is not None:
-            # add encode string function here
-            dd["ancil"] = self.ancil
+            # encode any string columns if the file will be hdf5
+            if encode == True and ext == "hdf5":
+                ancil_tmp = encode_strings(self.ancil)
+                dd["ancil"] = ancil_tmp
+            else:
+                dd["ancil"] = self.ancil
         return dd
 
     def norm(self):
@@ -555,9 +570,11 @@ class Ensemble:
         return self._gridded
 
     def write_to(self, filename: str):
-        """Write this ensemble to a file. The file type can be any of the
-        those supported by tables_io. File type is indicated by the suffix
-        of the file name given.
+        """Write this ensemble to a file.
+
+        The file type can be any of the those supported by tables_io. File type
+        is indicated by the suffix of the file name given. Allowed formats are:
+        'hdf5','h5','hf5','hd5','fits','fit','pq','parq','parquet'
 
         If writing to parquet files, a file will be written for the metadata,
         the object data, and the ancillary data if it exists, where the identifying
@@ -578,7 +595,7 @@ class Ensemble:
 
         """
         basename, ext = os.path.splitext(filename)
-        tables = self.build_tables()
+        tables = self.build_tables(encode=True, ext=ext[1:])
         tables_io.write(tables, basename, ext[1:])
 
     def pdf(self, x: Union[float, ArrayLike]) -> np.ndarray:
@@ -1268,7 +1285,7 @@ class Ensemble:
         end : `int`
             Ending index of data to write in the h5py file
         """
-        odict = self.build_tables().copy()
+        odict = self.build_tables(encode=True, ext="hdf5").copy()
         odict.pop("meta")
         hdf5.write_dict_to_HDF5_chunk(fname, odict, start, end)
 

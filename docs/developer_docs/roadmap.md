@@ -14,3 +14,5 @@
 - separate out `irregular_interp` and `interp` parameterizations into separate folders
 - possibly change `npdf` to `ndist`, part of larger change away from calling individual distribution objects PDFs
 - update the tests to use `pytest` instead of `unittest`
+- have a metadata translation layer to user datatypes (i.e. `ens.metadata['pdf_name']` returns a string not an array)
+- metadata coordinates data should be 1D instead of 2D with 1 dimension being 1
