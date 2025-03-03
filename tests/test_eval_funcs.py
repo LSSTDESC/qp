@@ -7,6 +7,7 @@ import unittest
 import numpy as np
 
 import qp
+from qp.parameterizations import hist, quant
 
 
 class EvalFuncsTestCase(
@@ -51,19 +52,23 @@ class EvalFuncsTestCase(
     def test_evaluate_hist_x_multi_y(self):
         """Test the evaluate_hist_x_multi_y function"""
         self._check_interface_function(
-            qp.array.evaluate_hist_x_multi_y, self.hbins, self.hpdfs
+            qp.parameterizations.hist.hist_utils.evaluate_hist_x_multi_y,
+            self.hbins,
+            self.hpdfs,
         )
 
     def test_evaluate_hist_multi_x_multi_y(self):
         """Test the evaluate_hist_multi_x_multi_y function"""
         self._check_interface_function(
-            qp.array.evaluate_hist_multi_x_multi_y, self.hbins2, self.hpdfs
+            quant.quant_utils.evaluate_hist_multi_x_multi_y,
+            self.hbins2,
+            self.hpdfs,
         )
 
     def test_interpolate_x_multi_y(self):
         """Test the interpolate_x_multi_y"""
         self._check_interface_function(
-            qp.array.interpolate_x_multi_y,
+            qp.utils.interpolation.interpolate_x_multi_y,
             self.xvals,
             self.hpdfs,
             bounds_error=False,
@@ -73,7 +78,7 @@ class EvalFuncsTestCase(
     def test_interpolate_multi_x_multi_y(self):
         """Test the interpolate_multi_x_multi_y"""
         self._check_interface_function(
-            qp.array.interpolate_multi_x_multi_y,
+            qp.utils.interpolation.interpolate_multi_x_multi_y,
             self.xvals2,
             self.hpdfs,
             bounds_error=False,
@@ -83,7 +88,7 @@ class EvalFuncsTestCase(
     def test_interpolate_multi_x_y(self):
         """Test the interpolate_multi_x_y"""
         self._check_interface_function(
-            qp.array.interpolate_multi_x_y,
+            qp.utils.interpolation.interpolate_multi_x_y,
             self.xvals2,
             self.yvals1d,
             bounds_error=False,

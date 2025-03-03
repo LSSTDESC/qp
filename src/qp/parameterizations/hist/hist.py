@@ -393,29 +393,6 @@ class hist_gen(Pdf_rows_gen):
         data = {"bins": bins, "pdfs": pdfs, "norm": norm, "warn": warn}
         return Ensemble(self, data, ancil)
 
-    @classmethod
-    def make_test_data(cls):
-        """Make data for unit tests"""
-        cls.test_data = dict(
-            hist=dict(
-                gen_func=hist,
-                ctor_data=dict(bins=XBINS, pdfs=HIST_DATA),
-                convert_data=dict(bins=XBINS),
-                atol_diff=1e-1,
-                atol_diff2=1e-1,
-                test_xvals=TEST_XVALS,
-            ),
-            hist_samples=dict(
-                gen_func=hist,
-                ctor_data=dict(bins=XBINS, pdfs=HIST_DATA),
-                convert_data=dict(bins=XBINS, method="samples", size=NSAMPLES),
-                atol_diff=1e-1,
-                atol_diff2=1e-1,
-                test_xvals=TEST_XVALS,
-                do_samples=True,
-            ),
-        )
-
 
 hist = hist_gen
 add_class(hist_gen)

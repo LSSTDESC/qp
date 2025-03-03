@@ -60,6 +60,7 @@ class Pdf_gen:
 
     def _addmetadata(self, key, val):
         self._metadata[key] = np.expand_dims(val, 0)
+        # self._metadata[key] = np.atleast_1d(val)
 
     def _addobjdata(self, key, val):
         self._objdata[key] = val

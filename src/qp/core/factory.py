@@ -256,8 +256,9 @@ class Factory(OrderedDict):
         md_table = tables["meta"]
         data_table = tables["data"]
         ancil_table = tables.get("ancil")
-        if decode == True and ext == "hdf5":
-            ancil_table = decode_strings(ancil_table)
+        if ancil_table is not None:
+            if decode == True and ext == "hdf5":
+                ancil_table = decode_strings(ancil_table)
 
         data = self._build_data_dict(md_table, data_table)
 

@@ -63,9 +63,9 @@ def test_xsamples():
     assert len(bins) == (len(xvals) + 1)
 
 
-def test_norm():
+def test_irreg():
     x = np.linspace(0, 5, 10)
-    y = np.array([[0, 0.5, 1, 0.5, 0.5, 1.25, 1.5, 0.75, 0.5, 0.2]])
+    y = np.array([0, 0.5, 1, 0.5, 0.5, 1.25, 1.5, 0.75, 0.5, 0.2])
     data = {"xvals": x, "yvals": y}
     ens_i = qp.interp_irregular.create_ensemble(x, y)
 

@@ -8,10 +8,54 @@ import unittest
 
 import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal
+import scipy.stats as sps
 import qp
 from qp import test_data
 from qp.plotting import init_matplotlib
-from .test_funcs import assert_all_close, assert_all_small, build_ensemble
+from ..test_funcs import assert_all_close, assert_all_small, build_ensemble
+
+
+np.random.seed(1234)
+
+NPDF = 11
+NBIN = 61
+NSAMPLES = 100
+XMIN = 0.0
+XMAX = 5.0
+LOC = np.expand_dims(np.linspace(0.5, 2.5, NPDF), -1)
+SCALE = np.expand_dims(np.linspace(0.2, 1.2, NPDF), -1)
+LOC_SHIFTED = LOC + SCALE
+TEST_XVALS = np.linspace(XMIN, XMAX, 201)
+XBINS = np.linspace(XMIN, XMAX, NBIN)
+XARRAY = np.ones((NPDF, NBIN)) * XBINS
+YARRAY = np.expand_dims(np.linspace(0.5, 2.5, NPDF), -1) * (
+    1.0 + 0.1 * np.random.uniform(size=(NPDF, NBIN))
+)
+HIST_DATA = YARRAY[:, 0:-1]
+QUANTS = np.linspace(0.01, 0.99, NBIN)
+QLOCS = sps.norm(loc=LOC, scale=SCALE).ppf(QUANTS)
+SAMPLES = sps.norm(loc=LOC, scale=SCALE).rvs(size=(NPDF, NSAMPLES))
+
+MEAN_MIXMOD = np.vstack(
+    [
+        np.linspace(0.5, 2.5, NPDF),
+        np.linspace(0.5, 1.5, NPDF),
+        np.linspace(1.5, 2.5, NPDF),
+    ]
+).T
+STD_MIXMOD = np.vstack(
+    [
+        np.linspace(0.2, 1.2, NPDF),
+        np.linspace(0.2, 0.5, NPDF),
+        np.linspace(0.2, 0.5, NPDF),
+    ]
+).T
+WEIGHT_MIXMOD = np.vstack(
+    [0.7 * np.ones((NPDF)), 0.2 * np.ones((NPDF)), 0.1 * np.ones((NPDF))]
+).T
+
+HIST_TOL = 4.0 / NBIN
+QP_TOPDIR = os.path.dirname(os.path.dirname(__file__))
 
 
 class EnsembleTestCase(unittest.TestCase):
@@ -21,6 +65,27 @@ class EnsembleTestCase(unittest.TestCase):
         """
         Make any objects that are used in multiple tests.
         """
+
+        # make hist test data
+        self.hist_test_data = dict(
+            hist=dict(
+                gen_func=qp.hist,
+                ctor_data=dict(bins=XBINS, pdfs=HIST_DATA),
+                convert_data=dict(bins=XBINS),
+                atol_diff=1e-1,
+                atol_diff2=1e-1,
+                test_xvals=TEST_XVALS,
+            ),
+            hist_samples=dict(
+                gen_func=qp.hist,
+                ctor_data=dict(bins=XBINS, pdfs=HIST_DATA),
+                convert_data=dict(bins=XBINS, method="samples", size=NSAMPLES),
+                atol_diff=1e-1,
+                atol_diff2=1e-1,
+                test_xvals=TEST_XVALS,
+                do_samples=True,
+            ),
+        )
 
     def tearDown(self):
         "Clean up any mock data files created by the tests."
@@ -186,8 +251,10 @@ class EnsembleTestCase(unittest.TestCase):
     def test_hist(self):
         """Run the ensemble tests on an ensemble of qp.hist distributions"""
         key = "hist"
-        qp.hist_gen.make_test_data()
-        cls_test_data = qp.hist_gen.test_data[key]
+
+        # qp.hist_gen.make_test_data()
+        # cls_test_data = qp.hist_gen.test_data[key]
+        cls_test_data = self.hist_test_data[key]
         ens_h = build_ensemble(cls_test_data)
         assert isinstance(ens_h.gen_obj, qp.hist_gen)
         self._run_ensemble_funcs(ens_h, cls_test_data["test_xvals"])
@@ -242,8 +309,9 @@ class EnsembleTestCase(unittest.TestCase):
     def test_dictionary_output(self):
         """Test that writing and reading a dictionary of ensembles works as expected."""
         key = "hist"
-        qp.hist_gen.make_test_data()
-        cls_test_data = qp.hist_gen.test_data[key]
+        # qp.hist_gen.make_test_data()
+        # cls_test_data = qp.hist_gen.test_data[key]
+        cls_test_data = self.hist_test_data[key]
         ens_h = build_ensemble(cls_test_data)
 
         key = "interp"
@@ -256,9 +324,9 @@ class EnsembleTestCase(unittest.TestCase):
             "interp": ens_i,
         }
 
-        qp.factory.write_dict("test_dict.hdf5", output_dict)
+        qp.write_dict("test_dict.hdf5", output_dict)
 
-        input_dict = qp.factory.read_dict("test_dict.hdf5")
+        input_dict = qp.read_dict("test_dict.hdf5")
 
         assert input_dict.keys() == output_dict.keys()
 

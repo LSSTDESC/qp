@@ -186,6 +186,17 @@ class parameterization_gen(Pdf_rows_gen):
         """Return arg2"""
         return self._arg2
 
+    def x_samples(self):
+        """Return a set of x values that can be used to plot all the [distributions]."""
+        # This function is meant to return a set of x values that can be used to calculate
+        # either the PDF or CDF, whichever is the characteristic distribution of
+        # this parameterization. This means that the x values should allow you to plot
+        # the data in the parameterization without missing anything due to too
+        # large spacing between x values, for example.
+
+        # -> Add in functionality to return an array of x values here
+        return
+
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
 

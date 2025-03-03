@@ -235,7 +235,7 @@ class Ensemble:
             The array of points to use.
         """
         try:
-            return self.dist.x_samples()
+            return self._frozen.dist.x_samples()
         except:
             return np.linspace(min, max, n)
 

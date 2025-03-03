@@ -8,7 +8,7 @@ import numpy as np
 
 import qp
 from qp import test_data
-from tests.qp import test_funcs
+from .. import test_funcs
 
 
 class UtilsTestCase(unittest.TestCase):
