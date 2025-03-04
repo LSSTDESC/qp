@@ -125,6 +125,7 @@ class hist_gen(Pdf_rows_gen):
         """
         self._hbins = np.asarray(bins)
         self._nbins = self._hbins.size - 1
+        self._hpdfs = reshape_to_pdf_size(np.asarray(pdfs), -1)
 
         # make sure that the bins are sorted
         if not np.all(np.diff(self._hbins) >= 0):
@@ -146,8 +147,8 @@ class hist_gen(Pdf_rows_gen):
                     f"There are non-finite values in the pdfs for the distributions: {indices[0]}",
                     RuntimeWarning,
                 )
-            if np.any(pdfs < 0):
-                indices = np.where(pdfs < 0)
+            if np.any(self._hpdfs < 0):
+                indices = np.where(self._hpdfs < 0)
                 warnings.warn(
                     f"There are negative values in the pdfs for the distributions: {indices[0]}",
                     RuntimeWarning,
@@ -163,8 +164,6 @@ class hist_gen(Pdf_rows_gen):
         self._hbin_widths = self._hbins[1:] - self._hbins[:-1]
         self._xmin = self._hbins[0]
         self._xmax = self._hbins[-1]
-
-        self._hpdfs = reshape_to_pdf_size(pdfs, -1)
 
         # normalize the input data if norm is True
         self._norm = norm

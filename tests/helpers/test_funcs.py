@@ -7,7 +7,7 @@ import numpy as np
 
 from qp.core.ensemble import Ensemble
 from qp.plotting import plot_native, plot, plot_pdf_samples_on_axes
-from qp.test_data import NPDF
+from tests.helpers.test_data_helper import NPDF
 from qp.core.factory import read, read_metadata, convert
 
 
@@ -44,7 +44,7 @@ def build_ensemble(test_data):
 
 
 def pdf_func_tests(pdf, test_data, short=False, check_props=True):
-    """Run the test for a practicular class"""
+    """Run the test for a particular class"""
 
     xpts = test_data["test_xvals"]
 
@@ -116,7 +116,7 @@ def pdf_func_tests(pdf, test_data, short=False, check_props=True):
 
 
 def run_pdf_func_tests(test_class, test_data, short=False, check_props=True):
-    """Run the test for a practicular class"""
+    """Run the test for a particular class"""
 
     method = test_data.get("method", None)
     ctor_func = test_class.creation_method(method)
@@ -182,13 +182,13 @@ def persist_func_test(ensemble, test_data):
 
 
 def run_persist_func_tests(test_data):
-    """Run the test for a practicular class"""
+    """Run the test for a particular class"""
     ens = build_ensemble(test_data)
     persist_func_test(ens, test_data)
 
 
 def run_convert_tests(ens_orig, gen_class, test_data, **kwargs):
-    """Run the test for a practicular class"""
+    """Run the test for a particular class"""
 
     xpts = test_data["test_xvals"]
 
@@ -212,7 +212,7 @@ def run_convert_tests(ens_orig, gen_class, test_data, **kwargs):
 
 
 def plotting_func_tests(ensemble, do_samples=False):
-    """Run the test for a practicular class"""
+    """Run the test for a particular class"""
     pdf = ensemble[0]
     fig, axes = plot_native(pdf, xlim=(-5, 5))
     assert fig is not None
@@ -232,7 +232,7 @@ def plotting_func_tests(ensemble, do_samples=False):
 
 
 def run_plotting_func_tests(test_data, do_samples=False):
-    """Run the test for a practicular class"""
+    """Run the test for a particular class"""
     ens = build_ensemble(test_data)
     if ens.ndim != 1:
         return

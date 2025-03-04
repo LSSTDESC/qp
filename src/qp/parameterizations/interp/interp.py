@@ -134,6 +134,8 @@ class interp_gen(Pdf_rows_gen):
                 % (np.size(xvals), np.shape(yvals)[-1])
             )
         self._xvals = np.asarray(xvals)
+        self._yvals = reshape_to_pdf_size(np.asarray(yvals), -1)
+        kwargs["shape"] = np.shape(self._yvals)
 
         # make sure that the xvals are sorted
         if not np.all(np.diff(self._xvals) >= 0):
@@ -165,9 +167,6 @@ class interp_gen(Pdf_rows_gen):
         self._xmin = self._xvals[0]
         self._xmax = self._xvals[-1]
         # kwargs["shape"] = np.shape(yvals)
-
-        self._yvals = reshape_to_pdf_size(yvals, -1)
-        kwargs["shape"] = np.shape(self._yvals)
 
         # normalize the distribution if norm is True
         self._norm = norm

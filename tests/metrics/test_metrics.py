@@ -10,7 +10,7 @@ import numpy as np
 
 import qp
 import qp.metrics
-from .. import test_funcs
+from tests.helpers import test_funcs
 from qp.metrics.array_metrics import quick_rbpe
 from qp.metrics.concrete_metric_classes import (
     BrierMetric,

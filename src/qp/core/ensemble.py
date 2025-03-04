@@ -401,6 +401,7 @@ class Ensemble:
         dd.update(self._frozen.kwds)
         dd.pop("row", None)
         dd.update(self._gen_obj.objdata)
+        # TODO: add here to reduce dimensions if (1,n)
         return dd
 
     def set_ancil(self, ancil: Mapping):
@@ -564,6 +565,8 @@ class Ensemble:
             raise AttributeError(
                 "This parameterization does not have a normalization function."
             ) from err
+        except RuntimeError as err:
+            raise err
 
         # update ensemble objdata with normalized values
         d_keys = list(self.objdata.keys())

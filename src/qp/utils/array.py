@@ -169,7 +169,7 @@ def profile(x_data, y_data, x_bins, std=True):
     return vals, errs
 
 
-def reshape_to_pdf_size(vals, split_dim):
+def reshape_to_pdf_size(vals: np.ndarray, split_dim):
     """Reshape an array to match the number of PDFs in a distribution
 
     Parameters
@@ -191,7 +191,7 @@ def reshape_to_pdf_size(vals, split_dim):
     return vals.reshape(out_shape)
 
 
-def reshape_to_pdf_shape(vals, pdf_shape, per_pdf):
+def reshape_to_pdf_shape(vals: np.ndarray, pdf_shape, per_pdf):
     """Reshape an array to match the shape of PDFs in a distribution
 
     Parameters

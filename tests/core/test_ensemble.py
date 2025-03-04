@@ -5,57 +5,20 @@ Unit tests for PDF class
 import copy
 import os
 import unittest
-
+from pathlib import Path
 import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal
 import scipy.stats as sps
 import qp
 from qp import test_data
 from qp.plotting import init_matplotlib
-from ..test_funcs import assert_all_close, assert_all_small, build_ensemble
-
-
-np.random.seed(1234)
-
-NPDF = 11
-NBIN = 61
-NSAMPLES = 100
-XMIN = 0.0
-XMAX = 5.0
-LOC = np.expand_dims(np.linspace(0.5, 2.5, NPDF), -1)
-SCALE = np.expand_dims(np.linspace(0.2, 1.2, NPDF), -1)
-LOC_SHIFTED = LOC + SCALE
-TEST_XVALS = np.linspace(XMIN, XMAX, 201)
-XBINS = np.linspace(XMIN, XMAX, NBIN)
-XARRAY = np.ones((NPDF, NBIN)) * XBINS
-YARRAY = np.expand_dims(np.linspace(0.5, 2.5, NPDF), -1) * (
-    1.0 + 0.1 * np.random.uniform(size=(NPDF, NBIN))
+from qp.parameterizations.packed_interp.packing_utils import PackingType
+from tests.helpers.test_funcs import (
+    assert_all_close,
+    assert_all_small,
+    build_ensemble,
 )
-HIST_DATA = YARRAY[:, 0:-1]
-QUANTS = np.linspace(0.01, 0.99, NBIN)
-QLOCS = sps.norm(loc=LOC, scale=SCALE).ppf(QUANTS)
-SAMPLES = sps.norm(loc=LOC, scale=SCALE).rvs(size=(NPDF, NSAMPLES))
-
-MEAN_MIXMOD = np.vstack(
-    [
-        np.linspace(0.5, 2.5, NPDF),
-        np.linspace(0.5, 1.5, NPDF),
-        np.linspace(1.5, 2.5, NPDF),
-    ]
-).T
-STD_MIXMOD = np.vstack(
-    [
-        np.linspace(0.2, 1.2, NPDF),
-        np.linspace(0.2, 0.5, NPDF),
-        np.linspace(0.2, 0.5, NPDF),
-    ]
-).T
-WEIGHT_MIXMOD = np.vstack(
-    [0.7 * np.ones((NPDF)), 0.2 * np.ones((NPDF)), 0.1 * np.ones((NPDF))]
-).T
-
-HIST_TOL = 4.0 / NBIN
-QP_TOPDIR = os.path.dirname(os.path.dirname(__file__))
+from tests.helpers import test_data_helper as t_data
 
 
 class EnsembleTestCase(unittest.TestCase):
@@ -66,24 +29,92 @@ class EnsembleTestCase(unittest.TestCase):
         Make any objects that are used in multiple tests.
         """
 
+        self.norm_test_data = dict(
+            norm=dict(
+                gen_func=qp.stats.norm,
+                ctor_data=dict(loc=t_data.LOC, scale=t_data.SCALE),
+                test_xvals=t_data.TEST_XVALS,
+                do_samples=True,
+                ancil=dict(zmode=t_data.LOC),
+            ),
+            norm_shifted=dict(
+                gen_func=qp.stats.norm,
+                ctor_data=dict(loc=t_data.LOC, scale=t_data.SCALE),
+                test_xvals=t_data.TEST_XVALS,
+            ),
+            norm_multi_d=dict(
+                gen_func=qp.stats.norm,
+                ctor_data=dict(
+                    loc=np.array([t_data.LOC, t_data.LOC]),
+                    scale=np.array([t_data.SCALE, t_data.SCALE]),
+                ),
+                test_xvals=t_data.TEST_XVALS,
+                do_samples=True,
+            ),
+        )
         # make hist test data
         self.hist_test_data = dict(
             hist=dict(
                 gen_func=qp.hist,
-                ctor_data=dict(bins=XBINS, pdfs=HIST_DATA),
-                convert_data=dict(bins=XBINS),
+                ctor_data=dict(bins=t_data.XBINS, pdfs=t_data.HIST_DATA),
+                convert_data=dict(bins=t_data.XBINS),
                 atol_diff=1e-1,
                 atol_diff2=1e-1,
-                test_xvals=TEST_XVALS,
+                test_xvals=t_data.TEST_XVALS,
             ),
             hist_samples=dict(
                 gen_func=qp.hist,
-                ctor_data=dict(bins=XBINS, pdfs=HIST_DATA),
-                convert_data=dict(bins=XBINS, method="samples", size=NSAMPLES),
+                ctor_data=dict(bins=t_data.XBINS, pdfs=t_data.HIST_DATA),
+                convert_data=dict(
+                    bins=t_data.XBINS, method="samples", size=t_data.NSAMPLES
+                ),
                 atol_diff=1e-1,
                 atol_diff2=1e-1,
-                test_xvals=TEST_XVALS,
+                test_xvals=t_data.TEST_XVALS,
                 do_samples=True,
+            ),
+        )
+        self.interp_test_data = dict(
+            interp=dict(
+                gen_func=qp.interp,
+                ctor_data=dict(xvals=t_data.XBINS, yvals=t_data.YARRAY),
+                convert_data=dict(xvals=t_data.XBINS),
+                test_xvals=t_data.TEST_XVALS,
+            )
+        )
+
+        ypacked_lin, ymax_lin, ypacked_log, ymax_log = t_data.calc_ypacked()
+
+        self.packed_interp_test_data = dict(
+            lin_packed_interp=dict(
+                gen_func=qp.packed_interp,
+                ctor_data=dict(
+                    packing_type=PackingType.linear_from_rowmax,
+                    xvals=t_data.XBINS,
+                    ypacked=ypacked_lin,
+                    ymax=ymax_lin,
+                ),
+                convert_data=dict(
+                    xvals=t_data.XBINS,
+                    packing_type=PackingType.linear_from_rowmax,
+                ),
+                test_xvals=t_data.TEST_XVALS,
+            ),
+            log_packed_interp=dict(
+                gen_func=qp.packed_interp,
+                ctor_data=dict(
+                    packing_type=PackingType.log_from_rowmax,
+                    xvals=t_data.XBINS,
+                    ypacked=ypacked_log,
+                    ymax=ymax_log,
+                    log_floor=-3.0,
+                ),
+                convert_data=dict(
+                    xvals=t_data.XBINS,
+                    packing_type=PackingType.log_from_rowmax,
+                    log_floor=-3.0,
+                ),
+                test_xvals=t_data.TEST_XVALS,
             ),
         )
 
@@ -92,7 +123,7 @@ class EnsembleTestCase(unittest.TestCase):
 
     @staticmethod
     def _run_ensemble_funcs(ens, xpts):
-        """Run the test for a practicular class"""
+        """Run the test for a particular class"""
 
         pdfs = ens.pdf(xpts)
         cdfs = ens.cdf(xpts)
@@ -116,16 +147,16 @@ class EnsembleTestCase(unittest.TestCase):
         hist_check = ens.frozen.histogramize(xpts)[1]
         assert_all_small(hist - hist_check, atol=1e-5, test_name="hist")
 
-        ppfs = ens.ppf(test_data.QUANTS)
-        check_ppf = ens.cdf(ppfs) - test_data.QUANTS
+        ppfs = ens.ppf(t_data.QUANTS)
+        check_ppf = ens.cdf(ppfs) - t_data.QUANTS
         assert_all_small(check_ppf, atol=2e-2, test_name="ppf")
 
         sfs = ens.sf(xpts)
         check_sf = sfs + cdfs
         assert_all_small(check_sf - 1, atol=2e-2, test_name="sf")
 
-        _ = ens.isf(test_data.QUANTS)
-        check_isf = ens.cdf(ppfs) + test_data.QUANTS[::-1]
+        _ = ens.isf(t_data.QUANTS)
+        check_isf = ens.cdf(ppfs) + t_data.QUANTS[::-1]
         assert_all_small(check_isf - 1, atol=2e-2, test_name="isf")
 
         samples = ens.rvs(size=1000)
@@ -156,11 +187,9 @@ class EnsembleTestCase(unittest.TestCase):
         assert interval[0].size == ens.npdf
 
         for N in range(3):
-            moment_partial = ens.moment_partial(
-                N, limits=(test_data.XMIN, test_data.XMAX)
-            )
+            moment_partial = ens.moment_partial(N, limits=(t_data.XMIN, t_data.XMAX))
             calc_moment = qp.metrics.calculate_moment(
-                ens, N, limits=(test_data.XMIN, test_data.XMAX)
+                ens, N, limits=(t_data.XMIN, t_data.XMAX)
             )
             assert_all_close(
                 moment_partial,
@@ -238,7 +267,8 @@ class EnsembleTestCase(unittest.TestCase):
     def test_norm(self):
         """Run the ensemble tests on an ensemble of scipy.stats.norm distributions"""
         key = "norm"
-        cls_test_data = qp.stats.norm_gen.test_data[key]  # pylint: disable=no-member
+        # cls_test_data = qp.stats.norm_gen.test_data[key]  # pylint: disable=no-member
+        cls_test_data = self.norm_test_data[key]
         ens_norm = build_ensemble(cls_test_data)
         assert hasattr(ens_norm, "gen_func")
         assert isinstance(
@@ -267,8 +297,9 @@ class EnsembleTestCase(unittest.TestCase):
     def test_interp(self):
         """Run the ensemble tests on an ensemble of qp.interp distributions"""
         key = "interp"
-        qp.interp_gen.make_test_data()
-        cls_test_data = qp.interp_gen.test_data[key]
+        # qp.interp_gen.make_test_data()
+        # cls_test_data = qp.interp_gen.test_data[key]
+        cls_test_data = self.interp_test_data[key]
         ens_i = build_ensemble(cls_test_data)
         assert isinstance(ens_i.gen_obj, qp.interp_gen)
         self._run_ensemble_funcs(ens_i, cls_test_data["test_xvals"])
@@ -276,8 +307,10 @@ class EnsembleTestCase(unittest.TestCase):
     def test_packed_interp(self):
         """Run the ensemble tests on an ensemble of qp.packed_interp distributions"""
         key = "lin_packed_interp"
-        qp.packed_interp_gen.make_test_data()
-        cls_test_data = qp.packed_interp_gen.test_data[key]
+
+        # qp.packed_interp_gen.make_test_data()
+        # cls_test_data = qp.packed_interp_gen.test_data[key]
+        cls_test_data = self.packed_interp_test_data[key]
         ens_i = build_ensemble(cls_test_data)
         assert isinstance(ens_i.gen_obj, qp.packed_interp_gen)
         self._run_ensemble_funcs(ens_i, cls_test_data["test_xvals"])
@@ -285,9 +318,9 @@ class EnsembleTestCase(unittest.TestCase):
 
     def test_iterator(self):
         """Test the iterated read"""
-        QP_DIR = os.path.abspath(os.path.dirname(qp.__file__))
-        TEST_DIR = "./tests/qp/"
-        data_file = os.path.join(TEST_DIR, "test_data", "test.hdf5")
+        # QP_DIR = os.path.abspath(os.path.dirname(qp.__file__))
+        TEST_DIR = Path(__file__).resolve().parent
+        data_file = os.path.join(TEST_DIR.parent, "test_data", "test.hdf5")
         ens = qp.read(data_file)
         data_length = qp.data_length(data_file)
         assert data_length == ens.npdf
@@ -315,8 +348,9 @@ class EnsembleTestCase(unittest.TestCase):
         ens_h = build_ensemble(cls_test_data)
 
         key = "interp"
-        qp.interp_gen.make_test_data()
-        cls_test_data = qp.interp_gen.test_data[key]
+        # qp.interp_gen.make_test_data()
+        # cls_test_data = qp.interp_gen.test_data[key]
+        cls_test_data = self.interp_test_data[key]
         ens_i = build_ensemble(cls_test_data)
 
         output_dict = {

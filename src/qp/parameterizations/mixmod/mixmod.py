@@ -7,6 +7,7 @@ from scipy import stats as sps
 from scipy.stats import rv_continuous
 from typing import Mapping, Optional
 from numpy.typing import ArrayLike
+import warnings
 
 from .mixmod_utils import extract_mixmod_fit_samples
 from ...core.factory import add_class
@@ -51,7 +52,11 @@ class mixmod_gen(Pdf_rows_gen):
     the pdf() and cdf() of the component Gaussians.
 
     The ppf() is computed by computing the cdf() values on a fixed
-    grid and interpolating the inverse function.
+    grid and interpolating the inverse function using scipy.interp1d with the
+    default method (linear)
+
+    If you need to fill values use 0 not np.nan, if you have any np.nan it will
+    mean most of the ensemble functions likely won't work
     """
 
     # pylint: disable=protected-access
@@ -62,7 +67,13 @@ class mixmod_gen(Pdf_rows_gen):
     _support_mask = rv_continuous._support_mask
 
     def __init__(
-        self, means: ArrayLike, stds: ArrayLike, weights: ArrayLike, *args, **kwargs
+        self,
+        means: ArrayLike,
+        stds: ArrayLike,
+        weights: ArrayLike,
+        warn: bool = True,
+        *args,
+        **kwargs,
     ):
         """
         Create a new distribution or distributions using a Gaussian Mixture Model.
@@ -79,16 +90,45 @@ class mixmod_gen(Pdf_rows_gen):
             The weights to attach to the Gaussians, with shape (npdf, ncomp).
             Weights should sum up to one. If not, the weights are interpreted
             as relative weights.
+        warn : `bool`, optional
+            If True, raises warnings if input is not finite. If False, no warnings
+            are raised. By default True.
         """
         self._scipy_version_warning()
-        self._means = reshape_to_pdf_size(means, -1)
-        self._stds = reshape_to_pdf_size(stds, -1)
-        self._weights = reshape_to_pdf_size(weights, -1)
+        self._means = reshape_to_pdf_size(np.asarray(means), -1)
+        self._stds = reshape_to_pdf_size(np.asarray(stds), -1)
+        self._weights = reshape_to_pdf_size(np.asarray(weights), -1)
         kwargs["shape"] = self._means.shape  # means.shape
         self._ncomps = means.shape[-1]
-        super().__init__(*args, **kwargs)
+
+        # validate input
+        if (
+            self._means.shape != self._stds.shape
+            or self._stds.shape != self._weights.shape
+        ):
+            raise ValueError(
+                f"Invalid input: means {np.shape(means)}, stds {np.shape(stds)}, and weights {np.shape(weights)} must have the same shape."
+            )
         if np.any(self._weights < 0):
-            raise ValueError("All weights need to be larger than zero")
+            raise ValueError(
+                "Invalid input: All weights need to be larger than or equal to 0"
+            )
+        if np.any(self._stds < 0):
+            raise ValueError(
+                "Invalid input: All standard deviations (stds) must be greater than or equal to 0."
+            )
+        if np.any(np.sum(self._weights, axis=1) <= 0):
+            raise ValueError(
+                "Invalid input: The sum of the weights for each distribution must be greater than 0"
+            )
+
+        # raise warnings if input data is not finite
+        self._warn = warn
+        if self._warn:
+            self._input_warnings()
+
+        super().__init__(*args, **kwargs)
+
         self._weights = self._weights / self._weights.sum(axis=1)[:, None]
         self._addobjdata("weights", self._weights)
         self._addobjdata("stds", self._stds)
@@ -105,6 +145,38 @@ class mixmod_gen(Pdf_rows_gen):
             f"Mixmod_gen will not work correctly with scipy version < 1.8.0, you have {scipy_version}"
         )  # pragma: no cover
 
+    def _input_warnings(self):
+        """Raise warnings if input is not finite or any distribution has all stds <= 0"""
+        if not np.all(np.isfinite(self._means)):
+            indices = np.where(np.isfinite(self._means) != True)
+            warnings.warn(
+                f"The given means contain non-finite values for the following distributions: {indices}",
+                RuntimeWarning,
+            )
+        if not np.all(np.isfinite(self._stds)):
+            indices = np.where(np.isfinite(self._stds) != True)
+            warnings.warn(
+                f"There are non-finite values in the stds for the following distributions: {indices}",
+                RuntimeWarning,
+            )
+        if not np.all(np.isfinite(self._weights)):
+            indices = np.where(np.isfinite(self._weights) != True)
+            warnings.warn(
+                f"There are non-finite values in the weights for the following distributions: {indices}",
+                RuntimeWarning,
+            )
+        if np.any(np.all(self._stds <= 0, axis=1)):
+            indices = np.where(np.all(self._stds <= 0, axis=1))
+            warnings.warn(
+                f"The following distributions have all stds <= 0: {indices}",
+                RuntimeWarning,
+            )
+
+    def normalize(self):
+        raise RuntimeError(
+            "The distributions in a mixmod parameterization are already normalized"
+        )
+
     @property
     def weights(self):
         """Return weights to attach to the Gaussians"""
@@ -119,6 +191,25 @@ class mixmod_gen(Pdf_rows_gen):
     def stds(self):
         """Return standard deviations of the Gaussians"""
         return self._stds
+
+    def x_samples(self):
+        """Return a set of x values that can be used to plot all the PDFs."""
+
+        # make sure the number of points is reasonable
+        npts_min = 50
+        npts_max = 10000
+
+        # calculate bounds and dx
+        dx = np.min(self._stds) / 2.0
+        xmin = np.min(self._means) - np.max(self._stds)
+        xmax = np.max(self._means) + np.max(self._stds)
+        npts = (xmax - xmin) // dx
+        if npts < npts_min:
+            return np.linspace(xmin, xmax, npts_min)
+        elif npts >= npts_min and npts <= npts_max:
+            return np.linspace(xmin, xmax, npts)
+        elif npts > npts_max:
+            return np.linspace(xmin, xmax, npts_max)
 
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
@@ -156,7 +247,7 @@ class mixmod_gen(Pdf_rows_gen):
             cdf_vals = self.cdf(grid, np.expand_dims(rr, -1))
         else:  # pragma: no cover
             raise ValueError(
-                f"Opps, we handle this kind of input to mixmod._ppf {case_idx}"
+                f"Oops, we can't handle this kind of input to mixmod._ppf {case_idx}"
             )
         return interpolate_multi_x_y(
             x, row, cdf_vals, grid, bounds_error=False, fill_value=(min_val, max_val)
@@ -170,6 +261,7 @@ class mixmod_gen(Pdf_rows_gen):
         dct["means"] = self._means
         dct["stds"] = self._stds
         dct["weights"] = self._weights
+        dct["warn"] = self._warn
         return dct
 
     @classmethod
@@ -202,7 +294,7 @@ class mixmod_gen(Pdf_rows_gen):
             Raises an error if the means are not provided.
         """
         if "means" not in kwargs:  # pragma: no cover
-            raise ValueError("required argument means not included in kwargs")
+            raise ValueError("Required argument `means` not included in kwargs")
 
         ncomp = np.shape(kwargs["means"])[-1]
         return dict(
@@ -225,6 +317,7 @@ class mixmod_gen(Pdf_rows_gen):
         means: ArrayLike,
         stds: ArrayLike,
         weights: ArrayLike,
+        warn: bool = True,
         ancil: Optional[Mapping] = None,
     ) -> Ensemble:
         """Creates an Ensemble of distributions parameterized as Gaussian Mixture models.
@@ -242,8 +335,13 @@ class mixmod_gen(Pdf_rows_gen):
             The weights to attach to the Gaussians, with shape (npdf, ncomp).
             Weights should sum up to one. If not, the weights are interpreted
             as relative weights.
+        warn : `bool`, optional
+            If True, raises warnings if input is not finite. If False, no warnings
+            are raised. By default True.
         ancil : Optional[Mapping], optional
-            A dictionary of metadata for the distributions, where any arrays have the same length as the number of distributions, by default None
+            A dictionary of metadata for the distributions, where any arrays have
+            the same length as the number of distributions, by default None
+
 
         Returns
         -------
@@ -266,7 +364,7 @@ class mixmod_gen(Pdf_rows_gen):
 
 
         """
-        data = {"means": means, "stds": stds, "weights": weights}
+        data = {"means": means, "stds": stds, "weights": weights, "warn": warn}
         return Ensemble(self, data, ancil)
 
     @classmethod

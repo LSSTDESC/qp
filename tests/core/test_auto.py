@@ -6,7 +6,7 @@ import unittest
 from functools import partial
 
 import qp
-from . import test_funcs
+from tests.helpers import test_funcs
 
 
 class PDFTestCase(unittest.TestCase):

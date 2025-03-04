@@ -136,10 +136,10 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
         self._xmin = np.min(locs)
         self._xmax = np.max(locs)
 
-        locs_2d = reshape_to_pdf_size(locs, -1)
+        locs_2d = reshape_to_pdf_size(np.asarray(locs), -1)
 
         # make sure input makes sense for a CDF
-        self._validate_input(quants, locs_2d)
+        self._validate_input(np.asarray(quants), locs_2d)
 
         # check locs are finite
         self._warn = warn
