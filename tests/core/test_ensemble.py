@@ -6,6 +6,7 @@ import copy
 import os
 import unittest
 from pathlib import Path
+import tempfile
 import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal
 import scipy.stats as sps
@@ -28,6 +29,8 @@ class EnsembleTestCase(unittest.TestCase):
         """
         Make any objects that are used in multiple tests.
         """
+
+        self.tmpdir = tempfile.TemporaryDirectory()
 
         self.norm_test_data = dict(
             norm=dict(
@@ -121,8 +124,10 @@ class EnsembleTestCase(unittest.TestCase):
     def tearDown(self):
         "Clean up any mock data files created by the tests."
 
+        self.tmpdir.cleanup()
+
     @staticmethod
-    def _run_ensemble_funcs(ens, xpts):
+    def _run_ensemble_funcs(ens: qp.Ensemble, xpts, tmpdir):
         """Run the test for a particular class"""
 
         pdfs = ens.pdf(xpts)
@@ -226,21 +231,20 @@ class EnsembleTestCase(unittest.TestCase):
             except ImportError:
                 pass
             for comm in commList:
+                filepath = Path(tmpdir) / "testwrite.hdf5"
                 try:
-                    group, fout = ens.initializeHdf5Write(
-                        "testwrite.hdf5", ens.npdf, comm
-                    )
+                    group, fout = ens.initializeHdf5Write(filepath, ens.npdf, comm)
                 except TypeError:
                     continue
                 ens.writeHdf5Chunk(group, 0, ens.npdf)
                 ens.finalizeHdf5Write(fout)
-                readens = qp.read("testwrite.hdf5")
+                readens = qp.read(filepath)
                 assert readens.metadata.keys() == ens.metadata.keys()
                 assert readens.objdata.keys() == ens.objdata.keys()
-                os.remove("testwrite.hdf5")
+                # os.remove("testwrite.hdf5")
 
     @staticmethod
-    def _run_merge_tests(ens, xpts):
+    def _run_merge_tests(ens: qp.Ensemble, xpts):
         npdf = ens.npdf
         pdf_orig = ens.pdf(xpts)
 
@@ -275,7 +279,7 @@ class EnsembleTestCase(unittest.TestCase):
             ens_norm.gen_obj, qp.stats.norm_gen  # pylint: disable=no-member
         )
         assert "loc" in ens_norm.frozen.kwds
-        self._run_ensemble_funcs(ens_norm, cls_test_data["test_xvals"])
+        self._run_ensemble_funcs(ens_norm, cls_test_data["test_xvals"], self.tmpdir)
         self._run_merge_tests(ens_norm, cls_test_data["test_xvals"])
 
     def test_hist(self):
@@ -287,7 +291,7 @@ class EnsembleTestCase(unittest.TestCase):
         cls_test_data = self.hist_test_data[key]
         ens_h = build_ensemble(cls_test_data)
         assert isinstance(ens_h.gen_obj, qp.hist_gen)
-        self._run_ensemble_funcs(ens_h, cls_test_data["test_xvals"])
+        self._run_ensemble_funcs(ens_h, cls_test_data["test_xvals"], self.tmpdir)
         self._run_merge_tests(ens_h, cls_test_data["test_xvals"])
 
         pdfs_mod = copy.copy(ens_h.dist.pdfs)
@@ -302,7 +306,7 @@ class EnsembleTestCase(unittest.TestCase):
         cls_test_data = self.interp_test_data[key]
         ens_i = build_ensemble(cls_test_data)
         assert isinstance(ens_i.gen_obj, qp.interp_gen)
-        self._run_ensemble_funcs(ens_i, cls_test_data["test_xvals"])
+        self._run_ensemble_funcs(ens_i, cls_test_data["test_xvals"], self.tmpdir)
 
     def test_packed_interp(self):
         """Run the ensemble tests on an ensemble of qp.packed_interp distributions"""
@@ -313,7 +317,7 @@ class EnsembleTestCase(unittest.TestCase):
         cls_test_data = self.packed_interp_test_data[key]
         ens_i = build_ensemble(cls_test_data)
         assert isinstance(ens_i.gen_obj, qp.packed_interp_gen)
-        self._run_ensemble_funcs(ens_i, cls_test_data["test_xvals"])
+        self._run_ensemble_funcs(ens_i, cls_test_data["test_xvals"], self.tmpdir)
         assert np.isfinite(ens_i.dist.yvals).all()
 
     def test_iterator(self):
@@ -358,9 +362,10 @@ class EnsembleTestCase(unittest.TestCase):
             "interp": ens_i,
         }
 
-        qp.write_dict("test_dict.hdf5", output_dict)
+        filepath = Path(self.tmpdir) / "test_dict.hdf5"
+        qp.write_dict(filepath, output_dict)
 
-        input_dict = qp.read_dict("test_dict.hdf5")
+        input_dict = qp.read_dict(filepath)
 
         assert input_dict.keys() == output_dict.keys()
 
