@@ -1,9 +1,10 @@
-"""Utility functions for the qp package"""
+"""Utility functions for array handling in the the qp package"""
 
 import sys
 
 import numpy as np
-from typing import Mapping
+from typing import Mapping, Union
+from numpy.typing import ArrayLike
 
 # epsilon = sys.float_info.epsilon
 # infty = sys.float_info.max * epsilon
@@ -247,3 +248,28 @@ def decode_strings(data: Mapping[str, np.ndarray]) -> Mapping:
         converted_data[key] = new_val
 
     return converted_data
+
+
+def reduce_dimensions(arr: np.ndarray, x: ArrayLike) -> Union[float, np.ndarray]:
+    """If the given array has dimensionality greater than x, reduces its dimensionality
+    to match x, if this will not result in a loss of data.
+
+    Parameters
+    ----------
+    arr : np.ndarray
+        Array to reduce dimensionality
+    x : ArrayLike
+        Object to match dimensionality to
+
+    Returns
+    -------
+    Union[float, np.ndarray]
+        The array with dimension reduced (if possible)
+    """
+    if np.ndim(x) < 1 and np.ndim(arr) >= 2:
+        if np.shape(arr) == (1, 1):
+            return arr.item()
+    if np.ndim(x) == 1 and np.ndim(arr) > 1:
+        if arr.shape[0] == 1:
+            return np.squeeze(arr)
+    return arr

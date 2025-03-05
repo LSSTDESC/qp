@@ -150,14 +150,14 @@ class interp_gen(Pdf_rows_gen):
                 warnings.warn(
                     "The given xvals contain non-finite values", RuntimeWarning
                 )
-            if not np.all(np.isfinite(yvals)):
-                indices = np.where(np.isfinite(yvals) != True)
+            if not np.all(np.isfinite(self._yvals)):
+                indices = np.where(np.isfinite(self._yvals) != True)
                 warnings.warn(
                     f"There are non-finite values in the yvals for the following distributions: {indices}",
                     RuntimeWarning,
                 )
-            if np.any(yvals < 0):
-                indices = np.where(yvals < 0)
+            if np.any(self._yvals < 0):
+                indices = np.where(self._yvals < 0)
                 warnings.warn(
                     f"There are negative values in the yvals for the following distributions: {indices}",
                     RuntimeWarning,
@@ -487,7 +487,8 @@ class interp_irregular_gen(Pdf_rows_gen):
                 "Shape of xvals (%s) != shape of yvals (%s)"
                 % (np.shape(xvals), np.shape(yvals))
             )
-        self._xvals = reshape_to_pdf_size(xvals, -1)
+        self._xvals = reshape_to_pdf_size(np.asarray(xvals), -1)
+        self._yvals = reshape_to_pdf_size(np.asarray(yvals), -1)
 
         # raise warnings if input data is not finite or pdfs are not positive
         self._warn = warn
@@ -498,14 +499,14 @@ class interp_irregular_gen(Pdf_rows_gen):
                     f"The given xvals contain non-finite values for the following distributions: {indices}",
                     RuntimeWarning,
                 )
-            if not np.all(np.isfinite(yvals)):
-                indices = np.where(np.isfinite(yvals) != True)
+            if not np.all(np.isfinite(self._yvals)):
+                indices = np.where(np.isfinite(self._yvals) != True)
                 warnings.warn(
                     f"There are non-finite values in the yvals for the following distributions: {indices}",
                     RuntimeWarning,
                 )
-            if np.any(yvals < 0):
-                indices = np.where(yvals < 0)
+            if np.any(self._yvals < 0):
+                indices = np.where(self._yvals < 0)
                 warnings.warn(
                     f"There are negative values in the yvals for the following distributions: {indices}",
                     RuntimeWarning,
@@ -523,7 +524,7 @@ class interp_irregular_gen(Pdf_rows_gen):
         kwargs["shape"] = np.shape(self._xvals)
 
         self._norm = norm
-        self._yvals = reshape_to_pdf_size(yvals, -1)
+
         if self._norm:
             self._yvals = self.normalize()
         self._ycumul = None

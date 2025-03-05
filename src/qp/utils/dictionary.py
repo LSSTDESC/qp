@@ -1,4 +1,4 @@
-"""This module implements tools to convert between distributions"""
+"""This module implements tools to handle dictionaries"""
 
 import sys
 

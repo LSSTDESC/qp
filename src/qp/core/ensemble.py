@@ -17,7 +17,7 @@ from ..utils.dictionary import (
     reduce_arrays_to_1d,
     make_len_equal,
 )
-from ..utils.array import encode_strings
+from ..utils.array import encode_strings, reduce_dimensions
 from ..metrics import quick_moment
 from ..parameterizations.base import Pdf_gen
 
@@ -645,18 +645,18 @@ class Ensemble:
         tables = self.build_tables(encode=True, ext=ext[1:])
         tables_io.write(tables, basename, ext[1:])
 
-    def pdf(self, x: Union[float, ArrayLike]) -> np.ndarray:
+    def pdf(self, x: ArrayLike) -> ArrayLike:
         """
         Evaluates the probability density function (PDF) for the whole ensemble
 
         Parameters
         ----------
-        x: `float` or `ndarray`
+        x: ArrayLike
             Location(s) at which to evaluate the PDF for each distribution.
 
         Returns
         -------
-        pdf :  `np.ndarray`
+        pdf : ArrayLike
             The PDF value(s) at the given location(s).
 
         Example
@@ -673,9 +673,17 @@ class Ensemble:
                 0.        ]])
 
         """
-        return self._frozen.pdf(x)
 
-    def logpdf(self, x: Union[float, ArrayLike]) -> np.ndarray:
+        pdf = self._frozen.pdf(x)
+
+        # reduce dimensionality if possible
+        if self.npdf == 1:
+            pdf = reduce_dimensions(pdf, x)
+
+        return pdf
+        # return self._frozen.pdf(x)
+
+    def logpdf(self, x: ArrayLike) -> ArrayLike:
         """
         Evaluates the log of the probability density function (PDF) for the whole ensemble
 
@@ -686,7 +694,7 @@ class Ensemble:
 
         Returns
         -------
-        logpdf : `np.ndarray`
+        logpdf : ArrayLike
             The log of the PDF at the given location(s)
 
         Example
@@ -703,9 +711,15 @@ class Ensemble:
                -inf]])
 
         """
-        return self._frozen.logpdf(x)
+        logpdf = self._frozen.logpdf(x)
 
-    def cdf(self, x: Union[float, ArrayLike]) -> np.ndarray:
+        # reduce dimensionality if possible
+        if self.npdf == 1:
+            logpdf = reduce_dimensions(logpdf, x)
+
+        return logpdf
+
+    def cdf(self, x: ArrayLike) -> ArrayLike:
         """
         Evaluates the cumulative distribution function (CDF) for the whole ensemble
 
@@ -716,7 +730,7 @@ class Ensemble:
 
         Returns
         -------
-        cdf : `np.ndarray`
+        cdf : ArrayLike
             The CDF at the given location(s)
 
         Example
@@ -733,9 +747,15 @@ class Ensemble:
                 1.        ]])
 
         """
-        return self._frozen.cdf(x)
+        cdf = self._frozen.cdf(x)
 
-    def logcdf(self, x: Union[float, ArrayLike]) -> np.ndarray:
+        # reduce dimensionality if possible
+        if self.npdf == 1:
+            cdf = reduce_dimensions(cdf, x)
+
+        return cdf
+
+    def logcdf(self, x: ArrayLike) -> ArrayLike:
         """
         Evaluates the log of the cumulative distribution function (CDF) for the whole ensemble
 
@@ -746,7 +766,7 @@ class Ensemble:
 
         Returns
         -------
-        cdf : `np.ndarray`
+        cdf : ArrayLike
             The log of the CDF at the given location(s)
 
         Example
@@ -763,9 +783,15 @@ class Ensemble:
                 0.        ]])
 
         """
-        return self._frozen.logcdf(x)
+        logcdf = self._frozen.logcdf(x)
 
-    def ppf(self, q: Union[float, ArrayLike]) -> np.ndarray:
+        # reduce dimensionality if possible
+        if self.npdf == 1:
+            logcdf = reduce_dimensions(logcdf, x)
+
+        return logcdf
+
+    def ppf(self, q: ArrayLike) -> ArrayLike:
         """
         Evaluates the percentage point function (PPF) for the whole ensemble.
 
@@ -791,9 +817,14 @@ class Ensemble:
                [3.18333333]])
 
         """
-        return self._frozen.ppf(q)
+        ppf = self._frozen.ppf(q)
 
-    def sf(self, q: Union[float, ArrayLike]) -> np.ndarray:
+        # reduce dimensionality if possible
+        if self.npdf == 1:
+            ppf = reduce_dimensions(ppf, q)
+        return ppf
+
+    def sf(self, q: ArrayLike) -> ArrayLike:
         """
         Evaluates the survival fraction (SF) of the distribution for the whole ensemble.
 
@@ -804,7 +835,7 @@ class Ensemble:
 
         Returns
         -------
-        sf : `np.ndarray`
+        sf : ArrayLike
             The SF at the given location(s)
 
         Example
@@ -819,9 +850,15 @@ class Ensemble:
                [0.96835443]])
 
         """
-        return self._frozen.sf(q)
+        sf = self._frozen.sf(q)
 
-    def logsf(self, q: Union[float, ArrayLike]) -> np.ndarray:
+        # reduce dimensionality if possible
+        if self.npdf == 1:
+            sf = reduce_dimensions(sf, q)
+
+        return sf
+
+    def logsf(self, q: ArrayLike) -> ArrayLike:
         """Evaluates the log of the survival function (SF) of the distribution for the whole ensemble.
 
         Parameters
@@ -831,7 +868,7 @@ class Ensemble:
 
         Returns
         -------
-        sf : `np.ndarray`
+        sf : ArrayLike
             The log of the SF at the given location(s)
 
         Example
@@ -846,9 +883,15 @@ class Ensemble:
                [-0.03215711]])
 
         """
-        return self._frozen.logsf(q)
+        logsf = self._frozen.logsf(q)
 
-    def isf(self, q: Union[float, ArrayLike]) -> np.ndarray:
+        # reduce dimensionality if possible
+        if self.npdf == 1:
+            logsf = reduce_dimensions(logsf, q)
+
+        return logsf
+
+    def isf(self, q: ArrayLike) -> ArrayLike:
         """
         Evaluates the inverse of the survival fraction of the distribution for the whole ensemble.
 
@@ -859,7 +902,7 @@ class Ensemble:
 
         Returns
         -------
-        sf : `np.ndarray`
+        sf : ArrayLike
             The inverse of the survival fraction at the given location(s)
 
         Example
@@ -874,7 +917,13 @@ class Ensemble:
                [3.18333333]])
 
         """
-        return self._frozen.isf(q)
+        isf = self._frozen.isf(q)
+
+        # reduce dimensionality if possible
+        if self.npdf == 1:
+            isf = reduce_dimensions(isf, q)
+
+        return isf
 
     def rvs(
         self,
@@ -953,7 +1002,8 @@ class Ensemble:
         Returns
         -------
         medians : `arraylike`
-            The median for each distribution, the shape of the array is (npdf, 1)
+            The median for each distribution, returns a float if there is only one
+            distribution, or the shape of the array is (npdf, 1)
 
         Example
         -------
@@ -967,7 +1017,12 @@ class Ensemble:
                [3.18333333]])
 
         """
-        return self._frozen.median()
+        median = self._frozen.median()
+        # reduce dimensionality if possible
+        if self.npdf == 1:
+            median = reduce_dimensions(median, 1)
+
+        return median
 
     def mean(self) -> ArrayLike:
         """Return the means of the distributions in this ensemble.
@@ -975,7 +1030,8 @@ class Ensemble:
         Returns
         -------
         means : `arraylike`
-            The mean for each distribution, the shape of the array is (npdf, 1)
+            The mean for each distribution, returns a float if there is only one
+            distribution, or the shape of the array is (npdf, 1)
 
         Example
         -------
@@ -989,7 +1045,13 @@ class Ensemble:
                [3.01898734]])
 
         """
-        return self._frozen.mean()
+        mean = self._frozen.mean()
+
+        # reduce dimensionality if possible
+        if self.npdf == 1:
+            mean = reduce_dimensions(mean, 1)
+
+        return mean
 
     def var(self) -> ArrayLike:
         """Return the variances for the distributions in this ensemble.
@@ -997,7 +1059,8 @@ class Ensemble:
         Returns
         -------
         variances : `arraylike`
-            The variance for each distribution, the shape of the array is (npdf, 1)
+            The variance for each distribution, returns a float if there is only one
+            distribution, or the shape of the array is (npdf, 1)
 
         Example
         -------
@@ -1011,7 +1074,13 @@ class Ensemble:
                [1.23698125]])
 
         """
-        return self._frozen.var()
+        var = self._frozen.var()
+
+        # reduce dimensionality if possible
+        if self.npdf == 1:
+            var = reduce_dimensions(var, 1)
+
+        return var
 
     def std(self) -> ArrayLike:
         """Return the standard deviations the distributions in this ensemble.
@@ -1033,7 +1102,12 @@ class Ensemble:
                [1.11219659]])
 
         """
-        return self._frozen.std()
+        std = self._frozen.std()
+        # reduce dimensionality if possible
+        if self.npdf == 1:
+            std = reduce_dimensions(std, 1)
+
+        return std
 
     def moment(self, n: int) -> ArrayLike:
         """Return the nth moments for the distributions in this ensemble.
@@ -1060,7 +1134,13 @@ class Ensemble:
                [10.35126582]])
 
         """
-        return self._frozen.moment(n)
+        moment = self._frozen.moment(n)
+
+        # reduce dimensionality if possible
+        if self.npdf == 1:
+            moment = reduce_dimensions(moment, 1)
+
+        return moment
 
     def entropy(self) -> ArrayLike:
         """Return the differential entropy for the distributions in this ensemble.
@@ -1083,7 +1163,13 @@ class Ensemble:
                [1.45307405]])
 
         """
-        return self._frozen.entropy()
+        entropy = self._frozen.entropy()
+
+        # reduce dimensionality if possible
+        if self.npdf == 1:
+            entropy = reduce_dimensions(entropy, 1)
+
+        return entropy
 
     # def pmf(self, k):
     #    """ Return the kth pmf for this ensemble """

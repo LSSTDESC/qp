@@ -72,16 +72,20 @@ def test_irreg():
     # ens_i.norm()
     assert ens_i.shape == (1, 10)
 
+    ens_i.set_ancil({"name": ["irreg1"]})
+
     ens_i.cdf(2)
 
 
 def test_quant():
+    """Make sure that quant parameterization doesn't work if the constructor name
+    is not in the given list."""
     quants = np.linspace(0, 1, 5)
     locs = np.linspace(-1, 1, 5)
     pdf_constructor_name = "piecewise"
-    ens_q = qp.quant.create_ensemble(quants, locs, pdf_constructor_name)
-
-    assert ens_q.npdf == 1
+    with pytest.raises(ValueError) as exec_info:
+        qp.quant.create_ensemble(quants, locs, pdf_constructor_name)
+    assert exec_info.type is ValueError
 
 
 def test_stats_norm():
