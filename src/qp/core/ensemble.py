@@ -14,6 +14,8 @@ from ..utils.dictionary import (
     compare_dicts,
     concatenate_dicts,
     slice_dict,
+    reduce_arrays_to_1d,
+    make_len_equal,
 )
 from ..utils.array import encode_strings
 from ..metrics import quick_moment
@@ -401,7 +403,11 @@ class Ensemble:
         dd.update(self._frozen.kwds)
         dd.pop("row", None)
         dd.update(self._gen_obj.objdata)
-        # TODO: add here to reduce dimensions if (1,n)
+
+        # if there is only one distribution reshape data as necessary
+        if self.npdf == 1:
+            dd = reduce_arrays_to_1d(dd)
+
         return dd
 
     def set_ancil(self, ancil: Mapping):
@@ -533,12 +539,13 @@ class Ensemble:
 
         Returns
         -------
-        data : `Mapping`
+        data : `Mapping`, `TableDict-like` object
             The dictionary with the data. Has the keys: ``meta`` for metadata, ``data``
             for object data, and optionally ``ancil`` for ancillary data.
 
         """
-        dd = dict(meta=self.metadata, data=self.objdata)
+        meta = make_len_equal(self.metadata)
+        dd = dict(meta=meta, data=self.objdata)
         if self.ancil is not None:
             # encode any string columns if the file will be hdf5
             if encode == True and ext == "hdf5":
@@ -1337,5 +1344,5 @@ class Ensemble:
         filename : h5py `File object` or `group`
             The file or group object to complete writing and close.
         """
-        mdata = self.metadata
+        mdata = make_len_equal(self.metadata)
         hdf5.finalize_HDF5_write(filename, "meta", **mdata)

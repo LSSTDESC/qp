@@ -64,6 +64,8 @@ class hist_gen(Pdf_rows_gen):
     Notes
     -----
 
+    There must be a minimum of 2 bins.
+
     Converting to this parameterization:
 
     This table contains the available methods to convert to this parameterization,

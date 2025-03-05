@@ -24,6 +24,9 @@ from ...core.ensemble import Ensemble
 class mixmod_gen(Pdf_rows_gen):
     """Parameterizes distributions using a Gaussian Mixture model.
 
+    There are `ncomp` Gaussians in the model, and `npdf` distributions contained
+    in the object.
+
     Parameters
     ----------
     means : array_like
@@ -34,10 +37,18 @@ class mixmod_gen(Pdf_rows_gen):
         The weights to attach to the Gaussians, with shape (npdf, ncomp).
         Weights should sum up to one. If not, the weights are interpreted
         as relative weights.
+    warn : bool, optional
+        If True, raises warnings if input is not finite. If False, no warnings
+        are raised. By default True.
 
 
     Notes
     -----
+
+    All distributions must have the same number of Gaussian components, `ncomp`.
+    Use 0 as a fill value instead of `Nan`, which will result in errors in the
+    PDF construction.
+
 
     Converting to this parameterization:
     +----------------------------+--------------------------------------------+------------+
@@ -48,15 +59,14 @@ class mixmod_gen(Pdf_rows_gen):
 
     Implementation Notes:
 
-    The pdf() and cdf() are exact, and are computed as a weighted sum of
-    the pdf() and cdf() of the component Gaussians.
+    The `pdf()` and `cdf()` are exact, and are computed as a weighted sum of
+    the `pdf()` and `cdf()` of the component Gaussians.
 
-    The ppf() is computed by computing the cdf() values on a fixed
-    grid and interpolating the inverse function using scipy.interp1d with the
-    default method (linear)
+    The `ppf()` is computed by computing the `cdf()` values on a fixed
+    grid and interpolating the inverse function using `scipy.interp1d` with the
+    default interpolation method (linear).
 
-    If you need to fill values use 0 not np.nan, if you have any np.nan it will
-    mean most of the ensemble functions likely won't work
+
     """
 
     # pylint: disable=protected-access

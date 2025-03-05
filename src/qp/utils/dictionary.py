@@ -3,6 +3,7 @@
 import sys
 
 import numpy as np
+from typing import Mapping
 
 
 def get_val_or_default(in_dict, key):
@@ -223,3 +224,55 @@ def compare_dicts(in_dicts):
         if not compare_two_dicts(first_dict, in_dict):  # pragma: no cover
             return False
     return True
+
+
+def reduce_arrays_to_1d(in_dict: Mapping) -> Mapping:
+    """Checks if any arrays in the dictionary have ndim greater than 1, and
+    if the first dimension is equal to 1 it reshapes the array to remove that dimension.
+
+    Parameters
+    ----------
+    in_dict : Mapping
+        A dictionary of array-like objects.
+
+    Returns
+    -------
+    Mapping
+        The updated dictionary.
+    """
+
+    for key, value in in_dict.items():
+        if np.ndim(value) > 1:
+            # if shape of any objdata is (1,n) reshape to (,n)
+            if np.shape(value)[0] == 1:
+                new_val = np.reshape(value, np.shape(value)[-1:])
+                in_dict[key] = new_val
+
+    return in_dict
+
+
+def make_len_equal(in_dict: Mapping, l_arr: int = 1) -> Mapping:
+    """Ensures that all arrays in the dictionary have `shape[0]` of at least l_arr.
+
+    This essentially assures that a dictionary of numpy arrays is a `numpyDict`
+    `Table-like` object according to `tables_io` to allow for writing.
+
+    Parameters
+    ----------
+    in_dict : Mapping
+        A dictionary of array-like objects.
+    l_arr : int, optional
+        The value of shape[0] to ensure, by default 1
+
+    Returns
+    -------
+    Mapping
+        The updated dictionary.
+    """
+
+    for key, value in in_dict.items():
+        if np.shape(value)[0] > l_arr:
+            # add a dimension to axis=0
+            in_dict[key] = np.expand_dims(value, 0)
+
+    return in_dict

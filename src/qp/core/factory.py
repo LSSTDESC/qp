@@ -17,7 +17,7 @@ from tables_io.types import NUMPY_DICT
 
 from .ensemble import Ensemble
 
-from ..utils.dictionary import compare_dicts, concatenate_dicts
+from ..utils.dictionary import compare_dicts, concatenate_dicts, reduce_arrays_to_1d
 from ..utils.array import decode_strings
 
 from ..parameterizations.base import Pdf_gen_wrap, Pdf_gen
@@ -258,6 +258,7 @@ class Factory(OrderedDict):
         ancil_table = tables.get("ancil")
         if ancil_table is not None:
             if decode == True and ext == "hdf5":
+                # decode string arrays
                 ancil_table = decode_strings(ancil_table)
 
         data = self._build_data_dict(md_table, data_table)
@@ -389,6 +390,7 @@ class Factory(OrderedDict):
             allow_missing_keys=allow_missing_keys,
         )  # pylint: disable=no-member
 
+        # set up file_fmt to have the file extension information
         if fmt is not None:
             file_fmt = fmt
         else:
