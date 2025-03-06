@@ -42,17 +42,20 @@ class EnsembleTestCase(unittest.TestCase):
             ),
             norm_shifted=dict(
                 gen_func=qp.stats.norm,
+                filekey="norm_shifted",
                 ctor_data=dict(loc=t_data.LOC, scale=t_data.SCALE),
                 test_xvals=t_data.TEST_XVALS,
             ),
             norm_multi_d=dict(
                 gen_func=qp.stats.norm,
+                filekey="norm_multi_d",
                 ctor_data=dict(
                     loc=np.array([t_data.LOC, t_data.LOC]),
                     scale=np.array([t_data.SCALE, t_data.SCALE]),
                 ),
                 test_xvals=t_data.TEST_XVALS,
                 do_samples=True,
+                npdf=22,
             ),
         )
         # make hist test data
@@ -67,6 +70,7 @@ class EnsembleTestCase(unittest.TestCase):
             ),
             hist_samples=dict(
                 gen_func=qp.hist,
+                filekey="hist_samples",
                 ctor_data=dict(bins=t_data.XBINS, pdfs=t_data.HIST_DATA),
                 convert_data=dict(
                     bins=t_data.XBINS, method="samples", size=t_data.NSAMPLES
@@ -279,7 +283,9 @@ class EnsembleTestCase(unittest.TestCase):
             ens_norm.gen_obj, qp.stats.norm_gen  # pylint: disable=no-member
         )
         assert "loc" in ens_norm.frozen.kwds
-        self._run_ensemble_funcs(ens_norm, cls_test_data["test_xvals"], self.tmpdir)
+        self._run_ensemble_funcs(
+            ens_norm, cls_test_data["test_xvals"], self.tmpdir.name
+        )
         self._run_merge_tests(ens_norm, cls_test_data["test_xvals"])
 
     def test_hist(self):
@@ -291,7 +297,7 @@ class EnsembleTestCase(unittest.TestCase):
         cls_test_data = self.hist_test_data[key]
         ens_h = build_ensemble(cls_test_data)
         assert isinstance(ens_h.gen_obj, qp.hist_gen)
-        self._run_ensemble_funcs(ens_h, cls_test_data["test_xvals"], self.tmpdir)
+        self._run_ensemble_funcs(ens_h, cls_test_data["test_xvals"], self.tmpdir.name)
         self._run_merge_tests(ens_h, cls_test_data["test_xvals"])
 
         pdfs_mod = copy.copy(ens_h.dist.pdfs)
@@ -306,7 +312,7 @@ class EnsembleTestCase(unittest.TestCase):
         cls_test_data = self.interp_test_data[key]
         ens_i = build_ensemble(cls_test_data)
         assert isinstance(ens_i.gen_obj, qp.interp_gen)
-        self._run_ensemble_funcs(ens_i, cls_test_data["test_xvals"], self.tmpdir)
+        self._run_ensemble_funcs(ens_i, cls_test_data["test_xvals"], self.tmpdir.name)
 
     def test_packed_interp(self):
         """Run the ensemble tests on an ensemble of qp.packed_interp distributions"""
@@ -317,7 +323,7 @@ class EnsembleTestCase(unittest.TestCase):
         cls_test_data = self.packed_interp_test_data[key]
         ens_i = build_ensemble(cls_test_data)
         assert isinstance(ens_i.gen_obj, qp.packed_interp_gen)
-        self._run_ensemble_funcs(ens_i, cls_test_data["test_xvals"], self.tmpdir)
+        self._run_ensemble_funcs(ens_i, cls_test_data["test_xvals"], self.tmpdir.name)
         assert np.isfinite(ens_i.dist.yvals).all()
 
     def test_iterator(self):
@@ -362,7 +368,7 @@ class EnsembleTestCase(unittest.TestCase):
             "interp": ens_i,
         }
 
-        filepath = Path(self.tmpdir) / "test_dict.hdf5"
+        filepath = Path(self.tmpdir.name) / "test_dict.hdf5"
         qp.write_dict(filepath, output_dict)
 
         input_dict = qp.read_dict(filepath)

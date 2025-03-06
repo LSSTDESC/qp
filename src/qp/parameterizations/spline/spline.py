@@ -59,9 +59,6 @@ class spline_gen(Pdf_rows_gen):
 
     def __init__(
         self,
-        splx: ArrayLike,
-        sply: ArrayLike,
-        spln: Optional[ArrayLike] = None,
         *args,
         **kwargs,
     ):
@@ -81,9 +78,9 @@ class spline_gen(Pdf_rows_gen):
         -----
         Either (splx, sply and spln) must be provided.
         """
-        # splx = kwargs.pop("splx", None)
-        # sply = kwargs.pop("sply", None)
-        # spln = kwargs.pop("spln", None)
+        splx = kwargs.pop("splx", None)
+        sply = kwargs.pop("sply", None)
+        spln = kwargs.pop("spln", None)
 
         if splx is None:  # pragma: no cover
             raise ValueError("splx must be provided")
@@ -278,6 +275,7 @@ class spline_gen(Pdf_rows_gen):
         sply: ArrayLike,
         spln: Optional[ArrayLike] = None,
         ancil: Optional[Mapping] = None,
+        method: Optional[str] = None,
     ) -> Ensemble:
         """Creates an Ensemble of distributions parameterized as via a set of splines.
 
@@ -293,6 +291,8 @@ class spline_gen(Pdf_rows_gen):
         ancil : Optional[Mapping], optional
             A dictionary of metadata for the distributions, where any arrays have the same length as the number of
             distributions, by default None
+        method : Optional[str], optional
+            The string of the creation method to use, by default None.
 
         Returns
         -------
@@ -302,7 +302,7 @@ class spline_gen(Pdf_rows_gen):
 
         """
         data = {"splx": splx, "sply": sply, "spln": spln}
-        return Ensemble(self, data, ancil)
+        return Ensemble(self, data, ancil, method)
 
     @classmethod
     def make_test_data(cls):
@@ -315,7 +315,8 @@ class spline_gen(Pdf_rows_gen):
                 test_xvals=TEST_XVALS[::10],
             ),
             spline_kde=dict(
-                gen_func=spline_from_samples,
+                gen_func=spline,
+                method="samples",
                 ctor_data=dict(samples=SAMPLES, xvals=np.linspace(0, 5, 51)),
                 convert_data=dict(xvals=np.linspace(0, 5, 51), method="samples"),
                 test_xvals=TEST_XVALS,
@@ -323,7 +324,8 @@ class spline_gen(Pdf_rows_gen):
                 test_pdf=False,
             ),
             spline_xy=dict(
-                gen_func=spline_from_xy,
+                gen_func=spline,
+                method="xy",
                 ctor_data=dict(xvals=XARRAY, yvals=YARRAY),
                 convert_data=dict(xvals=np.linspace(0, 5, 51), method="xy"),
                 test_xvals=TEST_XVALS,

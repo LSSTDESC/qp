@@ -165,6 +165,12 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
         self._locs = locs_2d
 
         # set up PDF constructor
+        if not isinstance(pdf_constructor_name, str):
+            try:
+                pdf_constructor_name = str(np.strings.decode(pdf_constructor_name))
+            except AttributeError as a_err:
+                pdf_constructor_name = str(pdf_constructor_name)
+
         if pdf_constructor_name not in PDF_CONSTRUCTORS:
             raise ValueError(
                 f"Unknown interpolator provided: '{pdf_constructor_name}'. Allowed interpolators are {list(PDF_CONSTRUCTORS.keys())}"  # pylint: disable=line-too-long

@@ -32,8 +32,9 @@ def build_ensemble(test_data):
     """Build an ensemble from test data in a class"""
     gen_func = test_data["gen_func"]
     ctor_data = test_data["ctor_data"]
+    method = test_data.get("method", None)
     try:
-        ens = Ensemble(gen_func, data=ctor_data)
+        ens = Ensemble(gen_func, data=ctor_data, method=method)
         ancil = test_data.get("ancil")
         if ancil is not None:
             ens.set_ancil(ancil)
@@ -47,6 +48,9 @@ def pdf_func_tests(pdf, test_data, short=False, check_props=True):
     """Run the test for a particular class"""
 
     xpts = test_data["test_xvals"]
+    npdf = NPDF
+    if test_data.get("npdf", None) is not None:
+        npdf = test_data["npdf"]
 
     if check_props:
         # if we used the c'tor, make sure the class keeps the data used in the c'tor
@@ -60,7 +64,7 @@ def pdf_func_tests(pdf, test_data, short=False, check_props=True):
     if hasattr(pdf.dist, "npdf"):
         assert pdf.dist.npdf == pdf.npdf
 
-    assert pdf.shape[-1] == NPDF
+    assert pdf.shape[0] == npdf
 
     pdfs = pdf.pdf(xpts)
     if pdf.ndim == 1:
@@ -82,7 +86,7 @@ def pdf_func_tests(pdf, test_data, short=False, check_props=True):
     quants = np.linspace(0.01, 0.99, 50)
 
     binw = xpts[1:] - xpts[0:-1]
-    if pdf.ndim == 1:
+    if pdf.ndim <= 2:  # changed from == 1
         check_cdf = ((pdfs[:, 0:-1] + pdfs[:, 1:]) * binw / 2).cumsum(axis=-1) - cdfs[
             :, 1:
         ]
@@ -97,7 +101,7 @@ def pdf_func_tests(pdf, test_data, short=False, check_props=True):
     check_ppf = pdf.cdf(ppfs) - quants
     assert_all_small(check_ppf, atol=2e-2, test_name="ppf")
 
-    if pdf.ndim == 1:
+    if pdf.ndim <= 2:  # changed from ==1
         quants_slice = np.expand_dims(quants[np.arange(pdf.npdf)], -1)
         ppfs_slice = pdf.ppf(quants_slice)
         _ = np.array([ppfs[i, i] for i in range(pdf.npdf)])
@@ -140,13 +144,16 @@ def run_pdf_func_tests(test_class, test_data, short=False, check_props=True):
 def persist_func_test(ensemble, test_data):
     """Run loopback persistence tests on an ensemble"""
     # ftypes = ['fits', 'hdf5', 'pq']
-    if ensemble.ndim == 1:
+    if ensemble.ndim <= 2:  # changed from ==1
         ftypes = ["fits", "hf5", "h5", "pq", "hdf5"]
     else:
         ftypes = ["fits", "hf5"]
 
     for ftype in ftypes:
-        filename = "test_%s.%s" % (ensemble.gen_class.name, ftype)
+        filekey = test_data.get("filekey", None)
+        if filekey is None:
+            filekey = ensemble.gen_class.name
+        filename = "test_%s.%s" % (filekey, ftype)
         try:
             os.remove(filename)
         except FileNotFoundError:
@@ -214,10 +221,10 @@ def run_convert_tests(ens_orig, gen_class, test_data, **kwargs):
 def plotting_func_tests(ensemble, do_samples=False):
     """Run the test for a particular class"""
     pdf = ensemble[0]
-    fig, axes = plot_native(pdf, xlim=(-5, 5))
+    fig, axes = plot_native(ensemble, xlim=(-5, 5))
     assert fig is not None
     assert axes is not None
-    fig, axes = plot(pdf, axes=axes)
+    fig, axes = plot(ensemble, axes=axes)
     assert fig is not None
     assert axes is not None
     fig, axes = plot_native(pdf.frozen, xlim=(-5, 5))
@@ -234,6 +241,6 @@ def plotting_func_tests(ensemble, do_samples=False):
 def run_plotting_func_tests(test_data, do_samples=False):
     """Run the test for a particular class"""
     ens = build_ensemble(test_data)
-    if ens.ndim != 1:
+    if ens.ndim > 2:  # changed from != 1
         return
     plotting_func_tests(ens, do_samples=do_samples)

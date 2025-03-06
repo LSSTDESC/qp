@@ -26,18 +26,24 @@ from ..core.factory import stats
 stats.norm_gen.test_data = dict(
     norm=dict(
         gen_func=stats.norm,
+        filekey="norm",
         ctor_data=dict(loc=LOC, scale=SCALE),
         test_xvals=TEST_XVALS,
         do_samples=True,
         ancil=dict(zmode=LOC),
     ),
     norm_shifted=dict(
-        gen_func=stats.norm, ctor_data=dict(loc=LOC, scale=SCALE), test_xvals=TEST_XVALS
+        gen_func=stats.norm,
+        filekey="norm_shifted",
+        ctor_data=dict(loc=LOC, scale=SCALE),
+        test_xvals=TEST_XVALS,
     ),
     norm_multi_d=dict(
         gen_func=stats.norm,
+        filekey="norm_multi_d",
         ctor_data=dict(loc=np.array([LOC, LOC]), scale=np.array([SCALE, SCALE])),
         test_xvals=TEST_XVALS,
         do_samples=True,
+        npdf=22,
     ),
 )

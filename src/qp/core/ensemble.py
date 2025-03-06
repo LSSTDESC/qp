@@ -296,7 +296,7 @@ class Ensemble:
                 % (class_name, method)
             )
         data = extract_func(self, **kwds)
-        return Ensemble(to_class, data=data)
+        return Ensemble(to_class, data=data, method=method)
 
     def update(self, data: Mapping, ancil: Optional[Mapping] = None):
         """Update the frozen distribution object with the given data, and set

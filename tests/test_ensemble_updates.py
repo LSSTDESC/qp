@@ -4,6 +4,7 @@ import numpy as np
 
 
 def test_norm():
+    """Test that the norm method works for a histogram ensemble"""
     bins = np.linspace(-2, 2, 11)
     print(bins)
     pdfs = np.array(
