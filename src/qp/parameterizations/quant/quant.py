@@ -87,8 +87,8 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
 
     This implements a CDF by interpolating a set of quantile values
 
-    It takes a set of quants and locs values and uses `scipy.interpolate.interp1d` to
-    build the CDF.
+    It takes a set of quants and locs values and uses `scipy.interpolate.interp1d`
+    with a spline interpolation method of order 2 (kind=`quadratic`) to build the CDF.
 
     It has multiple PDF constructors to get the PDF from the quantiles. The default
     is the `piecewise_linear` method, which takes the numerical derivative of the

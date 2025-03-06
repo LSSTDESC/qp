@@ -31,7 +31,7 @@ class interp_gen(Pdf_rows_gen):
     """Implements distributions parameterized as interpolated sets of values.
 
     All distributions share the same x values. Interpolation is performed using
-    `scipy.interpolate.interp1d`.
+    `scipy.interpolate.interp1d`, with the default interpolation method (linear).
 
 
     Parameters

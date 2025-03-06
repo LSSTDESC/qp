@@ -89,8 +89,25 @@ def test_quant():
 
 
 def test_stats_norm():
-    scale = np.array([[1, 0.5], [1, 0.5]])
-    loc = np.array([[0, 2], [1.0, 1.5]])
+    scale = np.array([1, 0.5])
+    loc = np.array([1.0, 1.5])
     ens_n = qp.stats.norm.create_ensemble(data={"scale": scale, "loc": loc})
 
     assert ens_n.npdf == 2
+
+
+@pytest.mark.parametrize(
+    "loc,scale,npdf",
+    [
+        (np.array([1.0, 1.5]), np.array([1.0, 1.5]), 2),
+        (np.array([[1], [0.5]]), np.array([[1], [0.5]]), 2),
+    ],
+)
+def test_stats_arg_reshape(loc, scale, npdf):
+    """Tests that the arg reshape and broadcasting for scipy classes works as expected"""
+
+    ens_chi = qp.stats.chi2.create_ensemble(
+        data={"scale": scale, "loc": loc, "df": 0.5}
+    )
+
+    assert ens_chi.npdf == npdf

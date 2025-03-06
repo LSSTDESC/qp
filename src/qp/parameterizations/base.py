@@ -174,14 +174,16 @@ class rv_frozen_func(rv_continuous_frozen):
         """
         super().__init__(dist, *args, **kwds)
         array_list = [np.array(val) for val in self.kwds.values()]
-        bc = np.broadcast(array_list)
+        bc = np.broadcast(*array_list)
         ss = bc.shape
-        if len(ss) < 2:
-            # self._shape = 1
-            self._shape = ss[1:]
-        else:
-            # self._shape = ss[1:-1]
-            self._shape = ss[1:]
+        self._shape = ss
+        # TODO: remove this commented code
+        # if len(ss) <= 2:
+        #     # self._shape = 1
+        #     self._shape = ss
+        # else:
+        #     # self._shape = ss[1:-1]
+        #     self._shape = ss[1:]
         self._npdf = np.prod(self._shape[:-1]).astype(int)
         self._ndim = np.size(self._shape)
 
@@ -422,7 +424,16 @@ class Pdf_gen_wrap(Pdf_gen):
         """Create and return a `scipy.stats.rv_frozen` object using the
         keyword arguments provided"""
         # pylint: disable=not-callable
-        obj, kwds_freeze = cls.create_gen(**kwds)
+
+        # reshape the arrays to match the shape of the other parameterizations
+        new_kwds = {}
+        for key, value in kwds.items():
+            if np.ndim(value) >= 1:
+                new_kwds[key] = reshape_to_pdf_shape(value, np.size(value), 1)
+            else:
+                new_kwds[key] = value
+
+        obj, kwds_freeze = cls.create_gen(**new_kwds)
         return obj(**kwds_freeze)
 
     @classmethod
