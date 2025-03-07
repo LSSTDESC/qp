@@ -32,98 +32,10 @@ class EnsembleTestCase(unittest.TestCase):
 
         self.tmpdir = tempfile.TemporaryDirectory()
 
-        self.norm_test_data = dict(
-            norm=dict(
-                gen_func=qp.stats.norm,
-                ctor_data=dict(loc=t_data.LOC, scale=t_data.SCALE),
-                test_xvals=t_data.TEST_XVALS,
-                do_samples=True,
-                ancil=dict(zmode=t_data.LOC),
-            ),
-            norm_shifted=dict(
-                gen_func=qp.stats.norm,
-                filekey="norm_shifted",
-                ctor_data=dict(loc=t_data.LOC, scale=t_data.SCALE),
-                test_xvals=t_data.TEST_XVALS,
-            ),
-            norm_multi_d=dict(
-                gen_func=qp.stats.norm,
-                filekey="norm_multi_d",
-                ctor_data=dict(
-                    loc=np.array([t_data.LOC, t_data.LOC]),
-                    scale=np.array([t_data.SCALE, t_data.SCALE]),
-                ),
-                test_xvals=t_data.TEST_XVALS,
-                do_samples=True,
-                npdf=22,
-            ),
-        )
-        # make hist test data
-        self.hist_test_data = dict(
-            hist=dict(
-                gen_func=qp.hist,
-                ctor_data=dict(bins=t_data.XBINS, pdfs=t_data.HIST_DATA),
-                convert_data=dict(bins=t_data.XBINS),
-                atol_diff=1e-1,
-                atol_diff2=1e-1,
-                test_xvals=t_data.TEST_XVALS,
-            ),
-            hist_samples=dict(
-                gen_func=qp.hist,
-                filekey="hist_samples",
-                ctor_data=dict(bins=t_data.XBINS, pdfs=t_data.HIST_DATA),
-                convert_data=dict(
-                    bins=t_data.XBINS, method="samples", size=t_data.NSAMPLES
-                ),
-                atol_diff=1e-1,
-                atol_diff2=1e-1,
-                test_xvals=t_data.TEST_XVALS,
-                do_samples=True,
-            ),
-        )
-        self.interp_test_data = dict(
-            interp=dict(
-                gen_func=qp.interp,
-                ctor_data=dict(xvals=t_data.XBINS, yvals=t_data.YARRAY),
-                convert_data=dict(xvals=t_data.XBINS),
-                test_xvals=t_data.TEST_XVALS,
-            )
-        )
-
-        ypacked_lin, ymax_lin, ypacked_log, ymax_log = t_data.calc_ypacked()
-
-        self.packed_interp_test_data = dict(
-            lin_packed_interp=dict(
-                gen_func=qp.packed_interp,
-                ctor_data=dict(
-                    packing_type=PackingType.linear_from_rowmax,
-                    xvals=t_data.XBINS,
-                    ypacked=ypacked_lin,
-                    ymax=ymax_lin,
-                ),
-                convert_data=dict(
-                    xvals=t_data.XBINS,
-                    packing_type=PackingType.linear_from_rowmax,
-                ),
-                test_xvals=t_data.TEST_XVALS,
-            ),
-            log_packed_interp=dict(
-                gen_func=qp.packed_interp,
-                ctor_data=dict(
-                    packing_type=PackingType.log_from_rowmax,
-                    xvals=t_data.XBINS,
-                    ypacked=ypacked_log,
-                    ymax=ymax_log,
-                    log_floor=-3.0,
-                ),
-                convert_data=dict(
-                    xvals=t_data.XBINS,
-                    packing_type=PackingType.log_from_rowmax,
-                    log_floor=-3.0,
-                ),
-                test_xvals=t_data.TEST_XVALS,
-            ),
-        )
+        self.norm_test_data = t_data.norm_test_data
+        self.hist_test_data = t_data.hist_test_data
+        self.interp_test_data = t_data.interp_test_data
+        self.packed_interp_test_data = t_data.packed_interp_test_data
 
     def tearDown(self):
         "Clean up any mock data files created by the tests."

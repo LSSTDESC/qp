@@ -61,7 +61,6 @@ WEIGHT_MIXMOD = np.vstack(
 HIST_TOL = 4.0 / NBIN
 QP_TOPDIR = os.path.dirname(os.path.dirname(__file__))
 
-
 ###############################################################################
 ## Data construction helper functions
 ###############################################################################
@@ -102,3 +101,178 @@ def get_sparse_data():
     )
 
     return sparse_idx, meta
+
+
+###############################################################################
+## The test data dictionaries
+###############################################################################
+
+
+hist_test_data = dict(
+    hist=dict(
+        gen_func=qp.hist,
+        ctor_data=dict(bins=XBINS, pdfs=HIST_DATA),
+        convert_data=dict(bins=XBINS),
+        atol_diff=1e-1,
+        atol_diff2=1e-1,
+        test_xvals=TEST_XVALS,
+    ),
+    hist_samples=dict(
+        gen_func=qp.hist,
+        filekey="hist_samples",
+        ctor_data=dict(bins=XBINS, pdfs=HIST_DATA),
+        convert_data=dict(
+            bins=XBINS,
+            method="samples",
+            size=NSAMPLES,
+        ),
+        atol_diff=1e-1,
+        atol_diff2=1e-1,
+        test_xvals=TEST_XVALS,
+        do_samples=True,
+    ),
+)
+
+
+interp_test_data = dict(
+    interp=dict(
+        gen_func=qp.interp,
+        ctor_data=dict(xvals=XBINS, yvals=YARRAY),
+        convert_data=dict(xvals=XBINS),
+        test_xvals=TEST_XVALS,
+    )
+)
+interp_irregular_test_data = dict(
+    interp_irregular=dict(
+        gen_func=qp.interp_irregular,
+        ctor_data=dict(xvals=XARRAY, yvals=YARRAY),
+        convert_data=dict(xvals=XBINS),
+        test_xvals=TEST_XVALS,
+    )
+)
+
+mixmod_test_data = dict(
+    mixmod=dict(
+        gen_func=qp.mixmod,
+        ctor_data=dict(
+            weights=WEIGHT_MIXMOD,
+            means=MEAN_MIXMOD,
+            stds=STD_MIXMOD,
+        ),
+        convert_data={},
+        test_xvals=TEST_XVALS,
+        atol_diff2=1.0,
+    )
+)
+quant_test_data = dict(
+    quant=dict(
+        gen_func=qp.quant,
+        ctor_data=dict(quants=QUANTS, locs=QLOCS),
+        convert_data=dict(quants=QUANTS),
+        test_xvals=TEST_XVALS,
+    )
+)
+
+norm_test_data = dict(
+    norm=dict(
+        gen_func=qp.stats.norm,
+        ctor_data=dict(loc=LOC, scale=SCALE),
+        test_xvals=TEST_XVALS,
+        do_samples=True,
+        ancil=dict(zmode=LOC),
+    ),
+    norm_shifted=dict(
+        gen_func=qp.stats.norm,
+        filekey="norm_shifted",
+        ctor_data=dict(loc=LOC, scale=SCALE),
+        test_xvals=TEST_XVALS,
+    ),
+    norm_multi_d=dict(
+        gen_func=qp.stats.norm,
+        filekey="norm_multi_d",
+        ctor_data=dict(
+            loc=np.array([LOC, LOC]),
+            scale=np.array([SCALE, SCALE]),
+        ),
+        test_xvals=TEST_XVALS,
+        do_samples=True,
+        npdf=22,
+    ),
+)
+
+ypacked_lin, ymax_lin, ypacked_log, ymax_log = calc_ypacked()
+
+packed_interp_test_data = dict(
+    lin_packed_interp=dict(
+        gen_func=qp.packed_interp,
+        ctor_data=dict(
+            packing_type=PackingType.linear_from_rowmax,
+            xvals=XBINS,
+            ypacked=ypacked_lin,
+            ymax=ymax_lin,
+        ),
+        convert_data=dict(
+            xvals=XBINS,
+            packing_type=PackingType.linear_from_rowmax,
+        ),
+        test_xvals=TEST_XVALS,
+    ),
+    log_packed_interp=dict(
+        gen_func=qp.packed_interp,
+        ctor_data=dict(
+            packing_type=PackingType.log_from_rowmax,
+            xvals=XBINS,
+            ypacked=ypacked_log,
+            ymax=ymax_log,
+            log_floor=-3.0,
+        ),
+        convert_data=dict(
+            xvals=XBINS,
+            packing_type=PackingType.log_from_rowmax,
+            log_floor=-3.0,
+        ),
+        test_xvals=TEST_XVALS,
+    ),
+)
+
+sparse_idx, meta = get_sparse_data()
+
+sparse_test_data = dict(
+    sparse=dict(
+        gen_func=qp.sparse,
+        ctor_data=dict(
+            xvals=meta["xvals"],
+            mu=meta["mu"],
+            sig=meta["sig"],
+            dims=meta["dims"],
+            sparse_indices=sparse_idx,
+        ),
+        test_xvals=TEST_XVALS,
+    ),
+)
+
+SPLX, SPLY, SPLN = qp.spline.build_normed_splines(XARRAY, YARRAY)
+spline_test_data = dict(
+    spline=dict(
+        gen_func=qp.spline,
+        ctor_data=dict(splx=SPLX, sply=SPLY, spln=SPLN),
+        test_xvals=TEST_XVALS[::10],
+    ),
+    spline_kde=dict(
+        gen_func=qp.spline,
+        method="samples",
+        ctor_data=dict(samples=SAMPLES, xvals=np.linspace(0, 5, 51)),
+        convert_data=dict(xvals=np.linspace(0, 5, 51), method="samples"),
+        test_xvals=TEST_XVALS,
+        atol_diff2=1.0,
+        test_pdf=False,
+    ),
+    spline_xy=dict(
+        gen_func=qp.spline,
+        method="xy",
+        ctor_data=dict(xvals=XARRAY, yvals=YARRAY),
+        convert_data=dict(xvals=np.linspace(0, 5, 51), method="xy"),
+        test_xvals=TEST_XVALS,
+        test_pdf=False,
+    ),
+)

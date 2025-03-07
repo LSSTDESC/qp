@@ -1,9 +1,11 @@
-"""This small module implements generic tests for distributions to ensure 
+"""This small module implements generic tests for distributions to ensure
 that they have been implemented consistently
 """
 
 import os
 import numpy as np
+from pathlib import Path
+import tempfile
 
 from qp.core.ensemble import Ensemble
 from qp.plotting import plot_native, plot, plot_pdf_samples_on_axes
@@ -141,7 +143,7 @@ def run_pdf_func_tests(test_class, test_data, short=False, check_props=True):
     return pdf_func_tests(pdf, test_data, short=short, check_props=check_props)
 
 
-def persist_func_test(ensemble, test_data):
+def persist_func_test(ensemble, test_data, tmpdir):
     """Run loopback persistence tests on an ensemble"""
     # ftypes = ['fits', 'hdf5', 'pq']
     if ensemble.ndim <= 2:  # changed from ==1
@@ -154,13 +156,31 @@ def persist_func_test(ensemble, test_data):
         if filekey is None:
             filekey = ensemble.gen_class.name
         filename = "test_%s.%s" % (filekey, ftype)
-        try:
-            os.remove(filename)
-        except FileNotFoundError:
-            pass
-        ensemble.write_to(filename)
-        meta = read_metadata(filename)
-        ens_r = read(filename)
+        filepath = Path(tmpdir) / filename
+        # try:
+        #     os.remove(filename)
+        # except FileNotFoundError:
+        #     pass
+
+        filepath.unlink(missing_ok=True)
+        if ftype == "pq":
+            filepath.with_stem("test_%sdata.%s" % (filekey, ftype)).unlink(
+                missing_ok=True
+            )
+            filepath.with_stem("test_%smeta.%s" % (filekey, ftype)).unlink(
+                missing_ok=True
+            )
+            filepath.with_stem("test_%sancil.%s" % (filekey, ftype)).unlink(
+                missing_ok=True
+            )
+
+        if filepath.exists():
+            raise RuntimeError(f"{filepath} exists before write")
+        if not filepath.parent.exists():
+            raise FileNotFoundError(f"{filepath.parent} doesn't exist to write to")
+        ensemble.write_to(filepath)
+        meta = read_metadata(filepath)
+        ens_r = read(filepath)
         meta2 = ens_r.metadata
         # check that reading metadata and main file get same metadata items
         for k, _v in meta.items():
@@ -177,21 +197,28 @@ def persist_func_test(ensemble, test_data):
                 continue
             diff2 = ensemble.ancil["zmode"] - ens_r.ancil["zmode"]
             assert_all_small(diff2, atol=1e-5, test_name="persist_ancil")
-        try:
-            os.unlink(filename)
-        except FileNotFoundError:
-            pass
-        try:
-            os.unlink(filename.replace(".%s" % ftype, "data.%s" % ftype))
-            os.unlink(filename.replace(".%s" % ftype, "meta.%s" % ftype))
-        except FileNotFoundError:
-            pass
+
+        # TODO: figure out if I need to delete files here
+        # try:
+        #     pass
+        # except FileNotFoundError:
+        #     pass
+        filepath.unlink(missing_ok=True)
+        filepath.with_stem("test_%sdata.%s" % (filekey, ftype)).unlink(missing_ok=True)
+        filepath.with_stem("test_%smeta.%s" % (filekey, ftype)).unlink(missing_ok=True)
+        filepath.with_stem("test_%sancil.%s" % (filekey, ftype)).unlink(missing_ok=True)
+        # os.unlink(filepath.replace(".%s" % ftype, "data.%s" % ftype))
+        # os.unlink(filepath.replace(".%s" % ftype, "meta.%s" % ftype))
+        # except FileNotFoundError:
+        #     pass
 
 
 def run_persist_func_tests(test_data):
     """Run the test for a particular class"""
     ens = build_ensemble(test_data)
-    persist_func_test(ens, test_data)
+    tmpdir = tempfile.TemporaryDirectory()
+    persist_func_test(ens, test_data, tmpdir.name)
+    tmpdir.cleanup()
 
 
 def run_convert_tests(ens_orig, gen_class, test_data, **kwargs):

@@ -4,9 +4,12 @@ Unit tests for PDF class
 
 import unittest
 from functools import partial
+import tempfile
+import numpy as np
 
 import qp
 from tests.helpers import test_funcs
+from tests.helpers import test_data_helper as t_data
 
 
 class PDFTestCase(unittest.TestCase):
@@ -21,9 +24,9 @@ class PDFTestCase(unittest.TestCase):
         "Clean up any mock data files created by the tests."
 
     @classmethod
-    def auto_add_class(cls, test_class, ens_list):
+    def auto_add_class(cls, test_class, test_data, ens_list):
         """Add tests as member functions to a class"""
-        for key, val in test_class.test_data.items():
+        for key, val in test_data.items():
             test_pdf = val.pop("test_pdf", True)
             if test_pdf:
                 kw_test_pdf = dict(
@@ -67,19 +70,30 @@ class PDFTestCase(unittest.TestCase):
     def auto_add(cls, class_list, ens_orig):
         """Add tests as member functions to a class"""
         for test_class in class_list:
-            try:
-                test_class.make_test_data()
-            except AttributeError:
-                pass
-            if hasattr(test_class, "test_data"):
-                cls.auto_add_class(test_class, ens_orig)
+            test_data_name = f"{test_class.name}_test_data"
+            added = False
+
+            if hasattr(t_data, test_data_name):
+                test_data = getattr(t_data, test_data_name)
+                cls.auto_add_class(test_class, test_data, ens_orig)
+                added = True
+            # try:
+            #     test_class.make_test_data()
+            # except AttributeError:
+            #     pass
+            # if hasattr(test_class, "test_data"):
+            #     if not added == True:
+            #         raise ValueError(
+            #             f"{test_class.name} not added with new method but should be added"
+            #         )
+            #     cls.auto_add_class(test_class, test_data, ens_orig)
 
 
 ENS_ORIG = test_funcs.build_ensemble(
-    qp.stats.norm_gen.test_data["norm"]  # pylint: disable=no-member
+    t_data.norm_test_data["norm"]  # pylint: disable=no-member
 )
 ENS_MULTI = test_funcs.build_ensemble(
-    qp.stats.norm_gen.test_data["norm"]  # pylint: disable=no-member
+    t_data.norm_test_data["norm"]  # pylint: disable=no-member
 )
 TEST_CLASSES = qp.instance().values()
 

@@ -13,8 +13,10 @@ class PiecewiseLinearTestCase(unittest.TestCase):
     """Tests for the CDF Spline Derivative PDF constructor for quantile parameterization."""
 
     def setUp(self):
-        self.single_norm = qp.stats.norm(loc=3, scale=0.5)  # pylint: disable=no-member
-        self.many_norm = qp.stats.norm(  # pylint: disable=no-member
+        self.single_norm = qp.stats.norm.create(
+            loc=3, scale=0.5
+        )  # pylint: disable=no-member
+        self.many_norm = qp.stats.norm.create(  # pylint: disable=no-member
             loc=np.array([[1], [2.5], [3]]), scale=np.array([[0.25], [0.5], [0.1]])
         )
 

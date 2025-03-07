@@ -7,7 +7,7 @@ def test_pdf_constructor():
 
     loc1 = np.array([[0]])
     scale1 = np.array([[1]])
-    norm_dist1 = qp.stats.norm(loc=loc1, scale=scale1)
+    norm_dist1 = qp.stats.norm.create(loc=loc1, scale=scale1)
 
     xvals = np.linspace(-5, 5, 11)
 
@@ -19,10 +19,12 @@ def test_pdf_constructor():
     locs = np.squeeze(norm_dist1.ppf(quants))  # Ensure locs is 1D
 
     # Construct the quantile distribution
-    quant_dist = qp.quant(quants=quants, locs=locs)
+    quant_dist = qp.quant.create(quants=quants, locs=locs)
     quant_vals = quant_dist.pdf(xvals)
 
-    quant_dist1 = qp.quant(quants=np.atleast_1d(quants), locs=np.atleast_2d(locs))
+    quant_dist1 = qp.quant.create(
+        quants=np.atleast_1d(quants), locs=np.atleast_2d(locs)
+    )
     # quant_dist1.dist.pdf_constructor_name = 'piecewise_linear'
     # quant_dist1.dist.pdf_constructor_name = "piecewise_constant"
     # quant_dist1.dist.pdf_constructor_name = "cdf_spline_derivative"
