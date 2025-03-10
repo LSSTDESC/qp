@@ -1,5 +1,4 @@
-"""This module implements a PDT distribution sub-class using a Gaussian mixture model
-"""
+"""This module implements a PDT distribution sub-class using a Gaussian mixture model"""
 
 from __future__ import annotations
 import numpy as np
@@ -31,7 +30,7 @@ class mixmod_gen(Pdf_rows_gen):
     ----------
     means : array_like
         The means of the Gaussians, with shape (npdf, ncomp)
-    stds:  array_like
+    stds : array_like
         The standard deviations of the Gaussians, with shape (npdf, ncomp)
     weights : array_like
         The weights to attach to the Gaussians, with shape (npdf, ncomp).
@@ -94,7 +93,7 @@ class mixmod_gen(Pdf_rows_gen):
         ----------
         means : array_like
             The means of the Gaussians, with shape (npdf, ncomp)
-        stds:  array_like
+        stds : array_like
             The standard deviations of the Gaussians, with shape (npdf, ncomp)
         weights : array_like
             The weights to attach to the Gaussians, with shape (npdf, ncomp).

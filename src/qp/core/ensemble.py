@@ -143,14 +143,25 @@ class Ensemble:
         md.pop("pdf_version")
         for k, v in md.items():
             red_data[k] = np.squeeze(v)
-        dd = slice_dict(self.objdata, key)
+
+        if self.npdf > 1:
+            dd = slice_dict(self.objdata, key)
+        elif self.npdf == 1 and key == 0:
+            dd = self.objdata
+        else:
+            raise KeyError(
+                f"Cannot slice Ensemble object with {self.npdf} with given index/slice {key}."
+            )
+
         for k, v in dd.items():
             if len(np.shape(v)) < 2:
                 red_data[k] = np.expand_dims(v, 0)
             else:
                 red_data[k] = v
-        if self._ancil is not None:
+        if self._ancil is not None and self.npdf > 1:
             ancil = slice_dict(self._ancil, key)
+        elif self._ancil is not None and self.npdf == 1:
+            ancil = self._ancil
         else:
             ancil = None
         return Ensemble(self._gen_obj, data=red_data, ancil=ancil)

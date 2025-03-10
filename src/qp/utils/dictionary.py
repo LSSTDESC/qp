@@ -122,7 +122,7 @@ def slice_dict(in_dict, subslice):
     Returns
     -------
     out_dict : `dict`
-        The converted dicionary
+        The converted dictionary
     """
 
     out_dict = {}
