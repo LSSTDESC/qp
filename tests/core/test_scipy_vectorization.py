@@ -10,6 +10,7 @@ import numpy as np
 import qp
 import qp.metrics
 from tests.helpers import test_funcs
+from tests.helpers import test_data_helper as test_data
 from qp.metrics.concrete_metric_classes import ADMetric, CvMMetric, KSMetric
 
 
@@ -26,7 +27,7 @@ class ScipyVectorizationTests(unittest.TestCase):
         t1 = time.perf_counter()
         # ! Consider changing this to the gamma distribution - norm is symmetric.
         # ! trunc_norm is a good option too.
-        cls.ens_n = test_funcs.build_ensemble(qp.stats.norm_gen.test_data["norm"])
+        cls.ens_n = test_funcs.build_ensemble(test_data.norm_test_data["norm"])
         t2 = time.perf_counter()
         print(f"Setup time is {t2-t1}")
         print(f"Ensemble contains {cls.ens_n.npdf} distributions.")

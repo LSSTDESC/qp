@@ -11,7 +11,6 @@ import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal
 import scipy.stats as sps
 import qp
-from qp import test_data
 from qp.plotting import init_matplotlib
 from qp.parameterizations.packed_interp.packing_utils import PackingType
 from tests.helpers.test_funcs import (

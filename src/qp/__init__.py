@@ -53,7 +53,6 @@ from .core.lazy_modules import *
 
 
 from .utils import array, interpolation
-from .parameterizations.scipy_testdata import *
 
 from .parameterizations.packed_interp import packing_utils
 

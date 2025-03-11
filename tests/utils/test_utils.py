@@ -7,9 +7,9 @@ import unittest
 import numpy as np
 
 import qp
-from qp import test_data
 from qp.parameterizations.sparse_interp import sparse_rep
 from tests.helpers import test_funcs
+from tests.helpers import test_data_helper as test_data
 
 
 class UtilsTestCase(unittest.TestCase):
