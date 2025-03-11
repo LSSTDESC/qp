@@ -105,7 +105,7 @@ def calculate_kld(p, q, limits, dx=0.01):
     -----
     TO DO: have this take number of points not dx!
     """
-    if p.shape != q.shape:
+    if p.shape[0] != q.shape[0]:
         raise ValueError(
             "Cannot calculate KLD between two ensembles with different shapes"
         )
@@ -199,7 +199,7 @@ def calculate_rbpe(p, limits=(np.inf, np.inf)):
     rbpes = []
 
     def evaluate_pdf_at_z(z, dist):
-        return dist.pdf(z)[0][0]
+        return dist.pdf(z)
 
     for n in range(0, p.npdf):
         if p[n].npdf != 1:
@@ -209,7 +209,7 @@ def calculate_rbpe(p, limits=(np.inf, np.inf)):
             )
 
         this_dist_pdf_at_z = partial(evaluate_pdf_at_z, dist=p[n])
-        integration_bounds = (p[n].ppf(0.01)[0][0], p[n].ppf(0.99)[0][0])
+        integration_bounds = (p[n].ppf(0.01), p[n].ppf(0.99))
 
         rbpes.append(
             array_metrics.quick_rbpe(this_dist_pdf_at_z, integration_bounds, limits)
@@ -390,7 +390,7 @@ def calculate_outlier_rate(p, lower_limit=0.0001, upper_limit=0.9999):
         )
 
     outlier_rates = np.array(
-        [(dist.cdf(lower_limit) + (1.0 - dist.cdf(upper_limit)))[0][0] for dist in p]
+        [(dist.cdf(lower_limit) + (1.0 - dist.cdf(upper_limit))) for dist in p]
     )
     return outlier_rates
 

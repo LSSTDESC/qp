@@ -30,6 +30,12 @@ def normalize_spline(xvals, yvals, limits, **kwargs):
         Normalized y-vals
     """
 
+    # make sure xvals and yvals are 2d
+    if np.ndim(xvals) == 1:
+        xvals = np.expand_dims(xvals, axis=0)
+    if np.ndim(yvals) == 1:
+        yvals = np.expand_dims(yvals, axis=0)
+
     def row_integral(irow):
         def spl(xv):
             return splev(xv, splrep(xvals[irow], yvals[irow]))

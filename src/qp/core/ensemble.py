@@ -149,7 +149,7 @@ class Ensemble:
         elif self.npdf == 1 and key == 0:
             dd = self.objdata
         else:
-            raise KeyError(
+            raise IndexError(
                 f"Cannot slice Ensemble object with {self.npdf} with given index/slice {key}."
             )
 

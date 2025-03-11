@@ -34,6 +34,7 @@ from qp.metrics.metrics import (
     calculate_rmse,
 )
 from qp.metrics.util_funcs import epsilon
+from tests.helpers import test_data_helper as t_data
 
 
 class MetricTestCase(unittest.TestCase):
@@ -43,12 +44,12 @@ class MetricTestCase(unittest.TestCase):
         """
         Make any objects that are used in multiple tests.
         """
-        self.ens_n = test_funcs.build_ensemble(qp.stats.norm_gen.test_data["norm"])
+        self.ens_n = test_funcs.build_ensemble(t_data.norm_test_data["norm"])
         self.ens_n_shift = test_funcs.build_ensemble(
-            qp.stats.norm_gen.test_data["norm_shifted"]
+            t_data.norm_test_data["norm_shifted"]
         )
         self.ens_n_multi = test_funcs.build_ensemble(
-            qp.stats.norm_gen.test_data["norm_multi_d"]
+            t_data.norm_test_data["norm_multi_d"]
         )
 
         locs = 2 * (np.random.uniform(size=(10, 1)) - 0.5)
@@ -269,11 +270,11 @@ class MetricTestCase(unittest.TestCase):
         """Test the quick_rbpe method"""
 
         def eval_pdf_at_z(z):
-            return self.ens_n[0].pdf(z)[0][0]
+            return self.ens_n[0].pdf(z)
 
         integration_bounds = (
-            self.ens_n[0].ppf(0.01)[0][0],
-            self.ens_n[0].ppf(0.99)[0][0],
+            self.ens_n[0].ppf(0.01),
+            self.ens_n[0].ppf(0.99),
         )
         rbpe = quick_rbpe(eval_pdf_at_z, integration_bounds, limits=(0.0, 2.5))
         assert np.all(rbpe >= 0.0)
@@ -283,11 +284,11 @@ class MetricTestCase(unittest.TestCase):
         """Test the quick_rbpe method"""
 
         def eval_pdf_at_z(z):
-            return self.ens_n[0].pdf(z)[0][0]
+            return self.ens_n[0].pdf(z)
 
         integration_bounds = (
-            self.ens_n[0].ppf(0.01)[0][0],
-            self.ens_n[0].ppf(0.99)[0][0],
+            self.ens_n[0].ppf(0.01),
+            self.ens_n[0].ppf(0.99),
         )
         rbpe = quick_rbpe(eval_pdf_at_z, integration_bounds)
         assert np.all(rbpe >= -2.0)
@@ -388,6 +389,7 @@ class MetricTestCase(unittest.TestCase):
 
     def test_check_ensemble_is_not_nested_with_nested_ensemble(self):
         """Test that a ValueError is raised when a nested Ensemble is passed in"""
+        # TODO: I think this just shouldn't be an issue now
         with self.assertRaises(ValueError) as context:
             _check_ensemble_is_not_nested(self.ens_n_multi)
 

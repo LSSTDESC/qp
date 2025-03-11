@@ -126,9 +126,9 @@ def test_ensemble_objdata_dims(hist_test_data):
     single_ens = ens_h[1]
 
     assert np.ndim(single_ens[0].objdata["pdfs"]) == 1
-    with pytest.raises(KeyError) as exec_info:
+    with pytest.raises(IndexError) as exec_info:
         single_ens[1].objdata["pdfs"]
-    assert exec_info.type is KeyError
+    assert exec_info.type is IndexError
 
     maxvals = np.max(hist_test_data[key]["ctor_data"]["pdfs"], axis=1)
     ancil = dict(maxvals=maxvals)
@@ -139,6 +139,6 @@ def test_ensemble_objdata_dims(hist_test_data):
     assert np.ndim(single_ens2[0].objdata["pdfs"]) == 1
     assert np.ndim(single_ens2[0].ancil["maxvals"]) == 0
 
-    with pytest.raises(KeyError) as exec_info:
+    with pytest.raises(IndexError) as exec_info:
         single_ens2[2].ancil
-    assert exec_info.type is KeyError
+    assert exec_info.type is IndexError
