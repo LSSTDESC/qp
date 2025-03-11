@@ -1,6 +1,6 @@
 # qp Primer
 
-- The point of qp is to provide a method of representing and storing distributions that are not continuous, analytic functions
+- The point of qp is to provide a method of representing, performing operations on, and storing distributions that are not continuous, analytic functions
 
 - A quick stats primer on distributions
 
@@ -14,4 +14,4 @@
   1.  Histogram
   2.  Quantiles
   3.  Interpolated
-  4.  Mixed Models (?)
+  4.  Mixed Models
