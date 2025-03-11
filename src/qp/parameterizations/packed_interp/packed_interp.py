@@ -1,5 +1,4 @@
-"""This module implements a PDT distribution sub-class using interpolated grids
-"""
+"""This module implements a PDT distribution sub-class using interpolated grids"""
 
 from __future__ import annotations
 import numpy as np
@@ -12,7 +11,6 @@ from ...core.ensemble import Ensemble
 from .packing_utils import PackingType, pack_array, unpack_array
 from ..base import Pdf_rows_gen
 from ...plotting import get_axes_and_xlims, plot_pdf_on_axes
-from ...test_data import TEST_XVALS, XBINS, YARRAY
 from ...utils.array import reshape_to_pdf_size
 from ...utils.interpolation import interpolate_multi_x_y, interpolate_x_multi_y
 
@@ -323,48 +321,6 @@ class packed_interp_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attr
             "log_floor": log_floor,
         }
         return Ensemble(self, data, ancil)
-
-    @classmethod
-    def make_test_data(cls):
-        """Make data for unit tests"""
-        ypacked_lin, ymax_lin = pack_array(
-            PackingType.linear_from_rowmax, YARRAY.copy()
-        )
-        ypacked_log, ymax_log = pack_array(
-            PackingType.log_from_rowmax, YARRAY.copy(), log_floor=-3
-        )
-
-        cls.test_data = dict(
-            lin_packed_interp=dict(
-                gen_func=packed_interp,
-                ctor_data=dict(
-                    packing_type=PackingType.linear_from_rowmax,
-                    xvals=XBINS,
-                    ypacked=ypacked_lin,
-                    ymax=ymax_lin,
-                ),
-                convert_data=dict(
-                    xvals=XBINS, packing_type=PackingType.linear_from_rowmax
-                ),
-                test_xvals=TEST_XVALS,
-            ),
-            log_packed_interp=dict(
-                gen_func=packed_interp,
-                ctor_data=dict(
-                    packing_type=PackingType.log_from_rowmax,
-                    xvals=XBINS,
-                    ypacked=ypacked_log,
-                    ymax=ymax_log,
-                    log_floor=-3.0,
-                ),
-                convert_data=dict(
-                    xvals=XBINS,
-                    packing_type=PackingType.log_from_rowmax,
-                    log_floor=-3.0,
-                ),
-                test_xvals=TEST_XVALS,
-            ),
-        )
 
 
 packed_interp = packed_interp_gen

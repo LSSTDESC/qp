@@ -1,5 +1,4 @@
-"""This module implements a distribution parameterization sub-class using histograms
-"""
+"""This module implements a distribution parameterization sub-class using histograms"""
 
 from __future__ import annotations
 import numpy as np
@@ -22,7 +21,6 @@ from ...utils.array import reshape_to_pdf_size
 
 from ...utils.interpolation import interpolate_multi_x_y, interpolate_x_multi_y
 
-from ...test_data import XBINS, HIST_DATA, TEST_XVALS, NSAMPLES
 from ...core.factory import add_class
 from ...core.ensemble import Ensemble
 

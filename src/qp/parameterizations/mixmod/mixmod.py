@@ -11,7 +11,6 @@ import warnings
 from .mixmod_utils import extract_mixmod_fit_samples
 from ...core.factory import add_class
 from ..base import Pdf_rows_gen
-from ...test_data import MEAN_MIXMOD, STD_MIXMOD, TEST_XVALS, WEIGHT_MIXMOD
 from ...utils.array import (
     get_eval_case,
     reshape_to_pdf_size,
@@ -375,21 +374,6 @@ class mixmod_gen(Pdf_rows_gen):
         """
         data = {"means": means, "stds": stds, "weights": weights, "warn": warn}
         return Ensemble(self, data, ancil)
-
-    @classmethod
-    def make_test_data(cls):
-        """Make data for unit tests"""
-        cls.test_data = dict(
-            mixmod=dict(
-                gen_func=mixmod,
-                ctor_data=dict(
-                    weights=WEIGHT_MIXMOD, means=MEAN_MIXMOD, stds=STD_MIXMOD
-                ),
-                convert_data={},
-                test_xvals=TEST_XVALS,
-                atol_diff2=1.0,
-            )
-        )
 
 
 mixmod = mixmod_gen

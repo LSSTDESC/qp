@@ -36,10 +36,9 @@ def test_pdf_constructor():
     cdf_vals = np.squeeze(quant_dist1.cdf(xvals))
 
 
-def test_mixmod():
+def test_mixmod(mixmod_test_data):
 
-    qp.mixmod_gen.make_test_data()
-    cls_test_data = qp.mixmod_gen.test_data["mixmod"]
+    cls_test_data = mixmod_test_data["mixmod"]
     gen_func = cls_test_data["gen_func"]
     ctor_data = cls_test_data["ctor_data"]
     ens = qp.Ensemble(gen_func, ctor_data)

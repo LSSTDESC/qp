@@ -1,5 +1,4 @@
-"""This module implements a distribution parameterization sub-class using interpolated grids
-"""
+"""This module implements a distribution parameterization sub-class using interpolated grids"""
 
 from __future__ import annotations
 import numpy as np
@@ -18,7 +17,6 @@ from ...core.factory import add_class
 from ...core.ensemble import Ensemble
 from ..base import Pdf_rows_gen
 from ...plotting import get_axes_and_xlims, plot_pdf_on_axes
-from ...test_data import TEST_XVALS, XARRAY, XBINS, YARRAY
 from ...utils.array import reshape_to_pdf_size
 from ...utils.interpolation import (
     interpolate_multi_x_multi_y,
@@ -402,18 +400,6 @@ class interp_gen(Pdf_rows_gen):
         data = {"xvals": xvals, "yvals": yvals, "warn": warn}
         return Ensemble(self, data, ancil)
 
-    @classmethod
-    def make_test_data(cls):
-        """Make data for unit tests"""
-        cls.test_data = dict(
-            interp=dict(
-                gen_func=interp,
-                ctor_data=dict(xvals=XBINS, yvals=YARRAY),
-                convert_data=dict(xvals=XBINS),
-                test_xvals=TEST_XVALS,
-            )
-        )
-
 
 interp = interp_gen
 
@@ -749,18 +735,6 @@ class interp_irregular_gen(Pdf_rows_gen):
         """
         data = {"xvals": xvals, "yvals": yvals, "norm": norm, "warn": warn}
         return Ensemble(self, data, ancil)
-
-    @classmethod
-    def make_test_data(cls):
-        """Make data for unit tests"""
-        cls.test_data = dict(
-            interp_irregular=dict(
-                gen_func=interp_irregular,
-                ctor_data=dict(xvals=XARRAY, yvals=YARRAY),
-                convert_data=dict(xvals=XBINS),
-                test_xvals=TEST_XVALS,
-            )
-        )
 
 
 interp_irregular = interp_irregular_gen

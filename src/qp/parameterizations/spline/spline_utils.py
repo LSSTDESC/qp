@@ -14,9 +14,9 @@ def normalize_spline(xvals, yvals, limits, **kwargs):
     Parameters
     ----------
     xvals : array-like
-        X-values used for the spline
+        X-values used for the spline, should be a 2D array.
     yvals : array-like
-        Y-values used for the spline
+        Y-values used for the spline, should be a 2D array.
     limits : tuple (2)
         Lower and Upper limits of integration
 
@@ -29,12 +29,6 @@ def normalize_spline(xvals, yvals, limits, **kwargs):
     ynorm: array-like
         Normalized y-vals
     """
-
-    # make sure xvals and yvals are 2d
-    if np.ndim(xvals) == 1:
-        xvals = np.expand_dims(xvals, axis=0)
-    if np.ndim(yvals) == 1:
-        yvals = np.expand_dims(yvals, axis=0)
 
     def row_integral(irow):
         def spl(xv):

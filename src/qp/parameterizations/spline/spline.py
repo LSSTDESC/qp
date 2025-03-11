@@ -1,5 +1,4 @@
-"""This module implements a PDT distribution sub-class using splines
-"""
+"""This module implements a PDT distribution sub-class using splines"""
 
 from __future__ import annotations
 import numpy as np
@@ -21,7 +20,6 @@ from ...core.factory import add_class
 from ...core.ensemble import Ensemble
 from ..base import Pdf_rows_gen
 from ...plotting import get_axes_and_xlims, plot_pdf_on_axes
-from ...test_data import SAMPLES, TEST_XVALS, XARRAY, YARRAY
 from ...utils.array import reshape_to_pdf_size
 
 
@@ -131,6 +129,13 @@ class spline_gen(Pdf_rows_gen):
             )
         xmin = np.min(xvals)
         xmax = np.max(xvals)
+
+        # make sure xvals and yvals are 2d
+        if np.ndim(xvals) == 1:
+            xvals = np.expand_dims(xvals, axis=0)
+        if np.ndim(yvals) == 1:
+            yvals = np.expand_dims(yvals, axis=0)
+
         yvals = normalize_spline(xvals, yvals, limits=(xmin, xmax), **kwargs)
         return build_splines(xvals, yvals)
 
@@ -303,35 +308,6 @@ class spline_gen(Pdf_rows_gen):
         """
         data = {"splx": splx, "sply": sply, "spln": spln}
         return Ensemble(self, data, ancil, method)
-
-    @classmethod
-    def make_test_data(cls):
-        """Make data for unit tests"""
-        SPLX, SPLY, SPLN = cls.build_normed_splines(XARRAY, YARRAY)
-        cls.test_data = dict(
-            spline=dict(
-                gen_func=spline,
-                ctor_data=dict(splx=SPLX, sply=SPLY, spln=SPLN),
-                test_xvals=TEST_XVALS[::10],
-            ),
-            spline_kde=dict(
-                gen_func=spline,
-                method="samples",
-                ctor_data=dict(samples=SAMPLES, xvals=np.linspace(0, 5, 51)),
-                convert_data=dict(xvals=np.linspace(0, 5, 51), method="samples"),
-                test_xvals=TEST_XVALS,
-                atol_diff2=1.0,
-                test_pdf=False,
-            ),
-            spline_xy=dict(
-                gen_func=spline,
-                method="xy",
-                ctor_data=dict(xvals=XARRAY, yvals=YARRAY),
-                convert_data=dict(xvals=np.linspace(0, 5, 51), method="xy"),
-                test_xvals=TEST_XVALS,
-                test_pdf=False,
-            ),
-        )
 
 
 spline = spline_gen

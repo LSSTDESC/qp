@@ -1,5 +1,4 @@
-"""This module implements a distribution parameterization sub-class using interpolated quantiles
-"""
+"""This module implements a distribution parameterization sub-class using interpolated quantiles"""
 
 from __future__ import annotations
 import logging
@@ -23,7 +22,6 @@ from . import (
     PiecewiseConstant,
     PiecewiseLinear,
 )
-from ...test_data import QLOCS, QUANTS, TEST_XVALS
 from ...utils.array import reshape_to_pdf_size
 from ...utils.interpolation import interpolate_multi_x_y, interpolate_x_multi_y
 
@@ -470,13 +468,5 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
 
 quant = quant_gen
 
-quant_gen.test_data = dict(
-    quant=dict(
-        gen_func=quant,
-        ctor_data=dict(quants=QUANTS, locs=QLOCS),
-        convert_data=dict(quants=QUANTS),
-        test_xvals=TEST_XVALS,
-    )
-)
 
 add_class(quant_gen)
