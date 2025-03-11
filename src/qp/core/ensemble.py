@@ -342,7 +342,7 @@ class Ensemble:
         self._samples = None
 
     def update_objdata(self, data: Mapping, ancil: Optional[Mapping] = None):
-        """Updates the data in the frozen distribution, and sets
+        """Updates the objdata in the frozen distribution, and sets
         the ancillary data table if given.
 
         Parameters
@@ -658,7 +658,7 @@ class Ensemble:
 
     def pdf(self, x: ArrayLike) -> ArrayLike:
         """
-        Evaluates the probability density function (PDF) for the whole ensemble
+        Evaluates the probability density function (PDF) for each of the distributions in the ensemble
 
         Parameters
         ----------
@@ -696,7 +696,7 @@ class Ensemble:
 
     def logpdf(self, x: ArrayLike) -> ArrayLike:
         """
-        Evaluates the log of the probability density function (PDF) for the whole ensemble
+        Evaluates the log of the probability density function (PDF) for each of the distributions in the ensemble.
 
         Parameters
         ----------
@@ -732,7 +732,7 @@ class Ensemble:
 
     def cdf(self, x: ArrayLike) -> ArrayLike:
         """
-        Evaluates the cumulative distribution function (CDF) for the whole ensemble
+        Evaluates the cumulative distribution function (CDF) for each of the distributions in the ensemble.
 
         Parameters
         ----------
@@ -768,7 +768,7 @@ class Ensemble:
 
     def logcdf(self, x: ArrayLike) -> ArrayLike:
         """
-        Evaluates the log of the cumulative distribution function (CDF) for the whole ensemble
+        Evaluates the log of the cumulative distribution function (CDF) for each of the distributions in the ensemble.
 
         Parameters
         ----------
@@ -804,7 +804,7 @@ class Ensemble:
 
     def ppf(self, q: ArrayLike) -> ArrayLike:
         """
-        Evaluates the percentage point function (PPF) for the whole ensemble.
+        Evaluates the percentage point function (PPF) for each of the distributions in the ensemble..
 
         Parameters
         ----------
@@ -837,7 +837,7 @@ class Ensemble:
 
     def sf(self, q: ArrayLike) -> ArrayLike:
         """
-        Evaluates the survival fraction (SF) of the distribution for the whole ensemble.
+        Evaluates the survival fraction (SF) for each of the distributions in the ensemble.
 
         Parameters
         ----------
@@ -870,7 +870,7 @@ class Ensemble:
         return sf
 
     def logsf(self, q: ArrayLike) -> ArrayLike:
-        """Evaluates the log of the survival function (SF) of the distribution for the whole ensemble.
+        """Evaluates the log of the survival function (SF) for each of the distributions in the ensemble.
 
         Parameters
         ----------
@@ -904,7 +904,7 @@ class Ensemble:
 
     def isf(self, q: ArrayLike) -> ArrayLike:
         """
-        Evaluates the inverse of the survival fraction of the distribution for the whole ensemble.
+        Evaluates the inverse of the survival fraction (SF) for each of the distributions in the ensemble.
 
         Parameters
         ----------
@@ -975,7 +975,7 @@ class Ensemble:
 
     def stats(self, moments: str = "mv") -> tuple[ArrayLike]:
         """
-        Return some statistics for the distributions in this ensemble.
+        Return some statistics for each of the distributions in this ensemble.
 
         The moments to be returned are determined by the string given to `moments`,
         where each letter represents a specific moment. The options are:
@@ -1008,7 +1008,7 @@ class Ensemble:
         return self._frozen.stats(moments=moments)
 
     def median(self) -> ArrayLike:
-        """Return the medians of the distributions in this ensemble.
+        """Return the median for each of the distributions in this ensemble.
 
         Returns
         -------
@@ -1036,7 +1036,7 @@ class Ensemble:
         return median
 
     def mean(self) -> ArrayLike:
-        """Return the means of the distributions in this ensemble.
+        """Return the mean for each of the distributions in this ensemble.
 
         Returns
         -------
@@ -1065,7 +1065,7 @@ class Ensemble:
         return mean
 
     def var(self) -> ArrayLike:
-        """Return the variances for the distributions in this ensemble.
+        """Return the variance for each of the distributions in this ensemble.
 
         Returns
         -------
@@ -1094,7 +1094,7 @@ class Ensemble:
         return var
 
     def std(self) -> ArrayLike:
-        """Return the standard deviations the distributions in this ensemble.
+        """Return the standard deviation for each of the distributions in this ensemble.
 
         Returns
         -------
@@ -1121,7 +1121,7 @@ class Ensemble:
         return std
 
     def moment(self, n: int) -> ArrayLike:
-        """Return the nth moments for the distributions in this ensemble.
+        """Return the nth moment for each of the distributions in this ensemble.
 
         Parameters
         ----------
@@ -1154,7 +1154,7 @@ class Ensemble:
         return moment
 
     def entropy(self) -> ArrayLike:
-        """Return the differential entropy for the distributions in this ensemble.
+        """Return the differential entropy for each of the distributions in this ensemble.
 
         Returns
         -------
@@ -1191,13 +1191,13 @@ class Ensemble:
     #    return self._frozen.logpmf(k)
 
     def interval(self, alpha) -> tuple[ArrayLike]:
-        """Return the intervals corresponding to a confidence level of alpha for the
+        """Return the intervals corresponding to a confidence level of `alpha` for each of the
          distributions in this ensemble.
 
         Parameters
         ----------
         alpha : `arraylike`
-            The array of values to return intervals for. These should be the probability that an rv will be
+            The array of values to return intervals for. These should be the probability that a random variable will be
             drawn from the returned range. Each value should be in the range [0,1].
 
         Returns
@@ -1255,7 +1255,7 @@ class Ensemble:
         self, limits: tuple[Union[float, ArrayLike], Union[float, ArrayLike]]
     ) -> ArrayLike:
         """
-        Computes the integral under the PDFs of the distributions in the ensemble
+        Computes the integral under the probability distribution functions (PDFs) of the distributions in the ensemble
         between the given limits.
 
         Parameters
@@ -1299,8 +1299,7 @@ class Ensemble:
         raise NotImplementedError("mix_mod_fit %i" % comps)
 
     def moment_partial(self, n: int, limits: tuple, dx: float = 0.01) -> ArrayLike:
-        """Return the nth moments for the distributions in this ensemble
-        over a particular range
+        """Return the nth moment over a particular range for each of the distributions in this ensemble.
 
         Parameters
         ----------
@@ -1356,7 +1355,7 @@ class Ensemble:
         return self._gen_class.plot(self[key], **kwargs)
 
     def plot_native(self, key: Union[int, slice] = 0, **kwargs):
-        """Plot the selected distribution as a curve. To find what arguments are
+        """Plot the selected distribution in the default format for this parameterization. To find what arguments are
         required for specific parameterizations, you can check the docstrings
         of qp.[parameterization].plot_native, where [parameterization] is the parameterization
         class for the current ensemble.
@@ -1391,7 +1390,7 @@ class Ensemble:
         return keywords
 
     def initializeHdf5Write(self, filename: str, npdf: int, comm=None):
-        """set up the output write for an ensemble, but set size to npdf rather than
+        """Set up the output write for an ensemble, but set size to npdf rather than
         the size of the ensemble, as the "initial chunk" will not contain the full data
 
         Parameters
