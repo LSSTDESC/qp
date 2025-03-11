@@ -213,18 +213,30 @@ def reshape_to_pdf_shape(vals: np.ndarray, pdf_shape, per_pdf):
     return vals.reshape(outshape)
 
 
-def encode_strings(data: Mapping) -> Mapping:
+def encode_strings(data: Mapping) -> Mapping[str, np.ndarray]:
+    """Encodes any dictionary values that are Unicode strings (or just strings
+    if not numpy arrays). Other data types are not affected.
+
+    Parameters
+    ----------
+    data : Mapping
+        Dictionary of data to encode.
+
+    Returns
+    -------
+    Mapping
+        Dictionary of data with strings encoded.
+    """
 
     converted_data = {}
     for key, val in data.items():
         new_val = val
-        try:
+        if isinstance(val, np.ndarray):
             # encode unicode strings as bytes to work with hdf5
             if val.dtype.kind == "U":
                 new_val = np.strings.encode(val, "utf-8")
-        except:
+        else:
             # is not a numpy array
-            # TODO: what do we do here? anything?
             if isinstance(val[0], str):
                 new_val = np.strings.encode(val, "utf-8")
 
@@ -234,16 +246,31 @@ def encode_strings(data: Mapping) -> Mapping:
 
 
 def decode_strings(data: Mapping[str, np.ndarray]) -> Mapping:
+    """Decodes dictionary values that have been encoded (dtype = bytes). Other
+    data types are not affected.
+
+    Parameters
+    ----------
+    data : Mapping[str, np.ndarray]
+        The dictionary of data to be decoded.
+
+    Returns
+    -------
+    Mapping
+        The dictionary of data with any strings decoded.
+    """
     converted_data = {}
     for key, val in data.items():
         new_val = val
 
-        try:
+        if isinstance(val, np.ndarray):
+            # decode any string objects as necessary
             if val.dtype.kind == "S":
                 new_val = np.strings.decode(val, "utf-8")
-        except:
-            print("not a numpy array")
-            # TODO: figure out what to do here?
+        else:
+            # decode string objects that are not numpy arrays
+            if isinstance(val[0], bytes):
+                new_val = np.strings.decode(val, "utf-8")
 
         converted_data[key] = new_val
 

@@ -255,3 +255,10 @@ def spline_test_data():
     )
 
     return spline_test_data
+
+
+## Fixtures to create ensembles
+@pytest.fixture
+def hist_ensemble(hist_test_data):
+    ens_h = qp.hist.create_ensemble(**hist_test_data["hist"]["ctor_data"])
+    return ens_h
