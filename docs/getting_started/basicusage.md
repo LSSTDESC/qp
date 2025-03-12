@@ -90,9 +90,64 @@ Note that these `yvals` are different than the ones we provided in the [section 
 
 An `Ensemble` has other attributes that provide information about it, including `ens.npdf`, which tells you how many distributions it contains, or `ens.shape`, which returns the shape of the `objdata`, (`npdf`, `ncoord`), where `ncoord` is the number of values that each distribution has, usually corresponding in some way to the number of coordinates in the metadata.
 
-### Important Methods
+### Important methods
 
-<project:methods.md> lists all of the available methods of an `Ensemble` object, and links to their docstrings. Or you can see the [API documentation of the class](#qp.core.ensemble.Ensemble) to see a complete list of its attributes and methods all in one place.
+What can you do with an `Ensemble`? <project:methods.md> lists all of the available methods of an `Ensemble` object, and links to their docstrings. Or you can see the [API documentation of the class](#qp.core.ensemble.Ensemble) to see a complete list of its attributes and methods all in one place. Here we will go over a few of the most commonly-used methods.
+
+#### Statistical methods
+
+One of the main functions of an `Ensemble` is the ability to calculate the probability distribution function (PDF) or cumulative distribution function (CDF) of the distributions. This can be done via the `ens.pdf` and `ens.cdf` methods, which return values that correspond to the given x values for each distribution. For example, to get the value of the PDFs at a specific x value, one can do the following:
+
+```{doctest}
+
+>>> ens.pdf(1.2)
+array([[0.73239437],
+       [0.53333333]])
+
+```
+
+This returns an array of shape (`npdf`, `nxval`), where `nxval` is the number of x values given to the function.
+
+#### Conversion
+
+It is possible to convert an `Ensemble` of distributions of one parameterization to a different parameterization. For example, let's say we wanted to convert our `Ensemble` from `interp` to a histogram (`hist`). We can do this using [`qp.convert`](#qp.core.factory.convert), which takes as arguments the `Ensemble` to convert and the name of the parameterization we want to convert to. You can also provide a specific conversion method via the `method` keyword, if the parameterization has more than one conversion method. Most conversion methods also have additional required arguments, which will differ for the parameterization as well as the specific method being used.
+
+To get more information about the existing conversion methods and arguments, we can take a look at the docstrings of the parameterization class (via `qp.hist?` or `help(qp.hist)` in the command line). They tell us that for the [`hist` parameterization](#qp.parameterizations.hist.hist_gen), there are two conversion methods, `extract_hist_values` and `extract_hist_samples`. For this example we'll use `extract_hist_values`, which requires the `bins` argument.
+
+```{docstring}
+
+>>> bins = np.linspace(np.min(xvals),np.max(xvals),10)
+>>> ens_hist = qp.convert(ens, 'hist', bins)
+>>> ens_hist
+Ensemble(the_class=hist,shape=(2, 9))
+
+```
+
+Our new `Ensemble` has a different class and a different shape, as now instead of 5 `xvals` we have 9 `bins` (and 10 bin edges).
+
+However, converting an `Ensemble` does not guarantee that the converted `Ensemble` will have _exactly_ the same distribution shape. For example, we can compare the value of the PDF at `x=1.2` in the `hist` parameterized `Ensemble` to that of the `interp` parameterized `Ensemble`:
+
+:::{doctest}
+
+> > > ens_hist.pdf(1.2)
+> > > array([[0.70921986],
+
+       [0.54054054]])
+
+> > > ens.pdf(1.2)
+> > > array([[0.73239437],
+
+       [0.53333333]])
+
+:::
+
+As you can see, these values are slightly different. Typically, ensuring that your `Ensembles` have a higher density of coordinate values, and that your conversions have similarly high density, will aid in producing converted distributions that match their initial distributions more closely.
+
+:::{note}
+
+You can only convert to a parameterization that has a conversion method. This means that any parameterization inherited from `scipy` (i.e. any parameterization that starts with `qp.stats`) cannot be converted to.
+
+:::
 
 - objdata, metadata, and ancil tables
 - Show a couple of the more important methods that can be called, link to the ensemble methods page which lists all of them
