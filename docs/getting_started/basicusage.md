@@ -25,7 +25,7 @@ There are three available methods to create an `Ensemble` from in-memory data, a
 
 ### Creating an Ensemble from in-memory data
 
-The first method is to use the `create_ensemble` function that exists for each parameterization. For example, to create an interpolated parameterization, where the distributions are given by a set of x and y values, you can use [`qp.interp.create_ensemble`](#qp.parameterizations.interp.interp.create_ensemble), where the data is passed as arguments to the function. See below for an example:
+The first method is to use the `create_ensemble` function that exists for each parameterization. For example, to create an interpolated parameterization, where the distributions are given by a set of x and y values, you can use [`qp.interp.create_ensemble`](#qp.parameterizations.interp.interp.interp_gen.create_ensemble), where the data is passed as arguments to the function. See below for an example:
 
 ```{doctest}
 
@@ -92,7 +92,7 @@ An `Ensemble` has other attributes that provide information about it, including 
 
 ### Important methods
 
-What can you do with an `Ensemble`? <project:methods.md> lists all of the available methods of an `Ensemble` object, and links to their docstrings. Or you can see the [API documentation of the class](#qp.core.ensemble.Ensemble) to see a complete list of its attributes and methods all in one place. Here we will go over a few of the most commonly-used methods.
+What can you do with an `Ensemble`? <project:methods.md> lists all of the available methods of an `Ensemble` object, and links to their docstrings. Or you can see the [API documentation of the class](#qp.core.ensemble.Ensemble) for a complete list of its attributes and methods all in one place. Here we will go over a few of the most commonly-used methods.
 
 #### Statistical methods
 
@@ -112,9 +112,9 @@ This returns an array of shape (`npdf`, `nxval`), where `nxval` is the number of
 
 It is possible to convert an `Ensemble` of distributions of one parameterization to a different parameterization. For example, let's say we wanted to convert our `Ensemble` from `interp` to a histogram (`hist`). We can do this using [`qp.convert`](#qp.core.factory.convert), which takes as arguments the `Ensemble` to convert and the name of the parameterization we want to convert to. You can also provide a specific conversion method via the `method` keyword, if the parameterization has more than one conversion method. Most conversion methods also have additional required arguments, which will differ for the parameterization as well as the specific method being used.
 
-To get more information about the existing conversion methods and arguments, we can take a look at the docstrings of the parameterization class (via `qp.hist?` or `help(qp.hist)` in the command line). They tell us that for the [`hist` parameterization](#qp.parameterizations.hist.hist_gen), there are two conversion methods, `extract_hist_values` and `extract_hist_samples`. For this example we'll use `extract_hist_values`, which requires the `bins` argument.
+To get more information about the existing conversion methods and arguments, we can take a look at the docstrings of the parameterization class (via `qp.hist?` or `help(qp.hist)` in the command line). They tell us that for the [`hist` parameterization](#qp.parameterizations.hist.hist.hist_gen), there are two conversion methods, `extract_hist_values` and `extract_hist_samples`. For this example we'll use `extract_hist_values`, which requires the `bins` argument.
 
-```{docstring}
+```{doctest}
 
 >>> bins = np.linspace(np.min(xvals),np.max(xvals),10)
 >>> ens_hist = qp.convert(ens, 'hist', bins)
@@ -127,21 +127,19 @@ Our new `Ensemble` has a different class and a different shape, as now instead o
 
 However, converting an `Ensemble` does not guarantee that the converted `Ensemble` will have _exactly_ the same distribution shape. For example, we can compare the value of the PDF at `x=1.2` in the `hist` parameterized `Ensemble` to that of the `interp` parameterized `Ensemble`:
 
-:::{doctest}
+```{doctest}
 
-> > > ens_hist.pdf(1.2)
-> > > array([[0.70921986],
-
+>>> ens_hist.pdf(1.2)
+array([[0.70921986],
        [0.54054054]])
 
-> > > ens.pdf(1.2)
-> > > array([[0.73239437],
-
+>>> ens.pdf(1.2)
+array([[0.73239437],
        [0.53333333]])
 
-:::
+```
 
-As you can see, these values are slightly different. Typically, ensuring that your `Ensembles` have a higher density of coordinate values, and that your conversions have similarly high density, will aid in producing converted distributions that match their initial distributions more closely.
+As you can see, these values are slightly different. In this case, they are close enough, but depending on the scenario there can be larger differences. Typically, ensuring that your `Ensembles` have a higher density of coordinate values, and that your conversions have similarly high density, will aid in producing converted distributions that match their initial distributions more closely.
 
 :::{note}
 
