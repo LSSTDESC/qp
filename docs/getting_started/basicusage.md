@@ -17,18 +17,90 @@ An `Ensemble` object has three main data components, which exist as dictionaries
 The exact configuration of the data within these dictionaries differs for each parameterization, so see <project:../advanced_usage/datastructure.md> for more details.
 ```
 
-- Creating a qp ensemble
+## Creating an Ensemble
 
-  - from data in a dictionary or table
-  - from file
+There are three available methods to create an `Ensemble` from in-memory data, as well as the ability to read in an `Ensemble` from file.
 
-- Working with a qp ensemble
+(creating-ensemble-memory)=
 
-  - objdata, metadata, and ancil tables
-  - Show a couple of the more important methods that can be called, link to the ensemble methods page which lists all of them
-  - basics of how to convert to different parameterizations (more detail elsewhere)
-    - mention you can't convert to scipy parameterizations
-  - calculating metrics (basics, table of existing supported metrics)
+### Creating an Ensemble from in-memory data
+
+The first method is to use the `create_ensemble` function that exists for each parameterization. For example, to create an interpolated parameterization, where the distributions are given by a set of x and y values, you can use [`qp.interp.create_ensemble`](#qp.parameterizations.interp.interp.create_ensemble), where the data is passed as arguments to the function. See below for an example:
+
+```{doctest}
+
+>>> import qp
+>>> import numpy as np
+>>> xvals= np.array([0,0.5,1,1.5,2]),
+>>> yvals = np.array([[0.01, 0.2,0.3,0.2,0.01],[0.09,0.25,0.2,0.1,0.01]])
+>>> ancil = {'ids':[5,8]}
+>>> ens = qp.interp.create_ensemble(xvals, yvals,ancil=ancil)
+>>> ens.metadata
+{'pdf_name': array([b'interp'], dtype='|S6'),
+'pdf_version': array([0]),
+'xvals': array([[0. , 0.5, 1. , 1.5, 2. ]])}
+
+```
+
+Another method is to use [`qp.create`](#qp.core.factory.create), which allows you to create an `Ensemble` of any parameterization type. The function requires the parameterization type as an argument, as well as a dictionary of the necessary data, and an optional `ancil` argument for any ancillary data. So to create an `Ensemble` using the same data above, you would use the following commands:
+
+```{doctest}
+
+>>> data = {"xvals": xvals, "yvals": yvals}
+>>> ens = qp.create('interp', data=data, ancil=ancil)
+
+```
+
+Finally, you can instantiate the `Ensemble` class directly by using [`qp.Ensemble`](#qp.core.ensemble.Ensemble), which takes the same arguments as the [`qp.create`](#qp.core.factory.create) method, except the parameterization argument must be the actual class, instead of the string name of the class:
+
+```{doctest}
+
+>>> ens = qp.Ensemble(qp.interp, data=data,ancil=ancil)
+
+```
+
+### Reading an Ensemble from file
+
+An `Ensemble` can be read from a file as well, if the file is in the appropriate format. To check if a file can be read in as an `Ensemble`, you can use [`qp.is_qp_file(filename)`](#qp.core.factory.is_qp_file), which returns `True` if it is in a compatible format. Once you have a file that can be read it, you can use [`qp.read`](#qp.core.factory.read) as shown in the example below:
+
+```{doctest}
+
+>>> import qp
+>>> ens = qp.read("ensemble.hdf5")
+>>> ens
+Ensemble(the_class=interp,shape=(2,5))
+
+```
+
+## Working with an Ensemble
+
+### Attributes of an Ensemble
+
+Now that we have an `Ensemble`, we can check the data it contains using `ens.metadata` or `ens.objdata`. These show the dictionaries of data that define our `Ensemble`. Let's check the `objdata` for the `Ensemble` we created above:
+
+```{doctest}
+
+>>> ens.objdata
+{'yvals': array([[0.02816901, 0.56338028, 0.84507042, 0.56338028, 0.02816901],
+        [0.3       , 0.83333333, 0.66666667, 0.33333333, 0.03333333]])}
+
+```
+
+Note that these `yvals` are different than the ones we provided in the [section above](#creating-ensemble-memory). This is because the data stored is not the input data, but the data used to create the `Ensemble`, and in this case, as is true for many parameterizations, the data is normalized by default. So `objdata` returns the normalized data.
+
+An `Ensemble` has other attributes that provide information about it, including `ens.npdf`, which tells you how many distributions it contains, or `ens.shape`, which returns the shape of the `objdata`, (`npdf`, `ncoord`), where `ncoord` is the number of values that each distribution has, usually corresponding in some way to the number of coordinates in the metadata.
+
+### Important Methods
+
+<project:methods.md> lists all of the available methods of an `Ensemble` object, and links to their docstrings. Or you can see the [API documentation of the class](#qp.core.ensemble.Ensemble) to see a complete list of its attributes and methods all in one place.
+
+- objdata, metadata, and ancil tables
+- Show a couple of the more important methods that can be called, link to the ensemble methods page which lists all of them
+- basics of how to convert to different parameterizations (more detail elsewhere)
+  - mention you can't convert to scipy parameterizations
+- calculating metrics (basics, table of existing supported metrics)
+
+## Writing an Ensemble to file
 
 - Writing out a qp ensemble
   - format file is normally written to

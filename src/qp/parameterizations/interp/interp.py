@@ -388,7 +388,7 @@ class interp_gen(Pdf_rows_gen):
         >>> import qp
         >>> import numpy as np
         >>> xvals= np.array([0,0.5,1,1.5,2]),
-        >>> yvals = np.array([[0.01, 0.2,0.3,0.2,0.01],[0.09,0.25,0.2,0.1,0.01]])}
+        >>> yvals = np.array([[0.01, 0.2,0.3,0.2,0.01],[0.09,0.25,0.2,0.1,0.01]])
         >>> ancil = {'ids':[5,8]}
         >>> ens = qp.interp.create_ensemble(xvals, yvals,ancil=ancil)
         >>> ens.metadata
