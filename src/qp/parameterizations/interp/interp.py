@@ -169,7 +169,7 @@ class interp_gen(Pdf_rows_gen):
         # normalize the distribution if norm is True
         self._norm = norm
         if self._norm:
-            self._yvals = self.normalize()
+            self._yvals = self.normalize()["yvals"]
         else:  # pragma: no cover
             self._ycumul = None
 
@@ -196,12 +196,12 @@ class interp_gen(Pdf_rows_gen):
                 f"The distribution(s) cannot be properly normalized, the integral is <= 0 for distributions at indices = {indices[0]}"
             )
 
-    def normalize(self) -> np.ndarray:
+    def normalize(self) -> Mapping[str, np.ndarray]:
         """Normalizes the input distribution values.
 
         Returns
         -------
-        np.ndarray
+        Mapping[str,np.ndarray]
             An (npdf, n) array of y values for the npdf distributions
 
         Raises
@@ -214,7 +214,7 @@ class interp_gen(Pdf_rows_gen):
 
         new_yvals = (self._yvals.T / self._ycumul[:, -1]).T
         self._ycumul = (self._ycumul.T / self._ycumul[:, -1]).T
-        return new_yvals
+        return {"yvals": new_yvals}
 
     @property
     def xvals(self):
@@ -355,6 +355,7 @@ class interp_gen(Pdf_rows_gen):
         self,
         xvals: ArrayLike,
         yvals: ArrayLike,
+        norm: bool = True,
         warn: bool = True,
         ancil: Optional[Mapping] = None,
     ) -> Ensemble:
@@ -368,6 +369,9 @@ class interp_gen(Pdf_rows_gen):
         yvals : `array_like`
           The y-values used to do the interpolation, shape is (npdfs, n), where
           npdfs is the number of distributions
+        norm : `bool`, optional
+            If True, normalizes the input distribution. If False, assumes the
+            given distribution is already normalized. By default True.
         warn : `bool`, optional
             If True, raises warnings if input is not valid PDF data (i.e. if
             data is negative). If False, no warnings are raised. By default True.
@@ -397,7 +401,7 @@ class interp_gen(Pdf_rows_gen):
         'xvals': array([[0. , 0.5, 1. , 1.5, 2. ]])}
 
         """
-        data = {"xvals": xvals, "yvals": yvals, "warn": warn}
+        data = {"xvals": xvals, "yvals": yvals, "norm": norm, "warn": warn}
         return Ensemble(self, data, ancil)
 
 
@@ -512,7 +516,7 @@ class interp_irregular_gen(Pdf_rows_gen):
         self._norm = norm
 
         if self._norm:
-            self._yvals = self.normalize()
+            self._yvals = self.normalize()["yvals"]
         self._ycumul = None
         super().__init__(*args, **kwargs)
         self._addobjdata("xvals", self._xvals)
@@ -535,13 +539,13 @@ class interp_irregular_gen(Pdf_rows_gen):
                 f"The integral is <= 0 for distributions at indices = {indices[0]}, so the distribution(s) cannot be properly normalized."
             )
 
-    def normalize(self):
+    def normalize(self) -> Mapping[str, np.ndarray]:
         """
         Normalize a set of 1D interpolators
 
         Returns
         -------
-        ynorm: array-like
+        ynorm: Mapping[str, np.ndarray]
             Normalized y-vals
         """
         # def row_integral(irow):
@@ -562,7 +566,7 @@ class interp_irregular_gen(Pdf_rows_gen):
                 f"The integral is <= 0 for distributions at indices = {indices[0]}, so the distribution(s) cannot be properly normalized."
             )
 
-        return (self._yvals.T / integrals).T
+        return {"yvals": (self._yvals.T / integrals).T}
 
     @property
     def xvals(self):

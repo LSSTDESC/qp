@@ -168,7 +168,7 @@ class hist_gen(Pdf_rows_gen):
         # normalize the input data if norm is True
         self._norm = norm
         if self._norm:
-            self._hpdfs = self.normalize()
+            self._hpdfs = self.normalize()["pdfs"]
 
         self._hcdfs = None
         # Set support
@@ -184,12 +184,12 @@ class hist_gen(Pdf_rows_gen):
         self._hcdfs[:, 0] = 0.0
         self._hcdfs[:, 1:] = np.cumsum(self._hpdfs * self._hbin_widths, axis=1)
 
-    def normalize(self) -> np.ndarray:
+    def normalize(self) -> Mapping[str, np.ndarray]:
         """Normalizes the input distribution values.
 
         Returns
         -------
-        np.ndarray
+        Mapping[str, np.ndarray]
             An (npdf, n) array of pdf values in the n bins for the npdf distributions
 
         Raises
@@ -204,7 +204,7 @@ class hist_gen(Pdf_rows_gen):
             raise ValueError(
                 f"The distribution(s) cannot be properly normalized, the sum of the pdfs is <= 0 for distributions at index = {indices[0]} "
             )
-        return (pdfs_2d.T / sums).T
+        return {"pdfs": (pdfs_2d.T / sums).T}
 
     @property
     def bins(self):
@@ -218,6 +218,7 @@ class hist_gen(Pdf_rows_gen):
 
     def x_samples(self):
         """Return a set of x values that can be used to plot all the PDFs."""
+        # TODO: possibly add a bin to the left and right?
         return (self._hbins[:-1] + self._hbins[1:]) / 2
 
     def _pdf(self, x, row):

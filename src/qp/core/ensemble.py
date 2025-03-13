@@ -588,7 +588,13 @@ class Ensemble:
 
         # update ensemble objdata with normalized values
         d_keys = list(self.objdata.keys())
-        self.update_objdata(data={d_keys[0]: normed}, ancil=self.ancil)
+
+        # add in any data from current ensemble which was unchanged
+        for key in d_keys:
+            if not key in normed.keys():
+                normed[key] = self.objdata[key]
+
+        self.update_objdata(data=normed, ancil=self.ancil)
 
     def mode(self, grid: ArrayLike) -> ArrayLike:
         """Return the mode of each ensemble distribution, evaluated on the given grid.
