@@ -25,22 +25,36 @@ There are three available methods to create an `Ensemble` from in-memory data, a
 
 ### Creating an Ensemble from in-memory data
 
-The first method is to use the `create_ensemble` function that exists for each parameterization. For example, to create an interpolated parameterization, where the distributions are given by a set of x and y values, you can use [`qp.interp.create_ensemble`](#qp.parameterizations.interp.interp.interp_gen.create_ensemble), where the data is passed as arguments to the function. See below for an example:
+The first method is to use the `create_ensemble` function that exists for each parameterization. This function will take as arguments the required metadata coordinates and data values for the parameterization, as well as the argument `ancil` for any ancillary data.
+
+For example, to create an interpolated parameterization, where the distributions are given by a set of x and y values, you can use [`qp.interp.create_ensemble`](#qp.parameterizations.interp.interp.interp_gen.create_ensemble), where the data is passed as arguments to the function. Below, we do just that. First we have to set up a distribution with x and y values, which we do by using the `scipy.stats.norm` distribution:
 
 ```{doctest}
 
 >>> import qp
 >>> import numpy as np
->>> xvals= np.array([0,0.5,1,1.5,2]),
->>> yvals = np.array([[0.01, 0.2,0.3,0.2,0.01],[0.09,0.25,0.2,0.1,0.01]])
->>> ancil = {'ids':[5,8]}
->>> ens = qp.interp.create_ensemble(xvals, yvals,ancil=ancil)
->>> ens.metadata
-{'pdf_name': array([b'interp'], dtype='|S6'),
-'pdf_version': array([0]),
-'xvals': array([[0. , 0.5, 1. , 1.5, 2. ]])}
+>>> from scipy import stats
+>>> npdf = 3
+>>> nvals = 50
+>>> xvals = np.linspace(0,5,nvals)
+>>> loc = np.expand_dims(np.linspace(0.7, 2.5, npdf),-1)
+>>> scale = np.expand_dims(np.linspace(0.2, 1.2, npdf),-1)
+>>> yvals = stats.norm(loc=loc, scale=scale).pdf(xvals)
+>>> ancil = {'ids':[5,8,10]}
 
 ```
+
+Then we use this data to create our `Ensemble`:
+
+```{doctest}
+
+>>> ens = qp.interp.create_ensemble(xvals, yvals,ancil=ancil)
+>>> ens
+Ensemble(the_class=interp,shape=(3, 50))
+
+```
+
+Note that the representation of the `Ensemble` tells us what the parameterization class is, and the shape of the `Ensemble` (also available via `ens.shape`). The first value is the number of distributions and the second value is the number of data values per distribution, which in this case is equal to the number of 'xvals'.
 
 Another method is to use [`qp.create`](#qp.core.factory.create), which allows you to create an `Ensemble` of any parameterization type. The function requires the parameterization type as an argument, as well as a dictionary of the necessary data, and an optional `ancil` argument for any ancillary data. So to create an `Ensemble` using the same data above, you would use the following commands:
 
@@ -48,6 +62,8 @@ Another method is to use [`qp.create`](#qp.core.factory.create), which allows yo
 
 >>> data = {"xvals": xvals, "yvals": yvals}
 >>> ens = qp.create('interp', data=data, ancil=ancil)
+>>> ens
+Ensemble(the_class=interp,shape=(3, 50))
 
 ```
 
@@ -56,6 +72,8 @@ Finally, you can instantiate the `Ensemble` class directly by using [`qp.Ensembl
 ```{doctest}
 
 >>> ens = qp.Ensemble(qp.interp, data=data,ancil=ancil)
+>>> ens
+Ensemble(the_class=interp,shape=(3, 50))
 
 ```
 
@@ -68,31 +86,62 @@ An `Ensemble` can be read from a file as well, if the file is in the appropriate
 >>> import qp
 >>> ens = qp.read("ensemble.hdf5")
 >>> ens
-Ensemble(the_class=interp,shape=(2,5))
+Ensemble(the_class=interp,shape=(3, 50))
 
 ```
 
 ## Working with an Ensemble
 
+**SOMEWHERE IN THIS SECTION PUT IN HOW TO SELECT ONE OR MORE DISTRIBUTIONS FROM YOUR ENSEMBLE**
+
 ### Attributes of an Ensemble
 
-Now that we have an `Ensemble`, we can check the data it contains using `ens.metadata` or `ens.objdata`. These show the dictionaries of data that define our `Ensemble`. Let's check the `objdata` for the `Ensemble` we created above:
+Now that we have an `Ensemble`, we can check the data it contains using `ens.metadata` or `ens.objdata`. These show the dictionaries of data that define our `Ensemble`. Let's use these data dictionaries to quickly plot one of our distributions (for more details on plotting distributions see [link]):
 
 ```{doctest}
 
->>> ens.objdata
-{'yvals': array([[0.02816901, 0.56338028, 0.84507042, 0.56338028, 0.02816901],
-        [0.3       , 0.83333333, 0.66666667, 0.33333333, 0.03333333]])}
+>>> plt.plot(ens.metadata["xvals"],ens.objdata["yvals"][2])
+>>> plt.show()
 
 ```
 
-Note that these `yvals` are different than the ones we provided in the [section above](#creating-ensemble-memory). This is because the data stored is not the input data, but the data used to create the `Ensemble`, and in this case, as is true for many parameterizations, the data is normalized by default. So `objdata` returns the normalized data.
+```{image} ../assets/basic_usage_plot_data.svg
+:alt: plot-ensemble-data
+:width: 80%
+:align: center
+```
 
-An `Ensemble` has other attributes that provide information about it, including `ens.npdf`, which tells you how many distributions it contains, or `ens.shape`, which returns the shape of the `objdata`, (`npdf`, `ncoord`), where `ncoord` is the number of values that each distribution has, usually corresponding in some way to the number of coordinates in the metadata.
+:::{warning}
+
+Note that `objdata` and `metadata` do not store the exact input data. Instead they store what represents the `Ensemble`. For example, if you input a distribution that is not normalized, by default most parameterizations will normalize the data, and they store the normalized data in `objdata`. For a quick example, we create a new `interp` `Ensemble` below:
+
+```{doctest}
+
+>>> xvals_2 = np.array([0,0.5,1,1.5,2])
+>>> yvals_2 = np.array([0.01,0.2,0.3,0.2,0.01])
+>>> ens_2 = qp.interp.create_ensemble(xvals_2,yvals_2)
+>>> ens_2.objdata
+{'yvals': array([[0.02816901, 0.56338028, 0.84507042, 0.56338028,
+0.02816901],
+        [0.3       , 0.83333333, 0.66666667, 0.33333333,
+0.03333333]])}
+
+```
+
+Note that the 'yvals' in `objdata` are different than the ones given to the `create_ensemble` function.
+
+:::
+
+An `Ensemble` also has other attributes that provide information about it. Some useful ones are:
+
+- `ens.npdf`: the number of distributions in the `Ensemble`
+- `ens.shape`: (`npdf`, `ncoord`), where `ncoord` is the number of values that each distribution has, usually corresponding in some way to the number of coordinates in the metadata. For our sample `Ensemble`, `ncoord` would be the number of 'xvals'.
+
+A complete list of attributes can be found in the [API class documentation](#qp.core.ensemble.Ensemble).
 
 ### Important methods
 
-What can you do with an `Ensemble`? <project:methods.md> lists all of the available methods of an `Ensemble` object, and links to their docstrings. Or you can see the [API documentation of the class](#qp.core.ensemble.Ensemble) for a complete list of its attributes and methods all in one place. Here we will go over a few of the most commonly-used methods.
+What can we do with our `Ensemble`? <project:methods.md> lists all of the available methods of an `Ensemble` object, and links to their docstrings. Or you can see the [API documentation of the class](#qp.core.ensemble.Ensemble) for a complete list of its attributes and methods all in one place. Here we will go over a few of the most commonly-used methods.
 
 #### Statistical methods
 
@@ -101,8 +150,9 @@ One of the main functions of an `Ensemble` is the ability to calculate the proba
 ```{doctest}
 
 >>> ens.pdf(1.2)
-array([[0.73239437],
-       [0.53333333]])
+array([[0.10014283],
+       [0.48897684],
+       [0.19207249]])
 
 ```
 
@@ -110,42 +160,60 @@ This returns an array of shape (`npdf`, `nxval`), where `nxval` is the number of
 
 #### Conversion
 
-It is possible to convert an `Ensemble` of distributions of one parameterization to a different parameterization. For example, let's say we wanted to convert our `Ensemble` from `interp` to a histogram (`hist`). We can do this using [`qp.convert`](#qp.core.factory.convert), which takes as arguments the `Ensemble` to convert and the name of the parameterization we want to convert to. You can also provide a specific conversion method via the `method` keyword, if the parameterization has more than one conversion method. Most conversion methods also have additional required arguments, which will differ for the parameterization as well as the specific method being used.
+It is possible to convert an `Ensemble` of distributions to a different parameterization. There are two main methods for conversion:
 
-To get more information about the existing conversion methods and arguments, we can take a look at the docstrings of the parameterization class (via `qp.hist?` or `help(qp.hist)` in the command line). They tell us that for the [`hist` parameterization](#qp.parameterizations.hist.hist.hist_gen), there are two conversion methods, `extract_hist_values` and `extract_hist_samples`. For this example we'll use `extract_hist_values`, which requires the `bins` argument.
+- [`qp.convert`](#qp.core.factory.convert): takes as arguments the `Ensemble` to convert and the name of the parameterization we want to convert to (i.e. 'hist').
+- `ens.convert_to`: takes as an argument the class object for the parameterization we want to convert to (i.e. `qp.hist`)
+
+Both functions also allow you to provide a specific conversion method via the `method` keyword, if the parameterization has more than one conversion method. Most conversion methods also have additional required arguments, which differ between parameterizations. To get more information about the conversion methods for a specific parameterization, see <project:../advanced_usage/parameterizations> or <project:../qp.rst#-parameterization-types>.
+
+:::{note}
+
+You can only convert to a parameterization that has a conversion method. This means that you cannot convert to any parameterization inherits from `scipy` (i.e. any parameterization that starts with `qp.stats`).
+
+:::
+
+For example, let's say we wanted to convert our `Ensemble` from `interp` to a histogram (`hist`). The [`hist` parameterization](#qp.parameterizations.hist.hist.hist_gen) has two conversion methods, `extract_hist_values` and `extract_hist_samples`. For this example we'll use `extract_hist_values`, which requires the `bins` argument.
 
 ```{doctest}
 
->>> bins = np.linspace(np.min(xvals),np.max(xvals),10)
+>>> bins = np.linspace(0,5,26)
 >>> ens_hist = qp.convert(ens, 'hist', bins)
 >>> ens_hist
-Ensemble(the_class=hist,shape=(2, 9))
+Ensemble(the_class=hist,shape=(3, 25))
 
 ```
 
-Our new `Ensemble` has a different class and a different shape, as now instead of 5 `xvals` we have 9 `bins` (and 10 bin edges).
+Our new `Ensemble` has a different class and a different shape, since now instead of 50 'xvals' we have 25 'bins' (and 26 bin edges). Let's plot them both to compare:
 
-However, converting an `Ensemble` does not guarantee that the converted `Ensemble` will have _exactly_ the same distribution shape. For example, we can compare the value of the PDF at `x=1.2` in the `hist` parameterized `Ensemble` to that of the `interp` parameterized `Ensemble`:
+```{doctest}
+
+>>> plt.bar(ens_h.x_samples(),ens_h[1].objdata["pdfs"], width=ens_h.x_samples()[1]-ens_h.x_samples()[0],
+... alpha=0.5, color = colours[0])
+>>> plt.plot(ens_i.metadata["xvals"],ens_i[1].objdata["yvals"],c=colours[1])
+>>> plt.show()
+
+```
+
+![comparison_plot](../assets/basic_usage_convert_comparison.svg)
+
+Overall they match up quite well. However, converting an `Ensemble` does not guarantee that the converted `Ensemble` will have _exactly_ the same distribution shape. For example, we can compare the value of the PDF at `x=1.2` in the `hist` parameterized `Ensemble` to that of the `interp` parameterized `Ensemble`:
 
 ```{doctest}
 
 >>> ens_hist.pdf(1.2)
-array([[0.70921986],
-       [0.54054054]])
+array([[0.33411264],
+       [0.44635119],
+       [0.1754643 ]])
 
 >>> ens.pdf(1.2)
-array([[0.73239437],
-       [0.53333333]])
+array([[0.10014283],
+       [0.48897684],
+       [0.19207249]])
 
 ```
 
-As you can see, these values are slightly different. In this case, they are close enough, but depending on the scenario there can be larger differences. Typically, ensuring that your `Ensembles` have a higher density of coordinate values, and that your conversions have similarly high density, will aid in producing converted distributions that match their initial distributions more closely.
-
-:::{note}
-
-You can only convert to a parameterization that has a conversion method. This means that any parameterization inherited from `scipy` (i.e. any parameterization that starts with `qp.stats`) cannot be converted to.
-
-:::
+These values are slightly different, even though the distributions match up quite well. Depending on the scenario there can be even more significant differences in distribution shape. Typically, ensuring that your `Ensemble` has a higher density of coordinate values, and that your conversions have similarly high density, will aid in producing converted distributions that match their initial distributions more closely. Make sure to check your converted `Ensemble` looks the way you expect it to.
 
 - objdata, metadata, and ancil tables
 - Show a couple of the more important methods that can be called, link to the ensemble methods page which lists all of them

@@ -23,7 +23,7 @@ Ensemble and Factory
     :undoc-members:
        
 
-Distribution types
+Parameterization types
 ==================
 
 Histogram based
