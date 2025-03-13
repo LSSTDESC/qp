@@ -123,7 +123,7 @@ class hist_gen(Pdf_rows_gen):
             If True, raises warnings if input is not valid PDF data (i.e. if
             data is negative). If False, no warnings are raised. By default True.
         """
-        self._hbins = np.asarray(bins)
+        self._hbins = np.squeeze(bins)  # make sure bins is 1D
         self._nbins = self._hbins.size - 1
         self._hpdfs = reshape_to_pdf_size(np.asarray(pdfs), -1)
 

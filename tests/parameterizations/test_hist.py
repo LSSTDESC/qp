@@ -88,3 +88,12 @@ def test_invalid_input(bins, pdfs, match_string):
 
     with pytest.raises(ValueError, match=match_string) as err:
         ens_h = qp.hist.create_ensemble(bins=bins, pdfs=pdfs, warn=False)
+
+
+def test_hist_bins2d():
+    """Test that passing 2D bin array works"""
+
+    bins = np.array([[0, 0.5, 1, 1.5]])
+    pdfs = np.array([1, 2, 3])
+
+    ens = qp.hist.create_ensemble(bins=bins, pdfs=pdfs)
