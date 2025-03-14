@@ -3,7 +3,7 @@ import warnings
 import numpy as np
 import qp
 
-from tests.helpers.test_data_helper import NPDF, hist_test_data
+from tests.helpers.test_data_helper import NPDF
 from tests.helpers.test_funcs import assert_all_close
 
 

@@ -125,10 +125,6 @@ class mixmod_gen(Pdf_rows_gen):
             raise ValueError(
                 "Invalid input: All standard deviations (stds) must be greater than or equal to 0."
             )
-        if np.any(np.sum(self._weights, axis=1) <= 0):
-            raise ValueError(
-                "Invalid input: The sum of the weights for each distribution must be greater than 0"
-            )
 
         # raise warnings if input data is not finite
         self._warn = warn
