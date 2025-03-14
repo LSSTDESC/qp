@@ -34,21 +34,20 @@ qp
 │   │   ├── __init__.py
 │   │   ├── mixmod # mixed model Gaussian parameterization
 │   │   │   ├── __init__.py
-│   │   │   ├── mixmod_pdf.py
+│   │   │   ├── mixmod.py
 │   │   │   └── mixmod_utils.py
-│   │   └── scipy_dists_import.py # imports scipy dists as parameterizations
-│   ├── base_parameterization.py # base classes for all parameterizations
+│   ├── base.py # base classes for all parameterizations
 │   ├── hist # histogram parameterization
 │   │   ├── __init__.py
-│   │   ├── hist_pdf.py
+│   │   ├── hist.py
 │   │   └── hist_utils.py
 │   ├── interp # interpolated parameterization
 │   │   ├── __init__.py
-│   │   ├── interp_pdf.py
+│   │   ├── interp.py
 │   │   └── interp_utils.py
 │   ├── packed_interp # interpolated parameterization stored as packed integers
 │   │   ├── __init__.py
-│   │   ├── packed_interp_pdf.py
+│   │   ├── packed_interp.py
 │   │   └── packing_utils.py
 │   ├── quant # quantile parameterization
 │   │   ├── __init__.py
@@ -57,24 +56,24 @@ qp
 │   │   ├── dual_spline_average.py # constructor class
 │   │   ├── piecewise_constant.py # constructor class
 │   │   ├── piecewise_linear.py # default constructor class
-│   │   ├── quant_pdf.py
+│   │   ├── quant.py
 │   │   └── quant_utils.py
 │   ├── sparse_interp # sparse parameterization
 │   │   ├── __init__.py
-│   │   ├── sparse_pdf.py
+│   │   ├── sparse.py
 │   │   ├── sparse_rep.py
 │   │   └── sparse_utils.py
 │   └── spline # spline parameterization
 │       ├── __init__.py
-│       ├── spline_pdf.py
+│       ├── spline.py
 │       └── spline_utils.py
 ├── plotting.py # creates plots
 ├── utils # utility functions used throughout qp
 │   ├── __init__.py
-│   ├── array_funcs.py # performing array operations
-│   ├── conversion_funcs.py # utilities for converting between parameterizations and unused functions
-│   ├── dict_funcs.py # performing dictionary operations
-│   ├── interp_funcs.py # interpolation functions
+│   ├── array.py # performing array operations
+│   ├── conversion.py # utilities for converting between parameterizations and unused functions
+│   ├── dictionary.py # performing dictionary operations
+│   ├── interpolation.py # interpolation functions
 └── version.py
 
 ```

@@ -61,7 +61,7 @@ qp : quantile-parametrized PDF approximation
 
 .. toctree:: 
     :hidden:
-    :maxdepth: 4
+    :maxdepth: 3
 
     whatisqp
     
@@ -95,7 +95,7 @@ qp : quantile-parametrized PDF approximation
 
 .. toctree:: 
     :hidden:
-    :maxdepth: 4
+    :maxdepth: 6
     :caption: API Documentation
     
     qp

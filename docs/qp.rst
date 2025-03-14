@@ -10,21 +10,25 @@ The package also contains some `utils` and `metrics` for quantifying the quality
 these approximations.
 
 
-Ensemble and Factory
-====================
+Ensemble
+========
 
-.. automodule:: qp.core.ensemble
+.. autoclass:: qp.Ensemble
     :members:
     :undoc-members:
 
     
+Factory 
+=======
+
 .. automodule:: qp.core.factory
     :members:
     :undoc-members:
        
 
+.. _parameterization-types:
 Parameterization types
-==================
+======================
 
 Histogram based
 ---------------
@@ -33,8 +37,10 @@ Histogram based
     :members: 
     :show-inheritance:
     :undoc-members:
-    :exclude-members: test_data
 
+
+.. automodule:: qp.parameterizations.hist.hist_utils
+    :members:
 		      
 Interpolation of a fixed grid
 -----------------------------
@@ -43,7 +49,7 @@ Interpolation of a fixed grid
     :members:
     :show-inheritance:
     :undoc-members:
-    :exclude-members: test_data
+
 
 		      
 Interpolation of a non-fixed grid
@@ -53,18 +59,6 @@ Interpolation of a non-fixed grid
     :members:
     :show-inheritance:
     :undoc-members:
-    :exclude-members: test_data
-
-
-Spline based
-------------
-
-.. autoclass :: qp.spline_gen
-    :members:
-    :show-inheritance:
-    :undoc-members:       
-    :exclude-members: test_data
-
 
 Quantile based
 --------------
@@ -73,9 +67,8 @@ Quantile based
     :members:
     :show-inheritance:
     :undoc-members:
-    :exclude-members: test_data
 
-		      
+   
 Gaussian mixture model based
 ----------------------------
 
@@ -83,7 +76,14 @@ Gaussian mixture model based
     :members:
     :show-inheritance:
     :undoc-members:
-    :exclude-members: test_data
+
+Spline based
+------------
+
+.. autoclass :: qp.spline_gen
+    :members:
+    :show-inheritance:
+    :undoc-members:       
 
 
               
@@ -139,8 +139,8 @@ Utility functions
 
 
       
-Infrastructure and Core functionality
-=====================================
+Infrastructure
+==============
 
 `qp.pdf_gen`: `scipy.stats` interface
 -------------------------------------

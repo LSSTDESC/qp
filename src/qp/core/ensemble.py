@@ -31,6 +31,7 @@ class Ensemble:
 
     The Ensemble allows you to perform operations on the group of parameterizations as a whole.
     An Ensemble has three main data components, the last of which is optional:
+
     1. The metadata: this contains information about the parameterization, and
         the coordinates of the parameterization.
     2. The object data: this contains the data that is unique to each distribution,

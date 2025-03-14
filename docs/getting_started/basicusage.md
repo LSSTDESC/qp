@@ -27,7 +27,7 @@ There are three available methods to create an `Ensemble` from in-memory data, a
 
 The first method is to use the `create_ensemble` function that exists for each parameterization. This function will take as arguments the required metadata coordinates and data values for the parameterization, as well as the argument `ancil` for any ancillary data.
 
-For example, to create an interpolated parameterization, where the distributions are given by a set of x and y values, you can use [`qp.interp.create_ensemble`](#qp.parameterizations.interp.interp.interp_gen.create_ensemble), where the data is passed as arguments to the function. Below, we do just that. First we have to set up a distribution with x and y values, which we do by using the `scipy.stats.norm` distribution:
+For example, to create an interpolated parameterization, where the distributions are given by a set of x and y values, you can use {py:meth}`qp.interp.create_ensemble()<qp.interp_gen.create_ensemble>`, where the data is passed as arguments to the function. Below, we do just that. First we have to set up a distribution with x and y values, which we do by using the `scipy.stats.norm` distribution:
 
 ```{doctest}
 
@@ -83,20 +83,29 @@ An `Ensemble` can be read from a file as well, if the file is in the appropriate
 
 ```{doctest}
 
->>> import qp
 >>> ens = qp.read("ensemble.hdf5")
 >>> ens
 Ensemble(the_class=interp,shape=(3, 50))
 
 ```
 
-## Working with an Ensemble
+Alternatively, if you have multiple `Ensembles` to read in from an HDF5 file, you can use `qp.read_dict`:
 
-**SOMEWHERE IN THIS SECTION PUT IN HOW TO SELECT ONE OR MORE DISTRIBUTIONS FROM YOUR ENSEMBLE**
+```{doctest}
+
+>>> ens_dict = qp.read_dict("multiple_ensembles.hdf5")
+>>> type(ens_dict)
+dict
+
+```
+
+## Working with an Ensemble
 
 ### Attributes of an Ensemble
 
-Now that we have an `Ensemble`, we can check the data it contains using `ens.metadata` or `ens.objdata`. These show the dictionaries of data that define our `Ensemble`. Let's use these data dictionaries to quickly plot one of our distributions (for more details on plotting distributions see [link]):
+Now that we have an `Ensemble`, we can check the data it contains using `ens.metadata` or `ens.objdata`. These show the dictionaries of data that define our `Ensemble`. To select one or more of the distributions in our `Ensemble`, you can easily slice the `Ensemble` object itself, for example `ens[0]` will yield an `Ensemble` object with just the data for the first distribution.
+
+Let's use these data dictionaries to quickly plot one of our distributions (for more details on plotting distributions see [link]):
 
 ```{doctest}
 
@@ -113,7 +122,7 @@ Now that we have an `Ensemble`, we can check the data it contains using `ens.met
 
 :::{warning}
 
-Note that `objdata` and `metadata` do not store the exact input data. Instead they store what represents the `Ensemble`. For example, if you input a distribution that is not normalized, by default most parameterizations will normalize the data, and they store the normalized data in `objdata`. For a quick example, we create a new `interp` `Ensemble` below:
+Note that `objdata` and `metadata` do not store the exact input data. Instead they store what represents the `Ensemble`. For example, if you input a distribution that is not normalized, by default most parameterizations will normalize the data, and they store the normalized data in `objdata`. For a quick example, we create a new `Ensemble` below:
 
 ```{doctest}
 
@@ -165,7 +174,7 @@ It is possible to convert an `Ensemble` of distributions to a different paramete
 - [`qp.convert`](#qp.core.factory.convert): takes as arguments the `Ensemble` to convert and the name of the parameterization we want to convert to (i.e. 'hist').
 - `ens.convert_to`: takes as an argument the class object for the parameterization we want to convert to (i.e. `qp.hist`)
 
-Both functions also allow you to provide a specific conversion method via the `method` keyword, if the parameterization has more than one conversion method. Most conversion methods also have additional required arguments, which differ between parameterizations. To get more information about the conversion methods for a specific parameterization, see <project:../advanced_usage/parameterizations> or <project:../qp.rst#-parameterization-types>.
+Both functions also allow you to provide a specific conversion method via the `method` keyword, if the parameterization has more than one conversion method. Most conversion methods also have additional required arguments, which differ between parameterizations. To get more information about the conversion methods for a specific parameterization, see <project:../advanced_usage/parameterizations.md>.
 
 :::{note}
 
@@ -173,7 +182,7 @@ You can only convert to a parameterization that has a conversion method. This me
 
 :::
 
-For example, let's say we wanted to convert our `Ensemble` from `interp` to a histogram (`hist`). The [`hist` parameterization](#qp.parameterizations.hist.hist.hist_gen) has two conversion methods, `extract_hist_values` and `extract_hist_samples`. For this example we'll use `extract_hist_values`, which requires the `bins` argument.
+For example, let's say we wanted to convert our `Ensemble` from an interpolation to a histogram (`hist`). The [`hist` parameterization](#qp.parameterizations.hist.hist.hist_gen) has two conversion methods, `extract_hist_values` and `extract_hist_samples`. For this example we'll use `extract_hist_values`, which requires the `bins` argument.
 
 ```{doctest}
 
@@ -197,7 +206,7 @@ Our new `Ensemble` has a different class and a different shape, since now instea
 
 ![comparison_plot](../assets/basic_usage_convert_comparison.svg)
 
-Overall they match up quite well. However, converting an `Ensemble` does not guarantee that the converted `Ensemble` will have _exactly_ the same distribution shape. For example, we can compare the value of the PDF at `x=1.2` in the `hist` parameterized `Ensemble` to that of the `interp` parameterized `Ensemble`:
+Overall they match up quite well. However, converting an `Ensemble` does not guarantee that the converted `Ensemble` will have _exactly_ the same distribution shape. For example, we can compare the value of the PDF at `x=1.2` in the histogram `Ensemble` to that of the interpolated `Ensemble`:
 
 ```{doctest}
 
@@ -213,17 +222,57 @@ array([[0.10014283],
 
 ```
 
-These values are slightly different, even though the distributions match up quite well. Depending on the scenario there can be even more significant differences in distribution shape. Typically, ensuring that your `Ensemble` has a higher density of coordinate values, and that your conversions have similarly high density, will aid in producing converted distributions that match their initial distributions more closely. Make sure to check your converted `Ensemble` looks the way you expect it to.
+These values are slightly different, even though the distributions match up quite well. Depending on the scenario there can be even more significant differences in distribution shape. Typically, ensuring that your `Ensemble` has a higher density of coordinate values, and that the parameters you convert to have similarly high density, will aid in producing converted distributions that match their initial distributions more closely. Make sure to check your converted `Ensemble` looks the way you expect it to.
 
-- objdata, metadata, and ancil tables
-- Show a couple of the more important methods that can be called, link to the ensemble methods page which lists all of them
-- basics of how to convert to different parameterizations (more detail elsewhere)
-  - mention you can't convert to scipy parameterizations
-- calculating metrics (basics, table of existing supported metrics)
+- metrics at all?
 
 ## Writing an Ensemble to file
 
-- Writing out a qp ensemble
-  - format file is normally written to
-  - see data structure for more information about what's written
-  - see cookbook for example
+Once you're done working with your `Ensemble`, you can write it to a `qp` file. The main method to use for this is `ens.write_to`. This uses `ens.build_tables` to turn the three data tables, metadata, objdata and ancil into one `TableDict-like` object (essentially a dictionary of tables), and then uses [`tables_io`](https://tables-io.readthedocs.io/en/latest/#) to write it to one of the compatible file types.
+
+The available file formats are given in the table below. The recommended file type is **HDF5** (suffix `hdf5`), as this requires no conversion to other table types in memory (which may cause slow downs on larger files), and no additional packages that may not be loaded already.
+
+| File format name | File suffix    | Produced by                                                                            |
+| ---------------- | -------------- | -------------------------------------------------------------------------------------- |
+| astropyFits      | `fits`         | [`astropy.io.fits`](https://docs.astropy.org/en/stable/io/fits/index.html)             |
+| astropyHDF5      | `hf5`          | [`astropy`](https://docs.astropy.org/en/stable/io/unified.html#hdf5)                   |
+| **numpyHDF5**    | `hdf5`         | [`h5py`](https://docs.h5py.org/en/stable/quick.html#appendix-creating-a-file)          |
+| numpyFits        | `fit`          | [`astropy.io.fits`](https://docs.astropy.org/en/stable/io/fits/index.html)             |
+| pyarrowHDF5      | `hd5`          | [`pyarrow`](https://arrow.apache.org/docs/python/getstarted.html)                      |
+| pandasHDF5       | `h5`           | [`pandas`](https://pandas.pydata.org/pandas-docs/stable/user_guide/io.html#io-hdf5)    |
+| pandaParquet     | `parq` or `pq` | [`pandas`](https://pandas.pydata.org/pandas-docs/stable/user_guide/10min.html#parquet) |
+| pyarrowParquet   | `parquet`      | [`pyarrow`](https://arrow.apache.org/docs/python/parquet.html)                         |
+
+:::{tip}
+See the [`tables_io` documentation](https://tables-io.readthedocs.io/en/latest/#) for more details about the file formats or the write functionality.
+:::
+
+As an example, let's write our interpolated `Ensemble` to an HDF5 file:
+
+```{doctest}
+
+>>> ens.write_to("interp_ens.hdf5")
+
+```
+
+Now we can make sure that it wrote out properly by checking it's a qp file:
+
+```{doctest}
+
+>>> qp.is_qp_file("interp_ens.hdf5")
+True
+
+```
+
+If we wanted to write both of our `Ensembles` to the same file, we can use method [`qp.write_dict`](#qp.core.factory.write_dict).
+
+```{doctest}
+
+>>> ens_dict = {'ens_i': ens, 'ens_h': ens_h}
+>>> qp.write_dict("ensemble_file.hdf5", ens_dict)
+
+```
+
+This function **only** writes to HDF5 files.
+
+It is also possible to iteratively write a chunk of an `Ensemble` at a time to an HDF5 file. For a more detailed example of this, see (cookbook link).

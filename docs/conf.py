@@ -32,7 +32,7 @@ extensions = [
 ]
 
 myst_enable_extensions = ["colon_fence"]
-myst_heading_anchors = 3
+myst_heading_anchors = 5
 nb_execution_mode = "auto"
 nb_execution_allow_errors = True
 exclude_patterns = ["_build", "_build/jupyter_execute", "_build/html/_downloads"]
@@ -55,6 +55,7 @@ autodoc_type_aliases = {
 html_css_files = [
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
 ]
+html_theme_options = {"style_external_links": True}
 
 project = "qp"
 author = "Alex Malz and Phil Marshall"
