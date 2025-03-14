@@ -7,12 +7,6 @@ from tests.helpers.test_data_helper import NPDF
 from tests.helpers.test_funcs import assert_all_close
 
 
-@pytest.fixture
-def hist_ensemble(hist_test_data):
-    ens_h = qp.hist.create_ensemble(**hist_test_data["hist"]["ctor_data"])
-    return ens_h
-
-
 def test_norm(hist_test_data):
     """Test that the histogram norm method works as expected."""
 

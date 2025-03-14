@@ -190,16 +190,16 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
 
         if np.any(quants < 0) or np.any(quants > 1):
             raise ValueError(
-                f"Invalid quants: One or more of the given quants either negative or >1: {quants}"
+                f"Invalid quants: One or more of the given quants is outside the allowed range (0,1): {quants}"
             )
         if not np.all(np.diff(quants) >= 0):
             raise ValueError(
-                f"Invalid quants: \n There are decreasing values, quants must be given in order from 0 to 1 : {quants}"
+                f"Invalid quants: \n There are decreasing values, quants must be given in order from 0 to 1: {quants}"
             )
         if not np.all(np.diff(locs) >= 0):
             indices = np.where(np.diff(locs) < 0)
             raise ValueError(
-                f"Invalid locs: \n The given data does not produce a 1 to 1 CDF for the distributions at the following indices: {indices}"
+                f"Invalid locs: \n The given data does not produce a one-to-one CDF for the distributions at the following indices: {indices}"
             )
 
     @property
