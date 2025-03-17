@@ -37,8 +37,8 @@ For example, to create an interpolated parameterization, where the distributions
 >>> npdf = 3
 >>> nvals = 50
 >>> xvals = np.linspace(0,5,nvals)
->>> loc = np.expand_dims(np.linspace(0.7, 2.5, npdf),-1)
->>> scale = np.expand_dims(np.linspace(0.2, 1.2, npdf),-1)
+>>> loc = np.expand_dims(np.linspace(1., 2., npdf),-1)
+>>> scale = np.expand_dims(np.linspace(0.2, 1.15, npdf),-1)
 >>> yvals = stats.norm(loc=loc, scale=scale).pdf(xvals)
 >>> ancil = {'ids':[5,8,10]}
 
@@ -159,9 +159,9 @@ One of the main functions of an `Ensemble` is the ability to calculate the proba
 ```{doctest}
 
 >>> ens.pdf(1.2)
-array([[0.10014283],
-       [0.48897684],
-       [0.19207249]])
+array([[1.20683683],
+       [0.53529521],
+       [0.27484342]])
 
 ```
 
@@ -211,14 +211,14 @@ Overall they match up quite well. However, converting an `Ensemble` does not gua
 ```{doctest}
 
 >>> ens_hist.pdf(1.2)
-array([[0.33411264],
-       [0.44635119],
-       [0.1754643 ]])
+array([[0.81902906],
+       [0.55474111],
+       [0.28733705]])
 
 >>> ens.pdf(1.2)
-array([[0.10014283],
-       [0.48897684],
-       [0.19207249]])
+array([[1.20683683],
+       [0.53529521],
+       [0.27484342]])
 
 ```
 

@@ -25,12 +25,36 @@ pip install -e '.[dev]'
 
 ## Running tests
 
-- run coverage tests using ./do_cover.sh
-- what the output should look like
+To run coverage tests, run the following on the command line from the base `qp` directory.
+
+```{doctest}
+
+>>> ./do_cover.sh
+
+```
+
+The output is in the `cover` folder, which will output HTML files that provide an overview of the coverage status. For a PR, the goal is to have 100% coverage.
 
 ## Building Documentation
 
-- how to make documentation locally
+To build the documentation locally, start by making sure that you have the appropriate documentation packages installed:
+
+```{doctest}
+
+>>> pip install -e '.[doc]'
+
+```
+
+Once you have the appropriate packages, run the following lines of code to make the documentation:
+
+```{doctest}
+
+>>> cd docs/
+>>> make html
+
+```
+
+The HTML files will be generated in the `_build` folder inside the `docs` folder.
 
 ## Where to go from here
 
