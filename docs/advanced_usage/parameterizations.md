@@ -1,10 +1,12 @@
 # Parameterizations
 
-This covers details of each of the parameterizations.
+There are currently four main supported parameterizations in `qp`.
 
-- should include plots
+Below are detailed descriptions of each of the main supported parameterizations, including their data structures, converting to those parameterizations, and so on.
 
 ## Histogram
+
+The
 
 - figure of what an example of this parameterization looks like
 - how to make an ensemble of histograms

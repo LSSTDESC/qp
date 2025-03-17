@@ -7,15 +7,24 @@
 - metadata table is dictionary of arrays
   - pdf_name, pdf_version, and coordinates, where in the example below the coordinates key is 'bins'.
 
-| key         | value              |
-| ----------- | ------------------ |
-| pdf_name    | `array(b["hist"])` |
-| pdf_version | `array([0])`       |
-| bins        | `array([1,2,3])`   |
+| key         | value              | dtype      |
+| ----------- | ------------------ | ---------- |
+| pdf_name    | `array(b["hist"])` | np.ndarray |
+| pdf_version | `array([0])`       | np.ndarray |
+| bins        | `array([1,2,3])`   | np.ndarray |
 
 - data table is dictionary of arrays
   - typically data has one 2d array of data values, with a shape (num_pdfs (rows), len(coordinates) (columns))
+
+| key  | value                             |
+| ---- | --------------------------------- |
+| var1 | array with shape (npdfs, ncoords) |
+
 - ancil table is optional, when it exists it is a dictionary of arrays where the first dimension of those arrays = npdf
+
+| key  | value                     |
+| ---- | ------------------------- |
+| col1 | array with shape (npdfs,) |
 
 ## Structure for each parameterization
 
