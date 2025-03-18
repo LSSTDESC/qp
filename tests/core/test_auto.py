@@ -77,16 +77,6 @@ class PDFTestCase(unittest.TestCase):
                 test_data = getattr(t_data, test_data_name)
                 cls.auto_add_class(test_class, test_data, ens_orig)
                 added = True
-            # try:
-            #     test_class.make_test_data()
-            # except AttributeError:
-            #     pass
-            # if hasattr(test_class, "test_data"):
-            #     if not added == True:
-            #         raise ValueError(
-            #             f"{test_class.name} not added with new method but should be added"
-            #         )
-            #     cls.auto_add_class(test_class, test_data, ens_orig)
 
 
 ENS_ORIG = test_funcs.build_ensemble(

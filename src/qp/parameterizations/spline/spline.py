@@ -10,7 +10,7 @@ from numpy.typing import ArrayLike
 
 from .spline_utils import (
     extract_samples,
-    extract_xy_vals,
+    spline_extract_xy_vals,
     build_kdes,
     evaluate_kdes,
     normalize_spline,
@@ -270,7 +270,7 @@ class spline_gen(Pdf_rows_gen):
         cls._add_creation_method(cls.create, None)
         cls._add_creation_method(cls.create_from_xy_vals, "xy")
         cls._add_creation_method(cls.create_from_samples, "samples")
-        cls._add_extraction_method(extract_xy_vals, "xy")
+        cls._add_extraction_method(spline_extract_xy_vals, "xy")
         cls._add_extraction_method(extract_samples, "samples")
 
     @classmethod

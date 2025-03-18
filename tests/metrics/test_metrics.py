@@ -293,14 +293,6 @@ class MetricTestCase(unittest.TestCase):
         rbpe = quick_rbpe(eval_pdf_at_z, integration_bounds)
         assert np.all(rbpe >= -2.0)
 
-    # def test_rbpe_multiple_pdfs(self):
-    #     """Ensure that calculate_rbpe function fails when working with multi-dimensional Ensembles."""
-    #     with self.assertRaises(ValueError) as context:
-    #         _ = calculate_rbpe(self.ens_n_multi, limits=(0.0, 2.5))
-
-    #     error_msg = "quick_rbpe only handles Ensembles with a single PDF"
-    #     self.assertTrue(error_msg in str(context.exception))
-
     def test_calculate_brier(self):
         """Base test case of Ensemble-based brier metric. Ensure that the class wrapped
         version returns the same results."""
@@ -386,17 +378,6 @@ class MetricTestCase(unittest.TestCase):
             _check_ensemble_is_not_nested(self.ens_n)
         except ValueError:
             self.fail("Unexpectedly raised ValueError")
-
-    # def test_check_ensemble_is_not_nested_with_nested_ensemble(self):
-    #     """Test that a ValueError is raised when a nested Ensemble is passed in"""
-    #     # TODO: I think this just shouldn't be an issue now
-    #     with self.assertRaises(ValueError) as context:
-    #         _check_ensemble_is_not_nested(self.ens_n_multi)
-
-    #     error_msg = (
-    #         "Each element in the input Ensemble should be a single distribution."
-    #     )
-    #     self.assertTrue(error_msg in str(context.exception))
 
     def test_check_ensembles_contain_correct_number_of_distributions_base(self):
         """Test base case of two ensembles the same size"""

@@ -219,10 +219,13 @@ def test_irreg_invalid_input(xvals, yvals, match_string):
 
 
 def test_compute_ycumul_error():
+    """Make sure that computing the CDF when it's less than 0 raises the appropriate error, even when norm=False."""
 
     xvals = np.array([0, 0.5, 1])
     yvals = np.array([-0.5, -1, -0.5])
-    ens_i = qp.interp_irregular.create_ensemble(xvals=xvals, yvals=yvals, norm=False)
+    ens_i = qp.interp_irregular.create_ensemble(
+        xvals=xvals, yvals=yvals, norm=False, warn=False
+    )
     with pytest.raises(
         ValueError, match="The integral is <= 0 for distributions at indices"
     ):
