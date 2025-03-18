@@ -24,17 +24,25 @@ While the PDF and the CDF are the main methods used in `qp` to parameterize a di
 
 #### Percent Point Function (PPF)
 
-(plot)
+```{figure} ../assets/primer-PPF-norm.svg
+:alt: Plot of the PPF of a normal distribution
+```
+
 The percent point function (PPF) is the inverse of the CDF. It returns the outcome {math}`x` which has a probability less than or equal to the given probability. This means that the distribution of input values is limited to the range [0,1]. This function can be easily used to return the quantiles of a given distribution.
 
 #### Survival Function (SF)
 
-(plot)
+```{figure} ../assets/primer-SF-norm.svg
+:alt: Plot of the SF of a normal distribution
+```
+
 The survival function (SF) is also known as the complementary cumulative distribution function. It is defined as {math}`SF(x) = 1 - CDF(x)`, so that it returns the probability that an outcome is greater than the given outcome {math}`x`.
 
 #### Inverse Survival Function (ISF)
 
-(plot)
+```{figure} ../assets/primer-ISF-norm.svg
+:alt: Plot of the ISF of a normal distribution
+```
 
 The inverse survival function (ISF) serves the same purpose for the survival function as the PPF does for the CDF. It provides the outcome {math}`x` that has a probability greater than the given probability. The ISF is equivalent to {math}`CDF(1-p)`, where {math}`p` is the given probability.
 
@@ -43,6 +51,8 @@ The inverse survival function (ISF) serves the same purpose for the survival fun
 A mentioned above, a **parameterization** in `qp` refers to how a distribution is represented. For example, in the above sample plots, each of these distributions are represented using the normal distribution, which is an analytic function that has the parameters "mean" and "standard deviation".
 
 For distributions that are represented by data points, there are currently three main supported `qp` parameterizations: **histogram**, **interpolation**, and **quantiles**.
+
+### Parameterizations Outline
 
 - what is a parameterization?
 

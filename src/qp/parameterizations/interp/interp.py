@@ -11,7 +11,6 @@ from .interp_utils import (
     irreg_interp_extract_xy_vals,
     extract_vals_at_x,
     extract_xy_sparse,
-    normalize_interp1d,
 )
 from ...core.factory import add_class
 from ...core.ensemble import Ensemble
@@ -685,9 +684,8 @@ class interp_irregular_gen(Pdf_rows_gen):
         Add this classes mappings to the conversion dictionary
         """
         cls._add_creation_method(cls.create, None)
-        # TODO: figure out which of these should be default and add key for the other
         cls._add_extraction_method(irreg_interp_extract_xy_vals, None)
-        cls._add_extraction_method(extract_xy_sparse, None)
+        cls._add_extraction_method(extract_xy_sparse, "sparse")
 
     @classmethod
     def create_ensemble(

@@ -202,7 +202,7 @@ class Factory(OrderedDict):
 
         # handle if class creation function is given instead of string
         if not isinstance(class_name, str):
-            class_name = class_name.__name__
+            class_name = class_name.name
 
         if class_name not in self:  # pragma: no cover
             raise KeyError("Class named %s is not in factory" % class_name)
