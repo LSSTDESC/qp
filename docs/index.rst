@@ -36,7 +36,7 @@ qp : quantile-parametrized PDF approximation
         description 
 
     .. grid-item-card::
-        :link: qp
+        :link: api_docs/index
         :link-type: doc
         :link-alt: api-documentation
         :text-align: center
@@ -95,10 +95,10 @@ qp : quantile-parametrized PDF approximation
 
 .. toctree:: 
     :hidden:
-    :maxdepth: 6
+    :maxdepth: 5
     :caption: API Documentation
     
-    qp
+    api_docs/index.rst
 
 .. toctree::
     :hidden:
@@ -106,6 +106,7 @@ qp : quantile-parametrized PDF approximation
     :caption: Demo Notebooks
 
     nb/index.rst
+
 
 .. toctree::
     :hidden:
