@@ -19,7 +19,7 @@ def test_norm(mixmod_ensemble):
         mixmod_ensemble.norm()
 
 
-def test_xsamples(mixmod_ensemble):
+def test_x_samples(mixmod_ensemble):
     """Test that x_samples works as expected."""
 
     xsamps = mixmod_ensemble.x_samples()
@@ -35,6 +35,54 @@ def test_xsamples(mixmod_ensemble):
     assert np.max(xsamps) >= xmax
     assert len(xsamps) >= 50
     assert len(xsamps) <= 10000
+
+
+@pytest.mark.parametrize(
+    ("means_big,stds_small, stds_big"),
+    [((-25, 25), (3, 7), (25, 35)), ((-100, 100), (0.05, 0.5), (50, 100))],
+)
+def test_x_samples_with_more_npts(means_big, stds_small, stds_big):
+    """Make sure that the x_smaples method works when npts is used and when npts_max is used."""
+
+    npdf = 5
+
+    mean = np.vstack(
+        [
+            np.linspace(-2, 2, npdf),
+            np.linspace(-10, 10, npdf),
+            np.linspace(*means_big, num=npdf),
+        ]
+    ).T
+    std = np.vstack(
+        [
+            np.linspace(*stds_small, num=npdf),
+            np.linspace(5, 10, npdf),
+            np.linspace(*stds_big, num=npdf),
+        ]
+    ).T
+    weights = np.vstack(
+        [0.7 * np.ones((npdf)), 0.2 * np.ones((npdf)), 0.1 * np.ones((npdf))]
+    ).T
+
+    ens_m = qp.mixmod.create_ensemble(means=mean, stds=std, weights=weights)
+
+    xmin = np.min(ens_m.objdata["means"]) - np.max(ens_m.objdata["stds"])
+    xmax = np.max(ens_m.objdata["means"]) + np.max(ens_m.objdata["stds"])
+
+    dx = np.min(ens_m.objdata["stds"]) / 2.0
+    npts = (xmax - xmin) // dx
+
+    xsamps = ens_m.x_samples()
+
+    # make sure limits of xsamples makes sense
+    assert xmin == np.min(xsamps)
+    assert xmax == np.max(xsamps)
+
+    # make sure the number of points makes sense
+    if npts > 10000:
+        assert len(xsamps) == 10000
+    else:
+        assert len(xsamps) == npts
 
 
 @pytest.mark.parametrize(

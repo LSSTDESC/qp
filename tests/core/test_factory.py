@@ -17,7 +17,23 @@ def test_create(hist_test_data, norm_test_data):
     assert ens_n.metadata["pdf_name"][0].decode() == "norm"
 
 
-def test_qp_read_files_with_check_input():
+@pytest.mark.parametrize(
+    "filename, expected",
+    [("test-quant.h5", True), ("test-quant-nocheckinput.h5", False)],
+)
+def test_qp_read_files_with_check_input(filename, expected, test_data_dir):
     """Make sure that qp read works with Ensembles with the check_input parameter."""
 
-    pass
+    filepath = test_data_dir / filename
+    ens_q = qp.read(filepath)
+
+    assert ens_q.metadata["ensure_extent"] == expected
+
+
+def test_qp_read_with_fmt(test_data_dir):
+    """Make sure that qp read works when given the fmt argument"""
+
+    filepath = test_data_dir / "test.hdf5"
+    ens = qp.read(filepath, fmt="hdf5")
+
+    assert ens.metadata["pdf_name"][0].decode() == "mixmod"

@@ -216,3 +216,14 @@ def test_irreg_invalid_input(xvals, yvals, match_string):
         ens_i = qp.interp_irregular.create_ensemble(
             xvals=xvals, yvals=yvals, warn=False
         )
+
+
+def test_compute_ycumul_error():
+
+    xvals = np.array([0, 0.5, 1])
+    yvals = np.array([-0.5, -1, -0.5])
+    ens_i = qp.interp_irregular.create_ensemble(xvals=xvals, yvals=yvals, norm=False)
+    with pytest.raises(
+        ValueError, match="The integral is <= 0 for distributions at indices"
+    ):
+        value = ens_i.cdf(1.0)

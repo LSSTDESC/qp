@@ -91,3 +91,9 @@ def spline_test_data():
 def hist_ensemble(hist_test_data):
     ens_h = qp.hist.create_ensemble(**hist_test_data["hist"]["ctor_data"])
     return ens_h
+
+
+@pytest.fixture
+def norm_ensemble(norm_test_data):
+    ens_n = qp.stats.norm.create_ensemble(norm_test_data["norm"]["ctor_data"])
+    return ens_n

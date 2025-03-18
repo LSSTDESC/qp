@@ -68,12 +68,19 @@ def test_validate_input(quants, locs, match_string):
         ens_h = qp.quant.create_ensemble(quants=quants, locs=locs, warn=False)
 
 
-def test_quant_constructor():
+@pytest.mark.parametrize(
+    "pdf_constructor_name",
+    [
+        ("piecewise"),
+        ("piecewise".encode()),
+    ],
+)
+def test_quant_constructor(pdf_constructor_name):
     """Make sure that quant parameterization doesn't work if the constructor name
     is not in the given list."""
 
     quants = np.linspace(0, 1, 5)
     locs = np.linspace(-1, 1, 5)
-    pdf_constructor_name = "piecewise"
+
     with pytest.raises(ValueError, match="Unknown interpolator provided:") as exec_info:
         qp.quant.create_ensemble(quants, locs, pdf_constructor_name)

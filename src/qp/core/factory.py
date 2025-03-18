@@ -274,11 +274,11 @@ class Factory(OrderedDict):
             if not check_input == None:
                 # replace with ensure extent
                 data["ensure_extent"] = check_input
-        elif pdf_name == "hist" or pdf_name == "interp":
-            check_input = data.pop("check_input", None)
-            if not check_input == None:
-                # replace with norm
-                data["norm"] = check_input
+        # elif pdf_name == "hist" or pdf_name == "interp":
+        #     check_input = data.pop("check_input", None)
+        #     if not check_input == None:
+        #         # replace with norm
+        #         data["norm"] = check_input
 
         the_class = self[pdf_name]
         reader_convert = the_class.reader_method(pdf_version)

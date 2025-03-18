@@ -211,7 +211,7 @@ class mixmod_gen(Pdf_rows_gen):
         if npts < npts_min:
             return np.linspace(xmin, xmax, npts_min)
         elif npts >= npts_min and npts <= npts_max:
-            return np.linspace(xmin, xmax, npts)
+            return np.linspace(xmin, xmax, int(npts))
         elif npts > npts_max:
             return np.linspace(xmin, xmax, npts_max)
 

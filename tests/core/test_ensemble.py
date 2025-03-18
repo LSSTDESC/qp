@@ -3,6 +3,7 @@ import qp
 import numpy as np
 
 from tests.helpers import test_data_helper as t_data
+from tests.helpers.test_funcs import assert_all_close
 
 
 def test_repr(hist_ensemble):
@@ -93,3 +94,43 @@ def test_ensemble_objdata_dims(hist_test_data):
     with pytest.raises(IndexError) as exec_info:
         single_ens2[2].ancil
     assert exec_info.type is IndexError
+
+
+def test_norm_error_raised(norm_ensemble):
+    """Make sure that the appropriate error is raised when a parameterizatoin doesn't have the normalize method."""
+
+    with pytest.raises(
+        AttributeError,
+        match="This parameterization does not have a normalization function.",
+    ):
+        norm_ensemble.norm()
+
+
+def test_x_samples(norm_ensemble):
+    """Make sure that x_samples does as expected when the parameterization doesn't have an x_samples method."""
+
+    min = 0
+    max = 2
+    n = 100
+    x_samps = norm_ensemble.x_samples(min=min, max=max, n=n)
+
+    assert_all_close(x_samps, np.linspace(min, max, n))
+
+
+def test_functions_one_ensemble(hist_ensemble):
+    """Make sure that the various Ensemble functions return the appropriate dimensions when given 1 distribution."""
+
+    assert np.ndim(hist_ensemble[0].pdf(1.0)) == 0
+    assert np.ndim(hist_ensemble[0].logpdf(1.0)) == 0
+    assert np.ndim(hist_ensemble[0].cdf(1.0)) == 0
+    assert np.ndim(hist_ensemble[0].logcdf(1.0)) == 0
+    assert np.ndim(hist_ensemble[0].ppf(1.0)) == 0
+    assert np.ndim(hist_ensemble[0].sf(1.0)) == 0
+    assert np.ndim(hist_ensemble[0].logsf(1.0)) == 0
+    assert np.ndim(hist_ensemble[0].isf(1.0)) == 0
+    assert np.ndim(hist_ensemble[0].mean()) == 0
+    assert np.ndim(hist_ensemble[0].median()) == 0
+    assert np.ndim(hist_ensemble[0].std()) == 0
+    assert np.ndim(hist_ensemble[0].var()) == 0
+    assert np.ndim(hist_ensemble[0].moment(1)) == 0
+    assert np.ndim(hist_ensemble[0].entropy()) == 0
