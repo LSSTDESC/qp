@@ -53,7 +53,33 @@ Utility functions
 
 .. automodule:: qp.parameterizations.quant.quant_utils
     :members:
+
+
+.. autoclass :: qp.parameterizations.quant.abstract_pdf_constructor.AbstractQuantilePdfConstructor
+    :members:
+    :show-inheritance:
+    :undoc-members:
+
+.. autoclass :: qp.parameterizations.quant.cdf_spline_derivative.CdfSplineDerivative
+    :members:
+    :show-inheritance:
+    :undoc-members:
    
+.. autoclass :: qp.parameterizations.quant.dual_spline_average.DualSplineAverage
+    :members:
+    :show-inheritance:
+    :undoc-members:
+
+.. autoclass :: qp.parameterizations.quant.piecewise_constant.PiecewiseConstant
+    :members:
+    :show-inheritance:
+    :undoc-members:
+
+.. autoclass :: qp.parameterizations.quant.piecewise_linear.PiecewiseLinear
+    :members:
+    :show-inheritance:
+    :undoc-members:
+
 Gaussian mixture model based
 ----------------------------
 
