@@ -1,13 +1,13 @@
 # `qp` Primer
 
-Often data is provided as a single number, or a number with some error bars, but in reality that number could be a variety of possible values with different probabilities. For example, in the plot below we see how a data point with errorbars is actually representing the underlying Gaussian distribution which represents all of the values that the data point could possibly take.
+Often data is provided as a single number, or a number with some error bars, but in reality that number could be a variety of possible values with different probabilities. For example, in the plot below we see how a data point with error bars is actually representing the underlying Gaussian distribution which represents all of the values that the data point could possibly take.
 
 ![point-to-distribution](../assets/primer-probability-dist-vs-point.svg)
 
 While there exist a variety of simple formulae to describe the distribution of outcomes in certain specific situations, for example the Gaussian used above, more complex situations require more complex representations. Real life data is messy and cannot always be reduced down to a simple function. Representing such a complex distribution with "single-point statistics" like the mean, median, and mode, cannot provide the full picture. In fact, these measures can even be misleading.
 
 ![complex-distributions](../assets/primer-complex-distributions.svg)
-
+s
 To represent such complex distributions can then become a hassle, requiring you to keep track of multiple numbers per distribution. `qp` helps you tackle this complexity by providing you with a number of ways to represent large numbers of real-life distributions in a consistent way.
 
 ## Statistics Refresher
