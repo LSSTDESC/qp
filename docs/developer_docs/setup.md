@@ -59,7 +59,3 @@ The HTML files will be generated in the `_build` folder inside the `docs` folder
 ## Where to go from here
 
 Now that you've got a development environment set up, take a look at <project:codestructure.md> to get a sense of how `qp` is structured. Make sure to read over the <project:contribution.md> before getting started, as this covers the intended workflow for developers to follow, in addition to expected naming conventions and so on. If you are looking to work on a new parameterization type, take a look at <project:parameterizationcontribution.md> for detailed instructions and a code template to get you started. Finally, if you're looking for ideas where to start, take a look at <project:techdebt.md> or the open [issues](https://github.com/LSSTDESC/qp/issues).
-
-- quick introduction to how qp is structured
-  - include a diagram of the code flow here
-- introduction to the rest of the section (i.e. link to guidelines, mention development priorities a place to look for things to work on, etc)

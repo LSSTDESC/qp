@@ -219,7 +219,7 @@ class rv_frozen_func(rv_continuous_frozen):
         """
         cdf_vals = reshape_to_pdf_size(self.cdf(bins), -1)
         bin_vals = cdf_vals[:, 1:] - cdf_vals[:, 0:-1]
-        return (bins, reshape_to_pdf_shape(bin_vals, self._shape[:-1], bins.size - 1))
+        return (bins, reshape_to_pdf_shape(bin_vals, self._npdf, bins.size - 1))
 
 
 class rv_frozen_rows(rv_continuous_frozen):
@@ -273,7 +273,7 @@ class rv_frozen_rows(rv_continuous_frozen):
         """
         cdf_vals = reshape_to_pdf_size(self.cdf(bins), -1)
         bin_vals = cdf_vals[:, 1:] - cdf_vals[:, 0:-1]
-        return (bins, reshape_to_pdf_shape(bin_vals, self._shape[:-1], bins.size - 1))
+        return (bins, reshape_to_pdf_shape(bin_vals, self._npdf, bins.size - 1))
 
 
 class Pdf_rows_gen(rv_continuous, Pdf_gen):
@@ -430,6 +430,8 @@ class Pdf_gen_wrap(Pdf_gen):
         for key, value in kwds.items():
             if np.ndim(value) >= 1:
                 new_kwds[key] = reshape_to_pdf_shape(value, np.size(value), 1)
+            elif np.ndim(value) == 0:
+                new_kwds[key] = np.expand_dims(value, -1)
             else:
                 new_kwds[key] = value
 

@@ -134,3 +134,9 @@ def test_functions_one_ensemble(hist_ensemble):
     assert np.ndim(hist_ensemble[0].var()) == 0
     assert np.ndim(hist_ensemble[0].moment(1)) == 0
     assert np.ndim(hist_ensemble[0].entropy()) == 0
+
+
+def test_histogramize_error():
+
+    ens_n = qp.stats.norm.create_ensemble({"loc": 2.5, "scale": 1.0})
+    ens_h = qp.convert(ens_n, "hist", bins=np.linspace(-1, 6, 50))

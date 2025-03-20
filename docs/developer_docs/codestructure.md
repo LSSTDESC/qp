@@ -1,5 +1,14 @@
 # Code Structure
 
+`qp` is split up into two main sections: `core` for the main functionality and `parameterizations` for the classes and supporting functions for each parameterization type.
+
+- core
+  - `Ensemble`: the primary code object
+  - `factory.py`: supporting functionality, wraps `scipy.stats` distributions as `qp` parameterizations, stores dictionary of all available parameterizations
+- parameterizations
+  - `base.py`: contains the base classes that all parameterization classes must inherit from
+  - parameterization classes: contain the attributes and functions specific to that parameterization
+
 ![qp-code-structure](../assets/qp-model-diagram.svg)
 
 - diagram of how the code is structured
