@@ -6,3 +6,8 @@
   - need `xvals`
 - details of how this parameterization works
 - any known issues
+
+## Data structure
+
+- coordinates are 'xvals'
+- data is 'yvals'

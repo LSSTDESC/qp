@@ -31,27 +31,7 @@
 - data schema is slightly different for each parameterization
 - for all parameterizations that are not continuous, mostly just the 'coordinates' in the metadata table and the corresponding 'data values' in the data table have different names
 - the format of the data itself within those places is roughly the same
-
-### Histogram parameterization
-
-- coordinates are 'bins'
-- data is 'pdfs', number of columns is len(bins) - 1 instead of length of bins
-
-### Quantile parameterization
-
-- coordinates are 'quants'
-- data is 'locs'
-- metadata table includes pdf_constructor_name and check_input
-
-### Mixed model parameterization
-
-data table
-weights, stds, means
-
-### Interpolated parameterization
-
-- coordinates are 'xvals'
-- data is 'yvals'
+- see parameterization pages for details
 
 ## File structure
 

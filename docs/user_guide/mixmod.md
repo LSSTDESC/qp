@@ -1,5 +1,15 @@
 # Mixed Model
 
+## Introduction
+
+## Data structure
+
+- data table: weights, stds, means
+
+## Conversion
+
+## Implementation notes
+
 - figure of what an example of this parameterization looks like
 - how to make an ensemble
 - how to convert an ensemble to this parameterization

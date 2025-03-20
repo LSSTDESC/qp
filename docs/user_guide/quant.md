@@ -7,3 +7,9 @@
 - details of how this parameterization works
   - pdf constructors
 - any known issues
+
+## Data structure
+
+- coordinates are 'quants'
+- data is 'locs'
+- metadata table includes pdf_constructor_name and check_input

@@ -82,11 +82,21 @@ A **parameterization** in `qp` refers to how a distribution is represented. For 
 
 In the case of a normal distribution, the analytic parameterization is clearly superior, as it contains the most accurate information in the least number of parameters. However, for the more complex, real-life distributions, the other parameterizations can provide more accuracy than attempting to fit to an analytic function. There is a trade-off for all of these parameterizations in that the more parameters, the more accurately your distribution will be represented, but the slower those distributions will be to work with and store.
 
-For a more detailed discussion of the workings of each of the main parameterizations and their pros and cons, you can see their documentation pages:
+For a more detailed discussion of the workings of each of the main parameterizations and their pros and cons, see their documentation pages:
 
-- [**Gaussian mixture model**]()
-- [**Histogram**]()
-- [**Interpolation**]()
-- [**Quantiles**]()
+- [**Gaussian mixture model**](mixmod.md)
+- [**Histogram**](hist.md)
+- [**Interpolation**](interp.md)
+- [**Quantiles**](quant.md)
 
-`qp` also supports all of the analytic `scipy.stats` distributions. For more information on the available distributions and their parameters, see the [`scipy.stats` documentation]().
+`qp` also supports all of the continuous `scipy.stats` distributions. For more information on the available distributions and their parameters, see the [`scipy.stats` documentation](https://docs.scipy.org/doc/scipy/reference/stats.html).
+
+````{warning}
+
+There exist additional parameterizations, however they are in various stages of completeness and are not guaranteed to work with all of the functions described in the documentation. For more information about these parameterizations see the API docs:
+
+```{eval-rst}
+:ref:`parameterization-types`
+```
+
+````
