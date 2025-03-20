@@ -12,7 +12,7 @@ qp : quantile-parametrized PDF approximation
     :padding: 0
 
     .. grid-item-card::
-        :link: getting_started/quickstart
+        :link: user_guide/quickstart
         :link-type: doc 
         :link-alt: quickstart
         :text-align: center 
@@ -70,16 +70,20 @@ qp : quantile-parametrized PDF approximation
     :maxdepth: 4
     :caption: User Guide
 
-    getting_started/quickstart
-    getting_started/installation
-    getting_started/qpprimer
-    getting_started/basicusage
-    getting_started/methods
-    getting_started/troubleshooting
+    user_guide/quickstart
+    user_guide/installation
+    user_guide/qpprimer
+    user_guide/interp
+    user_guide/hist
+    user_guide/quant
+    user_guide/mixmod
+    user_guide/basicusage
+    user_guide/methods
+    user_guide/datastructure
+    user_guide/cookbook
+    user_guide/troubleshooting
 
-    advanced_usage/datastructure
-    advanced_usage/cookbook
-    advanced_usage/parameterizations
+    
 
 .. toctree::
     :hidden:

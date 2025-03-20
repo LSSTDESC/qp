@@ -14,7 +14,7 @@ An `Ensemble` object has three main data components, which exist as dictionaries
   - Contains any additional parameters pertaining to the data, where there is one value for each distribution. The arrays for each parameter must have the same first dimension as the number of distributions.
 
 ```{note}
-The exact configuration of the data within these dictionaries differs for each parameterization, so see <project:../advanced_usage/datastructure.md> for more details.
+The exact configuration of the data within these dictionaries differs for each parameterization, so see <project:datastructure.md> for more details.
 ```
 
 ## Creating an Ensemble
@@ -174,7 +174,7 @@ It is possible to convert an `Ensemble` of distributions to a different paramete
 - [`qp.convert`](#qp.core.factory.convert): takes as arguments the `Ensemble` to convert and the name of the parameterization we want to convert to (i.e. 'hist').
 - `ens.convert_to`: takes as an argument the class object for the parameterization we want to convert to (i.e. `qp.hist`)
 
-Both functions also allow you to provide a specific conversion method via the `method` keyword, if the parameterization has more than one conversion method. Most conversion methods also have additional required arguments, which differ between parameterizations. To get more information about the conversion methods for a specific parameterization, see <project:../advanced_usage/parameterizations.md>.
+Both functions also allow you to provide a specific conversion method via the `method` keyword, if the parameterization has more than one conversion method. Most conversion methods also have additional required arguments, which differ between parameterizations. To get more information about the conversion methods for a specific parameterization, see the documentation page for that parameterization.
 
 :::{note}
 
