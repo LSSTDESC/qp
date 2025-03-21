@@ -11,7 +11,7 @@ An `Ensemble` object has three main data components, which exist as dictionaries
 - **Data values** (`Ensemble.objdata`)
   - Contains the data values for each distribution in the `Ensemble`, where each row in a value's array corresponds to a distribution.
 - _(optional)_ **Ancillary data table** (`Ensemble.ancil`)
-  - Contains any additional parameters pertaining to the data, where there is one value for each distribution. The arrays for each parameter must have the same first dimension as the number of distributions.
+  - Contains any additional parameters pertaining to the data, where there is one value or row per distribution. The arrays for each parameter must have the same first dimension as the number of distributions.
 
 ```{note}
 The exact configuration of the data within these dictionaries differs for each parameterization, so see <project:datastructure.md> for more details.

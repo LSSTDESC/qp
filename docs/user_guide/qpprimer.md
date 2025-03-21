@@ -91,12 +91,8 @@ For a more detailed discussion of the workings of each of the main parameterizat
 
 `qp` also supports all of the continuous `scipy.stats` distributions. For more information on the available distributions and their parameters, see the [`scipy.stats` documentation](https://docs.scipy.org/doc/scipy/reference/stats.html).
 
-````{warning}
+```{note}
 
-There exist additional parameterizations, however they are in various stages of completeness and are not guaranteed to work with all of the functions described in the documentation. For more information about these parameterizations see the API docs:
+There exist additional parameterizations, however they are in various stages of completeness and are not guaranteed to work with all of the functions described in the documentation. For more information about these parameterizations see the parameterization [API documentation](#qp.parameterizations.hist.hist.hist_gen).
 
-```{eval-rst}
-:ref:`parameterization-types`
 ```
-
-````

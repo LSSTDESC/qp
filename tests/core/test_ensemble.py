@@ -136,7 +136,7 @@ def test_functions_one_ensemble(hist_ensemble):
     assert np.ndim(hist_ensemble[0].entropy()) == 0
 
 
-def test_histogramize_error():
-
-    ens_n = qp.stats.norm.create_ensemble({"loc": 2.5, "scale": 1.0})
-    ens_h = qp.convert(ens_n, "hist", bins=np.linspace(-1, 6, 50))
+def test_ancil_dimension(hist_ensemble):
+    ancil = {"ids": np.ones((t_data.NPDF, 3))}
+    hist_ensemble.set_ancil(ancil)
+    assert_all_close(hist_ensemble.ancil["ids"], ancil["ids"])

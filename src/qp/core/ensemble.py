@@ -424,8 +424,9 @@ class Ensemble:
 
     def set_ancil(self, ancil: Mapping):
         """Set the ancillary data dictionary. The arrays in this dictionary must have
-        one value for each of the distributions, which means that the length of these
-        arrays must be the same as the number of distributions in the ensemble.
+        one row for each of the distributions, which means that the length of these
+        arrays (or the first dimension) must be the same as the number of distributions
+        in the ensemble.
 
         Parameters
         ----------
