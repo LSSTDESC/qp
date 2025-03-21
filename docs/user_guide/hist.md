@@ -21,8 +21,6 @@ A histogram represents a distribution with two sets of data: a set of bin edges,
 
 ```
 
-- how to make an ensemble of histograms
-
 ## Data structure
 
 ### Metadata table
@@ -51,7 +49,7 @@ There are two methods that can be used to convert an `Ensemble` to this paramete
 
 **Required argument:** `bins`, where `bins` are the bin edges of the histogram.
 
-The default method works by taking the current distribution, getting the CDF values at each of the bin edges, and then taking the difference across the bins to get the value for each bin.
+The default method works by taking the current distribution, getting the CDF values at each of the bin edges, and then taking the difference across the bins to get the value for each bin. This method works well if the CDF of the input distribution is well defined, but if it has been interpolated across widely spaced values the second method may give better results.
 
 ### Samples method
 
