@@ -72,8 +72,7 @@ Plotting a pdf from an interpolated distribution:
 
 ## What's in an Ensemble file
 
-- notebook
-- include an example of how to create such a file outside of qp and have it read by qp (or link to it in cookbook)
+<project:../nb/ensemble-file.ipynb>
 
 - creating a qp ensemble from a scipy stats distribution (or instead include this as a parameterization)
 - sampling from a pdf
