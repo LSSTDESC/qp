@@ -160,17 +160,18 @@ def evaluate_hist_x_multi_y_flat(x, row, bins, vals, derivs=None):  # pragma: no
 
 
 def extract_hist_values(in_dist, **kwargs):
-    """Convert using a set of values sampled from the PDF
+    """Convert to a histogram by using the CDF values at the given bin edges
+    to calculate the value within each bin.
 
     Parameters
     ----------
     in_dist : `qp.Ensemble`
-        Input distributions
+        Input Ensemble of distributions.
 
     Other Parameters
     ----------------
     bins : `np.array`
-        Histogram bin edges
+        The bin edges for the new histogram.
 
     Returns
     -------
@@ -185,19 +186,20 @@ def extract_hist_values(in_dist, **kwargs):
 
 
 def extract_hist_samples(in_dist, **kwargs):
-    """Convert using a set of values samples that are then histogramed
+    """Convert to a histogram by sampling the input distributions, then turning
+    those samples into a histogram with given bin edges.
 
     Parameters
     ----------
     in_dist : `qp.Ensemble`
-        Input distributions
+        Input Ensemble of distributions
 
     Other Parameters
     ----------------
     bins : `np.array`
-        Histogram bin edges
+        The bin edges for the new histogram
     size : `int`
-        Number of samples to generate
+        Number of samples to generate, by default 1000
 
     Returns
     -------

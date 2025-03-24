@@ -17,6 +17,8 @@ An `Ensemble` object has three main data components, which exist as dictionaries
 The exact configuration of the data within these dictionaries differs for each parameterization, so see <project:datastructure.md> for more details.
 ```
 
+(creating-ensembles)=
+
 ## Creating an Ensemble
 
 There are three available methods to create an `Ensemble` from in-memory data, as well as the ability to read in an `Ensemble` from file.

@@ -107,3 +107,35 @@ Utility functions
 
 .. automodule:: qp.parameterizations.spline.spline_utils
     :members:
+
+
+Packed Interpolation
+--------------------
+
+.. autoclass :: qp.packed_interp
+    :members:
+    :show-inheritance:
+    :undoc-members:
+
+Utility functions
+^^^^^^^^^^^^^^^^^
+
+.. automodule:: qp.parameterizations.packed_interp.packing_utils
+    :members:
+
+Sparse Interpolation
+--------------------
+
+.. autoclass :: qp.sparse
+    :members:
+    :show-inheritance:
+    :undoc-members:
+
+Utility functions
+^^^^^^^^^^^^^^^^^
+
+.. automodule:: qp.parameterizations.sparse_interp.sparse_rep
+    :members:
+
+.. automodule:: qp.parameterizations.sparse_interp.sparse_utils
+    :members:
