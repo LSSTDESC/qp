@@ -1,5 +1,7 @@
 # Cookbook
 
+This page provides some more in-depth examples of commonly performed routines with `qp`. The longer ones are given as `jupyter notebooks`, which can be viewed here or downloaded from <project:../nb/index.md>.
+
 ## Creating an `Ensemble` from a `qp.stats` distribution
 
 The `create_ensemble` function for the `qp.stats` distributions is slightly different than for the other parameterizations, as it requires a dictionary of the data to create the Ensemble, instead of being able to take individual arguments. See below for an example using the `qp.stats.norm` distribution:
@@ -17,7 +19,7 @@ Ensemble(the_class=norm, shape=(3,1))
 
 ```
 
-We provided an array of 3 values each for 'loc' and 'scale' and ended up with an `Ensemble` with 3 distributions. This is due to the automatic reshaping of the input arrays that is done to ensure that the resulting `Ensemble` looks and behaves like the other `Ensembles`. `qp.stats` distributions are analytic, unlike most of the other parameterizations, and therefore only require one value for each of the parameters per distribution. This means that you can input the data either as 1D arrays as above, or as 2D arrays as shown below, and both result in the same outcome.
+We provided an array of 3 values each for 'loc' and 'scale' and ended up with an `Ensemble` with 3 distributions. This is due to the automatic reshaping of the input arrays that `qp` does to ensure that the resulting `Ensemble` looks and behaves like the other `Ensemble` types. `qp.stats` distributions are analytic, unlike most of the other parameterizations, so they only require one value for each of the parameters per distribution. This means that you can input the data either as 1D arrays (above), or as 2D arrays (below), and both result in the same outcome.
 
 ```{doctest}
 
@@ -72,7 +74,7 @@ Plotting a pdf from an interpolated distribution:
 
 ## What's in an Ensemble file
 
-<project:../nb/ensemble-file.ipynb>
+See the full tutorial here: <project:../nb/ensemble-file.md>
 
 - creating a qp ensemble from a scipy stats distribution (or instead include this as a parameterization)
 - sampling from a pdf

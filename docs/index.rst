@@ -73,14 +73,14 @@ qp : quantile-parametrized PDF approximation
     user_guide/quickstart
     user_guide/installation
     user_guide/qpprimer
+    user_guide/basicusage
+    user_guide/datastructure
     user_guide/interp
     user_guide/hist
     user_guide/quant
     user_guide/mixmod
-    user_guide/basicusage
-    user_guide/methods
-    user_guide/datastructure
     user_guide/cookbook
+    user_guide/methods
     user_guide/troubleshooting
 
     

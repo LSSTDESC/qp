@@ -47,11 +47,11 @@ An example **ancillary** table:
 
 ## File structure
 
-When a single `Ensemble` is stored in a file, it is essentially stored as a `TableDict-like` object (a dictionary of tables as defined in `tables_io`). The keys for the three tables are `meta`, `data`, and `ancil`. It is written out using `tables_io`, so the supported file types are the same as for [`tables_io`](). In an HDF5 file, these are the `groupnames`, and each of these tables is stored in a `group`, where each column is a `dataset`. For a FITS file, each table is stored as a separate HDU. For parquet files, each table is stored as a different file, where the file name is 'filename`key`.pq'.
+When a single `Ensemble` is stored in a file, it is essentially stored as a `TableDict-like` object (a dictionary of tables as defined in `tables_io`). The keys for the three tables are `meta`, `data`, and `ancil`. It is written out using `tables_io`, so the supported file types are the same as for [`tables_io`](https://tables-io.readthedocs.io/en/latest/quickstart.html#supported-file-formats). In an HDF5 file, these are the `groupnames`, and each of these tables is stored in a `group`, where each column is a `dataset`. For a FITS file, each table is stored as a separate HDU. For parquet files, each table is stored as a different file, where the file name is 'filename`key`.pq'.
 
 ```{note}
 
-To get a better sense of what's in an `Ensemble` file, check out the example notebook [here]().
+To get a better sense of what's in an `Ensemble` file, check out the example notebook <project:../nb/ensemble-file.ipynb>.
 
 ```
 

@@ -10,7 +10,7 @@ cd qp
 pip install .
 ```
 
-For more information on alternate installation methods see <project:installation>.
+For more information on alternate installation methods see <project:installation.md>.
 
 ## How to use
 
