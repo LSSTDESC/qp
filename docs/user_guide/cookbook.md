@@ -34,6 +34,28 @@ Ensemble(the_class=norm, shape=(3,1))
 
 ## Sampling (?)
 
+## Appending an `Ensemble` to another `Ensemble` of the same type
+
+If you have created multiple `Ensembles` with the same parameterization, it can be easier to handle if they are all part of one `Ensemble`. You can use the [`append()`](#qp.Ensemble.append) method of the `Ensemble` to add an `Ensemble` of the same type to an existing `Ensemble`. This can only be done if the metadata for both `Ensembles` are the same. In particular, the coordinates (i.e. "xvals" or "bins") must be the same for both `Ensembles`. For example, to append two histogram `Ensembles` together:
+
+```{doctest}
+
+>>> import qp
+>>> bins =
+>>> pdfs =
+>>> ens_1 = qp.hist.create_ensemble(bins=bins,pdfs=pdfs)
+>>> ens_1
+Ensemble()
+>>> pdfs_2 =
+>>> ens_2 = qp.hist.create_ensemble(bins=bins,pdfs=pdfs_2)
+>>> ens_2
+Ensemble()
+>>> ens.append(ens_2)
+>>> ens
+Ensemble()
+
+```
+
 ## Conversion example
 
 - notebook
@@ -46,10 +68,10 @@ Ensemble(the_class=norm, shape=(3,1))
 
 - notebook?
 
-A useful function for quickly plotting a distribution or distributions in your `Ensemble` is the `x_samples` function. This is meant to provide a series of x values that should cover the range of data given in all distributions in the `Ensemble`, which can be provided to the appropriate function (`pdf` for most parameterizations, `cdf` for quantiles) to get the relevant y values.
+A useful method for quickly plotting a distribution or distributions in your `Ensemble` is the `x_samples()` method. This is meant to provide a series of x values that should cover the range of data given in all distributions in the `Ensemble`, which can be provided to the appropriate method (`pdf()` for most parameterizations, `cdf()` for quantiles) to get the relevant y values.
 
 :::{note}
-This function only does this for the four main supported parameterizations. For the rest it returns just a default set of points between a given minimum and maximum value.
+This method only does this for the four main supported parameterizations. For the rest it returns just a default set of points between a given minimum and maximum value.
 :::
 
 Plotting a CDF from a quantile distribution:
@@ -60,15 +82,29 @@ Plotting a CDF from a quantile distribution:
 >>> import matplotlib.pyplot as plt
 >>> quants =
 >>> locs =
+>>> ens_q = qp.quant.create_ensemble(quants=quants, locs=locs)
+>>> ens_q.x_samples()
+
+>>> plt.plot(ens_q.x_samples(), ens_q[0].cdf(ens_q.x_samples))
+>>> plt.xlabel("x")
+>>> plt.ylabel("CDF(x)")
+>>> plt.show()
 
 ```
 
-Plotting a pdf from an interpolated distribution:
+Plotting a PDF from an interpolated distribution:
 
 ```{doctest}
 
 >>> xvals =
 >>> yvals =
+>>> ens_i = qp.interp.create_ensemble(xvals=xvals, yvals=yvals)
+>>> ens_i.x_samples()
+
+>>> plt.plot(ens_i.x_samples(), ens_i[0].pdf(ens_i.x_samples()))
+>>> plt.xlabel("x")
+>>> plt.ylabel("P(x)")
+>>> plt.show()
 
 ```
 

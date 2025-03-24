@@ -36,7 +36,7 @@ The data structure of an `Ensemble` of histograms follows the basic structure la
 
 ### Metadata table
 
-The **metadata** table is a dictionary of arrays. For a histogram it contains the additional coordinates key "bins", which gives the **bin edges**, not the bin centers. The length of this array should be `nbins`+1, where `nbins` is the number of bins. An example is shown below:
+The **metadata** table is a dictionary of arrays. For a histogram it contains the additional coordinates key "bins", which gives the **bin edges**, not the bin centers. The shape of this array should be (`nbins`+1,), where `nbins` is the number of bins (or the number of bin edges - 1). An example is shown below:
 
 | key           | value              |
 | ------------- | ------------------ |
@@ -46,7 +46,7 @@ The **metadata** table is a dictionary of arrays. For a histogram it contains th
 
 ### Data table
 
-The **data** table is a dictionary with one key, the "pdfs", which give the values within each bin. The shape of the array is (`npdf`, `nbins`), where `nbins` is the number of bins, or the number of bin edges - 1. An example for an `Ensemble` with 3 distributions:
+The **data** table is a dictionary with one key, the "pdfs", which give the values within each bin. The shape of the array is (`npdf`, `nbins`), where `nbins` is the number of bins. An example for an `Ensemble` with 3 distributions:
 
 | key    | value                              |
 | ------ | ---------------------------------- |

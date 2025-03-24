@@ -950,8 +950,10 @@ class Ensemble:
         random_state: Union[None, int, np.random.Generator] = None,
     ) -> ArrayLike:
         """
-        Generate samples from the distributions in this ensemble. The returned samples
-        are of shape (npdf, size), where size is the number of samples per distribution.
+        Generate samples from the distributions in this ensemble.
+
+        The returned samples are of shape (npdf, size), where size is the number
+        of samples per distribution.
 
         Parameters
         ----------
@@ -975,6 +977,7 @@ class Ensemble:
         >>> ens_h.rvs(size=2)
         array([[3.12956247, 3.72090937],
                [4.96783836, 3.24016123]])
+
 
         """
         return self._frozen.rvs(

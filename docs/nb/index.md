@@ -21,6 +21,6 @@ Practical Example <practical_example>
 Iterator Example <iterator_demo>
 Metrics Example <metrics_examples>
 Mixed Model Examples <mixmod_examples>
-Quantile Parameterization <quantile_parameterization_demo.ipynb>
+Quantile Parameterization <quantile_demo.ipynb>
 Demo Notebook <demo>
 ```
