@@ -62,7 +62,7 @@ Ensemble()
 
 ## Iteration example
 
-- notebook?
+See the full tutorial here: <project:../nb/iterator_demo.md>
 
 ## Plotting using x_samples
 
