@@ -200,8 +200,8 @@ Our new `Ensemble` has a different class and a different shape, since now instea
 
 ```{doctest}
 
->>> plt.bar(ens_h.x_samples(),ens_h[1].objdata["pdfs"], width=ens_h.x_samples()[1]-ens_h.x_samples()[0],
-... alpha=0.5, color = colours[0])
+>>> plt.bar(ens_h.x_samples(),ens_h[1].objdata["pdfs"],
+... width=ens_h.x_samples()[1]-ens_h.x_samples()[0], alpha=0.5, color = colours[0])
 >>> plt.plot(ens_i.metadata["xvals"],ens_i[1].objdata["yvals"],c=colours[1])
 >>> plt.show()
 

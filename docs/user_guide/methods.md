@@ -1,8 +1,29 @@
-# Ensemble methods
+# Ensemble Methods
 
-## General use methods
+## Base Methods
 
-These are the methods that are used to handle `Ensembles`, from creating them to writing them to file.
+These are some base methods used to perform operations on one or more `Ensembles`.
+
+| Method                                                                             | Description                                                                    |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| [`qp.create` {octicon}`link;0.9em`](#qp.core.factory.Factory.create)               | Creates an `Ensemble` from a dictionary of data.                               |
+| [`qp.from_tables` {octicon}`link;0.9em`](#qp.core.factory.Factory.from_tables)     | Creates an `Ensemble` from a dictionary of tables.                             |
+| [`qp.read_metadata` {octicon}`link;0.9em`](#qp.core.factory.Factory.read_metadata) | Reads just an `Ensemble`'s metadata from a file.                               |
+| [`qp.is_qp_file` {octicon}`link;0.9em`](#qp.core.factory.Factory.is_qp_file)       | Tests if a file is a `qp` file containing a metadata table.                    |
+| [`qp.read` {octicon}`link;0.9em`](#qp.core.factory.Factory.read)                   | Reads an `Ensemble` from a file.                                               |
+| [`qp.data_length` {octicon}`link;0.9em`](#qp.core.factory.Factory.data_length)     | Gets the number of distributions present in the file.                          |
+| [`qp.iterator` {octicon}`link;0.9em`](#qp.core.factory.Factory.iterator)           | Iterates through an `Ensemble` in a given file.                                |
+| [`qp.convert` {octicon}`link;0.9em`](#qp.core.factory.Factory.convert)             | Converts an `Ensemble` to a different parameterization.                        |
+| [`qp.concatenate` {octicon}`link;0.9em`](#qp.core.factory.Factory.concatenate)     | Concatenates a list of `Ensembles` with the same metadata into one `Ensemble`. |
+| [`qp.write_dict` {octicon}`link;0.9em`](#qp.core.factory.Factory.write_dict)       | Writes a dictionary of `Ensembles` to an HDF5 file.                            |
+| [`qp.read_dict` {octicon}`link;0.9em`](#qp.core.factory.Factory.read_dict)         | Reads a dictionary of `Ensembles` from an HDF5 file.                           |
+| [`qp.add_class` {octicon}`link;0.9em`](#qp.core.factory.Factory.add_class)         | Adds a new parameterization class to the dictionary of classes.                |
+
+## Methods of the `Ensemble` class
+
+### General use methods
+
+These are more methods that are used to perform operations on `Ensembles`, from creating them to writing them to file. These are methods of an existing `Ensemble`, and so you would write `ens.set_ancil(ancil)`, for example.
 
 | Method &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | Description                                                                                                                   |
 | --------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
@@ -21,7 +42,7 @@ These are the methods that are used to handle `Ensembles`, from creating them to
 | [`plot` {octicon}`link;0.9em`](#qp.Ensemble.plot)                                                               | Plots the selected distribution as a curve and returns the figure axes.                                                       |
 | [`plot_native` {octicon}`link;0.9em`](#qp.Ensemble.plot_native)                                                 | Plots the selected distribution as the default for that parameterization and returns the figure axes.                         |
 
-## Statistics Methods
+### Statistics Methods
 
 Many of these methods are inherited from [`scipy.stats.rv_continuous`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.rv_continuous.html#scipy.stats.rv_continuous). Some of these methods, such as `pdf()`, inherit from the SciPy method, but may have parameterization-specific functions to calculate the values. Others are inherited more directly.
 

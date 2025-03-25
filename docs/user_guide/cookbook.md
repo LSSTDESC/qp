@@ -19,7 +19,9 @@ Ensemble(the_class=norm, shape=(3,1))
 
 ```
 
-We provided an array of 3 values each for 'loc' and 'scale' and ended up with an `Ensemble` with 3 distributions. This is due to the automatic reshaping of the input arrays that `qp` does to ensure that the resulting `Ensemble` looks and behaves like the other `Ensemble` types. `qp.stats` distributions are analytic, unlike most of the other parameterizations, so they only require one value for each of the parameters per distribution. This means that you can input the data either as 1D arrays (above), or as 2D arrays (below), and both result in the same outcome.
+We provided an array of 3 values each for 'loc' and 'scale' and ended up with an `Ensemble` with 3 distributions. This is due to the automatic reshaping of the input arrays that `qp` does to ensure that the resulting `Ensemble` looks and behaves like the other `Ensemble` types.
+
+`qp.stats` distributions only require one value per parameter per distribution. So you can input the data either as 1D arrays with shape (n,) (above), or as 2D arrays with shape (n,1) (below), and both result in the same outcome. Additionally, any arrays input with other shapes will be reshaped to 2D arrays of shape (n,1), where n is the number of elements in the input array.
 
 ```{doctest}
 
@@ -32,29 +34,53 @@ Ensemble(the_class=norm, shape=(3,1))
 
 ```
 
-## Sampling (?)
+## Sampling
 
-## Appending an `Ensemble` to another `Ensemble` of the same type
-
-If you have created multiple `Ensembles` with the same parameterization, it can be easier to handle if they are all part of one `Ensemble`. You can use the [`append()`](#qp.Ensemble.append) method of the `Ensemble` to add an `Ensemble` of the same type to an existing `Ensemble`. This can only be done if the metadata for both `Ensembles` are the same. In particular, the coordinates (i.e. "xvals" or "bins") must be the same for both `Ensembles`. For example, to append two histogram `Ensembles` together:
+Sampling from an `Ensemble` can be done easily using the `rvs()` method. Below is an example sampling from our example `Ensemble` from the <project:basicusage.md> documentation, which has 3 distributions:
 
 ```{doctest}
 
 >>> import qp
->>> bins =
->>> pdfs =
->>> ens_1 = qp.hist.create_ensemble(bins=bins,pdfs=pdfs)
->>> ens_1
-Ensemble()
->>> pdfs_2 =
->>> ens_2 = qp.hist.create_ensemble(bins=bins,pdfs=pdfs_2)
->>> ens_2
-Ensemble()
->>> ens.append(ens_2)
->>> ens
-Ensemble()
+>>> import numpy as np
+>>> samples = ens.rvs(10)
+>>> samples.shape
+(3, 10)
 
 ```
+
+You now have `samples`, which contains a set of x values that are drawn from each distribution in the `Ensemble`.
+
+## Appending an `Ensemble` to another `Ensemble` of the same type
+
+If you have created multiple `Ensembles` with the same parameterization, it can be easier to handle if they are all part of one `Ensemble`. You can use the [`append()`](#qp.Ensemble.append) method of the `Ensemble` to add an `Ensemble` of the same type to an existing `Ensemble`. This can only be done if the metadata for both `Ensembles` are the same. In particular, the coordinates (i.e. "xvals" or "bins") must be the same for both `Ensembles`. For example, to append two histogram `Ensembles` together, first we create the two separate `Ensembles`:
+
+```{doctest}
+
+>>> import qp
+>>> import numpy as np
+>>> bins = np.linspace(0,2,9)
+>>> pdfs = np.array([1,2,4,3,3.5,2,1, 0.5])
+>>> ens_1 = qp.hist.create_ensemble(bins=bins,pdfs=pdfs)
+>>> ens_1
+Ensemble(the_class=hist,shape=(1,8))
+>>> pdfs_2 = np.array([0.5,0.9,1.5,3,4.5,3,1.5,0.5])
+>>> ens_2 = qp.hist.create_ensemble(bins=bins,pdfs=pdfs_2)
+>>> ens_2
+Ensemble(the_class=hist,shape=(1,8))
+
+```
+
+Now that we have our `Ensembles`, we can append the second one to the first using `append()`:
+
+```{doctest}
+
+>>> ens.append(ens_2)
+>>> ens
+Ensemble(the_class=hist,shape=(2,8))
+
+```
+
+Our new `Ensemble` now contains both distributions.
 
 ## Conversion example
 
@@ -96,8 +122,10 @@ As an example, let's take a look at the output of x_samples and plot a CDF from 
 ```{doctest}
 
 >>> import qp
+>>> import numpy as np
 >>> import matplotlib.pyplot as plt
->>> ens_n2 = qp.stats.norm.create_ensemble({"loc": np.array([2.5, 3.5]), "scale": np.array([1.,0.85])})
+>>> ens_n2 = qp.stats.norm.create_ensemble({"loc": np.array([2.5, 3.5]),
+... "scale": np.array([1.,0.85])})
 >>> quants = np.linspace(0.001,0.999,10)
 >>> ens_q = qp.convert(ens_n, "quant", quants=quants)
 >>> ens_q.x_samples()
@@ -128,16 +156,14 @@ You can see that for the quantile parameterization, `x_samples()` returns a set 
 
 ![quant-plot](../assets/cookbook-plotting-quant.svg)
 
-For an example of plotting an interpolated `Ensemble`, see [the Basic Usage documentation](#plotting-interp-ensemble).
+For an example of plotting an interpolated `Ensemble`, see [the Basic Usage documentation](basicusage.md#conversion).
 
 ## What's in an Ensemble file
 
-See the full tutorial here: <project:../nb/ensemble-file.md>
+See the full tutorial here: <project:../nb/ensemble_file.md>
 
-- creating a qp ensemble from a scipy stats distribution (or instead include this as a parameterization)
 - sampling from a pdf
-- adding an ensemble to another ensemble (both a one-distribution ensemble and one with more distributions)
+
 - a conversion example, where we convert from one parameterization to another and then back again and compare the output (jupyter notebook)
-- iterating over a qp ensemble
-- plotting a specific pdf from an ensemble
+
 - read in ensemble file in h5py, look at what's in the file, and then read it in qp

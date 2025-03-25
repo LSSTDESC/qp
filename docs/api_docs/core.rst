@@ -15,7 +15,7 @@ Ensemble
 Factory 
 =======
 
-.. automodule:: qp.core.factory
+.. autoclass:: qp.core.factory.Factory
     :members:
     :undoc-members:
        

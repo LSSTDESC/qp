@@ -75,7 +75,7 @@ class Factory(OrderedDict):
             """Creates an Ensemble of distribution(s) in the given parameterization.
 
             Input data format:
-            data = {'arg1': values, 'arg2': values ...} where `arg1`, `arg2`... are the arguments for the parameterization.
+            data = {'arg1': values, 'arg2': values ...} where 'arg1', 'arg2'... are the arguments for the parameterization.
             The length of the values should be the number of distributions being created in the Ensemble, with a minimum value of 1.
 
 
@@ -213,12 +213,12 @@ class Factory(OrderedDict):
     def from_tables(
         self, tables: Mapping, decode: bool = False, ext: str = None
     ) -> Ensemble:
-        """Build this Ensemble from a dictionary of tables, where the metadata has key ``meta``,
-        and the data has key ``data``. If there is an ancillary data table, it should have the
-        key ``ancil``.
+        """Build this Ensemble from a dictionary of tables, where the metadata has key 'meta',
+        and the data has key 'data'. If there is an ancillary data table, it should have the
+        key 'ancil'.
 
-        The function will create the ensemble with the parameterization given in the ``meta``
-        table, and will use any other information in the ``meta`` table necessary to figure out
+        The function will create the ensemble with the parameterization given in the 'meta'
+        table, and will use any other information in the 'meta' table necessary to figure out
         how to construct the ensemble (i.e. construction method).
 
         Parameters
@@ -289,7 +289,7 @@ class Factory(OrderedDict):
 
     def read_metadata(self, filename: str) -> Mapping:
         """Read an ensemble's metadata from a file, without loading the full data.
-        The file must have multiple tables, one of which is called ``meta``.
+        The file must have multiple tables, one of which is called 'meta'.
 
         Parameters
         ----------
@@ -315,8 +315,8 @@ class Factory(OrderedDict):
         return tables["meta"]
 
     def is_qp_file(self, filename: str) -> bool:
-        """Test if a file is a qp file. Must have at least a table called ``meta`` in the
-        file, and that ``meta`` table must have a property ``pdf_name``.
+        """Test if a file is a `qp` file. Must have at least a table called 'meta' in the
+        file, and that 'meta' table must have a property 'pdf_name'.
 
         Parameters
         ----------
@@ -347,7 +347,7 @@ class Factory(OrderedDict):
         return False
 
     def read(self, filename: str, fmt: Optional[str] = None) -> Ensemble:
-        """Read this ensemble from a file. The file must be a qp file.
+        """Read this ensemble from a file. The file must be a `qp` file.
 
         The function will create the ensemble with the parameterization given in the metadata
         table, and will use any other information in the metadata table necessary to figure out
@@ -398,8 +398,8 @@ class Factory(OrderedDict):
         return self.from_tables(tables, decode=True, ext=file_fmt)
 
     def data_length(self, filename: str) -> int:
-        """Get the size of data in a file. The file must be a qp file, which means
-        it must have a ``meta`` table and a ``data`` table.
+        """Get the size of data in a file. The file must be a `qp` file, which means
+        it must contain an Ensemble with a metadata table.
 
         Parameters
         ----------
@@ -430,7 +430,7 @@ class Factory(OrderedDict):
         rank: int = 0,
         parallel_size: int = 1,
     ) -> Iterator[int, int, Ensemble]:
-        """Iterates through a given qp file and yields a chunk of the ensemble data at a time.
+        """Iterates through a given Ensemble file and yields a chunk of the ensemble data at a time.
         This means that the returned Ensemble contains the distributions from the returned start
         index to the returned stop index. If there is an ancillary data table, the Ensemble will
         also contain any ancillary data for those distributions.
@@ -567,7 +567,7 @@ class Factory(OrderedDict):
     @staticmethod
     def concatenate(ensembles: list[Ensemble]) -> Ensemble:
         """Concatenate a list of Ensembles into one Ensemble. The
-        Ensembles must be of the same parameterization.
+        Ensembles must be of the same parameterization and have the same metadata.
 
         Parameters
         ----------
@@ -629,7 +629,7 @@ class Factory(OrderedDict):
 
     @staticmethod
     def write_dict(filename: str, ensemble_dict: Mapping[str, Ensemble], **kwargs):
-        """Writes out a dictionary of qp Ensembles to an ``HDF5`` file. Each Ensemble
+        """Writes out a dictionary of Ensembles to an HDF5 file. Each Ensemble
         in the dictionary will be written to a group, and within each Ensemble group there
         will be subgroups for the metadata, data, and (optional) ancillary data tables.
 
@@ -672,7 +672,7 @@ class Factory(OrderedDict):
 
     @staticmethod
     def read_dict(filename: str) -> Mapping[str, Ensemble]:
-        """Reads in one or more Ensembles from an ``HDF5`` file to a dictionary of Ensembles.
+        """Reads in one or more Ensembles from an HDF5 file to a dictionary of Ensembles.
         The file should contain one top-level group per ensemble. Each Ensemble group should
         have subgroups that are the metadata, data, and (optional) ancillary data tables.
 

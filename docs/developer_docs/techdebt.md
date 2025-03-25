@@ -12,4 +12,5 @@
 
 ## Functionality that is partially supported
 
+- The `mixmod` parameterization is not completely functional. `rvs()` method does not work on `mixmod`, since `mixmod`'s `ppf()` method does not allow `CASE_2D` inputs
 - `add_reader_method` is an option, and is supported by `qp.read` in `factory.py`, but other functions that read data in (like `iterator` or `read_dict`) do not call this reader method, so if someone were to use the `reader_method` it would likely result in bugs at the moment. Support needs to be added to the other read functions, or the `reader_method` option could be removed.
