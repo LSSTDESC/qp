@@ -195,6 +195,7 @@ Ensemble(the_class=hist,shape=(3, 25))
 
 ```
 
+{#plotting-interp-ensemble}
 Our new `Ensemble` has a different class and a different shape, since now instead of 50 'xvals' we have 25 'bins' (and 26 bin edges). Let's plot them both to compare:
 
 ```{doctest}
@@ -225,8 +226,6 @@ array([[1.20683683],
 ```
 
 These values are slightly different, even though the distributions match up quite well. Depending on the scenario there can be even more significant differences in distribution shape. Typically, ensuring that your `Ensemble` has a higher density of coordinate values, and that the parameters you convert to have similarly high density, will aid in producing converted distributions that match their initial distributions more closely. Make sure to check your converted `Ensemble` looks the way you expect it to.
-
-- metrics at all?
 
 ## Writing an Ensemble to file
 

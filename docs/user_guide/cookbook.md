@@ -62,51 +62,73 @@ Ensemble()
 
 ## Iteration example
 
-See the full tutorial here: <project:../nb/iterator_demo.md>
+See the tutorial for general use of the iterator function here: <project:../nb/iterator_demo.md>
+
+The iterator function can also be used in parallel, allowing for each process to iterate through some of the distributions. Let's test this out on a sample file of `Ensembles`. First we need to know how many distributions are in the file:
+
+```{doctest}
+
+>>> import qp
+>>> filename = "../assets/test.hdf5"
+>>> qp.data_length(filename)
+100
+
+```
+
+We can now decide on a chunk size. Let's say that we're using 4 cores, so each core will have access to 25 distributions. So let's go with a chunk size of 5, so the data is easily divisible by the chunk size. Now we can write our little program to iterate through the data:
+
+```{literalinclude} ../assets/mpi-example.py
+
+```
+
+This will have each process iterate through chunks of 5 distributions at a time. However, each process will not necessarily iterate through a contiguous chunk of distributions. Try running the program to see what happens for yourself, using the command `mpiexec -n 4 python mpi-example.py`. You may have to edit the file path.
 
 ## Plotting using x_samples
-
-- notebook?
 
 A useful method for quickly plotting a distribution or distributions in your `Ensemble` is the `x_samples()` method. This is meant to provide a series of x values that should cover the range of data given in all distributions in the `Ensemble`, which can be provided to the appropriate method (`pdf()` for most parameterizations, `cdf()` for quantiles) to get the relevant y values.
 
 :::{note}
-This method only does this for the four main supported parameterizations. For the rest it returns just a default set of points between a given minimum and maximum value.
+The `x_samples()` method only works properly for the four main supported parameterizations. For the rest it returns just a default set of points between a given minimum and maximum value.
 :::
 
-Plotting a CDF from a quantile distribution:
+As an example, let's take a look at the output of x_samples and plot a CDF from a quantile distribution:
 
 ```{doctest}
 
 >>> import qp
 >>> import matplotlib.pyplot as plt
->>> quants =
->>> locs =
->>> ens_q = qp.quant.create_ensemble(quants=quants, locs=locs)
+>>> ens_n2 = qp.stats.norm.create_ensemble({"loc": np.array([2.5, 3.5]), "scale": np.array([1.,0.85])})
+>>> quants = np.linspace(0.001,0.999,10)
+>>> ens_q = qp.convert(ens_n, "quant", quants=quants)
 >>> ens_q.x_samples()
+array([-0.6071293 , -0.30039342,  0.00634245,  0.31307832,  0.61981419,
+        0.92655007,  1.23328594,  1.54002181,  1.84675769,  2.15349356,
+        2.46022943,  2.7669653 ,  3.07370118,  3.38043705,  3.68717292,
+        3.99390879,  4.30064467,  4.60738054,  4.91411641,  5.22085228,
+        5.52758816,  5.83432403,  6.1410599 ])
+>>> ens_q.objdata["locs]
+array([[-0.6071293 , -0.59023231,  1.28345605,  1.73715452,  2.07018928,
+         2.36057094,  2.63942906,  2.92981072,  3.26284548,  3.71654395,
+         5.59023231,  5.6071293 ],
+       [ 0.8589401 ,  0.87330254,  2.46593764,  2.85158134,  3.13466089,
+         3.3814853 ,  3.6185147 ,  3.86533911,  4.14841866,  4.53406236,
+         6.12669746,  6.1410599 ]])
 
->>> plt.plot(ens_q.x_samples(), ens_q[0].cdf(ens_q.x_samples))
+```
+
+You can see that for the quantile parameterization, `x_samples()` returns a set of values that are evenly spaced between the minimum and the maximum value of the "locs" for all distributions in the `Ensemble`. Now let's use this array to plot the first distribution in the `Ensemble`:
+
+```{doctest}
+>>> plt.plot(ens_q.x_samples(), ens_q[0].cdf(ens_q.x_samples()))
 >>> plt.xlabel("x")
 >>> plt.ylabel("CDF(x)")
 >>> plt.show()
 
 ```
 
-Plotting a PDF from an interpolated distribution:
+![quant-plot](../assets/cookbook-plotting-quant.svg)
 
-```{doctest}
-
->>> xvals =
->>> yvals =
->>> ens_i = qp.interp.create_ensemble(xvals=xvals, yvals=yvals)
->>> ens_i.x_samples()
-
->>> plt.plot(ens_i.x_samples(), ens_i[0].pdf(ens_i.x_samples()))
->>> plt.xlabel("x")
->>> plt.ylabel("P(x)")
->>> plt.show()
-
-```
+For an example of plotting an interpolated `Ensemble`, see [the Basic Usage documentation](#plotting-interp-ensemble).
 
 ## What's in an Ensemble file
 

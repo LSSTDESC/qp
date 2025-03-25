@@ -267,7 +267,16 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
 
     def x_samples(self):
         """Return a set of x values that can be used to plot all the CDFs."""
-        return np.linspace(np.min(self._locs), np.max(self._locs), self._shape[-1])
+
+        # get the range and median distance between points
+        min_dx = np.median(np.diff(self._locs))
+        min_val = np.min(self._locs)
+        max_val = np.max(self._locs)
+
+        # get the number of points (make sure it's less than some huge number)
+        npts = (max_val - min_val) // min_dx
+        npts = np.min([int(npts), 10000])
+        return np.linspace(min_val, max_val, npts)
 
     def _pdf(self, x, *args):
         # We're not requiring that the output be normalized!
