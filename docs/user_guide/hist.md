@@ -2,8 +2,8 @@
 
 Histograms are defined with:
 
-- Bin Edges (`bins`): $n+1$ ordered values represented the edges of $n$ bins
-- Values (`pdfs`): $n$ values corresponding to the probability associated with each bin
+- **Bin edges** (`bins`): $n+1$ ordered values represented the edges of $n$ bins
+- **Values** (`pdfs`): $n$ values corresponding to the probability associated with each bin
 
 ![hist-example](../assets/hist-example.svg)
 

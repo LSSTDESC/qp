@@ -146,7 +146,7 @@ Note that the 'yvals' in `objdata` are different than the ones given to the `cre
 An `Ensemble` also has other attributes that provide information about it. Some useful ones are:
 
 - `ens.npdf`: the number of distributions in the `Ensemble`
-- `ens.shape`: (`npdf`, `ncoord`), where `ncoord` is the number of values that each distribution has, usually corresponding in some way to the number of coordinates in the metadata. For our sample `Ensemble`, `ncoord` would be the number of 'xvals'.
+- `ens.shape`: (`npdf`, `nvals`), where `nvals` is the number of values that each distribution has, usually corresponding in some way to the number of coordinates in the metadata. For our sample `Ensemble`, `nvals` would be the number of 'xvals'.
 
 A complete list of attributes can be found in the [API class documentation](#qp.core.ensemble.Ensemble).
 

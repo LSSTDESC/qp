@@ -63,9 +63,9 @@ Now that you have created an `Ensemble`, you can get a sense of what's in it by 
 
 You can also use the available [`Ensemble` methods](methods.md). These allow you to manipulate your `Ensemble`, or get statistical information about your `Ensembles`. For example, here are some useful methods:
 
-- [`ens.pdf()`](#qp.Ensemble.pdf)
-- [`ens.cdf()`](#qp.Ensemble.cdf)
-- [`]
+- [`ens.pdf()`](#qp.Ensemble.pdf): Get the PDF values at specified x values
+- [`ens.cdf()`](#qp.Ensemble.cdf): Get the CDF values at specified x values
+- [`ens.convert()`](#qp.Ensemble.covert): Convert the `Ensemble` to a different parameterization
 
 ### Saving an `Ensemble` for later
 
@@ -81,9 +81,12 @@ The available file formats can be found in <project:basicusage.md#writing-an-ens
 
 ## Where to find more information
 
-For a statistical refresher that covers a lot of the concepts used in this documentation, see <project:qpprimer.md>. For more detailed information on how to use `qp`, see <project:basicusage.md>. <project:cookbook.md> has more detailed examples for specific use cases, such as conversion and plotting. If you're looking for more information on one of the supported parameterizations, you can take a look at their documentation pages:
-
-- <project:hist.md>
-- <project:quant.md>
-- <project:interp.md>
-- <project:mixmod.md>
+- <project:qpprimer.md> covers some of the statistics basics necessary for using `qp`
+- <project:basicusage.md> provides more detailed explanations of topics discussed here
+- <project:cookbook.md> contains detailed examples for specific use cases, i.e. conversion, plotting
+- More details on specific parameterizations:
+  - <project:hist.md>
+  - <project:quant.md>
+  - <project:interp.md>
+  - <project:mixmod.md>
+- <project:troubleshooting.md> for common pitfalls and errors
