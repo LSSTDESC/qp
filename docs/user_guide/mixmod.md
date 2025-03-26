@@ -8,6 +8,8 @@
 
 ## Conversion
 
+- uses sampling and then the scikitlearn GuassianMixture to fit the sampled distributions
+
 ## Implementation notes
 
 - currently the Gaussian mixed model parameterization `rvs()` method is not functional. This also means that converting Gaussian mixed model `Ensembles` to other types of `Ensembles` via conversion methods that use sampling will not work.

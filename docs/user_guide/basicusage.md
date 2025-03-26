@@ -107,7 +107,7 @@ dict
 
 Now that we have an `Ensemble`, we can check the data it contains using `ens.metadata` or `ens.objdata`. These show the dictionaries of data that define our `Ensemble`. To select one or more of the distributions in our `Ensemble`, you can easily slice the `Ensemble` object itself, for example `ens[0]` will yield an `Ensemble` object with just the data for the first distribution.
 
-Let's use these data dictionaries to quickly plot one of our distributions (for more details on plotting distributions see [link]):
+Let's use these data dictionaries to quickly plot one of our distributions (for more details on plotting distributions see <project:cookbook.md#plotting-using-x_samples>):
 
 ```{doctest}
 
