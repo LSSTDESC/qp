@@ -14,7 +14,7 @@ For more information on alternate installation methods see <project:installation
 
 ## How to use `qp`
 
-The main object of `qp` is the [`qp.Ensemble`](#qp.core.ensemble.Ensemble). This is an object that stores one or more distributions of the same type, or parameterization. It has three main data dictionaries:
+The main object of `qp` is the [`qp.Ensemble`](#qp.Ensemble). This is an object that stores one or more distributions of the same type, or parameterization. It has three main data dictionaries:
 
 - **Metadata** (`Ensemble.metadata`)
   - tells you the shared parameters, including the parameterization type
@@ -27,7 +27,7 @@ The printed representation of an `Ensemble` tells you the parameterization type 
 
 ### Creating an Ensemble
 
-To create an `Ensemble` of any number of distributions, you can use the [`create_ensemble`](#qp.Ensemble.create_ensemble) method of any of the existing parameterizations. For example, to create an `Ensemble` of interpolations:
+To create an `Ensemble` of any number of distributions, you can use the `create_ensemble` method of any of the existing parameterizations. For example, to create an `Ensemble` of interpolations:
 
 ```{doctest}
 
@@ -41,7 +41,7 @@ To create an `Ensemble` of any number of distributions, you can use the [`create
 Ensemble(the_class=interp,shape=(2,5))
 ```
 
-You can also read an `Ensemble` from a file using [`qp.read`](#qp.core.factory.read). For example:
+You can also read an `Ensemble` from a file using [`qp.read`](#qp.core.factory.Factory.read). For example:
 
 ```{doctest}
 

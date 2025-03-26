@@ -58,7 +58,7 @@ Ensemble(the_class=interp,shape=(3, 50))
 
 Note that the representation of the `Ensemble` tells us what the parameterization class is, and the shape of the `Ensemble` (also available via `ens.shape`). The first value is the number of distributions and the second value is the number of data values per distribution, which in this case is equal to the number of 'xvals'.
 
-Another method is to use [`qp.create`](#qp.core.factory.create), which allows you to create an `Ensemble` of any parameterization type. The function requires the parameterization type as an argument, as well as a dictionary of the necessary data, and an optional `ancil` argument for any ancillary data. So to create an `Ensemble` using the same data above, you would use the following commands:
+Another method is to use [`qp.create`](#qp.core.factory.Factory.create), which allows you to create an `Ensemble` of any parameterization type. The function requires the parameterization type as an argument, as well as a dictionary of the necessary data, and an optional `ancil` argument for any ancillary data. So to create an `Ensemble` using the same data above, you would use the following commands:
 
 ```{doctest}
 
@@ -69,7 +69,7 @@ Ensemble(the_class=interp,shape=(3, 50))
 
 ```
 
-Finally, you can instantiate the `Ensemble` class directly by using [`qp.Ensemble`](#qp.core.ensemble.Ensemble), which takes the same arguments as the [`qp.create`](#qp.core.factory.create) method, except the parameterization argument must be the actual class, instead of the string name of the class:
+Finally, you can instantiate the `Ensemble` class directly by using [`qp.Ensemble`](#qp.core.ensemble.Ensemble), which takes the same arguments as the [`qp.create`](#qp.core.factory.Factory.create) method, except the parameterization argument must be the actual class, instead of the string name of the class:
 
 ```{doctest}
 
@@ -81,7 +81,7 @@ Ensemble(the_class=interp,shape=(3, 50))
 
 ### Reading an Ensemble from file
 
-An `Ensemble` can be read from a file as well, if the file is in the appropriate format. To check if a file can be read in as an `Ensemble`, you can use [`qp.is_qp_file(filename)`](#qp.core.factory.is_qp_file), which returns `True` if it is in a compatible format. Once you have a file that can be read it, you can use [`qp.read`](#qp.core.factory.read) as shown in the example below:
+An `Ensemble` can be read from a file as well, if the file is in the appropriate format. To check if a file can be read in as an `Ensemble`, you can use [`qp.is_qp_file(filename)`](#qp.core.factory.Factory.is_qp_file), which returns `True` if it is in a compatible format. Once you have a file that can be read it, you can use [`qp.read`](#qp.core.factory.Factory.read) as shown in the example below:
 
 ```{doctest}
 
@@ -173,7 +173,7 @@ This returns an array of shape (`npdf`, `nxval`), where `nxval` is the number of
 
 It is possible to convert an `Ensemble` of distributions to a different parameterization. There are two main methods for conversion:
 
-- [`qp.convert`](#qp.core.factory.convert): takes as arguments the `Ensemble` to convert and the name of the parameterization we want to convert to (i.e. 'hist').
+- [`qp.convert`](#qp.core.factory.Factory.convert): takes as arguments the `Ensemble` to convert and the name of the parameterization we want to convert to (i.e. 'hist').
 - `ens.convert_to`: takes as an argument the class object for the parameterization we want to convert to (i.e. `qp.hist`)
 
 Both functions also allow you to provide a specific conversion method via the `method` keyword, if the parameterization has more than one conversion method. Most conversion methods also have additional required arguments, which differ between parameterizations. To get more information about the conversion methods for a specific parameterization, see the documentation page for that parameterization.
@@ -265,7 +265,7 @@ True
 
 ```
 
-If we wanted to write both of our `Ensembles` to the same file, we can use method [`qp.write_dict`](#qp.core.factory.write_dict).
+If we wanted to write both of our `Ensembles` to the same file, we can use method [`qp.write_dict`](#qp.core.factory.Factory.write_dict).
 
 ```{doctest}
 

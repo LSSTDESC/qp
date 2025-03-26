@@ -1,12 +1,23 @@
 # Troubleshooting
 
-- This is the place to go when you're not sure what's going wrong
-- also goes over a few common mistakes
+This page covers a range of common issues and errors that you may encounter.
 
-Topics to include:
+## Scipy update
 
-- normalization
-- making sure your coordinates cover the range of data for all the distributions in your ensemble
-- scipy updates (major updates in scipy can cause errors)
-- any known issues/things to watch for
-  - quant parameterization's interpolation can go negative
+This code inherits a number of classes from `scipy.stats`, specifically `rv_continous` and `rv_frozen`. If you are suddenly experiencing issues where the code was previously working, it may be that SciPy has an update that has broken something.
+
+## Conversion
+
+- Converting from Gaussian mixed models to another parameterization using any method that requires sampling (i.e. "samples" method for histogram) is currently not functional, use the default method instead
+- Converting to Gaussian mixed models relies on sampling and fitting the input distribution and does not provide consistent outputs.
+- Converting to a quantile parameterization from norm or Gaussian mixed model parameterizations, your quantiles cannot include 0 or 1. Give values as close to 0 and 1 as possible to avoid infinite values
+
+## Parameterizations
+
+- Quantile
+
+  - PDF interpolation can go into negative values unnecessarily with "dual spline average" and "cdf spline average" constructors.
+
+- Gaussian mixed models
+
+  - `rvs()` method is not currently functional
