@@ -84,7 +84,7 @@ Our new `Ensemble` now contains both distributions.
 
 ## Conversion example
 
-- notebook
+See the full example in this notebook: <project:../nb/conversion_example.md>.
 
 ## Iteration example
 
@@ -160,10 +160,4 @@ For an example of plotting an interpolated `Ensemble`, see [the Basic Usage docu
 
 ## What's in an Ensemble file
 
-See the full tutorial here: <project:../nb/ensemble_file.md>
-
-- sampling from a pdf
-
-- a conversion example, where we convert from one parameterization to another and then back again and compare the output (jupyter notebook)
-
-- read in ensemble file in h5py, look at what's in the file, and then read it in qp
+See the full example in this notebook: <project:../nb/ensemble_file.md>
