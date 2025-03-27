@@ -50,4 +50,8 @@ Then you can use the same installation command as above to install `qp`:
 pip install .
 ```
 
+```{tip}
+If you're still having difficulties installing, try using the `environment.yml` file to set up your conda environment (as described in <project:../developer_docs/setup.md>), and then installing `qp` normally as described here.
+```
+
 ## Installation on NERSC

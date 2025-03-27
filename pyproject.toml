@@ -1,6 +1,6 @@
 [project]
 name = "qp-prob"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = {file = "LICENSE"}
 readme = "README.md"
 authors = [
@@ -21,6 +21,10 @@ dependencies = [
     "scipy",
     "tables-io@git+https://github.com/sidratresearch/tables_io@dev-working",
     "deprecated",
+    "pytdigest",
+    "matplotlib",
+    "scikit-learn",
+    "astropy>=6.1",
 ]
 
 # On a mac, install optional dependencies with `pip install '.[dev]'` (include the single quotes)
@@ -46,25 +50,14 @@ dev = [
     "coverage",
     "ipyparallel",
 ]
-full = [
-    "tables-io[full]",
-    "pytdigest",
-    "matplotlib",
-    "scikit-learn",
-]
-all = [
-    "tables-io[full]",
-    "pytdigest",
-    "matplotlib",
-    "scikit-learn",
-]
+
 docs = [
     "nbsphinx",
     "sphinx>6.3.1", # Used to automatically generate documentation
     "sphinx_rtd_theme", # Used to render documentation
     "sphinx-autoapi", # Used to automatically generate api documentation 
     "sphinx_design",
-    "myst-nb",
+    "myst-nb", # used to render notebooks in markdown and write documentation in markdown
     "sphinx-copybutton"   
 ]
 
