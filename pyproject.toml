@@ -18,12 +18,12 @@ dynamic = ["version"]
 
 dependencies = [
     "numpy>=2.0",
-    "scipy",
+    "scipy>=1.13",
     "tables-io@git+https://github.com/sidratresearch/tables_io@dev-working",
     "deprecated",
     "pytdigest",
     "matplotlib",
-    "scikit-learn",
+    "scikit-learn>=1.0",
     "astropy>=6.1",
 ]
 
@@ -32,7 +32,7 @@ dependencies = [
 dev = [
     "tables-io@git+https://github.com/sidratresearch/tables_io@dev-working",
     "matplotlib",
-    "scikit-learn",
+    "scikit-learn>=1.0",
     "pytest",
     "pytest-cov", # Used to report total code coverage
     "pre-commit", # Used to run checks before finalizing a git commit

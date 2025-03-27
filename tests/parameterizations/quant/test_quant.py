@@ -15,11 +15,13 @@ def test_xsamples(quant_ensemble):
 
     xsamps = quant_ensemble.x_samples()
 
-    x_compare = np.linspace(
-        np.min(quant_ensemble.objdata["locs"]),
-        np.max(quant_ensemble.objdata["locs"]),
-        quant_ensemble.shape[-1],
-    )
+    xmin = np.min(quant_ensemble.objdata["locs"])
+    xmax = np.max(quant_ensemble.objdata["locs"])
+    min_dx = np.median(np.diff(quant_ensemble.objdata["locs"]))
+
+    npts = (xmax - xmin) // min_dx
+    npts = np.min([int(npts), 10000])
+    x_compare = np.linspace(xmin, xmax, npts)
 
     assert_all_close(xsamps, x_compare)
 
