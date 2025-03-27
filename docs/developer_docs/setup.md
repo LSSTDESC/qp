@@ -4,7 +4,7 @@
 
 For the installation of `qp` for the purpose of development, we recommend that you use a separate [Anaconda](https://docs.anaconda.com/anaconda/install/) virtual environment with `qp` installed in "editable" mode with all dev optional dependencies added.
 
-In this guide, we will name this developer environment `qp_dev` and we will assume that an Anaconda with a minimum python version of 3.9 has been previously installed.
+In this guide, we will name this developer environment `qp_dev` and we will assume that an Anaconda with a minimum Python version of 3.9 has been previously installed.
 
 To install the developer environment:
 
@@ -33,7 +33,7 @@ To run coverage tests, run the following on the command line from the base `qp` 
 
 ```
 
-The output is in the `cover` folder, which will output HTML files that provide an overview of the coverage status. For a PR, the goal is to have 100% coverage.
+The output is in the `cover` folder, which will output HTML files that provide an overview of the coverage status. For a pull request, the goal is to have 100% coverage.
 
 ## Building Documentation
 

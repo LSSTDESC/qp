@@ -32,7 +32,7 @@ For a more detailed explanation see [the Wikipedia page](https://en.wikipedia.or
 The CDF is essentially the integral of the PDF. The CDF at a given $x$ value is the probability that the outcome is less than or equal to {math}`x` as described by
 
 ```{math}
-F_X(x) = \int{-\inf}{x} f_X (t)dt
+F_X(x) = \int_{-\infty}^{x} f_X (t)dt
 ```
 
 Thus the minimum of the CDF is 0 at the minimum $x$ value, and from there it must be a non-decreasing, one-to-one function that reaches its maximum value of 1 at the maximum $x$ value. For a more detailed explanation see [the Wikipedia page](https://en.wikipedia.org/wiki/Cumulative_distribution_function).
