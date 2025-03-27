@@ -29,7 +29,7 @@ There are three available methods to create an `Ensemble` from in-memory data, a
 
 The first method is to use the `create_ensemble` function that exists for each parameterization. This function will take as arguments the required metadata coordinates and data values for the parameterization, as well as the argument `ancil` for any ancillary data.
 
-For example, to create an interpolated parameterization, where the distributions are given by a set of x and y values, you can use {py:meth}`qp.interp.create_ensemble()<qp.interp_gen.create_ensemble>`, where the data is passed as arguments to the function. Below, we do just that. First we have to set up a distribution with x and y values, which we do by using the `scipy.stats.norm` distribution:
+For example, to create an interpolated parameterization, where the distributions are given by a set of $x$ and $y$ values, you can use {py:meth}`qp.interp.create_ensemble()<qp.interp_gen.create_ensemble>`, where the data is passed as arguments to the function. Below, we do just that. First we have to set up a distribution with $x$ and $y$ values, which we do by using the `scipy.stats.norm` distribution:
 
 ```{doctest}
 
@@ -56,7 +56,7 @@ Ensemble(the_class=interp,shape=(3, 50))
 
 ```
 
-Note that the representation of the `Ensemble` tells us what the parameterization class is, and the shape of the `Ensemble` (also available via `ens.shape`). The first value is the number of distributions and the second value is the number of data values per distribution, which in this case is equal to the number of 'xvals'.
+Note that the representation of the `Ensemble` tells us what the parameterization class is, and the shape of the `Ensemble` (also available via `ens.shape`). The first value is the number of distributions and the second value is the number of data values per distribution, which in this case is equal to the number of $xvals$.
 
 Another method is to use [`qp.create`](#qp.core.factory.Factory.create), which allows you to create an `Ensemble` of any parameterization type. The function requires the parameterization type as an argument, as well as a dictionary of the necessary data, and an optional `ancil` argument for any ancillary data. So to create an `Ensemble` using the same data above, you would use the following commands:
 
@@ -139,14 +139,14 @@ Note that `objdata` and `metadata` do not store the exact input data. Instead th
 
 ```
 
-Note that the 'yvals' in `objdata` are different than the ones given to the `create_ensemble` function.
+Note that the $yvals$ in `objdata` are different than the ones given to the `create_ensemble` function.
 
 :::
 
 An `Ensemble` also has other attributes that provide information about it. Some useful ones are:
 
 - `ens.npdf`: the number of distributions in the `Ensemble`
-- `ens.shape`: (`npdf`, `nvals`), where `nvals` is the number of values that each distribution has, usually corresponding in some way to the number of coordinates in the metadata. For our sample `Ensemble`, `nvals` would be the number of 'xvals'.
+- `ens.shape`: ($npdf$, $ndata$), where $ndata$ is the number of values that each distribution has, usually corresponding in some way to the number of coordinates in the metadata. For our sample `Ensemble`, $ndata$ is equal to the number of $xvals$.
 
 A complete list of attributes can be found in the [API class documentation](#qp.core.ensemble.Ensemble).
 
@@ -156,7 +156,7 @@ What can we do with our `Ensemble`? <project:methods.md> lists all of the availa
 
 #### Statistical methods
 
-One of the main functions of an `Ensemble` is the ability to calculate the probability distribution function (PDF) or cumulative distribution function (CDF) of the distributions. This can be done via the `ens.pdf` and `ens.cdf` methods, which return values that correspond to the given x values for each distribution. For example, to get the value of the PDFs at a specific x value, one can do the following:
+One of the main functions of an `Ensemble` is the ability to calculate the probability distribution function (PDF) or cumulative distribution function (CDF) of the distributions. This can be done via the `ens.pdf` and `ens.cdf` methods, which return values that correspond to the given $x$ values for each distribution. For example, to get the value of the PDFs at a specific $x$ value, one can do the following:
 
 ```{doctest}
 
@@ -167,7 +167,7 @@ array([[1.20683683],
 
 ```
 
-This returns an array of shape (`npdf`, `nxval`), where `nxval` is the number of x values given to the function.
+This returns an array of shape ($npdf$, $nxval$), where $nxval$ is the number of $x$ values given to the function.
 
 #### Conversion
 
@@ -189,14 +189,14 @@ For example, let's say we wanted to convert our `Ensemble` from an interpolation
 ```{doctest}
 
 >>> bins = np.linspace(0,5,26)
->>> ens_hist = qp.convert(ens, 'hist', bins)
+>>> ens_hist = qp.convert(ens, 'hist', bins=bins)
 >>> ens_hist
 Ensemble(the_class=hist,shape=(3, 25))
 
 ```
 
 {#plotting-interp-ensemble}
-Our new `Ensemble` has a different class and a different shape, since now instead of 50 'xvals' we have 25 'bins' (and 26 bin edges). Let's plot them both to compare:
+Our new `Ensemble` has a different class and a different shape, since now instead of 50 $xvals$ we have 25 $bins$ (and 26 bin edges). Let's plot them both to compare:
 
 ```{doctest}
 
@@ -209,7 +209,7 @@ Our new `Ensemble` has a different class and a different shape, since now instea
 
 ![comparison_plot](../assets/basic_usage_convert_comparison.svg)
 
-Overall they match up quite well. However, converting an `Ensemble` does not guarantee that the converted `Ensemble` will have _exactly_ the same distribution shape. For example, we can compare the value of the PDF at `x=1.2` in the histogram `Ensemble` to that of the interpolated `Ensemble`:
+Overall they match up quite well. However, converting an `Ensemble` does not guarantee that the converted `Ensemble` will have _exactly_ the same distribution shape. For example, we can compare the value of the PDF at $x=1.2$ in the histogram `Ensemble` to that of the interpolated `Ensemble`:
 
 ```{doctest}
 
@@ -256,7 +256,7 @@ As an example, let's write our interpolated `Ensemble` to an HDF5 file:
 
 ```
 
-Now we can make sure that it wrote out properly by checking it's a qp file:
+Now we can make sure that it wrote out properly by checking it's a `qp` file:
 
 ```{doctest}
 

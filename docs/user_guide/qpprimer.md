@@ -29,7 +29,13 @@ For a more detailed explanation see [the Wikipedia page](https://en.wikipedia.or
 :alt: Plot of the CDF of a normal distribution
 ```
 
-The CDF is essentially the integral of the PDF. The CDF at a given x value is the probability that the outcome is less than or equal to {math}`x`, as described by {math}`F_X(x) = \int{-\inf}{x} f_X (t)dt`. Thus the minimum of the CDF is 0 at the minimum x value, and from there it must be a non-decreasing, one-to-one function that reaches its maximum value of 1 at the maximum x value. For a more detailed explanation see [the Wikipedia page](https://en.wikipedia.org/wiki/Cumulative_distribution_function).
+The CDF is essentially the integral of the PDF. The CDF at a given $x$ value is the probability that the outcome is less than or equal to {math}`x` as described by
+
+```{math}
+F_X(x) = \int{-\inf}{x} f_X (t)dt
+```
+
+Thus the minimum of the CDF is 0 at the minimum $x$ value, and from there it must be a non-decreasing, one-to-one function that reaches its maximum value of 1 at the maximum $x$ value. For a more detailed explanation see [the Wikipedia page](https://en.wikipedia.org/wiki/Cumulative_distribution_function).
 
 ### Other Useful Distribution Properties
 
@@ -75,8 +81,8 @@ A **parameterization** in `qp` refers to how a distribution is represented. For 
 
 - Gaussian: parameters are mean and standard deviation
 - Histogram: parameters are bin edges and bin values
-- Interpolation: parameters are a set of x and y values
-- Quantiles: parameters are the quantiles and the corresponding locations or x values
+- Interpolation: parameters are a set of $x$ and $y$ values
+- Quantiles: parameters are the quantiles and the corresponding locations or $x$ values
 
 ![parameterizing-a-distribution](../assets/primer-parameterizations.svg)
 

@@ -23,7 +23,7 @@ The main object of `qp` is the [`qp.Ensemble`](#qp.Ensemble). This is an object 
 - _(optional)_ **Ancillary data table** (`Ensemble.ancil`)
   - any additional data for the distributions, where there must be one row for every distribution
 
-The printed representation of an `Ensemble` tells you the parameterization type and the shape of the arrays in the `objdata`, which is essentially (`npdf`, `nvals`), where `npdf` is the number of distributions and `nvals` is the number of values or data points for each distribution in the `Ensemble`.
+The printed representation of an `Ensemble` tells you the parameterization type and the shape of the arrays in the `objdata`, which is essentially ($npdf$, $ndata$), where $npdf$ is the number of distributions and `nvals` is the number of values or data points for each distribution in the `Ensemble`.
 
 ### Creating an Ensemble
 
@@ -65,7 +65,7 @@ You can also use the available [`Ensemble` methods](methods.md). These allow you
 
 - [`ens.pdf()`](#qp.Ensemble.pdf): Get the PDF values at specified x values
 - [`ens.cdf()`](#qp.Ensemble.cdf): Get the CDF values at specified x values
-- [`ens.convert()`](#qp.Ensemble.covert): Convert the `Ensemble` to a different parameterization
+- [`ens.convert()`](#qp.Ensemble.convert): Convert the `Ensemble` to a different parameterization
 
 ### Saving an `Ensemble` for later
 

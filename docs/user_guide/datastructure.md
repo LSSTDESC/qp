@@ -2,7 +2,7 @@
 
 ## Basic structure
 
-The basic data structure of any `Ensemble` consists of two required tables, the **metadata** table and the **objdata** table. There is also an optional **ancillary data** table. These 'tables' are in fact dictionaries of `numpy` arrays. They are `Table-like` objects of the `numpyDict` type as defined by `tables_io` (see [the documentation](https://tables-io.readthedocs.io/en/latest/index.html) for more), which essentially means that each of the `numpy` arrays must have the same length, or first dimension of their shape, and that all items in the dictionary must be iterable.
+The basic data structure of any `Ensemble` consists of two required tables, the **metadata** table and the **objdata** table. There is also an optional **ancillary data** table. These 'tables' are in fact dictionaries of NumPy arrays. They are `Table-like` objects of the 'numpyDict' type as defined by `tables_io` (see [the documentation](https://tables-io.readthedocs.io/en/latest/index.html) for more), which essentially means that each of the NumPy arrays must have the same length, or first dimension of their shape, and that all items in the dictionary must be iterable.
 
 ### Metadata table
 
@@ -26,7 +26,7 @@ Strings are encoded here to allow them to be easily written to HDF5 files.
 
 ### Data table (objdata)
 
-The **data** table in an `Ensemble` is where the data specific to each distribution is stored. For example, in a histogram this is the bin values. The arrays are typically of shape `(npdfs, ndata)`, where `npdf` is the number of distributions in the `Ensemble`, and `ndata` is the number of data points per distribution. Typically `ndata` corresponds to the number of coordinate values (`ncoords`), though in a histogram `ndata = ncoords - 1`.
+The **data** table in an `Ensemble` is where the data specific to each distribution is stored. For example, in a histogram this is the bin values. The arrays are typically of shape ($npdfs$, $ndata$), where $npdf$ is the number of distributions in the `Ensemble`, and $ndata$ is the number of data points per distribution. Typically $ndata$ corresponds to the number of coordinate values ($ncoords$), though in a histogram $ndata = ncoords - 1$.
 
 An example of the **data** table for a histogram:
 
@@ -36,7 +36,7 @@ An example of the **data** table for a histogram:
 
 ### Ancillary data table
 
-The **ancillary** table is optional, and can be used to store additional data about the distributions which does not affect the distribution itself. It is a dictionary of arrays of length (or first dimension) `npdf`, so that each array has one value or row that corresponds to one distribution.
+The **ancillary** table is optional, and can be used to store additional data about the distributions which does not affect the distribution itself. It is a dictionary of arrays of length (or first dimension) $npdf$, so that each array has one value or row that corresponds to one distribution.
 
 An example **ancillary** table:
 
@@ -47,11 +47,11 @@ An example **ancillary** table:
 
 ## File structure
 
-When a single `Ensemble` is stored in a file, it is essentially stored as a `TableDict-like` object (a dictionary of tables as defined in `tables_io`). The keys for the three tables are `meta`, `data`, and `ancil`. It is written out using `tables_io`, so the supported file types are the same as for [`tables_io`](https://tables-io.readthedocs.io/en/latest/quickstart.html#supported-file-formats). In an HDF5 file, these are the `groupnames`, and each of these tables is stored in a `group`, where each column is a `dataset`. For a FITS file, each table is stored as a separate HDU. For parquet files, each table is stored as a different file, where the file name is 'filename`key`.pq'.
+When a single `Ensemble` is stored in a file, it is essentially stored as a `TableDict-like` object (a dictionary of tables as defined in `tables_io`). The keys for the three tables are 'meta', 'data', and 'ancil'. It is written out using `tables_io`, so the supported file types are the same as for [`tables_io`](https://tables-io.readthedocs.io/en/latest/quickstart.html#supported-file-formats). In an HDF5 file, these are the 'groupnames', and each of these tables is stored in a 'group', where each column is a 'dataset'. For a FITS file, each table is stored as a separate HDU. For parquet files, each table is stored as a different file, where the file name is 'filename`key`.pq'.
 
 ```{note}
 
-To get a better sense of what's in an `Ensemble` file, check out the example notebook <project:../nb/ensemble-file.ipynb>.
+To get a better sense of what's in an `Ensemble` file, check out the example notebook <project:../nb/ensemble_file.ipynb>.
 
 ```
 

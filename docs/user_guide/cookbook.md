@@ -1,6 +1,6 @@
 # Cookbook
 
-This page provides some more in-depth examples of commonly performed routines with `qp`. The longer ones are given as `jupyter notebooks`, which can be viewed here or downloaded from <project:../nb/index.md>.
+This page provides some more in-depth examples of commonly performed routines with `qp`. The longer ones are given as Jupyter Notebooks, which can be viewed here or downloaded from <project:../nb/index.md>.
 
 ## Creating an `Ensemble` from a `qp.stats` distribution
 
@@ -21,7 +21,7 @@ Ensemble(the_class=norm, shape=(3,1))
 
 We provided an array of 3 values each for 'loc' and 'scale' and ended up with an `Ensemble` with 3 distributions. This is due to the automatic reshaping of the input arrays that `qp` does to ensure that the resulting `Ensemble` looks and behaves like the other `Ensemble` types.
 
-`qp.stats` distributions only require one value per parameter per distribution. So you can input the data either as 1D arrays with shape (n,) (above), or as 2D arrays with shape (n,1) (below), and both result in the same outcome. Additionally, any arrays input with other shapes will be reshaped to 2D arrays of shape (n,1), where n is the number of elements in the input array.
+`qp.stats` distributions only require one value per parameter per distribution. So you can input the data either as 1D arrays with shape ($n$,) (above), or as 2D arrays with shape ($n$,1) (below), and both result in the same outcome. Additionally, any arrays input with other shapes will be reshaped to 2D arrays of shape ($n$,1), where $n$ is the number of elements in the input array.
 
 ```{doctest}
 
@@ -107,7 +107,13 @@ We can now decide on a chunk size. Let's say that we're using 4 cores, so each c
 
 ```
 
-This will have each process iterate through chunks of 5 distributions at a time. However, each process will not necessarily iterate through a contiguous chunk of distributions. Try running the program to see what happens for yourself, using the command `mpiexec -n 4 python mpi-example.py`. You may have to edit the file path.
+This will have each process iterate through chunks of 5 distributions at a time. However, each process will not necessarily iterate through a contiguous chunk of distributions. Try running the program to see what happens for yourself, using the command:
+
+```python
+mpiexec -n 4 python mpi-example.py
+```
+
+You may need to edit the file path in the example program above.
 
 ## Plotting using x_samples
 
@@ -117,7 +123,7 @@ A useful method for quickly plotting a distribution or distributions in your `En
 The `x_samples()` method only works properly for the four main supported parameterizations. For the rest it returns just a default set of points between a given minimum and maximum value.
 :::
 
-As an example, let's take a look at the output of x_samples and plot a CDF from a quantile distribution:
+As an example, let's take a look at the output of `x_samples()` and plot a CDF from a quantile distribution:
 
 ```{doctest}
 
@@ -134,7 +140,7 @@ array([-0.6071293 , -0.30039342,  0.00634245,  0.31307832,  0.61981419,
         2.46022943,  2.7669653 ,  3.07370118,  3.38043705,  3.68717292,
         3.99390879,  4.30064467,  4.60738054,  4.91411641,  5.22085228,
         5.52758816,  5.83432403,  6.1410599 ])
->>> ens_q.objdata["locs]
+>>> ens_q.objdata["locs"]
 array([[-0.6071293 , -0.59023231,  1.28345605,  1.73715452,  2.07018928,
          2.36057094,  2.63942906,  2.92981072,  3.26284548,  3.71654395,
          5.59023231,  5.6071293 ],
@@ -144,7 +150,7 @@ array([[-0.6071293 , -0.59023231,  1.28345605,  1.73715452,  2.07018928,
 
 ```
 
-You can see that for the quantile parameterization, `x_samples()` returns a set of values that are evenly spaced between the minimum and the maximum value of the "locs" for all distributions in the `Ensemble`. Now let's use this array to plot the first distribution in the `Ensemble`:
+You can see that for the quantile parameterization, `x_samples()` returns a set of values that are evenly spaced between the minimum and the maximum value of the $locs$ for all distributions in the `Ensemble`. Now let's use this array to plot the first distribution in the `Ensemble`:
 
 ```{doctest}
 >>> plt.plot(ens_q.x_samples(), ens_q[0].cdf(ens_q.x_samples()))

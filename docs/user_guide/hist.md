@@ -11,8 +11,6 @@ Histograms are defined with:
 
 The histogram parameterization is ideal for distributions derived from real data, particularly those that do not follow a smooth curved line. However, a histogram distribution is highly dependent on the bin widths. In an `Ensemble` all distributions must have the same bins, so keep in mind that the bins of an `Ensemble` must work well for **all** its distributions.
 
-All histogram distributions must be normalized, such that the total area of the histogram bins is equal to 1. If they are not, then the calculations of the distribution CDF, etc will not be accurate. By default, this parameterization normalizes given data. If you know that your data is already normalized, you can speed up the process slightly by setting `norm = True`, which will assume that the input data is already normalized.
-
 ## Behaviour
 
 Histogram `Ensembles` operate in the following way:
