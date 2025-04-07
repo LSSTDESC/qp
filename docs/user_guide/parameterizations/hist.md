@@ -5,7 +5,7 @@ Histograms are defined with:
 - **Bin edges** (`bins`): $n+1$ ordered values represented the edges of $n$ bins (they do not have to have the same width.)
 - **Values** (`pdfs`): $n$ values corresponding to the probability associated with each bin
 
-![hist-example](../assets/hist-example.svg)
+![hist-example](../../assets/hist-example.svg)
 
 ## Use Cases
 
@@ -21,7 +21,7 @@ Histogram `Ensembles` operate in the following way:
 
 ## Data structure
 
-See <project:datastructure.md> for general details on the data structure of `Ensembles`.
+See <project:../datastructure.md> for general details on the data structure of `Ensembles`.
 
 ### Metadata Dictionary
 
@@ -60,7 +60,7 @@ See <project:datastructure.md> for general details on the data structure of `Ens
 - `norm`: If True, normalizes the input distributions. If False, assumes the given distributions are already normalized. By default True.
 - `warn`: If True, raises warnings if input is not valid PDF data (i.e. if data is negative). If False, no warnings are raised. By default True.
 
-For more details on creating an `Ensemble`, see <project:basicusage.md#creating-an-ensemble>, and for more details on this function see its [API documentation](#qp.hist_gen.create_ensemble).
+For more details on creating an `Ensemble`, see <project:../basicusage.md#creating-an-ensemble>, and for more details on this function see its [API documentation](#qp.hist_gen.create_ensemble).
 
 ## Conversion
 
@@ -83,7 +83,7 @@ Ensemble(the_class=hist,shape=(3,20))
 
 The default method works by taking the current distribution, getting the CDF values at each of the bin edges, and then taking the difference across the bins to get the value for each bin. This method works well if the CDF of the input distribution is well defined, but if it has been interpolated across widely spaced values the second method may give better results.
 
-### Samples method ([`extract_hist_samples`](#qp.parameterizations.hist.hist_utils.extract_hist_samples))
+### Samples method ({py:meth}`extract_hist_samples <qp.parameterizations.hist.hist_utils.extract_hist_samples>`)
 
 ```{doctest}
 >>> ens_h = qp.convert(ens, 'hist', method='samples', bins=np.linspace(0,5,21), size=2000)

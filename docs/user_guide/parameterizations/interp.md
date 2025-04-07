@@ -5,7 +5,7 @@ Interpolated distributions are defined with:
 - **$x$ values** (`xvals`): $n$ ordered values representing points on the distribution.
 - **$y$ values** (`yvals`): $n$ values that correspond to the probability associated with each $x$ value.
 
-![interpolation-example](../assets/interp-gamma-example.svg)
+![interpolation-example](../../assets/interp-gamma-example.svg)
 
 ## Use Cases
 
@@ -23,7 +23,7 @@ Interpolated `Ensembles` operate in the following way:
 
 ## Data structure
 
-See <project:datastructure.md> for general details on the data structure of `Ensembles`.
+See <project:../datastructure.md> for general details on the data structure of `Ensembles`.
 
 ### Metadata Dictionary
 
@@ -66,7 +66,7 @@ $npdf$ is the number of distributions in an `Ensemble`.
 - `norm`: If True, normalizes the input distributions. If False, assumes the given distributions are already normalized. By default True.
 - `warn`: If True, raises warnings if input is not valid PDF data (i.e. if data is negative). If False, no warnings are raised. By default True.
 
-For more details on creating an `Ensemble`, see <project:basicusage.md#creating-an-ensemble>, and for more details on this function see its [API documentation](#qp.interp_gen.create_ensemble).
+For more details on creating an `Ensemble`, see <project:../basicusage.md#creating-an-ensemble>, and for more details on this function see its [API documentation](#qp.interp_gen.create_ensemble).
 
 ## Conversion
 
@@ -74,7 +74,7 @@ When converting an `Ensemble` of another type to an interpolation, you need to p
 
 There is only one method to convert an `Ensemble` to this parameterization: {py:meth}`extract_vals_at_x <qp.parameterizations.interp.interp_utils.extract_vals_at_x>`.
 
-### Example
+**Example:**
 
 ```{doctest}
 

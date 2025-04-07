@@ -85,8 +85,8 @@ The available file formats can be found in <project:basicusage.md#writing-an-ens
 - <project:basicusage.md> provides more detailed explanations of topics discussed here
 - <project:cookbook.md> contains detailed examples for specific use cases, i.e. conversion, plotting
 - More details on specific parameterizations:
-  - <project:hist.md>
-  - <project:quant.md>
-  - <project:interp.md>
-  - <project:mixmod.md>
+  - <project:./parameterizations/hist.md>
+  - <project:./parameterizations/uant.md>
+  - <project:./parameterizations/interp.md>
+  - <project:./parameterizations/mixmod.md>
 - <project:troubleshooting.md> for common pitfalls and errors

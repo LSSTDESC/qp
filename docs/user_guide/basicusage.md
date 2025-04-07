@@ -182,7 +182,7 @@ You can only convert to a parameterization that has a conversion method. This me
 
 :::
 
-For example, let's say we wanted to convert our `Ensemble` from an interpolation to a histogram (`hist`). The [`hist` parameterization](#qp.parameterizations.hist.hist.hist_gen) has two conversion methods, {py:func}`extract_hist_values <qp.parameterizations.hist.hist_utils.extract_hist_values>` and {py:func}`extract_hist_samples <qp.parameterizations.hist.hist_utils.extract_hist_samples>` (see <project:./hist.md#conversion> for more details on these functions). For this example we'll use `extract_hist_values`, which requires the `bins` argument.
+For example, let's say we wanted to convert our `Ensemble` from an interpolation to a histogram (`hist`). The [`hist` parameterization](#qp.parameterizations.hist.hist.hist_gen) has two conversion methods, {py:func}`extract_hist_values <qp.parameterizations.hist.hist_utils.extract_hist_values>` and {py:func}`extract_hist_samples <qp.parameterizations.hist.hist_utils.extract_hist_samples>` (see <project:parameterizations/hist.md#conversion> for more details on these functions). For this example we'll use `extract_hist_values`, which requires the `bins` argument.
 
 ```{doctest}
 
