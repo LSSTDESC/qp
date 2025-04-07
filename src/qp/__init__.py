@@ -57,4 +57,4 @@ from .utils import array, interpolation, dictionary, conversion
 from .parameterizations.packed_interp import packing_utils
 
 
-# from .core import factory
+from .core import factory

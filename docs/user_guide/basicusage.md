@@ -38,7 +38,7 @@ For example, to create an interpolated parameterization, where the distributions
 >>> from scipy import stats
 >>> npdf = 3
 >>> nvals = 50
->>> xvals = np.linspace(0,5,nvals)
+>>> xvals = np.linspace(-1,5,nvals)
 >>> loc = np.expand_dims(np.linspace(1., 2., npdf),-1)
 >>> scale = np.expand_dims(np.linspace(0.2, 1.15, npdf),-1)
 >>> yvals = stats.norm(loc=loc, scale=scale).pdf(xvals)
@@ -103,7 +103,9 @@ dict
 
 ## Working with an Ensemble
 
-### Attributes of an Ensemble
+What can we do with our `Ensemble`? <project:methods.md> lists all of the available methods of an `Ensemble` object, and links to their docstrings. Or you can see the [API documentation of the class](#qp.core.ensemble.Ensemble) for a complete list of its attributes and methods all in one place. Here we will go over a few of the most commonly-used methods and attributes.
+
+### Attributes
 
 Now that we have an `Ensemble`, we can check the data it contains using `ens.metadata` or `ens.objdata`. These show the dictionaries of data that define our `Ensemble`. To select one or more of the distributions in our `Ensemble`, you can easily slice the `Ensemble` object itself, for example `ens[0]` will yield an `Ensemble` object with just the data for the first distribution.
 
@@ -150,10 +152,6 @@ An `Ensemble` also has other attributes that provide information about it. Some 
 
 A complete list of attributes can be found in the [API class documentation](#qp.core.ensemble.Ensemble).
 
-### Important methods
-
-What can we do with our `Ensemble`? <project:methods.md> lists all of the available methods of an `Ensemble` object, and links to their docstrings. Or you can see the [API documentation of the class](#qp.core.ensemble.Ensemble) for a complete list of its attributes and methods all in one place. Here we will go over a few of the most commonly-used methods.
-
 #### Statistical methods
 
 One of the main functions of an `Ensemble` is the ability to calculate the probability distribution function (PDF) or cumulative distribution function (CDF) of the distributions. This can be done via the `ens.pdf` and `ens.cdf` methods, which return values that correspond to the given $x$ values for each distribution. For example, to get the value of the PDFs at a specific $x$ value, one can do the following:
@@ -169,7 +167,7 @@ array([[1.20683683],
 
 This returns an array of shape ($npdf$, $nxval$), where $nxval$ is the number of $x$ values given to the function.
 
-#### Conversion
+#### Converting between parameterizations
 
 It is possible to convert an `Ensemble` of distributions to a different parameterization. There are two main methods for conversion:
 
@@ -180,7 +178,7 @@ Both functions also allow you to provide a specific conversion method via the `m
 
 :::{note}
 
-You can only convert to a parameterization that has a conversion method. This means that you cannot convert to any parameterization inherits from `scipy` (i.e. any parameterization that starts with `qp.stats`).
+You can only convert to a parameterization that has a conversion method. This means that you cannot convert to any parameterization that inherits from `scipy` (i.e. any parameterization that starts with `qp.stats`).
 
 :::
 
@@ -188,9 +186,9 @@ For example, let's say we wanted to convert our `Ensemble` from an interpolation
 
 ```{doctest}
 
->>> bins = np.linspace(0,5,26)
->>> ens_hist = qp.convert(ens, 'hist', bins=bins)
->>> ens_hist
+>>> bins = np.linspace(-1,5,26)
+>>> ens_h = qp.convert(ens, 'hist', bins=bins)
+>>> ens_h
 Ensemble(the_class=hist,shape=(3, 25))
 
 ```
@@ -202,7 +200,7 @@ Our new `Ensemble` has a different class and a different shape, since now instea
 
 >>> plt.bar(ens_h.x_samples(),ens_h[1].objdata["pdfs"],
 ... width=ens_h.x_samples()[1]-ens_h.x_samples()[0], alpha=0.5, color = colours[0])
->>> plt.plot(ens_i.metadata["xvals"],ens_i[1].objdata["yvals"],c=colours[1])
+>>> plt.plot(ens.metadata["xvals"],ens[1].objdata["yvals"],c=colours[1])
 >>> plt.show()
 
 ```
@@ -213,7 +211,7 @@ Overall they match up quite well. However, converting an `Ensemble` does not gua
 
 ```{doctest}
 
->>> ens_hist.pdf(1.2)
+>>> ens_h.pdf(1.2)
 array([[0.81902906],
        [0.55474111],
        [0.28733705]])
@@ -231,18 +229,18 @@ These values are slightly different, even though the distributions match up quit
 
 Once you're done working with your `Ensemble`, you can write it to a `qp` file. The main method to use for this is `ens.write_to`. This uses `ens.build_tables` to turn the three data tables, metadata, objdata and ancil into one `TableDict-like` object (essentially a dictionary of tables), and then uses [`tables_io`](https://tables-io.readthedocs.io/en/latest/#) to write it to one of the compatible file types.
 
-The available file formats are given in the table below. The recommended file type is **HDF5** (suffix `hdf5`), as this requires no conversion to other table types in memory (which may cause slow downs on larger files), and no additional packages that may not be loaded already.
+The available file formats are given in the table below. The recommended file type is **HDF5** (suffix 'hdf5'), as this requires no conversion to other table types in memory (which may cause slow downs on larger files), and no additional packages that may not be loaded already.
 
 | File format name | File suffix    | Produced by                                                                            |
 | ---------------- | -------------- | -------------------------------------------------------------------------------------- |
-| astropyFits      | `fits`         | [`astropy.io.fits`](https://docs.astropy.org/en/stable/io/fits/index.html)             |
-| astropyHDF5      | `hf5`          | [`astropy`](https://docs.astropy.org/en/stable/io/unified.html#hdf5)                   |
-| **numpyHDF5**    | `hdf5`         | [`h5py`](https://docs.h5py.org/en/stable/quick.html#appendix-creating-a-file)          |
-| numpyFits        | `fit`          | [`astropy.io.fits`](https://docs.astropy.org/en/stable/io/fits/index.html)             |
-| pyarrowHDF5      | `hd5`          | [`pyarrow`](https://arrow.apache.org/docs/python/getstarted.html)                      |
-| pandasHDF5       | `h5`           | [`pandas`](https://pandas.pydata.org/pandas-docs/stable/user_guide/io.html#io-hdf5)    |
-| pandaParquet     | `parq` or `pq` | [`pandas`](https://pandas.pydata.org/pandas-docs/stable/user_guide/10min.html#parquet) |
-| pyarrowParquet   | `parquet`      | [`pyarrow`](https://arrow.apache.org/docs/python/parquet.html)                         |
+| astropyFits      | 'fits'         | [`astropy.io.fits`](https://docs.astropy.org/en/stable/io/fits/index.html)             |
+| astropyHDF5      | 'hf5'          | [`astropy`](https://docs.astropy.org/en/stable/io/unified.html#hdf5)                   |
+| **numpyHDF5**    | 'hdf5'         | [`h5py`](https://docs.h5py.org/en/stable/quick.html#appendix-creating-a-file)          |
+| numpyFits        | 'fit'          | [`astropy.io.fits`](https://docs.astropy.org/en/stable/io/fits/index.html)             |
+| pyarrowHDF5      | 'hd5'          | [`pyarrow`](https://arrow.apache.org/docs/python/getstarted.html)                      |
+| pandasHDF5       | 'h5'           | [`pandas`](https://pandas.pydata.org/pandas-docs/stable/user_guide/io.html#io-hdf5)    |
+| pandaParquet     | 'parq' or 'pq' | [`pandas`](https://pandas.pydata.org/pandas-docs/stable/user_guide/10min.html#parquet) |
+| pyarrowParquet   | 'parquet'      | [`pyarrow`](https://arrow.apache.org/docs/python/parquet.html)                         |
 
 :::{tip}
 See the [`tables_io` documentation](https://tables-io.readthedocs.io/en/latest/#) for more details about the file formats or the write functionality.
@@ -276,4 +274,4 @@ If we wanted to write both of our `Ensembles` to the same file, we can use metho
 
 This function **only** writes to HDF5 files.
 
-It is also possible to iteratively write a chunk of an `Ensemble` at a time to an HDF5 file. For a more detailed example of this, see (cookbook link).
+It is also possible to iteratively write a chunk of an `Ensemble` at a time to an HDF5 file. For a more detailed example of this, see <project:cookbook.md#iteration-example>.

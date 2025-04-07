@@ -1,13 +1,13 @@
 # `qp` Primer
 
-Often data is provided as a single number, or a number with some error bars, but in reality that number could be a variety of possible values with different probabilities. For example, in the plot below we see how a data point with error bars is actually representing the underlying Gaussian distribution which represents all of the values that the data point could possibly take.
+Often data is provided as a single number, or a number with some error bars, but in reality that number could be a variety of possible values with different probabilities. For example, in the plot below we see how a data point with error bars could be representing the underlying Gaussian distribution, which itself represents all of the values the data point could possibly take.
 
 ![point-to-distribution](../assets/primer-probability-dist-vs-point.svg)
 
 While there exist a variety of simple formulae to describe the distribution of outcomes in certain specific situations, for example the Gaussian used above, more complex situations require more complex representations. Real life data is messy and cannot always be reduced down to a simple function. Representing such a complex distribution with "single-point statistics" like the mean, median, and mode, cannot provide the full picture. In fact, these measures can even be misleading.
 
 ![complex-distributions](../assets/primer-complex-distributions.svg)
-s
+
 To represent such complex distributions can then become a hassle, requiring you to keep track of multiple numbers per distribution. `qp` helps you tackle this complexity by providing you with a number of ways to represent large numbers of real-life distributions in a consistent way.
 
 ## Statistics Refresher
@@ -49,7 +49,7 @@ While the PDF and the CDF are the main methods used in `qp` to parameterize a di
 
 #### Percent Point Function (PPF)
 
-The percent point function (PPF) is the inverse of the CDF. It returns the outcome {math}`x` which has a probability less than or equal to the given probability. This means that the distribution of input values is limited to the range [0,1]. This function can be easily used to return the quantiles of a given distribution. For more details see [the Wikipedia page](https://en.wikipedia.org/wiki/Quantile_function).
+The percent point function (PPF) is the inverse of the CDF, which is defined as $CDF^{-1}(x)$. It returns the outcome {math}`x` which has a probability less than or equal to the given probability, essentially reversing the independent and dependent variables from the CDF. This means that the distribution of input values is limited to the range [0,1]. This function can be easily used to return the quantiles of a given distribution. For more details see [the Wikipedia page](https://en.wikipedia.org/wiki/Quantile_function).
 
 ```{figure} ../assets/primer-PPF-norm.svg
 :alt: Plot of the PPF of a normal distribution
@@ -77,9 +77,9 @@ The inverse survival function (ISF) serves the same purpose for the survival fun
 
 ## Parameterizations
 
-A **parameterization** in `qp` refers to how a distribution is represented. For example, in the above sample plots, each of these distributions are represented using the normal distribution, which is an analytic function that has the parameters "mean" and "standard deviation". However, there are other ways to parameterize the same distribution. The figure below shows the same distribution parameterized in each of the four ways supported by `qp`:
+A **parameterization** in `qp` refers to how a distribution of outcomes is represented. For example, in the above sample plots, the distribution functions (PDF, CDF, etc) are applied to an analytic function called the normal distribution. This analytic parameterization is one way of representing this distribution of outcomes, and has parameters "mean" and "standard deviation". However, there are other ways to parameterize the same distribution. The figure below shows the same normal distribution parameterized in each of the four ways supported by `qp`:
 
-- Gaussian: parameters are mean and standard deviation
+- Gaussian mixture model: parameters are mean and standard deviation
 - Histogram: parameters are bin edges and bin values
 - Interpolation: parameters are a set of $x$ and $y$ values
 - Quantiles: parameters are the quantiles and the corresponding locations or $x$ values
