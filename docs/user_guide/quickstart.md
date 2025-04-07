@@ -14,13 +14,13 @@ For more information on alternate installation methods see <project:installation
 
 ## How to use `qp`
 
-The main object of `qp` is the [`qp.Ensemble`](#qp.Ensemble). This is an object that stores one or more distributions of the same type, or parameterization. It has three main data dictionaries:
+The main object of `qp` is the {py:class}`qp.Ensemble`. This is an object that stores one or more distributions of the same type, or parameterization. It has three main data dictionaries:
 
-- **Metadata** (`Ensemble.metadata`)
+- **Metadata** ({py:attr}`qp.Ensemble.metadata`)
   - tells you the shared parameters, including the parameterization type
-- **Data values** (`Ensemble.objdata`)
+- **Data values** ({py:attr}`qp.Ensemble.objdata`)
   - the data values for each distribution, where one row = one distribution
-- _(optional)_ **Ancillary data table** (`Ensemble.ancil`)
+- _(optional)_ **Ancillary data table** ({py:attr}`qp.Ensemble.ancil`)
   - any additional data for the distributions, where there must be one row for every distribution
 
 The printed representation of an `Ensemble` tells you the parameterization type and the shape of the arrays in the `objdata`, which is essentially ($npdf$, $ndata$), where $npdf$ is the number of distributions and `nvals` is the number of values or data points for each distribution in the `Ensemble`.
@@ -41,7 +41,7 @@ To create an `Ensemble` of any number of distributions, you can use the `create_
 Ensemble(the_class=interp,shape=(2,5))
 ```
 
-You can also read an `Ensemble` from a file using [`qp.read`](#qp.core.factory.Factory.read). For example:
+You can also read an `Ensemble` from a file using {py:meth}`qp.read <qp.factory.Factory.read>`. For example:
 
 ```{doctest}
 
@@ -55,21 +55,21 @@ Ensemble(the_class=interp,shape=(3, 50))
 
 Now that you have created an `Ensemble`, you can get a sense of what's in it by using some useful attributes:
 
-- `ens.npdf`: Number of distributions in the `Ensemble`
-- `ens.shape`: Shape of the data, (`npdf`, `nvals`)
-- `ens.metadata` : The metadata dictionary
-- `ens.objdata` : The data dictionary
-- `ens.ancil` : The ancillary data (will not work if there is no ancillary data table)
+- {py:attr}`qp.Ensemble.npdf`: Number of distributions in the `Ensemble`
+- {py:attr}`qp.Ensemble.shape`: Shape of the data, (`npdf`, `nvals`)
+- {py:attr}`qp.Ensemble.metadata` : The metadata dictionary
+- {py:attr}`qp.Ensemble.objdata` : The data dictionary
+- {py:attr}`qp.Ensemble.ancil` : The ancillary data (will not work if there is no ancillary data table)
 
 You can also use the available [`Ensemble` methods](methods.md). These allow you to manipulate your `Ensemble`, or get statistical information about your `Ensembles`. For example, here are some useful methods:
 
-- [`ens.pdf()`](#qp.Ensemble.pdf): Get the PDF values at specified x values
-- [`ens.cdf()`](#qp.Ensemble.cdf): Get the CDF values at specified x values
-- [`ens.convert()`](#qp.Ensemble.convert): Convert the `Ensemble` to a different parameterization
+- {py:meth}`qp.Ensemble.pdf`: Get the PDF values at specified x values
+- {py:meth}`qp.Ensemble.cdf`: Get the CDF values at specified x values
+- {py:meth}`qp.Ensemble.convert`: Convert the `Ensemble` to a different parameterization
 
 ### Saving an `Ensemble` for later
 
-To write an `Ensemble` to file, simply use the [`ens.write_to`](#qp.Ensemble.write_to) method. The only required argument is the full path to the file you would like to write. For example, we can write out the `Ensemble` we created like so:
+To write an `Ensemble` to file, simply use the {py:meth}`qp.Ensemble.write_to` method. The only required argument is the full path to the file you would like to write. For example, we can write out the `Ensemble` we created like so:
 
 ```{doctest}
 

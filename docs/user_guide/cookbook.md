@@ -36,7 +36,7 @@ Ensemble(the_class=norm, shape=(3,1))
 
 ## Sampling
 
-Sampling from an `Ensemble` can be done easily using the `rvs()` method. Below is an example sampling from our example `Ensemble` from the <project:basicusage.md> documentation, which has 3 distributions:
+Sampling from an `Ensemble` can be done easily using the {py:meth}`qp.Ensemble.rvs` method. Below is an example sampling from our example `Ensemble` from the <project:basicusage.md> documentation, which has 3 distributions:
 
 ```{doctest}
 
@@ -52,7 +52,7 @@ You now have `samples`, which contains a set of x values that are drawn from eac
 
 ## Appending an `Ensemble` to another `Ensemble` of the same type
 
-If you have created multiple `Ensembles` with the same parameterization, it can be easier to handle if they are all part of one `Ensemble`. You can use the [`append()`](#qp.Ensemble.append) method of the `Ensemble` to add an `Ensemble` of the same type to an existing `Ensemble`. This can only be done if the metadata for both `Ensembles` are the same. In particular, the coordinates (i.e. "xvals" or "bins") must be the same for both `Ensembles`. For example, to append two histogram `Ensembles` together, first we create the two separate `Ensembles`:
+If you have created multiple `Ensembles` with the same parameterization, it can be easier to handle if they are all part of one `Ensemble`. You can use the {py:meth}`qp.Ensemble.append` method of the `Ensemble` to add an `Ensemble` of the same type to an existing `Ensemble`. This can only be done if the metadata for both `Ensembles` are the same. In particular, the coordinates (i.e. "xvals" or "bins") must be the same for both `Ensembles`. For example, to append two histogram `Ensembles` together, first we create the two separate `Ensembles`:
 
 ```{doctest}
 
@@ -70,7 +70,7 @@ Ensemble(the_class=hist,shape=(1,8))
 
 ```
 
-Now that we have our `Ensembles`, we can append the second one to the first using `append()`:
+Now that we have our `Ensembles`, we can append the second one to the first using {py:meth}`qp.Ensemble.append`:
 
 ```{doctest}
 
@@ -117,13 +117,13 @@ You may need to edit the file path in the example program above.
 
 ## Plotting using x_samples
 
-A useful method for quickly plotting a distribution or distributions in your `Ensemble` is the `x_samples()` method. This is meant to provide a series of x values that should cover the range of data given in all distributions in the `Ensemble`, which can be provided to the appropriate method (`pdf()` for most parameterizations, `cdf()` for quantiles) to get the relevant y values.
+A useful method for quickly plotting a distribution or distributions in your `Ensemble` is the {py:meth}`qp.Ensemble.x_samples` method. This is meant to provide a series of x values that should cover the range of data given in all distributions in the `Ensemble`, which can be provided to the appropriate method ({py:meth}`qp.Ensemble.pdf` for most parameterizations, {py:meth}`qp.Ensemble.cdf` for quantiles) to get the relevant y values.
 
 :::{note}
-The `x_samples()` method only works properly for the four main supported parameterizations. For the rest it returns just a default set of points between a given minimum and maximum value.
+The {py:meth}`qp.Ensemble.x_samples` method only works properly for the four main supported parameterizations. For the rest it returns just a default set of points between a given minimum and maximum value.
 :::
 
-As an example, let's take a look at the output of `x_samples()` and plot a CDF from a quantile distribution:
+As an example, let's take a look at the output of {py:meth}`qp.Ensemble.x_samples` and plot a CDF from a quantile distribution:
 
 ```{doctest}
 
@@ -150,7 +150,7 @@ array([[-0.6071293 , -0.59023231,  1.28345605,  1.73715452,  2.07018928,
 
 ```
 
-You can see that for the quantile parameterization, `x_samples()` returns a set of values that are evenly spaced between the minimum and the maximum value of the $locs$ for all distributions in the `Ensemble`. Now let's use this array to plot the first distribution in the `Ensemble`:
+You can see that for the quantile parameterization, {py:meth}`qp.Ensemble.x_samples` returns a set of values that are evenly spaced between the minimum and the maximum value of the $locs$ for all distributions in the `Ensemble`. Now let's use this array to plot the first distribution in the `Ensemble`:
 
 ```{doctest}
 >>> plt.plot(ens_q.x_samples(), ens_q[0].cdf(ens_q.x_samples()))
@@ -162,7 +162,7 @@ You can see that for the quantile parameterization, `x_samples()` returns a set 
 
 ![quant-plot](../assets/cookbook-plotting-quant.svg)
 
-For an example of plotting an interpolated `Ensemble`, see [the Basic Usage documentation](basicusage.md#conversion).
+For an example of plotting an interpolated `Ensemble`, see [the Basic Usage documentation](basicusage.md#converting-between-parameterizations).
 
 ## What's in an Ensemble file
 
