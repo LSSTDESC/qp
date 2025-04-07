@@ -52,10 +52,9 @@ from .core.factory import (
 from .core.lazy_modules import *
 
 
-from .utils import array, interpolation
+from .utils import array, interpolation, dictionary, conversion
 
 from .parameterizations.packed_interp import packing_utils
 
-from .utils import dictionary
 
 # from .core import factory

@@ -16,6 +16,7 @@ from ..utils.dictionary import (
     slice_dict,
     reduce_arrays_to_1d,
     make_len_equal,
+    expand_dimensions,
 )
 from ..utils.array import encode_strings, reduce_dimensions
 from ..metrics import quick_moment
@@ -559,6 +560,12 @@ class Ensemble:
         """
         meta = make_len_equal(self.metadata)
         dd = dict(meta=meta, data=self.objdata)
+
+        # expand out the objdata to 2D arrays if there's only 1 distribution
+        if self.npdf == 1:
+            new_objdata = expand_dimensions(dd["data"], self.npdf, self.shape[1])
+            dd.update(dict(data=new_objdata))
+
         if self.ancil is not None:
             # encode any string columns if the file will be hdf5
             if encode == True and ext == "hdf5":

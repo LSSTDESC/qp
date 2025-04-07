@@ -4,6 +4,7 @@ import sys
 
 import numpy as np
 from typing import Mapping
+from .array import reshape_to_pdf_shape
 
 
 def get_val_or_default(in_dict, key):
@@ -251,7 +252,7 @@ def reduce_arrays_to_1d(in_dict: Mapping) -> Mapping:
     return in_dict
 
 
-def make_len_equal(in_dict: Mapping, l_arr: int = 1) -> Mapping:
+def make_len_equal(in_dict: Mapping[str, np.ndarray], l_arr: int = 1) -> Mapping:
     """Ensures that all arrays in the dictionary have `shape[0]` of at least l_arr.
 
     This essentially assures that a dictionary of numpy arrays is a `numpyDict`
@@ -274,5 +275,15 @@ def make_len_equal(in_dict: Mapping, l_arr: int = 1) -> Mapping:
         if np.shape(value)[0] > l_arr:
             # add a dimension to axis=0
             in_dict[key] = np.expand_dims(value, 0)
+
+    return in_dict
+
+
+def expand_dimensions(
+    in_dict: Mapping[str, np.ndarray], npdf: int, nvals: int
+) -> Mapping:
+
+    for key, value in in_dict.items():
+        in_dict[key] = reshape_to_pdf_shape(value, npdf, nvals)
 
     return in_dict

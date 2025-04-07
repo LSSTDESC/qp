@@ -137,6 +137,19 @@ def test_functions_one_ensemble(hist_ensemble):
 
 
 def test_ancil_dimension(hist_ensemble):
+    """Test that the ancillary data table dimensions make sense"""
+
     ancil = {"ids": np.ones((t_data.NPDF, 3))}
     hist_ensemble.set_ancil(ancil)
     assert_all_close(hist_ensemble.ancil["ids"], ancil["ids"])
+
+
+def test_writeHdf5Chunk(hist_ensemble, tmp_path):
+    """Test that the writeHdf5Chunk function works with a chunk of 1 distribution."""
+
+    single_ens = hist_ensemble[0]
+    file_path = tmp_path / "test.hdf5"
+    groups, fout = single_ens.initializeHdf5Write(file_path, single_ens.npdf)
+
+    single_ens.writeHdf5Chunk(groups, 0, 1)
+    single_ens.finalizeHdf5Write(fout)
