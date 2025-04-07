@@ -2,7 +2,7 @@
 
 Histograms are defined with:
 
-- **Bin edges** (`bins`): $n+1$ ordered values represented the edges of $n$ bins
+- **Bin edges** (`bins`): $n+1$ ordered values represented the edges of $n$ bins (they do not have to have the same width.)
 - **Values** (`pdfs`): $n$ values corresponding to the probability associated with each bin
 
 ![hist-example](../assets/hist-example.svg)
@@ -15,11 +15,29 @@ The histogram parameterization is ideal for distributions derived from real data
 
 Histogram `Ensembles` operate in the following way:
 
-- `Ensemble.pdf()` provides the bin value for the bin containing x, or 0 if x is outside of the bins. No interpolation takes place.
-- `Ensemble.cdf()` provides values that are interpolated across the bins, and return either 0 or 1 as appropriate outside of the bins.
-- `Ensemble.ppf()` provides values within the bin edges, e.g. `Ensemble.ppf(0)` returns the first bin edge, and `Ensemble.ppf(1)` returns the last bin edge.
+- `Ensemble.pdf(x)` provides the bin value for the bin containing x, or 0 if x is outside of the bins. No interpolation takes place.
+- `Ensemble.cdf(x)` provides values that are interpolated using `scipy.interpolate.interp1d` across the bins, and return either 0 or 1 as appropriate outside of the bins.
+- `Ensemble.ppf(x)` provides values within the bin edges, e.g. `Ensemble.ppf(0)` returns the first bin edge, and `Ensemble.ppf(1)` returns the last bin edge.
 
-## `Ensemble` Creation
+## Data structure
+
+See <project:datastructure.md> for general details on the data structure of `Ensembles`.
+
+### Metadata Dictionary
+
+| Key           | Example value      | Description                                            |
+| ------------- | ------------------ | ------------------------------------------------------ |
+| "pdf_name"    | `array(b["hist"])` | The parameterization type                              |
+| "pdf_version" | `array([0])`       | Version of parameterization type used                  |
+| "bins"        | `array([0,1,2,3])` | The bin edges, with shape $n+1$ ($n$ = number of bins) |
+
+### Data Dictionary
+
+| Key    | Example value                      | Description                                        |
+| ------ | ---------------------------------- | -------------------------------------------------- |
+| "pdfs" | `array([[4,5,6],[1,2,3],[7,8,9]])` | The values within each bin, of shape ($npdf$, $n$) |
+
+## Ensemble Creation
 
 ```{doctest}
 
@@ -44,24 +62,6 @@ Histogram `Ensembles` operate in the following way:
 
 For more details on creating an `Ensemble`, see <project:basicusage.md#creating-an-ensemble>, and for more details on this function see its [API documentation](#qp.hist_gen.create_ensemble).
 
-## Data structure
-
-See <project:datastructure.md> for general details on the data structure of `Ensembles`.
-
-### Metadata Dictionary
-
-| Key           | Example value      | Description                                            |
-| ------------- | ------------------ | ------------------------------------------------------ |
-| "pdf_name"    | `array(b["hist"])` | The parameterization type                              |
-| "pdf_version" | `array([0])`       | Version of parameterization type used                  |
-| "bins"        | `array([0,1,2,3])` | The bin edges, with shape $n+1$ ($n$ = number of bins) |
-
-### Data Dictionary
-
-| Key    | Dxample value                      | Description                                        |
-| ------ | ---------------------------------- | -------------------------------------------------- |
-| "pdfs" | `array([[4,5,6],[1,2,3],[7,8,9]])` | The values within each bin, of shape ($npdf$, $n$) |
-
 ## Conversion
 
 When converting an `Ensemble` of another type to a histogram, you must provide a set of bin edges. There are no checks during conversion that these bins cover the full range of the data in the input distribution, so keep in mind that it is up to you to ensure that the bin edges provided cover the full range of the input data distributions. Otherwise, the converted distributions will have altered data, as the new `Ensemble` of histograms will be normalized by default.
@@ -71,7 +71,7 @@ There are two methods that can be used to convert an `Ensemble` to this paramete
 - [default method](#qp.parameterizations.hist.hist_utils.extract_hist_values)
 - [samples](#qp.parameterizations.hist.hist_utils.extract_hist_samples)
 
-### Default method ([`extract_hist_values`](#qp.parameterizations.hist.hist_utils.extract_hist_values))
+### Default method ({py:meth}`extract_hist_values <qp.parameterizations.hist.hist_utils.extract_hist_values>`)
 
 ```{doctest}
 >>> ens_h = qp.convert(ens, 'hist', bins=np.linspace(0,5,21))
