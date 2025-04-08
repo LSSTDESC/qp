@@ -3,7 +3,7 @@ from ...core.lazy_modules import mixture
 
 
 def extract_mixmod_fit_samples(in_dist, **kwargs):
-    """Convert to a mixture model using a set of values sample from the pdf
+    """Convert to a mixture model using a set of values sampled from the pdf
 
     Parameters
     ----------

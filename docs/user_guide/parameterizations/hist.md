@@ -2,7 +2,7 @@
 
 Histograms are defined with:
 
-- **Bin edges** (`bins`): $n+1$ ordered values represented the edges of $n$ bins (they do not have to have the same width.)
+- **Bin edges** (`bins`): $n+1$ ordered values represented the edges of $n$ bins (they do not have to have the same width).
 - **Values** (`pdfs`): $n$ values corresponding to the probability associated with each bin
 
 ![hist-example](../../assets/hist-example.svg)
@@ -16,7 +16,7 @@ The histogram parameterization is ideal for distributions derived from real data
 Histogram `Ensembles` operate in the following way:
 
 - `Ensemble.pdf(x)` provides the bin value for the bin containing x, or 0 if x is outside of the bins. No interpolation takes place.
-- `Ensemble.cdf(x)` provides values that are interpolated using `scipy.interpolate.interp1d` across the bins, and return either 0 or 1 as appropriate outside of the bins.
+- `Ensemble.cdf(x)` provides values that are linearly interpolated using `scipy.interpolate.interp1d` across the bins, and return either 0 or 1 as appropriate outside of the bins.
 - `Ensemble.ppf(x)` provides values within the bin edges, e.g. `Ensemble.ppf(0)` returns the first bin edge, and `Ensemble.ppf(1)` returns the last bin edge.
 
 ## Data structure
@@ -33,9 +33,15 @@ See <project:../datastructure.md> for general details on the data structure of `
 
 ### Data Dictionary
 
-| Key    | Example value                      | Description                                        |
-| ------ | ---------------------------------- | -------------------------------------------------- |
-| "pdfs" | `array([[4,5,6],[1,2,3],[7,8,9]])` | The values within each bin, of shape ($npdf$, $n$) |
+| Key    | Example value                      | Description                                           |
+| ------ | ---------------------------------- | ----------------------------------------------------- |
+| "pdfs" | `array([[4,5,6],[1,2,3],[7,8,9]])` | The values within each bin, of shape ($n_{PDF}$, $n$) |
+
+```{note}
+
+Here $n_{PDF}$ is the number of distributions, and $n$ is the number of bins for each distribution.
+
+```
 
 ## Ensemble Creation
 
@@ -46,17 +52,19 @@ See <project:../datastructure.md> for general details on the data structure of `
 >>> bins = np.linspace(0,1,5)
 >>> pdfs = np.array([0.1,0.2,0.2,0.1])
 >>> ens = qp.hist.create_ensemble(bins=bins,pdfs=pdfs)
+>>> ens
+Ensemble(the_class=hist,shape=(1,4))
 
 ```
 
 **Required parameters:**
 
 - `bins`: The array containing the ($n+1$) bin edges
-- `pdfs`: The array containing the ($npdf$, $n$) bin values ($npdf$ is the number of distributions)
+- `pdfs`: The array containing the ($n_{PDF}$, $n$) bin values ($n_{PDF}$ is the number of distributions)
 
 **Optional parameters:**
 
-- `ancil`: The dictionary of arrays of additional data containing $npdf$ values
+- `ancil`: The dictionary of arrays of additional data containing $n_{PDF}$ values
 - `norm`: If True, normalizes the input distributions. If False, assumes the given distributions are already normalized. By default True.
 - `warn`: If True, raises warnings if input is not valid PDF data (i.e. if data is negative). If False, no warnings are raised. By default True.
 

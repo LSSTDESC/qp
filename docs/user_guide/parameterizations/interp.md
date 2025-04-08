@@ -17,9 +17,9 @@ To get around this requirement, you can use {py:class}`qp.interp_irregular <qp.i
 
 Interpolated `Ensembles` operate in the following way:
 
-- `Ensemble.pdf(x)` uses `scipy.interpolate.interp1d` to interpolate the PDF inside the range of given `xvals`, and returns 0 outside that range.
-- `Ensemble.cdf(x)` uses `scipy.interpolate.interp1d` to interpolate the CDF from the cumulative sum at the given `xvals`. It is not the direct integral of `Ensemble.pdf()`. Outside the range of given `xvals` it returns 0 or 1 as appropriate.
-- `Ensemble.ppf(x)` uses `scipy.interpolate.interp1d` to interpolate based on the cumulative sum at the given `xvals`, with the x and y inputs inverted.
+- `Ensemble.pdf(x)` uses `scipy.interpolate.interp1d` to linearly interpolate the PDF inside the range of given `xvals`, and returns 0 outside that range.
+- `Ensemble.cdf(x)` uses `scipy.interpolate.interp1d` to linearly interpolate the CDF from the cumulative sum at the given `xvals`. It is not the direct integral of `Ensemble.pdf()`. Outside the range of given `xvals` it returns 0 or 1 as appropriate.
+- `Ensemble.ppf(x)` uses `scipy.interpolate.interp1d` to linearly interpolate based on the cumulative sum at the given `xvals`, with the x and y inputs inverted.
 
 ## Data structure
 
@@ -35,12 +35,12 @@ See <project:../datastructure.md> for general details on the data structure of `
 
 ### Data Dictionary
 
-| Key     | Example value                      | Description                                                        |
-| ------- | ---------------------------------- | ------------------------------------------------------------------ |
-| "yvals" | `array([[4,5,6],[1,2,3],[7,8,9]])` | The values corresponding to each $x$ value, of shape ($npdf$, $n$) |
+| Key     | Example value                      | Description                                                           |
+| ------- | ---------------------------------- | --------------------------------------------------------------------- |
+| "yvals" | `array([[4,5,6],[1,2,3],[7,8,9]])` | The values corresponding to each $x$ value, of shape ($n_{PDF}$, $n$) |
 
 ```{note}
-$npdf$ is the number of distributions in an `Ensemble`.
+$n_{PDF}$ is the number of distributions in an `Ensemble`.
 ```
 
 ## Ensemble Creation
@@ -51,18 +51,20 @@ $npdf$ is the number of distributions in an `Ensemble`.
 >>> import numpy as np
 >>> xvals = np.linspace(0,1,5)
 >>> yvals = np.random.rand(2,5)
->>> ens = qp.hist.create_ensemble(xvals=xvals, yvals=yvals)
+>>> ens = qp.interp.create_ensemble(xvals=xvals, yvals=yvals)
+>>> ens
+Ensemble(the_class=interp,shape=(1,5))
 
 ```
 
 **Required parameters:**
 
 - `xvals`: The array containing the $n$ $x$ values shared by all of the distributions
-- `yvals`: The array containing the ($npdf$,$n$) probability values corresponding to each $x$ values
+- `yvals`: The array containing the ($n_{PDF}$,$n$) probability values corresponding to each $x$ values
 
 **Optional parameters:**
 
-- `ancil`: The dictionary of arrays of additional data containing $npdf$ values
+- `ancil`: The dictionary of arrays of additional data containing $n_{PDF}$ values
 - `norm`: If True, normalizes the input distributions. If False, assumes the given distributions are already normalized. By default True.
 - `warn`: If True, raises warnings if input is not valid PDF data (i.e. if data is negative). If False, no warnings are raised. By default True.
 
@@ -72,7 +74,7 @@ For more details on creating an `Ensemble`, see <project:../basicusage.md#creati
 
 When converting an `Ensemble` of another type to an interpolation, you need to provide a set of $x$ values. Make sure that the range of the $x$ values covers the full range of data in the input distributions, or the converted data will be inaccurate. The conversion process includes an automatic normalization of the data, which will change the input distributions if they are missing data points.
 
-There is only one method to convert an `Ensemble` to this parameterization: {py:meth}`extract_vals_at_x <qp.parameterizations.interp.interp_utils.extract_vals_at_x>`.
+There is only one method to convert an `Ensemble` to this parameterization: {py:func}`extract_vals_at_x() <qp.parameterizations.interp.interp_utils.extract_vals_at_x>`.
 
 **Example:**
 
