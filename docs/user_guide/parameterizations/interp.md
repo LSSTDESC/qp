@@ -11,7 +11,7 @@ Interpolated distributions are defined with:
 
 The interpolation parameterization works well for most distributions, provided there is a high enough density of $x$ values. It linearly interpolates between each point, so it does a poor job of reproducing curves. Keep in mind that all distributions in an `Ensemble` must have the same $x$ values, so the $x$ values have both the range and the density necessary to represent **all** of the distributions.
 
-To get around this requirement, you can use {py:class}`qp.interp_irregular <qp.interp_irregular_gen>`, though this will significantly slow down code performance for large datasets.
+To get around this requirement, you can use the <project:irregularinterp.md> parameterization, though this will significantly slow down code performance for large datasets.
 
 ## Behaviour
 
@@ -37,10 +37,10 @@ See <project:../datastructure.md> for general details on the data structure of `
 
 | Key     | Example value                      | Description                                                           |
 | ------- | ---------------------------------- | --------------------------------------------------------------------- |
-| "yvals" | `array([[4,5,6],[1,2,3],[7,8,9]])` | The values corresponding to each $x$ value, of shape ($n_{PDF}$, $n$) |
+| "yvals" | `array([[4,5,6],[1,2,3],[7,8,9]])` | The values corresponding to each $x$ value, of shape ($n_{pdf}$, $n$) |
 
 ```{note}
-$n_{PDF}$ is the number of distributions in an `Ensemble`.
+$n_{pdf}$ is the number of distributions in an `Ensemble`.
 ```
 
 ## Ensemble Creation
@@ -60,11 +60,11 @@ Ensemble(the_class=interp,shape=(1,5))
 **Required parameters:**
 
 - `xvals`: The array containing the $n$ $x$ values shared by all of the distributions
-- `yvals`: The array containing the ($n_{PDF}$,$n$) probability values corresponding to each $x$ values
+- `yvals`: The array containing the ($n_{pdf}$,$n$) probability values corresponding to each $x$ values
 
 **Optional parameters:**
 
-- `ancil`: The dictionary of arrays of additional data containing $n_{PDF}$ values
+- `ancil`: The dictionary of arrays of additional data containing $n_{pdf}$ values
 - `norm`: If True, normalizes the input distributions. If False, assumes the given distributions are already normalized. By default True.
 - `warn`: If True, raises warnings if input is not valid PDF data (i.e. if data is negative). If False, no warnings are raised. By default True.
 

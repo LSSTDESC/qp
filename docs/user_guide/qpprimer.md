@@ -102,7 +102,7 @@ For a more detailed discussion of the workings of each of the main parameterizat
 - [**Irregular Interpolation**](./parameterizations/irregularinterp.md)
 - [**Quantiles**](./parameterizations/quant.md)
 
-`qp` also supports all of the continuous `scipy.stats` distributions. For more information on the available distributions and their parameters, see the [`scipy.stats` documentation](https://docs.scipy.org/doc/scipy/reference/stats.html).
+`qp` also supports all of the continuous `scipy.stats` distributions, as listed in <project:./parameterizations/index.md>. For more information on the available distributions and their parameters, see the [`scipy.stats` documentation](https://docs.scipy.org/doc/scipy/reference/stats.html).
 
 ```{note}
 

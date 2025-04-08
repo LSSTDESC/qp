@@ -59,7 +59,8 @@ To get a better sense of what's in an `Ensemble` file, check out the example not
 
 Each parameterization has its own required keys, and thus the specific set of keys and values will vary depending on the parameterization. For details on the data structure for a parameterization, take a look at its documentation page:
 
-- [**Gaussian mixture model**](mixmod.md)
-- [**Histogram**](hist.md)
-- [**Interpolation**](interp.md)
-- [**Quantiles**](quant.md)
+- [**Gaussian mixture model**](./parameterizations/mixmod.md#data-structure)
+- [**Histogram**](./parameterizations/hist.md#data-structure)
+- [**Interpolation**](./parameterizations/interp.md#data-structure)
+- [**Irregular Interpolation**](./parameterizations/irregularinterp.md#data-structure)
+- [**Quantiles**](./parameterizations/quant.md#data-structure)

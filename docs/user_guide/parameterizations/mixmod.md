@@ -17,7 +17,7 @@ Gaussian mixture models are well suited to fitting real data distributions. They
 Gaussian mixture model `Ensembles` operate in the following ways:
 
 - `Ensemble.pdf()` and `Ensemble.cdf()` are computed as a weighted sum of each of the component Gaussian's `pdf()` and `cdf()`.
-- `Ensemble.ppf()` is calculated from a fixed grid of `cdf()` values that are interpolated linearly using `scipy.interp1d`.
+- `Ensemble.ppf()` is calculated from a fixed grid of `cdf()` values that are interpolated linearly using `scipy.interp1d`. `ppf(0)` returns negative infinity, and `ppf(1)` returns positive infinity.
 
 ## Data structure
 
@@ -34,13 +34,13 @@ See <project:../datastructure.md> for general details on the data structure of `
 
 | Key       | Example value                                        | Description                                                         |
 | --------- | ---------------------------------------------------- | ------------------------------------------------------------------- |
-| "means"   | `array([[1,2,3],[0.5,1,1.5],[-1,0,1]])`              | The means of each Gaussian, of shape ($n_{PDF}$, $n$)               |
-| "stds"    | `array([[0.4,0.5,0.6],[0.1,0.2,0.3],[0.7,0.8,0.9]])` | The standard deviations of each Gaussian, of shape ($n_{PDF}$, $n$) |
-| "weights" | `array([[0.3,0.3,0.4],[0.1,0.5,0.4],[0.2,0.5,0.3]])` | The weight given to each Gaussian, of shape ($n_{PDF}$, $n$)        |
+| "means"   | `array([[1,2,3],[0.5,1,1.5],[-1,0,1]])`              | The means of each Gaussian, of shape ($n_{pdf}$, $n$)               |
+| "stds"    | `array([[0.4,0.5,0.6],[0.1,0.2,0.3],[0.7,0.8,0.9]])` | The standard deviations of each Gaussian, of shape ($n_{pdf}$, $n$) |
+| "weights" | `array([[0.3,0.3,0.4],[0.1,0.5,0.4],[0.2,0.5,0.3]])` | The weight given to each Gaussian, of shape ($n_{pdf}$, $n$)        |
 
 ```{note}
 
-Here $n_{PDF}$ $n_{pdf}$ is the number of distributions, and $n$ is the number of Gaussians for each distribution.
+Here $n_{pdf}$ is the number of distributions, and $n$ is the number of Gaussians for each distribution.
 
 ```
 
@@ -61,13 +61,13 @@ Ensemble(the_class=mixmod,shape=(1,5))
 
 **Required parameters**:
 
-- `means`: The array of means of the component Gaussians, with shape ($n_{PDF}$,$n$).
-- `stds`: The array of standard deviations of the component Gaussians, with shape ($n_{PDF}$, $n$).
-- `weights`: The array of weights for each of the component Gaussians. The weights should add to 1, or they will be normalized. They have shape ($n_{PDF}$, $n$).
+- `means`: The array of means of the component Gaussians, with shape ($n_{pdf}$,$n$).
+- `stds`: The array of standard deviations of the component Gaussians, with shape ($n_{pdf}$, $n$).
+- `weights`: The array of weights for each of the component Gaussians. The weights should add to 1, or they will be normalized. They have shape ($n_{pdf}$, $n$).
 
 **Optional parameters:**
 
-- `ancil`: The dictionary of arrays of additional data containing $n_{PDF}$ values
+- `ancil`: The dictionary of arrays of additional data containing $n_{pdf}$ values
 - `warn`: If True, raises warnings if input is not valid PDF data (i.e. if input is not finite). If False, no warnings are raised. By default True.
 
 ## Conversion

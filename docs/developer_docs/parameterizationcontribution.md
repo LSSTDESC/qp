@@ -1,28 +1,29 @@
 # Creating New Parameterizations
 
-## Required 
+## Required
 
-* init function 
-    * should include functions to store values needed, pass pdf shape to base class constructor
-    * should call addmetadata and addobjdata methods
-* functions to access each of the data and metadata fields 
-* _pdf and _cdf hook functions 
-    * useful functions to help implement pdfs can be found in utils files
-* implement _updated_ctor_param function
-* define functions to convert other ensembles to this representation
-* register class with the factor and make function available 
-* add test data generation (or simply a test data file) to the tests folder
+- init function
+  - should include functions to store values needed, pass pdf shape to base class constructor
+  - should call addmetadata and addobjdata methods
+- functions to access each of the data and metadata fields
+- \_pdf and \_cdf hook functions
+  - useful functions to help implement pdfs can be found in utils files
+- implement \_updated_ctor_param function
+- define functions to convert other ensembles to this representation
+- register class with the factor and make function available
+- add test data generation (or simply a test data file) to the tests folder
 
-## Optional 
- 
-* _sf, _ppf, _isf, _rvs functions for faster evaluation
-* plotting (plot_native)
+## Optional
 
+- \_sf, \_ppf, \_isf, \_rvs functions for faster evaluation
+  - Keep in mind that the `_ppf()` function will return -inf at 0 and inf at 1, and the `_ppf()` function will not be called at all to return those values.
+- plotting (plot_native)
 
-## Code template 
+## Code template
 
-* below is a code template for what a basic parameterization should look like
-* use this to start your new parameterizations 
+- below is a code template for what a basic parameterization should look like
+- use this to start your new parameterizations
 
 ```{literalinclude} parameterization_template.py
+
 ```

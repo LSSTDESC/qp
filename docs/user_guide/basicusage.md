@@ -193,8 +193,7 @@ Ensemble(the_class=hist,shape=(3, 25))
 
 ```
 
-{#plotting-interp-ensemble}
-Our new `Ensemble` has a different class and a different shape, since now instead of 50 $xvals$ we have 25 $bins$ (and 26 bin edges). Let's plot them both to compare:
+[Our new `Ensemble` has a different class and a different shape, since now instead of 50 $xvals$ we have 25 $bins$ (and 26 bin edges). Let's plot them both to compare:]{#plotting-interp-ensemble}
 
 ```{doctest}
 
