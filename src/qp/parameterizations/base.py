@@ -336,6 +336,17 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
             )
         return np.atleast_1d(cond)
 
+    def _get_support(self, *args, **kwargs):
+        """Returns the bounds on the distribution(s).
+
+        Returns
+        -------
+        -np.inf, np.inf
+
+        """
+
+        return -np.inf, np.inf
+
     def freeze(self, *args, **kwds):
         """Freeze the distribution for the given arguments.
 

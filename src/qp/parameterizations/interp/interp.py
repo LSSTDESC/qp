@@ -66,11 +66,11 @@ class interp_gen(Pdf_rows_gen):
     their required arguments, and their method keys. If the key is `None`, this is
     the default conversion method.
 
-    +-------------------+-----------+------------+
-    | Function          | Arguments | Method key |
-    +-------------------+-----------+------------+
-    | extract_vals_at_x | xvals     | None       |
-    +-------------------+-----------+------------+
+    +---------------------+-----------+------------+
+    | Function            | Arguments | Method key |
+    +---------------------+-----------+------------+
+    | `extract_vals_at_x` | xvals     | None       |
+    +---------------------+-----------+------------+
 
     Implementation notes:
 
@@ -89,8 +89,8 @@ class interp_gen(Pdf_rows_gen):
     but is much, much faster to evaluate.
     Outside the range of given xvals the `cdf()` will return 0 or 1, respectively
 
-    The `ppf()` is computed by inverting the `cdf()`. `ppf(0)` will return `xvals[0]`
-    and `ppf(1)` will return `xvals[-1]`
+    The `ppf()` is computed by inverting the `cdf()`. `ppf(0)` will return negative infinity
+    and `ppf(1)` will return positive infinity.
     """
 
     # pylint: disable=protected-access
@@ -408,34 +408,69 @@ interp = interp_gen
 
 
 class interp_irregular_gen(Pdf_rows_gen):
-    """Interpolator based distribution
+    """Implements distributions parameterized as interpolated sets of values.
+
+    Each distribution has its own set of x values. Interpolation is performed using
+    `scipy.interpolate.interp1d`, with the default interpolation method (linear).
+
+    Parameters
+    ---------
+    xvals : array_like
+        The x-values that are used by each distribution, with shape (npdf,n)
+    yvals : array_like
+        The y-values that represent each distribution, with shape (npdf,n)
+    norm : `bool`, optional
+        If True, normalizes the input distribution. If False, assumes the
+        given distribution is already normalized. By default True.
+    warn : `bool`, optional
+        If True, raises warnings if input is not valid PDF data (i.e. if
+        data is negative). If False, no warnings are raised. By default True.
+
+    Attributes
+    ----------
+    xvals
+    yvals
+
+    Methods
+    -------
+    create_ensemble(xvals, yvals, ancil)
+        Create an Ensemble with this parameterization.
+    plot_native(xlim,axes,**kwargs)
+        Create a plot of a distribution with this parameterization.
+
 
     Notes
     -----
-    This implements a PDF using a set of interpolated values.
 
-    This version use the different xvals for each the the PDFs, which
-    allows for more precision.
+    Converting to this parameterization:
 
-    The relevant data members are:
+    This table contains the available methods to convert to this parameterization,
+    their required arguments, and their method keys. If the key is `None`, this is
+    the default conversion method.
 
-    xvals:  (npdf, n) x values
+    +--------------------------------+-----------+------------+
+    | Function                       | Arguments | Method key |
+    +--------------------------------+-----------+------------+
+    | `irreg_interp_extract_xy_vals` | xvals     | None       |
+    +--------------------------------+-----------+------------+
+    | `extract_xy_sparse`            | xvals     | 'sparse'   |
+    +--------------------------------+-----------+------------+
 
-    yvals:  (npdf, n) y values
+    Implementation notes:
 
-    Inside the range xvals[:,0], xvals[:,-1] tt simply takes a set of x and y values
-    and uses `scipy.interpolate.interp1d` to build the PDF.
-    Outside the range xvals[:,0], xvals[:,-1] the pdf() will return 0.
+    Inside the range xvals[:,0], xvals[:,-1] it simply takes a set of x and y values
+    and uses `scipy.interpolate.interp1d` to linearly interpolate the PDF.
+    Outside the range xvals[:,0], xvals[:,-1] the `pdf()` will return 0.
 
-    The cdf() is constructed by integrating analytically computing the cumulative
-    sum at the xvals grid points and interpolating between them.
-    This will give a slight discrepancy with the true integral of the pdf(),
-    bit is much, much faster to evaluate.
-    Outside the range xvals[:,0], xvals[:,-1] the cdf() will return (0 or 1), respectively
+    The cdf() is constructed by analytically computing the cumulative
+    sum at the xvals grid points and linearly interpolating between them.
+    This will give a slight discrepancy with the true integral of the `pdf()`,
+    but is much, much faster to evaluate.
+    Outside the range xvals[:,0], xvals[:,-1] the `cdf()` will return 0 or 1, respectively
 
-    The ppf() is computed by inverting the cdf().
-    ppf(0) will return min(xvals)
-    ppf(1) will return max(xvals)
+    The `ppf()` is computed by inverting the `cdf()`. `ppf(0)` gives negative infinity, and
+    `ppf(1)` gives positive infinity.
+
     """
 
     # pylint: disable=protected-access

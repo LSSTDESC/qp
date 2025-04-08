@@ -87,8 +87,9 @@ class hist_gen(Pdf_rows_gen):
     Inside a given bin `cdf()` will use a linear interpolation across the bin.
     Outside the range of the given bins `cdf()` will return (0 or 1), respectively.
 
-    The percentage point function `ppf()` will return bins[0] at 0, and
-    will return bins[-1] at 1.
+    The percentage point function `ppf()` will return negative infinity at 0 and positive
+    infinity at 1.
+
     """
 
     # pylint: disable=protected-access

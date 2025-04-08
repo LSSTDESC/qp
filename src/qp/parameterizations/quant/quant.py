@@ -75,11 +75,11 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
     -----
 
     Converting to this parameterization:
-    +-------------------+-----------+------------+
-    | Function          | Arguments | Method key |
-    +-------------------+-----------+------------+
-    | extract_quantiles | quants    | None       |
-    +-------------------+-----------+------------+
+    +---------------------+-----------+------------+
+    | Function            | Arguments | Method key |
+    +---------------------+-----------+------------+
+    | `extract_quantiles` | quants    | None       |
+    +---------------------+-----------+------------+
 
     Implementation notes:
 
@@ -91,6 +91,8 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
     It has multiple PDF constructors to get the PDF from the quantiles. The default
     is the `piecewise_linear` method, which takes the numerical derivative of the
     CDF and interpolates between those points.
+
+    `ppf(0)` returns negative infinity and `ppf(1)` returns positive infinity.
 
     """
 

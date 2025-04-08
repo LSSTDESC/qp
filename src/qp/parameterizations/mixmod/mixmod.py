@@ -49,11 +49,11 @@ class mixmod_gen(Pdf_rows_gen):
 
 
     Converting to this parameterization:
-    +----------------------------+--------------------------------------------+------------+
-    | Function                   | Arguments                                  | Method key |
-    +----------------------------+--------------------------------------------+------------+
-    | extract_mixmod_fit_samples | ncomps=3, nsamples=1000, random_state=None | None       |
-    +----------------------------+--------------------------------------------+------------+
+    +------------------------------+--------------------------------------------+------------+
+    | Function                     | Arguments                                  | Method key |
+    +------------------------------+--------------------------------------------+------------+
+    | `extract_mixmod_fit_samples` | ncomps=3, nsamples=1000, random_state=None | None       |
+    +------------------------------+--------------------------------------------+------------+
 
     Implementation Notes:
 
@@ -62,7 +62,8 @@ class mixmod_gen(Pdf_rows_gen):
 
     The `ppf()` is computed by computing the `cdf()` values on a fixed
     grid and interpolating the inverse function using `scipy.interp1d` with the
-    default interpolation method (linear).
+    default interpolation method (linear). `ppf(0)` returns negative infinity and
+    `ppf(1)` returns positive infinity.
 
 
     """

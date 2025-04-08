@@ -51,6 +51,12 @@ While the PDF and the CDF are the main methods used in `qp` to parameterize a di
 
 The percent point function (PPF) is the inverse of the CDF, which is defined as $CDF^{-1}(x)$. It returns the outcome {math}`x` which has a probability less than or equal to the given probability, essentially reversing the independent and dependent variables from the CDF. This means that the distribution of input values is limited to the range [0,1]. This function can be easily used to return the quantiles of a given distribution. For more details see [the Wikipedia page](https://en.wikipedia.org/wiki/Quantile_function).
 
+```{warning}
+
+Within the `qp` code, values returned at PPF(0) and PPF(1) are set as the *possible* boundaries of the distributions, and will not correspond to individual distributions. For example, PPF(0) of a normal distribution is always negative infinity.
+
+```
+
 ```{figure} ../assets/primer-PPF-norm.svg
 :alt: Plot of the PPF of a normal distribution
 ```
