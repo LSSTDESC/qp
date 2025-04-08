@@ -72,11 +72,17 @@ Ensemble(the_class=mixmod,shape=(1,5))
 
 ## Conversion
 
-Converting an `Ensemble` to a Gaussian mixture model does not require any input parameters.
-
 There is only one method to convert an `Ensemble` to this parameterization: {py:func}`extract_mixmod_fit_samples() <qp.parameterizations.mixmod.mixmod_utils.extract_mixmod_fit_samples>`.
 
 **Example:**
+
+```{doctest}
+
+>>> ens_m = qp.convert(ens, 'mixmod', ncomps=2)
+>>> ens_m
+Ensemble(the_class=mixmod,shape=(1,5))
+
+```
 
 **Optional arguments:**
 
@@ -84,15 +90,8 @@ There is only one method to convert an `Ensemble` to this parameterization: {py:
 - `nsamples`: The number of samples to generate from each distribution, by default 1000.
 - `random_state`: The random state to provide to {py:meth}`qp.Ensemble.rvs`, by default None.
 
-- uses sampling and then the scikitlearn GuassianMixture to fit the sampled distributions
+This conversion method uses the {py:meth}`qp.Ensemble.rvs` to sample `nsamples` data points from each of the input distributions. Then it uses `sklearn.mixture.GaussianMixture` to estimate the parameters of a Gaussian mixture model distribution for each of the distributions.
 
 ## Known issues
 
-- currently the Gaussian mixed model parameterization `rvs()` method is not functional. This also means that converting Gaussian mixed model `Ensembles` to other types of `Ensembles` via conversion methods that use sampling will not work.
-
-- figure of what an example of this parameterization looks like
-- how to make an ensemble
-- how to convert an ensemble to this parameterization
-  - will do it without any arguments but optional arguments are: `ncomps`, `nsamples`, `random_state`
-- details of how this parameterization works
-- any known issues
+Currently the `rvs()` method of the Gaussian mixed model parameterization is not functional. This also means that converting Gaussian mixed model `Ensembles` to other types of `Ensembles` via conversion methods that use sampling will not work (i.e. converting to a histogram via the 'samples' method).

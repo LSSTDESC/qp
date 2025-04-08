@@ -90,10 +90,11 @@ In the case of a normal distribution, the analytic parameterization is clearly s
 
 For a more detailed discussion of the workings of each of the main parameterizations and their pros and cons, see their documentation pages:
 
-- [**Gaussian mixture model**](mixmod.md)
-- [**Histogram**](hist.md)
-- [**Interpolation**](interp.md)
-- [**Quantiles**](quant.md)
+- [**Gaussian mixture model**](./parameterizations/mixmod.md)
+- [**Histogram**](./parameterizations/hist.md)
+- [**Interpolation**](./parameterizations/interp.md)
+- [**Irregular Interpolation**](./parameterizations/irregularinterp.md)
+- [**Quantiles**](./parameterizations/quant.md)
 
 `qp` also supports all of the continuous `scipy.stats` distributions. For more information on the available distributions and their parameters, see the [`scipy.stats` documentation](https://docs.scipy.org/doc/scipy/reference/stats.html).
 
