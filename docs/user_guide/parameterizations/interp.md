@@ -7,7 +7,7 @@ Interpolated distributions are defined with:
 
 ![interpolation-example](../../assets/interp-gamma-example.svg)
 
-## Use Cases
+## Use cases
 
 The interpolation parameterization works well for most distributions, provided there is a high enough density of $x$ values. It linearly interpolates between each point, so it does a poor job of reproducing curves. Keep in mind that all distributions in an `Ensemble` must have the same $x$ values, so the $x$ values have both the range and the density necessary to represent **all** of the distributions.
 
@@ -15,7 +15,7 @@ To get around this requirement, you can use the <project:irregularinterp.md> par
 
 ## Behaviour
 
-Interpolated `Ensembles` operate in the following way:
+Interpolated `Ensembles` operate in the following ways:
 
 - `Ensemble.pdf(x)` uses `scipy.interpolate.interp1d` to linearly interpolate the PDF inside the range of given `xvals`, and returns 0 outside that range.
 - `Ensemble.cdf(x)` uses `scipy.interpolate.interp1d` to linearly interpolate the CDF from the cumulative sum at the given `xvals`. It is not the direct integral of `Ensemble.pdf()`. Outside the range of given `xvals` it returns 0 or 1 as appropriate.
@@ -43,7 +43,7 @@ See <project:../datastructure.md> for general details on the data structure of `
 $n_{pdf}$ is the number of distributions in an `Ensemble`.
 ```
 
-## Ensemble Creation
+## Ensemble creation
 
 ```{doctest}
 
