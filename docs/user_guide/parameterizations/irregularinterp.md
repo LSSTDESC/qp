@@ -53,11 +53,11 @@ $n_{pdf}$ is the number of distributions in an `Ensemble`.
 
 >>> import qp
 >>> import numpy as np
->>> xvals = np.linspace(0,1,5)
+>>> xvals = np.array([np.linspace(0,1,5),np.linspace(1,2,5)])
 >>> yvals = np.random.rand(2,5)
->>> ens = qp.interp.create_ensemble(xvals=xvals, yvals=yvals)
+>>> ens = qp.interp_irregular.create_ensemble(xvals=xvals, yvals=yvals)
 >>> ens
-Ensemble(the_class=interp,shape=(1,5))
+Ensemble(the_class=interp_irregular,shape=(2,5))
 
 ```
 
@@ -75,3 +75,19 @@ Ensemble(the_class=interp,shape=(1,5))
 For more details on creating an `Ensemble`, see <project:../basicusage.md#creating-an-ensemble>, and for more details on this function see its [API documentation](#qp.interp_irregular_gen.create_ensemble).
 
 ## Conversion
+
+There is only one method to convert an `Ensemble` to this parameterization: {py:func}`irreg_interp_extract_xy_vals() <qp.parameterizations.interp.interp_utils.irreg_interp_extract_xy_vals>`.
+
+**Example:**
+
+```{doctest}
+
+>>> ens_irr = qp.convert(ens, 'interp_irregular', xvals=np.array([np.linspace(0,1,5), np.linspace(-1,1,10)]))
+>>> ens_irr
+Ensemble(the_class=interp_irregular,shape=(2,5))
+
+```
+
+**Required argument:** `xvals`, where `xvals` are the $x$ points at which to calculate the value of the PDF for each distribution. This can either be an ($n_{pdf}$, $n$) array where you specify values for each distribution, or an ($n$, ) array that is reshaped to ($n_{pdf}$, $n$). Though if you are using this option, we recommend you convert to {py:class}`qp.interp` instead for more efficient code.
+
+When converting an `Ensemble` of another type to irregular interpolation, you need to provide a set of $x$ values. Make sure that the range of the $x$ values for each distribution covers the full range of data for that distributions, or the converted data will be inaccurate. The conversion process includes an automatic normalization of the data, which will change the input distributions if they are missing data points.

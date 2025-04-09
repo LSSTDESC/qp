@@ -453,8 +453,6 @@ class interp_irregular_gen(Pdf_rows_gen):
     +--------------------------------+-----------+------------+
     | `irreg_interp_extract_xy_vals` | xvals     | None       |
     +--------------------------------+-----------+------------+
-    | `extract_xy_sparse`            | xvals     | 'sparse'   |
-    +--------------------------------+-----------+------------+
 
     Implementation notes:
 

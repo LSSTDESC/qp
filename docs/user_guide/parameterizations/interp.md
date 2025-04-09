@@ -53,7 +53,7 @@ $n_{pdf}$ is the number of distributions in an `Ensemble`.
 >>> yvals = np.random.rand(2,5)
 >>> ens = qp.interp.create_ensemble(xvals=xvals, yvals=yvals)
 >>> ens
-Ensemble(the_class=interp,shape=(1,5))
+Ensemble(the_class=interp,shape=(2,5))
 
 ```
 
@@ -72,8 +72,6 @@ For more details on creating an `Ensemble`, see <project:../basicusage.md#creati
 
 ## Conversion
 
-When converting an `Ensemble` of another type to an interpolation, you need to provide a set of $x$ values. Make sure that the range of the $x$ values covers the full range of data in the input distributions, or the converted data will be inaccurate. The conversion process includes an automatic normalization of the data, which will change the input distributions if they are missing data points.
-
 There is only one method to convert an `Ensemble` to this parameterization: {py:func}`extract_vals_at_x() <qp.parameterizations.interp.interp_utils.extract_vals_at_x>`.
 
 **Example:**
@@ -88,4 +86,6 @@ Ensemble(the_class=interp,shape=(2,5))
 
 **Required argument:** `xvals`, where `xvals` are the $x$ points at which to calculate the value of the PDF for each distribution.
 
-Conversion to an interpolation is quite simple. It calls the `Ensemble.pdf()` function of the input `Ensemble` with the given `xvals`, and creates the new interpolated `Ensemble` from using the given `xvals` and the PDF values as `yvals`.
+Make sure that the range of the $x$ values covers the full range of data in the input distributions, or the converted data will be inaccurate. The conversion process includes an automatic normalization of the data, which will change the input distributions if they are missing data points.
+
+Conversion to an interpolation is quite simple. It calls the {py:meth}`qp.Ensemble.pdf` function of the input `Ensemble` with the given `xvals`, and creates the new interpolated `Ensemble` from using the given `xvals` and the PDF values as `yvals`.
