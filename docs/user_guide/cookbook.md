@@ -2,6 +2,7 @@
 
 This page provides some more in-depth examples of commonly performed routines with `qp`. The longer ones are given as Jupyter Notebooks, which can be viewed here or downloaded from <project:../nb/index.md>.
 
+(creating-an-ensemble-from-a-qp-stats-distribution)=
 ## Creating an `Ensemble` from a `qp.stats` distribution
 
 The `create_ensemble` function for the `qp.stats` distributions is slightly different than for the other parameterizations, as it requires a dictionary of the data to create the Ensemble, instead of being able to take individual arguments. See below for an example using the `qp.stats.norm` distribution:
