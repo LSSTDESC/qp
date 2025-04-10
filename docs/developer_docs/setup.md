@@ -41,7 +41,7 @@ To build the documentation locally, start by making sure that you have the appro
 
 ```{doctest}
 
->>> pip install -e '.[doc]'
+>>> pip install -e '.[docs]'
 
 ```
 

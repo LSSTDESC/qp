@@ -10,7 +10,6 @@ import qp
 import sphinx_rtd_theme
 
 html_theme = "sphinx_rtd_theme"
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 
 # Avoid imports that may be unsatisfied when running sphinx, see:
