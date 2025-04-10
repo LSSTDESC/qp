@@ -200,10 +200,15 @@ class hist_gen(Pdf_rows_gen):
         """
         pdfs_2d = self._hpdfs
         sums = np.sum(pdfs_2d * self._hbin_widths, axis=1)
-        if np.any(sums <= 0):
-            indices = np.where(sums <= 0)
+        if np.any(sums < 0):
+            indices = np.where(sums < 0)
             raise ValueError(
-                f"The distribution(s) cannot be properly normalized, the sum of the pdfs is <= 0 for distributions at index = {indices[0]} "
+                f"The distribution(s) cannot be properly normalized, the sum of the pdfs is < 0 for distributions at index = {indices[0]} "
+            )
+        elif np.any(sums == 0):
+            indices = np.where(sums == 0)
+            warnings.warn(
+                f"The distributions(s) with indices {indices[0]} have an integral of 0."
             )
         return {"pdfs": (pdfs_2d.T / sums).T}
 

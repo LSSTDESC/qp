@@ -189,10 +189,15 @@ class interp_gen(Pdf_rows_gen):
         )
 
         # raise an error if the sum is 0 or negative
-        if np.any(self._ycumul[:, -1] <= 0):
-            indices = np.where(self._ycumul[:, -1] <= 0)
+        if np.any(self._ycumul[:, -1] < 0):
+            indices = np.where(self._ycumul[:, -1] < 0)
             raise ValueError(
-                f"The distribution(s) cannot be properly normalized, the integral is <= 0 for distributions at indices = {indices[0]} \n with yvals {self._yvals[indices[0]]}"
+                f"The distribution(s) cannot be properly normalized, the integral is < 0 for distributions at indices = {indices[0]} \n with yvals {self._yvals[indices[0]]}"
+            )
+        elif np.any(self._ycumul[:, -1] == 0):
+            indices = np.where(self._ycumul[:, -1] == 0)
+            warnings.warn(
+                f"The distributions at indices = {indices[0]} have an integral of 0."
             )
 
     def normalize(self) -> Mapping[str, np.ndarray]:
@@ -565,10 +570,15 @@ class interp_irregular_gen(Pdf_rows_gen):
         )
 
         # make sure that integrals are > 0
-        if np.any(self._ycumul[:, -1] <= 0):
-            indices = np.where(self._ycumul[:, -1] <= 0)
+        if np.any(self._ycumul[:, -1] < 0):
+            indices = np.where(self._ycumul[:, -1] < 0)
             raise ValueError(
-                f"The integral is <= 0 for distributions at indices = {indices[0]}, so the distribution(s) cannot be properly normalized."
+                f"The integral is < 0 for distributions at indices = {indices[0]}, so the distribution(s) cannot be properly normalized."
+            )
+        elif np.any(self._ycumul[:, -1] == 0):
+            indices = np.where(self._ycumul[:, -1] == 0)
+            warnings.warn(
+                f"The distributions at indices = {indices[0]} have an integral of 0."
             )
 
     def normalize(self) -> Mapping[str, np.ndarray]:
@@ -591,11 +601,16 @@ class interp_irregular_gen(Pdf_rows_gen):
             axis=1,
         )
 
-        # make sure that integrals are > 0
-        if np.any(integrals <= 0):
-            indices = np.where(integrals <= 0)
+        # make sure that integrals are >= 0
+        if np.any(integrals < 0):
+            indices = np.where(integrals < 0)
             raise ValueError(
-                f"The integral is <= 0 for distributions at indices = {indices[0]}, so the distribution(s) cannot be properly normalized."
+                f"The integral is < 0 for distributions at indices = {indices[0]}, so the distribution(s) cannot be properly normalized."
+            )
+        elif np.any(integrals == 0):
+            indices = np.where(integrals == 0)
+            warnings.warn(
+                f"The distributions at indices = {indices[0]} have an integral of 0."
             )
 
         return {"yvals": (self._yvals.T / integrals).T}
