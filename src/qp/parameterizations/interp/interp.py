@@ -192,7 +192,7 @@ class interp_gen(Pdf_rows_gen):
         if np.any(self._ycumul[:, -1] <= 0):
             indices = np.where(self._ycumul[:, -1] <= 0)
             raise ValueError(
-                f"The distribution(s) cannot be properly normalized, the integral is <= 0 for distributions at indices = {indices[0]}"
+                f"The distribution(s) cannot be properly normalized, the integral is <= 0 for distributions at indices = {indices[0]} \n with yvals {self._yvals[indices[0]]}"
             )
 
     def normalize(self) -> Mapping[str, np.ndarray]:
