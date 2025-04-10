@@ -13,7 +13,7 @@ The irregular interpolation parameterization works well for distributions derive
 
 ```{warning}
 
-This distribution can be quite slow when given many distributions with lots of $x$ values for each distribution. If you have a set of distributions that can be represented by a shared set of $x$ values, use the <project:interp.md> parameterization instead.
+This distribution can be slow when given many distributions with lots of $x$ values for each distribution. If you have a set of distributions that can be represented by a shared set of $x$ values, it is recommended to use the <project:interp.md> parameterization instead.
 
 ```
 
@@ -23,7 +23,7 @@ Interpolated `Ensembles` operate in the following way:
 
 - `Ensemble.pdf(x)` uses `scipy.interpolate.interp1d` to linearly interpolate the PDF inside the range of given `xvals`, and returns 0 outside that range.
 - `Ensemble.cdf(x)` uses `scipy.interpolate.interp1d` to linearly interpolate the CDF from the cumulative sum at the given `xvals`. It is not the direct integral of `Ensemble.pdf()`. Outside the range of given `xvals` it returns 0 or 1 as appropriate.
-- `Ensemble.ppf(x)` uses `scipy.interpolate.interp1d` to linearly interpolate based on the cumulative sum at the given `xvals`, with the x and y inputs inverted.
+- `Ensemble.ppf(x)` uses `scipy.interpolate.interp1d` to linearly interpolate based on the cumulative sum at the given `xvals`, with the $x$ and $y$ inputs inverted.
 
 ## Data structure
 
@@ -82,7 +82,8 @@ There is only one method to convert an `Ensemble` to this parameterization: {py:
 
 ```{doctest}
 
->>> ens_irr = qp.convert(ens, 'interp_irregular', xvals=np.array([np.linspace(0,1,5), np.linspace(-1,1,10)]))
+>>> ens_irr = qp.convert(ens, 'interp_irregular', xvals=np.array([np.linspace(0,1,5),
+... np.linspace(-1,1,10)]))
 >>> ens_irr
 Ensemble(the_class=interp_irregular,shape=(2,5))
 

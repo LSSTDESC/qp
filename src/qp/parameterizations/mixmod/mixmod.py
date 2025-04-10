@@ -49,6 +49,11 @@ class mixmod_gen(Pdf_rows_gen):
 
 
     Converting to this parameterization:
+
+    This table contains the available methods to convert to this parameterization,
+    their required arguments, and their method keys. If the key is `None`, this is
+    the default conversion method.
+
     +------------------------------+--------------------------------------------+------------+
     | Function                     | Arguments                                  | Method key |
     +------------------------------+--------------------------------------------+------------+

@@ -17,11 +17,11 @@ There exist additional parameterizations, however they are in various stages of 
 
 ## SciPy stats parameterizations
 
-`qp` also incorporates all of the continuous distributions from `scipy.stats` as parameterizations, allowing you to create `Ensembles` parameterized by these distributions. The main limitations on these parameterizations is that they cannot be converted to, as they have no conversion functions. Additionally, their `create_ensemble()` function takes a data dictionary instead of specific arguments, as shown in <../cookbook.md#creating-an-ensemble-from-a-qp-stats-distribution>.
+`qp` also incorporates all of the continuous distributions from `scipy.stats` as parameterizations, allowing you to create `Ensembles` parameterized by these distributions. The main limitations on these parameterizations is that they cannot be converted to, as they have no conversion functions. Additionally, their `create_ensemble()` method takes a data dictionary instead of specific arguments, as shown in <project:../cookbook.md#creating-an-ensemble-from-a-qp-stats-distribution>.
 
 You can access these parameterizations from the `qp.stats` module, as shown below:
 
-```{docstring}
+```{doctest}
 
 >>> import qp
 >>> ens_n = qp.stats.norm.create_ensemble(dict(loc=np.array([0,1]),scale=np.array([0.25,0.5])))

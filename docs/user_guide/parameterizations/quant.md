@@ -3,15 +3,15 @@
 Quantile distributions are parameterized by values from the CDF. They have:
 
 - **quantiles** (`quants`): $n$ ordered quantiles of the distribution, from 0 to 1. These are evenly spaced cumulative probabilities (i.e. the probability $x \leq$ some value.)
-- **locations** (`locs`): The $n$ locations, or x values, on the distribution's CDF where the quantiles are reached.
+- **locations** (`locs`): The $n$ locations ($x$ values), on the distribution's CDF where the quantiles are reached.
 
 ![quant-example](../../assets/quant-rayleigh-example.svg)
 
 ## Use cases
 
-The quantile parameterization works well for data that has a well-behaved CDF. It is easy to represent a range of data without worrying about choosing an appropriate range, as all distributions must have quantiles between 0 and 1.
+The quantile parameterization works well for data that has a well-behaved CDF. As well, it is easier to represent distributions that may be spread out in the $x$ coordinate space with this parameterization than with interpolation or histogram parameterizations., as all distributions will fall into the same range of quantiles.
 
-- do we discuss the issues at the edges and of interpolation method here? I think yes, in addition to mentioning interpolations can go negative in known issues section.
+One thing to note when using this parameterization is that it does not require that the PDF be positive. So the interpolation of the PDFs can become negative, particularly near the edges of a distribution, which may not be desirable in certain use cases.
 
 ## Behaviour
 
@@ -20,8 +20,8 @@ Quantile parameterized `Ensembles` behave in the following ways:
 - `Ensemble.cdf(x)` is created by interpolating quadratically between the quantiles using `scipy.interpolate.interp1d`.
 - `Ensemble.ppf(0)` returns negative infinity and `Ensemble.ppf(1)` returns positive infinity.
 - `Ensemble.pdf(x)` is calculated in a variety of ways depending on the PDF constructor used (`pdf_constructor_name`, described below).
-  - **piecewise_linear** (_Default_): Takes the numerical derivative of the CDF and linearly interpolates between those points.
-  - **piecewise_constant**:
+  - **piecewise_linear** (_Default_): Takes the numerical derivative of the CDF and linearly interpolates between those points. See {py:class}`PiecewiseLinear <qp.parameterizations.quant.piecewise_linear.PiecewiseLinear>` for more details.
+  - **piecewise_constant**: Calculates the numerical derivative of the CDF. Assumes a constant value between points on the derivative to interpolate. See {py:class}`PiecewiseConstant <qp.parameterizations.quant.piecewise_constant.PiecewiseConstant>` for more details.
   - **cdf_spline_derivative**: Uses `scipy.interpolate.InterpolatedUnivariateSpline` to fit a cubic spline to quantiles and locations, and then gets the derivative of that spline which provides the PDF values. See {py:class}`CdfSplineDerivative <qp.parameterizations.quant.cdf_spline_derivative.CdfSplineDerivative>` for more details.
   - **dual_spline_average**: Solves for the PDF with a stepwise algorithm, then uses these values to create an upper bound and lower bound cubic spline of the PDF, which are then averaged to produce the PDF. See {py:class}`DualSplineAverage <qp.parameterizations.quant.dual_spline_average.DualSplineAverage>` for more details.
 
@@ -31,19 +31,19 @@ See <project:../datastructure.md> for general details on the data structure of `
 
 ### Metadata Dictionary
 
-| Key                    | Example value                  | Description                                        |
-| ---------------------- | ------------------------------ | -------------------------------------------------- |
-| "pdf_name"             | `array(b["quant"])`            | The parameterization type                          |
-| "pdf_version"          | `array([0])`                   | Version of parameterization type used              |
-| "pdf_constructor_name" | `array(b["piecewise_linear"])` | Version of the PDF constructor algorithm used.     |
-| "ensure_extent"        | `array([True])`                | Value of the `ensure_extent` parameter used.       |
-| "quants"               | `array([0,0.25,0.5,0.75,1.])`  | The $n$ quantiles shared across all distributions. |
+| Key                    | Example value                  | Description                                                 |
+| ---------------------- | ------------------------------ | ----------------------------------------------------------- |
+| "pdf_name"             | `array(b["quant"])`            | The parameterization type                                   |
+| "pdf_version"          | `array([0])`                   | Version of parameterization type used                       |
+| "pdf_constructor_name" | `array(b["piecewise_linear"])` | Version of the PDF constructor algorithm used.              |
+| "ensure_extent"        | `array([True])`                | If the extent of the quantiles was forced to be from [0,1]. |
+| "quants"               | `array([0,0.25,0.5,0.75,1.])`  | The $n$ quantiles shared across all distributions.          |
 
 ### Data Dictionary
 
 | Key    | Example value                                          | Description                                                          |
 | ------ | ------------------------------------------------------ | -------------------------------------------------------------------- |
-| ";pcs" | `array([[2,4,5,6,8],[0.5,1,2,3,3.5],[6.8,7,8,9,9.5]])` | The values corresponding to each quantile, of shape ($n_{pdf}$, $n$) |
+| "locs" | `array([[2,4,5,6,8],[0.5,1,2,3,3.5],[6.8,7,8,9,9.5]])` | The values corresponding to each quantile, of shape ($n_{pdf}$, $n$) |
 
 ```{note}
 $n_{pdf}$ is the number of distributions in an `Ensemble`.
@@ -75,7 +75,7 @@ Ensemble(the_class=quant,shape=(2,5))
 - `ensure_extent`: If True, ensures that the quants start at 0 and end at 1 by linearly interpolating data points at the edges of the given data as necessary until the quants extend from 0 to 1. By default True.
 - `warn`: If True, raises warnings if input is not valid PDF data (i.e. if data is negative). If False, no warnings are raised. By default True.
 
-For more details on creating an `Ensemble`, see <project:../basicusage.md#creating-an-ensemble>, and for more details on this function see its [API documentation](#qp.quant.create_ensemble).
+For more details on creating an `Ensemble`, see <project:../basicusage.md#creating-an-ensemble>, and for more details on this function see its [API documentation](#qp.quant_gen.create_ensemble).
 
 ## Conversion
 
@@ -97,7 +97,7 @@ The conversion function calls the `ppf()` method of the input `Ensemble` at the 
 
 ```{warning}
 
-We recommend you do not include 0 and 1 in your input quantiles for conversion from **most** parameterizations. All of the `qp` exclusive parameterizations return infinite values at `ppf(0)` and `ppf(1)`, and many of the `scipy.stats.rv_continous` distributions do as well (i.e. a normal distribution). Instead, do as in the example above and input quantiles that extend from some value close to 0 to a value close to 1.
+We recommend you do not include 0 and 1 in your input quantiles for conversion from **most** parameterizations. All of the `qp` exclusive parameterizations return infinite values at `ppf(0)` and `ppf(1)`, and many of the `scipy.stats.rv_continous` distributions do as well (i.e. a normal distribution). Instead, do as in the example above and input quantiles that extend from some value close to 0 to a value close to 1. The parameterization will automatically interpolate the data out to 0 and 1 as explained in <project:#ensemble-creation>.
 
 ```
 
