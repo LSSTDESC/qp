@@ -24,6 +24,7 @@ Quantile parameterized `Ensembles` behave in the following ways:
   - **piecewise_constant**: Calculates the numerical derivative of the CDF. Assumes a constant value between points on the derivative to interpolate. See {py:class}`PiecewiseConstant <qp.parameterizations.quant.piecewise_constant.PiecewiseConstant>` for more details.
   - **cdf_spline_derivative**: Uses `scipy.interpolate.InterpolatedUnivariateSpline` to fit a cubic spline to quantiles and locations, and then gets the derivative of that spline which provides the PDF values. See {py:class}`CdfSplineDerivative <qp.parameterizations.quant.cdf_spline_derivative.CdfSplineDerivative>` for more details.
   - **dual_spline_average**: Solves for the PDF with a stepwise algorithm, then uses these values to create an upper bound and lower bound cubic spline of the PDF, which are then averaged to produce the PDF. See {py:class}`DualSplineAverage <qp.parameterizations.quant.dual_spline_average.DualSplineAverage>` for more details.
+- `Ensemble.x_samples()` returns a range of $x$ values that can be used to plot all of the distributions. The range is calculated using `np.linspace`, with a step size that is the median of the existing step sizes between the locations in the distributions, unless this gives more than 10 000 points, in which case the step size that returns 10 000 points is used.
 
 ## Data structure
 

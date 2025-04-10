@@ -18,6 +18,7 @@ Gaussian mixture model `Ensembles` operate in the following ways:
 
 - `Ensemble.pdf()` and `Ensemble.cdf()` are computed as a weighted sum of each of the component Gaussian's `pdf()` and `cdf()`.
 - `Ensemble.ppf()` is calculated from a fixed grid of `cdf()` values that are interpolated linearly using `scipy.interp1d`. `ppf(0)` returns negative infinity, and `ppf(1)` returns positive infinity.
+- `Ensemble.x_samples()` returns a range of $x$ values that should plot the majority of all the distributions. It may exclude the tail of some distributions. The minimum of the range is calculated as the lowest mean minus the largest standard deviation, and the maximum is calculated as the reverse.
 
 ## Data structure
 

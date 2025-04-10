@@ -20,7 +20,7 @@ Here's an example of a **metadata** table for a histogram:
 
 ```{note}
 
-Strings are encoded here to allow them to be easily written to HDF5 files.
+Strings are byte-encoded here to allow them to be easily written to HDF5 files.
 
 ```
 
