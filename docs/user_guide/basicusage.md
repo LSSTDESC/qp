@@ -107,7 +107,7 @@ What can we do with our `Ensemble`? <project:methods.md> lists all of the availa
 
 ### Attributes
 
-Now that we have an `Ensemble`, we can check the data it contains using {py:attr}`qp.Ensemble.metadata` or {py:attr}`qp.Ensemble.objdata`. These show the dictionaries of data that define our `Ensemble`. To select one or more of the distributions in our `Ensemble`, you can easily slice the `Ensemble` object itself, for example `ens[0]` will yield an `Ensemble` object with just the data for the first distribution.
+Now that we have an `Ensemble`, we can check the data it contains using {py:attr}`qp.Ensemble.metadata` or {py:attr}`qp.Ensemble.objdata`. These show the dictionaries of data that define our `Ensemble`. To select one or more of the distributions in our `Ensemble`, you can easily slice the `Ensemble` object itself, for example `ens[0]` will yield an `Ensemble` object with just the data for the first distribution. Another way to select just the data for a specific distribution is to slice the `objdata` dictionary, i.e. `ens.objdata["yvals"][0]` as used below.
 
 Let's use these data dictionaries to quickly plot one of our distributions (for more details on plotting distributions see <project:cookbook.md#plotting-using-x_samples>):
 
