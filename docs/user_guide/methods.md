@@ -1,5 +1,7 @@
 # Ensemble Methods
 
+The following tables are lists of existing methods for use on `Ensembles`, with short summaries of their purpose. The methods link to their API documentation for more detailed information.
+
 ## Base Methods
 
 These are some base methods used to perform operations on one or more `Ensembles`.

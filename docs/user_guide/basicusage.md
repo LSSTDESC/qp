@@ -174,7 +174,7 @@ It is possible to convert an `Ensemble` of distributions to a different paramete
 - {py:meth}`qp.convert() <qp.factory.Factory.convert>`: takes as arguments the `Ensemble` to convert and the name of the parameterization we want to convert to (i.e. 'hist').
 - {py:meth}`qp.Ensemble.convert_to`: takes as an argument the class object for the parameterization we want to convert to (i.e. `qp.hist`)
 
-Both functions also allow you to provide a specific conversion method via the `method` keyword, if the parameterization has more than one conversion method. Most conversion methods also have additional required arguments, which differ between parameterizations. To get more information about the conversion methods for a specific parameterization, see the documentation page for that parameterization.
+Both functions also allow you to provide a specific conversion method via the `method` keyword, if the parameterization has more than one conversion method. Most conversion methods also have additional required arguments, which differ between parameterizations. To get more information about the conversion methods for a specific parameterization, see the documentation page for that parameterization. For some more detailed examples of conversion and a look at how it affects the distributions, see <project:cookbook.md#conversion-example>.
 
 :::{note}
 

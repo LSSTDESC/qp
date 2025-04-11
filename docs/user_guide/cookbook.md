@@ -50,7 +50,7 @@ Sampling from an `Ensemble` can be done easily using the {py:meth}`qp.Ensemble.r
 
 ```
 
-You now have `samples`, which contains a set of x values that are drawn from each distribution in the `Ensemble`.
+You now have `samples`, which contains a set of $x$ values that are randomly drawn from each distribution in the `Ensemble`.
 
 ## Appending an `Ensemble` to another `Ensemble` of the same type
 
@@ -86,11 +86,11 @@ Our new `Ensemble` now contains both distributions.
 
 ## Conversion example
 
-See the full example in this notebook: <project:../nb/conversion_example.md>.
+See the full example in this notebook: <project:../nb/conversion_example.md> (download [here](../nb/conversion_example.ipynb)).
 
 ## Iteration example
 
-See the tutorial for general use of the iterator function here: <project:../nb/iterator_demo.md>
+See the tutorial for general use of the iterator function here: <project:../nb/iterator_demo.md> (download [here](../nb/iterator_demo.ipynb)).
 
 The iterator function can also be used in parallel, allowing for each process to iterate through some of the distributions. Let's test this out on a sample file of `Ensembles`. First we need to know how many distributions are in the file:
 
@@ -103,7 +103,7 @@ The iterator function can also be used in parallel, allowing for each process to
 
 ```
 
-We can now decide on a chunk size. Let's say that we're using 4 cores, so each core will have access to 25 distributions. So let's go with a chunk size of 5, so the data is easily divisible by the chunk size. Now we can write our little program to iterate through the data:
+We can now decide on a chunk size. Let's say that we're using 4 cores, so each core will have access to 25 distributions. So let's go with a chunk size of 5, so the data is easily divisible by the chunk size. Now we can write our little program to iterate through the data (you can download the file [here](../assets/mpi-example.py)):
 
 ```{literalinclude} ../assets/mpi-example.py
 
@@ -152,7 +152,7 @@ array([[-0.6071293 , -0.59023231,  1.28345605,  1.73715452,  2.07018928,
 
 ```
 
-You can see that for the quantile parameterization, {py:meth}`qp.Ensemble.x_samples` returns a set of values that are evenly spaced between the minimum and the maximum value of the $locs$ for all distributions in the `Ensemble`. Now let's use this array to plot the first distribution in the `Ensemble`:
+You can see that for the quantile parameterization, {py:meth}`qp.Ensemble.x_samples` returns a set of values that are evenly spaced between the minimum and the maximum value of the 'locs' for all distributions in the `Ensemble`. Now let's use this array to plot the first distribution in the `Ensemble`:
 
 ```{doctest}
 >>> plt.plot(ens_q.x_samples(), ens_q[0].cdf(ens_q.x_samples()))
@@ -168,4 +168,4 @@ For an example of plotting an interpolated `Ensemble`, see [the Basic Usage docu
 
 ## What's in an Ensemble file
 
-See the full example in this notebook: <project:../nb/ensemble_file.md>
+See the full example in this notebook: <project:../nb/ensemble_file.md> (download [here](../nb/ensemble_file.ipynb)).

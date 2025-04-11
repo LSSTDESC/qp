@@ -5,9 +5,11 @@
 To install `qp`, you can run the following commands:
 
 ```bash
+
 git clone https://github.com/LSSTDESC/qp.git
 cd qp
 pip install .
+
 ```
 
 For more information on alternate installation methods see <project:installation.md>.
@@ -25,7 +27,7 @@ The main object of `qp` is the {py:class}`qp.Ensemble`. This is an object that s
 - _(optional)_ **Ancillary data table** ({py:attr}`qp.Ensemble.ancil`)
   - any additional data for the distributions, where there must be one row for every distribution
 
-The printed representation of an `Ensemble` tells you the parameterization type and the shape of the arrays in the `objdata`, which is essentially ($n_{pdf}$, $ndata$), where $n_{pdf}$ is the number of distributions and $n_{vals}$ is the number of values or data points for each distribution in the `Ensemble`.
+The printed representation of an `Ensemble` tells you the parameterization type and the shape of the arrays in the `objdata`, which is essentially ($n_{pdf}$, $n_{vals}$), where $n_{pdf}$ is the number of distributions and $n_{vals}$ is the number of values or data points for each distribution in the `Ensemble`.
 
 ### Creating an Ensemble
 
@@ -65,8 +67,8 @@ Now that you have created an `Ensemble`, you can get a sense of what's in it by 
 
 You can also use the available [`Ensemble` methods](methods.md). These allow you to manipulate your `Ensemble`, or get statistical information about your `Ensembles`. For example, here are some useful methods:
 
-- {py:meth}`qp.Ensemble.pdf`: Get the PDF values at specified x values
-- {py:meth}`qp.Ensemble.cdf`: Get the CDF values at specified x values
+- {py:meth}`qp.Ensemble.pdf`: Get the PDF values at specified $x$ values
+- {py:meth}`qp.Ensemble.cdf`: Get the CDF values at specified $x$ values
 - {py:meth}`qp.Ensemble.convert`: Convert the `Ensemble` to a different parameterization
 
 ### Saving an `Ensemble` for later
@@ -85,6 +87,6 @@ The available file formats can be found in <project:basicusage.md#writing-an-ens
 
 - <project:qpprimer.md> covers some of the statistics basics necessary for using `qp`
 - <project:basicusage.md> provides more detailed explanations of topics discussed here
-- <project:cookbook.md> contains detailed examples for specific use cases, i.e. conversion, plotting
+- <project:cookbook.md> contains detailed examples for specific use cases, i.e. conversion, plotting, iteration
 - <project:./parameterizations/index.md> contains more details on specific parameterizations
 - <project:troubleshooting.md> for common pitfalls and errors

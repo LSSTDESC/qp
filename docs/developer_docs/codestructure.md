@@ -11,9 +11,6 @@
 
 ![qp-code-structure](../assets/qp-model-diagram.svg)
 
-- diagram of how the code is structured
-- short description of the code and how it works, etc
-
 Below is a diagram of the current code structure, and some descriptions of the purpose of files and folders.
 
 ```bash

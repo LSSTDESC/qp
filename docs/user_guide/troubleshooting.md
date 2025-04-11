@@ -8,15 +8,15 @@ This code inherits a number of classes from `scipy.stats`, specifically `rv_cont
 
 ## Conversion
 
-- Converting from Gaussian mixed models to another parameterization using any method that requires sampling (i.e. "samples" method for histogram) is currently not functional, use the default method instead
-- Converting to Gaussian mixed models relies on sampling and fitting the input distribution and does not provide consistent outputs.
-- Converting to a quantile parameterization from norm or Gaussian mixed model parameterizations, your quantiles cannot include 0 or 1. Give values as close to 0 and 1 as possible to avoid infinite values
+- Converting from Gaussian mixed models to another parameterization using any method that requires sampling (i.e. "samples" method for histogram) is currently not functional, use the default method instead.
+- Converting to Gaussian mixed models relies on sampling and then fitting the sampled data, so it does not provide consistent outputs.
+- When converting to a quantile parameterization from most other parameterizations, your quantiles cannot include 0 or 1. Give values as close to 0 and 1 as possible to avoid infinite values.
 
 ## Parameterizations
 
 - Quantile
 
-  - PDF interpolation can go into negative values unnecessarily with "dual spline average" and "cdf spline average" constructors.
+  - PDF interpolations can have negative values with "dual spline average" and "cdf spline average" constructors, particularly near the edges of the distribution
 
 - Gaussian mixed models
 
