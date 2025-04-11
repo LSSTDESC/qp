@@ -144,7 +144,7 @@ def test_ancil_dimension(hist_ensemble):
     assert_all_close(hist_ensemble.ancil["ids"], ancil["ids"])
 
 
-def test_writeHdf5Chunk(hist_ensemble, tmp_path):
+def test_writeHdf5Chunk_single_ens(hist_ensemble, tmp_path):
     """Test that the writeHdf5Chunk function works with a chunk of 1 distribution."""
 
     single_ens = hist_ensemble[0]

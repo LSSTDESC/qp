@@ -3,6 +3,7 @@
 This page provides some more in-depth examples of commonly performed routines with `qp`. The longer ones are given as Jupyter Notebooks, which can be viewed here or downloaded from <project:../nb/index.md>.
 
 (creating-an-ensemble-from-a-qp-stats-distribution)=
+
 ## Creating an `Ensemble` from a `qp.stats` distribution
 
 The `create_ensemble` function for the `qp.stats` distributions is slightly different than for the other parameterizations, as it requires a dictionary of the data to create the Ensemble, instead of being able to take individual arguments. See below for an example using the `qp.stats.norm` distribution:
@@ -118,20 +119,20 @@ You may need to edit the file path in the example program above.
 
 ## Plotting using x_samples
 
-A useful method for quickly plotting a distribution or distributions in your `Ensemble` is the {py:meth}`qp.Ensemble.x_samples` method. This is meant to provide a series of x values that should cover the range of data given in all distributions in the `Ensemble`, which can be provided to the appropriate method ({py:meth}`qp.Ensemble.pdf` for most parameterizations, {py:meth}`qp.Ensemble.cdf` for quantiles) to get the relevant y values.
+A useful method for quickly plotting a distribution or distributions in your `Ensemble` is the {py:meth}`qp.Ensemble.x_samples` method. This is meant to provide a series of $x$ values that should cover the range of data given in all distributions in the `Ensemble`, which can be provided to the appropriate method ({py:meth}`qp.Ensemble.pdf` for most parameterizations, {py:meth}`qp.Ensemble.cdf` for quantiles) to get the relevant $y$ values.
 
 :::{note}
-The {py:meth}`qp.Ensemble.x_samples` method only works properly for the four main supported parameterizations. For the rest it returns just a default set of points between a given minimum and maximum value.
+The {py:meth}`qp.Ensemble.x_samples` method only works properly for the five main supported parameterizations. For the rest it returns just a default set of points between a given minimum and maximum value.
 :::
 
-As an example, let's take a look at the output of {py:meth}`qp.Ensemble.x_samples` and plot a CDF from a quantile distribution:
+As an example, let's take a look at the output of {py:meth}`qp.Ensemble.x_samples` and plot a CDF from a [quantile distribution](./parameterizations/quant.md):
 
 ```{doctest}
 
 >>> import qp
 >>> import numpy as np
 >>> import matplotlib.pyplot as plt
->>> ens_n2 = qp.stats.norm.create_ensemble({"loc": np.array([2.5, 3.5]),
+>>> ens_n = qp.stats.norm.create_ensemble({"loc": np.array([2.5, 3.5]),
 ... "scale": np.array([1.,0.85])})
 >>> quants = np.linspace(0.001,0.999,10)
 >>> ens_q = qp.convert(ens_n, "quant", quants=quants)

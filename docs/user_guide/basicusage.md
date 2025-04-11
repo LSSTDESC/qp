@@ -27,7 +27,7 @@ There are three available methods to create an `Ensemble` from in-memory data, a
 
 ### Creating an Ensemble from in-memory data
 
-The first method is to use the `create_ensemble` function that exists for each parameterization. This function will take as arguments the required metadata coordinates and data values for the parameterization, as well as the argument `ancil` for any ancillary data.
+The first method is to use the `create_ensemble()` function that exists for each parameterization. This function will take as arguments the required metadata coordinates and data values for the parameterization, as well as the argument `ancil` for any ancillary data.
 
 For example, to create an interpolated parameterization, where the distributions are given by a set of $x$ and $y$ values, you can use {py:meth}`qp.interp.create_ensemble() <qp.interp_gen.create_ensemble>`, where the data is passed as arguments to the function. Below, we do just that. First we have to set up a distribution with $x$ and $y$ values, which we do by using the `scipy.stats.norm` distribution:
 
@@ -58,7 +58,7 @@ Ensemble(the_class=interp,shape=(3, 50))
 
 Note that the representation of the `Ensemble` tells us what the parameterization class is, and the shape of the `Ensemble` (also available via {py:attr}`qp.Ensemble.shape`). The first value is the number of distributions and the second value is the number of data values per distribution, which in this case is equal to the number of $xvals$.
 
-Another method is to use {py:meth}`qp.create <qp.factory.Factory.create>`, which allows you to create an `Ensemble` of any parameterization type. The function requires the parameterization type as an argument, as well as a dictionary of the necessary data, and an optional `ancil` argument for any ancillary data. So to create an `Ensemble` using the same data above, you would use the following commands:
+Another method is to use {py:meth}`qp.create() <qp.factory.Factory.create>`, which allows you to create an `Ensemble` of any parameterization type. The function requires the parameterization type as an argument, as well as a dictionary of the necessary data, and an optional `ancil` argument for any ancillary data. So to create an `Ensemble` using the same data above, you would use the following commands:
 
 ```{doctest}
 
@@ -69,7 +69,7 @@ Ensemble(the_class=interp,shape=(3, 50))
 
 ```
 
-Finally, you can instantiate the `Ensemble` class directly by using {py:class}`qp.Ensemble`, which takes the same arguments as the {py:meth}`qp.create <qp.factory.Factory.create>` method, except the parameterization argument must be the actual class, instead of the string name of the class:
+Finally, you can instantiate the `Ensemble` class directly by using {py:class}`qp.Ensemble`, which takes the same arguments as the {py:meth}`qp.create() <qp.factory.Factory.create>` method, except the parameterization argument must be the actual class, instead of the string name of the class:
 
 ```{doctest}
 
@@ -81,7 +81,7 @@ Ensemble(the_class=interp,shape=(3, 50))
 
 ### Reading an Ensemble from file
 
-An `Ensemble` can be read from a file as well, if the file is in the appropriate format. To check if a file can be read in as an `Ensemble`, you can use {py:meth}`qp.is_qp_file <qp.factory.Factory.is_qp_file>`, which returns `True` if it is in a compatible format. Once you have a file that can be read it, you can use {py:meth}`qp.read <qp.factory.Factory.read>` as shown in the example below:
+An `Ensemble` can be read from a file as well, if the file is in the appropriate format. To check if a file can be read in as an `Ensemble`, you can use {py:meth}`qp.is_qp_file() <qp.factory.Factory.is_qp_file>`, which returns `True` if it is in a compatible format. Once you have a file that can be read it, you can use {py:meth}`qp.read() <qp.factory.Factory.read>` as shown in the example below:
 
 ```{doctest}
 
@@ -91,7 +91,7 @@ Ensemble(the_class=interp,shape=(3, 50))
 
 ```
 
-Alternatively, if you have multiple `Ensembles` to read in from an HDF5 file, you can use {py:meth}`qp.read_dict <qp.factory.Factory.read_dict>`:
+Alternatively, if you have multiple `Ensembles` to read in from an HDF5 file, you can use {py:meth}`qp.read_dict() <qp.factory.Factory.read_dict>`:
 
 ```{doctest}
 
@@ -141,14 +141,14 @@ Note that `objdata` and `metadata` do not store the exact input data. Instead th
 
 ```
 
-Note that the $yvals$ in `objdata` are different than the ones given to the `create_ensemble` function.
+Note that the $y_{vals}$ in `objdata` are different than the ones given to the `create_ensemble()` function.
 
 :::
 
 An `Ensemble` also has other attributes that provide information about it. Some useful ones are:
 
 - {py:attr}`qp.Ensemble.npdf`: the number of distributions in the `Ensemble`
-- {py:attr}`qp.Ensemble.shape`: ($npdf$, $ndata$), where $ndata$ is the number of values that each distribution has, usually corresponding in some way to the number of coordinates in the metadata. For our sample `Ensemble`, $ndata$ is equal to the number of $xvals$.
+- {py:attr}`qp.Ensemble.shape`: ($n_{pdf}$, $n_{data}$), where $n_{data}$ is the number of values that each distribution has, usually corresponding in some way to the number of coordinates in the metadata. For our sample `Ensemble`, $n_{data}$ is equal to the number of $x_{vals}$.
 
 A complete list of attributes can be found in the [API class documentation](#qp.core.ensemble.Ensemble).
 
@@ -165,24 +165,24 @@ array([[1.20683683],
 
 ```
 
-This returns an array of shape ($npdf$, $nxval$), where $nxval$ is the number of $x$ values given to the function.
+This returns an array of shape ($n_{pdf}$, $n$), where $n$ is the number of $x$ values given to the function.
 
 #### Converting between parameterizations
 
 It is possible to convert an `Ensemble` of distributions to a different parameterization. There are two main methods for conversion:
 
-- {py:meth}`qp.convert <qp.factory.Factory.convert>`: takes as arguments the `Ensemble` to convert and the name of the parameterization we want to convert to (i.e. 'hist').
+- {py:meth}`qp.convert() <qp.factory.Factory.convert>`: takes as arguments the `Ensemble` to convert and the name of the parameterization we want to convert to (i.e. 'hist').
 - {py:meth}`qp.Ensemble.convert_to`: takes as an argument the class object for the parameterization we want to convert to (i.e. `qp.hist`)
 
 Both functions also allow you to provide a specific conversion method via the `method` keyword, if the parameterization has more than one conversion method. Most conversion methods also have additional required arguments, which differ between parameterizations. To get more information about the conversion methods for a specific parameterization, see the documentation page for that parameterization.
 
 :::{note}
 
-You can only convert to a parameterization that has a conversion method. This means that you cannot convert to any parameterization that inherits from `scipy` (i.e. any parameterization that starts with `qp.stats`).
+You can only convert to a parameterization that has a conversion method. This means that you cannot convert to any parameterization that inherits from `scipy` (i.e. any parameterization that starts with `qp.stats` -- see <project:./parameterizations/index.md> for more information about these parameterizations).
 
 :::
 
-For example, let's say we wanted to convert our `Ensemble` from an interpolation to a histogram (`hist`). The [`hist` parameterization](#qp.parameterizations.hist.hist.hist_gen) has two conversion methods, {py:func}`extract_hist_values <qp.parameterizations.hist.hist_utils.extract_hist_values>` and {py:func}`extract_hist_samples <qp.parameterizations.hist.hist_utils.extract_hist_samples>` (see <project:parameterizations/hist.md#conversion> for more details on these functions). For this example we'll use `extract_hist_values`, which requires the `bins` argument.
+For example, let's say we wanted to convert our `Ensemble` from an interpolation to a histogram (`hist`). The [`hist` parameterization](#qp.parameterizations.hist.hist.hist_gen) has two conversion methods, {py:func}`extract_hist_values() <qp.parameterizations.hist.hist_utils.extract_hist_values>` and {py:func}`extract_hist_samples() <qp.parameterizations.hist.hist_utils.extract_hist_samples>` (see <project:parameterizations/hist.md#conversion> for more details on these functions). For this example we'll use `extract_hist_values`, which requires the `bins` argument.
 
 ```{doctest}
 
@@ -193,7 +193,7 @@ Ensemble(the_class=hist,shape=(3, 25))
 
 ```
 
-[Our new `Ensemble` has a different class and a different shape, since now instead of 50 $xvals$ we have 25 $bins$ (and 26 bin edges). Let's plot them both to compare:]{#plotting-interp-ensemble}
+[Our new `Ensemble` has a different class and a different shape, since now instead of 50 $x$ values we have 25 bins (and 26 bin edges). Let's plot them both to compare:]{#plotting-interp-ensemble}
 
 ```{doctest}
 
@@ -262,7 +262,7 @@ True
 
 ```
 
-If we wanted to write both of our `Ensembles` to the same file, we can use method {py:meth}`qp.write_dict <qp.factory.Factory.write_dict>`.
+If we wanted to write both of our `Ensembles` to the same file, we can use method {py:meth}`qp.write_dict() <qp.factory.Factory.write_dict>`.
 
 ```{doctest}
 
