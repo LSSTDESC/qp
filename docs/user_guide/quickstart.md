@@ -16,9 +16,9 @@ For more information on alternate installation methods see <project:installation
 
 ## How to use `qp`
 
-**INTRO TO QP AND PARAMETERIZATIONS HERE**
+`qp` is meant to allow users to store and manipulate sets of probability distributions that can be represented, or parameterized, in different ways. The different parameterization options allow users to store analytically parameterized distributions, such as Gaussian mixture models, in addition to more data-based parameterizations such as histograms or distributions interpolated from a set of $x$ and $y$ values. It also allows for use of any of the `scipy.stats.rv_continuous` distributions as parameterization types under the `qp.stats` module. For a full list of supported parameterizations and more detailed explanations, see <project:./parameterizations/index.md>.
 
-The main object of `qp` is the {py:class}`qp.Ensemble`. This is an object that stores one or more distributions of the same type, or parameterization. It has three main data dictionaries:
+The main object of `qp` that stores these distributions is the {py:class}`qp.Ensemble`. It can store one or more distributions of the same parameterization. It has three main data dictionaries:
 
 - **Metadata** ({py:attr}`qp.Ensemble.metadata`)
   - tells you the shared parameters, including the parameterization type
@@ -31,7 +31,7 @@ The printed representation of an `Ensemble` tells you the parameterization type 
 
 ### Creating an Ensemble
 
-To create an `Ensemble` of any number of distributions, you can use the `create_ensemble` method of any of the existing parameterizations. For example, to create an `Ensemble` of interpolations:
+To create an `Ensemble` of any number of distributions, you can use the `create_ensemble` method of any of the existing parameterization classes. For example, to create an `Ensemble` of interpolations:
 
 ```{doctest}
 
