@@ -8,6 +8,8 @@
 - parameterizations
   - `base.py`: contains the base classes that all parameterization classes must inherit from
   - parameterization classes: contain the attributes and functions specific to that parameterization
+    - main file: contains the parameterization class and its methods
+    - `_utils.py` file: contains any supporting methods required for the parameterization
 
 ![qp-code-structure](../assets/qp-model-diagram.svg)
 
