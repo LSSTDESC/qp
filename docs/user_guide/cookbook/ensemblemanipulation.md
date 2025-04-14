@@ -1,11 +1,6 @@
-# Cookbook
+# Ensemble manipulation
 
-This page provides some more in-depth examples of commonly performed routines with `qp`. The longer ones are given as Jupyter Notebooks, which can be viewed here or downloaded from <project:../nb/index.md>.
-
-- add in a section on data manipulation of the `Ensemble`
-  - i.e has the qp file notebook
-  - also includes quick examples (how to get the pdfs for a histogram, or the x values for an interpolation, for example)
-  - how to update the data in an Ensemble
+This page covers examples of `Ensemble` creation and some basic usage.
 
 (creating-an-ensemble-from-a-qp-stats-distribution)=
 
@@ -43,7 +38,7 @@ Ensemble(the_class=norm, shape=(3,1))
 
 ## Sampling
 
-Sampling from an `Ensemble` can be done easily using the {py:meth}`qp.Ensemble.rvs` method. Below is an example sampling from our example `Ensemble` from the <project:basicusage.md> documentation, which has 3 distributions:
+Sampling from an `Ensemble` can be done easily using the {py:meth}`qp.Ensemble.rvs` method. Below is an example sampling from our example `Ensemble` from the <project:../basicusage.md> documentation, which has 3 distributions:
 
 ```{doctest}
 
@@ -89,28 +84,24 @@ Ensemble(the_class=hist,shape=(2,8))
 
 Our new `Ensemble` now contains both distributions.
 
-## Conversion example
-
-See the full example in this notebook: <project:../nb/conversion_example.md> (download [here](../nb/conversion_example.ipynb)).
-
 ## Iteration example
 
-See the tutorial for general use of the iterator function here: <project:../nb/iterator_demo.md> (download [here](../nb/iterator_demo.ipynb)).
+This tutorial notebook covers the use of the {py:meth}`qp.iterator() <qp.factory.Factory.iterator>` function to read in `Ensembles` from a file, as well as how to iteratively write `Ensembles` to HDF5 files in series and in parallel: <project:../../nb/iterator_demo.md> (download [here](../../nb/iterator_demo.ipynb)).
 
-The iterator function can also be used in parallel, allowing for each process to iterate through some of the distributions. Let's test this out on a sample file of `Ensembles`. First we need to know how many distributions are in the file:
+The {py:meth}`qp.iterator() <qp.factory.Factory.iterator>` function can also be used in parallel, allowing for each process to iterate through some of the distributions. Let's test this out on a sample file of `Ensembles`. First we need to know how many distributions are in the file:
 
 ```{doctest}
 
 >>> import qp
->>> filename = "../assets/test.hdf5"
+>>> filename = "../../assets/test.hdf5"
 >>> qp.data_length(filename)
 100
 
 ```
 
-We can now decide on a chunk size. Let's say that we're using 4 cores, so each core will have access to 25 distributions. So let's go with a chunk size of 5, so the data is easily divisible by the chunk size. Now we can write our little program to iterate through the data (you can download the file [here](../assets/mpi-example.py)):
+We can now decide on a chunk size. Let's say that we're using 4 cores, so each core will have access to 25 distributions. So let's go with a chunk size of 5, so the data is easily divisible by the chunk size. Now we can write our little program to iterate through the data (you can download the file [here](../../assets/mpi-example.py)):
 
-```{literalinclude} ../assets/mpi-example.py
+```{literalinclude} ../../assets/mpi-example.py
 
 ```
 
@@ -130,7 +121,7 @@ A useful method for quickly plotting a distribution or distributions in your `En
 The {py:meth}`qp.Ensemble.x_samples` method only works properly for the five main supported parameterizations. For the rest it returns just a default set of points between a given minimum and maximum value.
 :::
 
-As an example, let's take a look at the output of {py:meth}`qp.Ensemble.x_samples` and plot a CDF from a [quantile distribution](./parameterizations/quant.md):
+As an example, let's take a look at the output of {py:meth}`qp.Ensemble.x_samples` and plot a CDF from a [quantile distribution](../parameterizations/quant.md):
 
 ```{doctest}
 
@@ -167,10 +158,6 @@ You can see that for the quantile parameterization, {py:meth}`qp.Ensemble.x_samp
 
 ```
 
-![quant-plot](../assets/cookbook-plotting-quant.svg)
+![quant-plot](../../assets/cookbook-plotting-quant.svg)
 
-For an example of plotting an interpolated `Ensemble`, see [the Basic Usage documentation](basicusage.md#converting-between-parameterizations).
-
-## What's in an Ensemble file
-
-See the full example in this notebook: <project:../nb/ensemble_file.md> (download [here](../nb/ensemble_file.ipynb)).
+For an example of plotting an interpolated `Ensemble`, see [the Basic Usage documentation](../basicusage.md#converting-between-parameterizations).
