@@ -10,9 +10,9 @@ It is recommended to use type hints for the arguments and outputs of functions t
 
 ### Naming and placement
 
-- Parameterization classes get their own file in the `parameterizations/` folder. The file should be called `[name].py`, where `name` is the name of the parameterization.
-  - If they require supporting functions, then they should get a folder called `[name]`
-  - Supporting files should go in this folder in addition to the class file
+- Parameterization classes get their own folder within the `parameterizations/` folder. The folder should be called `[name]/`, where `name` is the name of the parameterization.
+  - The class file should be called `[name].py`
+  - Supporting files should go in this folder in addition to the class file. The generic supporting file name is `[name]_utils.py`
   - The class itself should be called `[name]_gen`
 
 ## Tests

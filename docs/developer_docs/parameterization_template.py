@@ -41,12 +41,12 @@ from ...core.ensemble import Ensemble
 # -> Replace `parameterization` in the class name with your chosen parameterization name
 #    and fill out the relevant information in the class docstring below
 class parameterization_gen(Pdf_rows_gen):
-    """[One sentence Description goes here]
+    """[One sentence description goes here]
 
     [ any further description needed here]
 
     By default, the input distribution is normalized. If the input data is
-    already normalized, you can use the optional parameter ``check_input = False``
+    already normalized, you can use the optional parameter ``norm = False``
     to skip the normalization process.
 
     Parameters
@@ -79,6 +79,7 @@ class parameterization_gen(Pdf_rows_gen):
     This table contains the available methods to convert to this parameterization,
     their required arguments, and their method keys. If the key is `None`, this is
     the default conversion method.
+
     +----------+-----------+------------+
     | Function | Arguments | Method key |
     +----------+-----------+------------+
