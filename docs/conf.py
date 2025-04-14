@@ -22,12 +22,13 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.mathjax",
-    "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     "sphinx.ext.doctest",
     "sphinx_design",
     "myst_nb",
     "sphinx_copybutton",
+    "sphinx.ext.intersphinx",
+    "numpydoc",
 ]
 
 myst_enable_extensions = ["colon_fence", "dollarmath", "attrs_inline", "tasklist"]
@@ -44,8 +45,54 @@ autoclass_content = "class"
 autodoc_default_flags = ["members", "no-special-members"]
 autodoc_member_order = "bysource"
 autodoc_type_aliases = {
-    "ArrayLike": "ArrayLike",
+    # requires `from __future__ import annotations` in all modules
+    "ArrayLike": "~numpy.typing.ArrayLike",  # required to stop ArrayLike from expanding in the function signature, can't seem to make it link unfortunately
 }
+
+numpydoc_show_class_members = False
+numpydoc_validation_checks = {"SS01"}
+numpydoc_xref_param_type = True  # save from having to backtick everything
+numpydoc_xref_aliases = {
+    "Optional": "typing.Optional",  # required for links in docstrings
+    "Mapping": "typing.Mapping",  # required for links in docstrings
+    "Union": "typing.Union",  # required for links in docstrings
+    "Any": "typing.Any",  # required for links in docstrings
+    "List": "typing.List",  # required for links in docstrings
+    # external
+    "ArrayLike": "numpy.typing.ArrayLike",  # required for links in docstrings
+    "Axes": "matplotlib.axes.Axes",
+    "Figure": "matplotlib.figure.Figure",
+    "sps.gaussian_kde": "scipy.stats.gaussian_kde ",
+    "np.uint8": "numpy.uint8",
+    # qp classes: lets you write just "ClassName" in files other than where ClassName is defined
+    # otherwise you'd need to write what's defined below
+    "Pdf_gen": "`~qp.parameterizations.base.Pdf_gen`",
+    "Ensemble": "`~qp.Ensemble`",
+    "AbstractQuantilePdfConstructor": "`~qp.parameterizations.quant.abstract_pdf_constructor.AbstractQuantilePdfConstructor`",
+}
+numpydoc_xref_ignore = {
+    "optional",
+    "default",
+    "subclass",
+    "of",
+    "or",
+    "length",
+    "size",
+    "shape",
+    "containing",
+    "distributions",
+}
+
+
+# intersphinx configuration
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "matplotlib": ("https://matplotlib.org/stable/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
+    "h5py": ("https://docs.h5py.org/en/stable", None),
+}
+default_role = "py:obj"  # interpret `function` as crossref to the py object 'function'
 
 
 # html_sidebars = {
