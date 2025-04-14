@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 import os
+from typing import Mapping, Optional, Union
 
+import h5py
 import numpy as np
 import tables_io
 from tables_io import hdf5
 from typing import Mapping, Optional, Union
+from matplotlib.axes import Axes
 from numpy.typing import ArrayLike
 
 from ..utils.dictionary import (
@@ -46,12 +49,12 @@ class Ensemble:
     ----------
     the_class : a subclass of `Pdf_gen`
         The class to use to parameterize the distributions
-    data : `dict`
+    data : Mapping
         Dictionary with data used to construct the ensemble. The keys required
         vary for different parameterizations.
-    ancil : `dict`, optional
+    ancil : Optional[Mapping]
         Dictionary with ancillary data, by default None
-    method : `str`, optional
+    method : Optional[str]
         The key for the creation method to use, by default None
 
 
@@ -98,12 +101,12 @@ class Ensemble:
         ----------
         the_class : a subclass of `Pdf_gen`
             The class to use to parameterize the distributions
-        data : `dict`
+        data : Mapping
             Dictionary with data used to construct the ensemble. The keys required
             vary for different parameterizations.
-        ancil : `dict`
+        ancil : Optional[Mapping]
             Dictionary with ancillary data, by default None
-        method : `str`
+        method : Optional[str]
             The key for the creation method to use, by default None
 
         """
@@ -119,15 +122,15 @@ class Ensemble:
         self._gridded = None
         self._samples = None
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         class_name = type(self).__name__
         return f"{class_name}(the_class={self._gen_class.name},shape={self.shape})"
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.npdf
 
-    def __getitem__(self, key: Union[int, slice]):
         """Build a `qp.Ensemble` object for a sub-set of the distributions in this ensemble
+    def __getitem__(self, key: Union[int, slice]) -> Ensemble:
 
         Parameter
         ---------
@@ -220,7 +223,7 @@ class Ensemble:
 
     def x_samples(
         self, min: float = 0.0, max: float = 5.0, n: Optional[int] = 1000
-    ) -> np.ndarray:
+    ) -> np.ndarray[float]:
         """Return an array of x values that can be used to plot all the distributions
         in the Ensemble.
 
@@ -246,7 +249,7 @@ class Ensemble:
 
         Returns
         -------
-        np.ndarray
+        xs : np.ndarray[float]
             The array of points to use.
         """
         try:
@@ -254,7 +257,7 @@ class Ensemble:
         except:
             return np.linspace(min, max, n)
 
-    def convert_to(self, to_class: Pdf_gen, **kwargs):
+    def convert_to(self, to_class: Pdf_gen, **kwargs: str) -> Ensemble:
         """Convert this ensemble to the given parameterization class. To see
         the available conversion methods for the your chosen parameterization
         and their required arguments, check the docstrings for ``qp.to_class``.
@@ -311,7 +314,7 @@ class Ensemble:
         data = extract_func(self, **kwds)
         return Ensemble(to_class, data=data, method=method)
 
-    def update(self, data: Mapping, ancil: Optional[Mapping] = None):
+    def update(self, data: Mapping, ancil: Optional[Mapping] = None) -> None:
         """Update the frozen distribution object with the given data, and set
         the ancillary data table with ``ancil`` if given.
 
@@ -319,7 +322,7 @@ class Ensemble:
         ----------
         data : `Mapping`
             Dictionary with data used to construct the ensemble, including metadata.
-        ancil : `Mapping`
+        ancil : Optional[Mapping], optional
             Optional dictionary that contains data for each of the distributions
             in the ensemble, by default None.
 
@@ -343,15 +346,15 @@ class Ensemble:
         self._gridded = None
         self._samples = None
 
-    def update_objdata(self, data: Mapping, ancil: Optional[Mapping] = None):
+    def update_objdata(self, data: Mapping, ancil: Optional[Mapping] = None) -> None:
         """Updates the objdata in the frozen distribution, and sets
         the ancillary data table if given.
 
         Parameters
         ----------
-        data : `dict`
+        data : Mapping
             Dictionary with the object data that will be used to reconstruct the ensemble
-        ancil : `Mapping`
+        ancil : Optional[Mapping], optional
             Optional dictionary that contains data for each of the distributions
             in the ensemble, by default None.
 
@@ -384,7 +387,7 @@ class Ensemble:
 
         Returns
         -------
-        metadata : `dict`
+        metadata : Mapping
             The dictionary of the metadata.
 
         """
@@ -401,7 +404,7 @@ class Ensemble:
 
         Returns
         -------
-        objdata : `dict`
+        objdata : Mapping
             The object data
 
         Notes
@@ -423,7 +426,7 @@ class Ensemble:
 
         return dd
 
-    def set_ancil(self, ancil: Mapping):
+    def set_ancil(self, ancil: Mapping) -> None:
         """Set the ancillary data dictionary. The arrays in this dictionary must have
         one row for each of the distributions, which means that the length of these
         arrays (or the first dimension) must be the same as the number of distributions
@@ -431,7 +434,7 @@ class Ensemble:
 
         Parameters
         ----------
-        ancil : `dict`
+        ancil : Mapping
             The ancillary data dictionary.
 
         Raises
@@ -456,7 +459,7 @@ class Ensemble:
         check_array_shapes(ancil, self.npdf)
         self._ancil = ancil
 
-    def add_to_ancil(self, to_add: Mapping):  # pragma: no cover
+    def add_to_ancil(self, to_add: Mapping) -> None:  # pragma: no cover
         """Add additional columns to the ancillary data dictionary. The
         ancil dictionary must already exist. If it does not, use `set_ancil`.
 
@@ -466,7 +469,7 @@ class Ensemble:
 
         Parameters
         ----------
-        to_add : `dict`
+        to_add : Mapping
             The columns to add to the ancillary data dict
 
 
@@ -493,7 +496,7 @@ class Ensemble:
         check_array_shapes(to_add, self.npdf)
         self._ancil.update(to_add)
 
-    def append(self, other_ens):
+    def append(self, other_ens: Ensemble) -> None:
         """Append another ensemble to this ensemble. The ensembles must be
         of the same parameterization, or this will not work. They must also
         have the same metadata, so for example if they are both histograms
@@ -622,7 +625,7 @@ class Ensemble:
         new_grid, griddata = self.gridded(grid)
         return np.expand_dims(new_grid[np.argmax(griddata, axis=1)], -1)
 
-    def gridded(self, grid: ArrayLike) -> ArrayLike:
+    def gridded(self, grid: ArrayLike) -> tuple[ArrayLike, ArrayLike]:
         """Build, cache and return the PDF values at the given grid points.
         If the given grid matches the already cached grid, then this just
         returns the cached value.
@@ -634,7 +637,8 @@ class Ensemble:
 
         Returns
         -------
-        gridded : (grid, pdf_values)
+        gridded : tuple [ ArrayLike, ArrayLike ]
+            (grid, pdf_values)
 
 
         """
@@ -642,7 +646,7 @@ class Ensemble:
             self._gridded = (grid, self.pdf(grid))
         return self._gridded
 
-    def write_to(self, filename: str):
+    def write_to(self, filename: str) -> None:
         """Write this ensemble to a file.
 
         The file type can be any of the those supported by tables_io. File type
@@ -715,7 +719,7 @@ class Ensemble:
 
         Parameters
         ----------
-        x: `float` or `ndarray`
+        x : ArrayLike
             Location(s) at which to do the evaluations
 
         Returns
@@ -751,7 +755,7 @@ class Ensemble:
 
         Parameters
         ----------
-        x: `float` or `ndarray`
+        x : ArrayLike
             Location(s) at which to do the evaluations
 
         Returns
@@ -787,7 +791,7 @@ class Ensemble:
 
         Parameters
         ----------
-        x: `float` or `ndarray`
+        x : ArrayLike
             Location(s) at which to do the evaluations
 
         Returns
@@ -823,12 +827,12 @@ class Ensemble:
 
         Parameters
         ----------
-        q: `float` or `ndarray`
+        q : ArrayLike
             Location(s) at which to do the evaluations
 
         Returns
         -------
-        ppf : `np.ndarray`
+        ppf : ArrayLike
             The PPF at the given location(s)
 
         Example
@@ -856,7 +860,7 @@ class Ensemble:
 
         Parameters
         ----------
-        q: `float` or `ndarray`
+        q : ArrayLike
             Location(s) at which to evaluate the distributions
 
         Returns
@@ -889,7 +893,7 @@ class Ensemble:
 
         Parameters
         ----------
-        q: `float` or `ndarray`
+        q : ArrayLike
             Location(s) at which to evaluate the distributions
 
         Returns
@@ -923,7 +927,7 @@ class Ensemble:
 
         Parameters
         ----------
-        q: `float` or `ndarray`
+        q : ArrayLike
             Location(s) at which to evaluate the distributions
 
         Returns
@@ -964,7 +968,7 @@ class Ensemble:
 
         Parameters
         ----------
-        size: `int`
+        size : int, optional
             Number of samples to return, by default 1.
         random_state : `int`, `np.random.Generator`, `None`, optional
             The random state to use. Can be provided with a random seed for consistency. By default None.
@@ -991,7 +995,7 @@ class Ensemble:
             size=(self._frozen.npdf, size), random_state=random_state
         )
 
-    def stats(self, moments: str = "mv") -> tuple[ArrayLike]:
+    def stats(self, moments: str = "mv") -> tuple[ArrayLike, ...]:
         """
         Return some statistics for each of the distributions in this ensemble.
 
@@ -1001,12 +1005,12 @@ class Ensemble:
 
         Parameters
         ----------
-        moments: `str`
+        moments : str, optional
             Which moments to include, by default "mv"
 
         Returns
         -------
-        stats : sequence
+        stats : tuple[ArrayLike, ... ]
             A sequence of arrays of the moments requested, where the shape of the arrays is (npdf, 1)
 
         Example
@@ -1208,9 +1212,10 @@ class Ensemble:
     #    """ Return the log of the kth pmf for this ensemble """
     #    return self._frozen.logpmf(k)
 
-    def interval(self, alpha) -> tuple[ArrayLike]:
-        """Return the intervals corresponding to a confidence level of `alpha` for each of the
-         distributions in this ensemble.
+    def interval(self, alpha: ArrayLike) -> tuple[ArrayLike, ...]:
+        """
+        Return the intervals corresponding to a confidence level of `alpha` for each of the
+        distributions in this ensemble.
 
         Parameters
         ----------
@@ -1220,7 +1225,7 @@ class Ensemble:
 
         Returns
         -------
-        interval :  `tuple[arraylike]`
+        interval :  tuple[ArrayLike, ...]
             A tuple of the arrays containing the intervals for each distribution, where the
             shape of the arrays is (npdf, len(alpha))
 
@@ -1246,12 +1251,12 @@ class Ensemble:
 
         Parameters
         ----------
-        bins: `ndarray`
+        bins : ArrayLike
             Array of N+1 endpoints of N bins
 
         Returns
         -------
-        histogram: `tuple[ndarray]`
+        histogram: tuple[ArrayLike, ArrayLike]
             The first array in the tuple is the bin edges that were input. The second
             array in the tuple is an (npdf, N) array of the values in the bins.
 
@@ -1278,7 +1283,7 @@ class Ensemble:
 
         Parameters
         ----------
-        limits: tuple[Union[numpy.ndarray, float], Union[numpy.ndarray, float]]
+        limits : tuple[Union[float, ArrayLike], Union[float, ArrayLike]]
             A tuple with the limits of integration, where the first object in the tuple is
             the lower limit, and the second object is the upper limit. The limit objects can
             be floats or arrays, where the number of limits is the length of those arrays, or
@@ -1287,7 +1292,7 @@ class Ensemble:
 
         Returns
         -------
-        integral: `numpy.ndarray`
+        integral: ArrayLike
             Value of the integral(s), with the shape (npdf, nlimits)
         """
         return self.cdf(limits[1]) - self.cdf(limits[0])
@@ -1346,8 +1351,8 @@ class Ensemble:
     def plot(
         self,
         key: Union[int, slice] = 0,
-        **kwargs,
-    ):
+        **kwargs: str,
+    ) -> Axes:
         """Plot the selected distribution as a curve.
 
         Parameters
@@ -1372,7 +1377,7 @@ class Ensemble:
         """
         return self._gen_class.plot(self[key], **kwargs)
 
-    def plot_native(self, key: Union[int, slice] = 0, **kwargs):
+    def plot_native(self, key: Union[int, slice] = 0, **kwargs: str) -> Axes:
         """Plot the selected distribution in the default format for this parameterization. To find what arguments are
         required for specific parameterizations, you can check the docstrings
         of qp.[parameterization].plot_native, where [parameterization] is the parameterization
@@ -1388,7 +1393,7 @@ class Ensemble:
 
         Returns
         -------
-        axes :
+        axes : Axes
             The plot axes
 
 
@@ -1407,7 +1412,9 @@ class Ensemble:
                     keywords[group][key] = (shape, array.dtype)
         return keywords
 
-    def initializeHdf5Write(self, filename: str, npdf: int, comm=None):
+    def initializeHdf5Write(
+        self, filename: str, npdf: int, comm=None
+    ) -> tuple[dict[str, h5py.File | h5py.Group], h5py.File]:
         """Set up the output write for an ensemble, but set size to npdf rather than
         the size of the ensemble, as the "initial chunk" will not contain the full data
 
@@ -1432,7 +1439,9 @@ class Ensemble:
         group, fout = hdf5.initialize_HDF5_write(filename, comm=comm, **kwds)
         return group, fout
 
-    def writeHdf5Chunk(self, fname, start: int, end: int):
+    def writeHdf5Chunk(
+        self, fname: "h5py.File" | "h5py.Group", start: int, end: int
+    ) -> None:
         """Write a chunk of the ensemble data to file. This will write
         the data for the distributions in the slice from [start:end] to the file.
         This includes the ancillary data table.
@@ -1450,7 +1459,7 @@ class Ensemble:
         odict.pop("meta")
         hdf5.write_dict_to_HDF5_chunk(fname, odict, start, end)
 
-    def finalizeHdf5Write(self, filename):
+    def finalizeHdf5Write(self, filename: "h5py.File" | "h5py.Group") -> None:
         """Write ensemble metadata to the output file and close the file.
 
         Parameters
