@@ -37,17 +37,17 @@ class Ensemble:
     An Ensemble has three main data components, the last of which is optional:
 
     1. The metadata: this contains information about the parameterization, and
-        the coordinates of the parameterization.
+       the coordinates of the parameterization.
     2. The object data: this contains the data that is unique to each distribution,
-        for example the values that correspond to the coordinates.
+       for example the values that correspond to the coordinates.
     3. The ancillary data (optional): this contains data points where there is one data point
-        for each distribution in the ensemble. There can be many of these columns or
-        arrays in the ancillary data table.
+       for each distribution in the ensemble. There can be many of these columns or
+       arrays in the ancillary data table.
 
 
     Parameters
     ----------
-    the_class : a subclass of `Pdf_gen`
+    the_class : Pdf_gen subclass
         The class to use to parameterize the distributions
     data : Mapping
         Dictionary with data used to construct the ensemble. The keys required
@@ -57,10 +57,8 @@ class Ensemble:
     method : Optional[str]
         The key for the creation method to use, by default None
 
-
-    Example
-    -------
-
+    Examples
+    --------
     >>> import qp
     >>> import numpy as np
     >>> data = {'bins': [0,1,2,3,4,5],
@@ -99,7 +97,7 @@ class Ensemble:
 
         Parameters
         ----------
-        the_class : a subclass of `Pdf_gen`
+        the_class : Pdf_gen subclass
             The class to use to parameterize the distributions
         data : Mapping
             Dictionary with data used to construct the ensemble. The keys required
@@ -129,12 +127,12 @@ class Ensemble:
     def __len__(self) -> int:
         return self.npdf
 
-        """Build a `qp.Ensemble` object for a sub-set of the distributions in this ensemble
     def __getitem__(self, key: Union[int, slice]) -> Ensemble:
+        """Build an `Ensemble` object for a sub-set of the distributions in this ensemble
 
-        Parameter
-        ---------
-        key : `int` or `slice`
+        Parameters
+        ----------
+        key : Union [int , slice]
             Used to slice the data to pick out one distribution from this ensemble
 
         Returns
@@ -231,21 +229,21 @@ class Ensemble:
         discrete data. For example, for an ensemble of histograms that would be
         the PDF, and for an ensemble of quantiles that would be the CDF.
 
-        Analytic parameterizations like `mixmod` or `norm` will just return a
-        `np.linspace(min,max,n)`, and it's recommended you input the values as
+        Analytic parameterizations like `mixmod <qp.mixmod_gen>` or `scipy.stats.norm` will just return a
+        `np.linspace(min,max,n) <numpy.linspace>`, and it's recommended you input the values as
         the defaults are the same for all analytic distributions.
 
         Parameters
         ----------
         min : float, optional
             The minimum x value to be used if the parameterization doesn't have an
-            x_samples method or is analytic, by default 0.
+            `x_samples` method or is analytic, by default 0.
         max : float, optional
             The maximum x value to be used if the parameterization doesn't have an
-            x_samples method or is analytic, by default 5.
+            `x_samples` method or is analytic, by default 5.
         n : Optional[int], optional
             The number of points to be used if the parameterization doesn't have an
-            x_samples method or is analytic, by default 1000
+            `x_samples` method or is analytic, by default 1000
 
         Returns
         -------
@@ -266,23 +264,23 @@ class Ensemble:
 
         Parameters
         ----------
-        to_class :  `class`, must be based on `Pdf_gen`
+        to_class :  Pdf_gen subclass
             Parameterization class to convert to
         **kwargs :
             Keyword arguments that are passed to the output class constructor
 
         Other Parameters
         ----------------
-        method : `str`
+        method : str
             Optional argument to specify a non-default conversion algorithm
 
         Returns
         -------
-        ens : `qp.Ensemble`
+        ens : Ensemble
             Ensemble of distributions of type class_to using the data from this object
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -320,14 +318,14 @@ class Ensemble:
 
         Parameters
         ----------
-        data : `Mapping`
+        data : Mapping
             Dictionary with data used to construct the ensemble, including metadata.
         ancil : Optional[Mapping], optional
             Optional dictionary that contains data for each of the distributions
             in the ensemble, by default None.
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -358,8 +356,8 @@ class Ensemble:
             Optional dictionary that contains data for each of the distributions
             in the ensemble, by default None.
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -443,8 +441,8 @@ class Ensemble:
             If the length of the arrays in ancil does not match the number of
             distributions in the Ensemble.
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -479,8 +477,8 @@ class Ensemble:
             If the length of the arrays in to_add does not match the number of
             distributions in the Ensembles
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -509,7 +507,7 @@ class Ensemble:
 
         Parameters
         ----------
-        other_ens : `qp.Ensemble`
+        other_ens : Ensemble
             The ensemble to append to this one.
 
         Raises
@@ -517,8 +515,8 @@ class Ensemble:
         KeyError
             Raised if the two ensembles do not have matching metadata.
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -556,7 +554,7 @@ class Ensemble:
 
         Returns
         -------
-        data : `Mapping`, `TableDict-like` object
+        data : Mapping, `tables_io.TableDict-like`
             The dictionary with the data. Has the keys: ``meta`` for metadata, ``data``
             for object data, and optionally ``ancil`` for ancillary data.
 
@@ -613,13 +611,13 @@ class Ensemble:
 
         Parameters
         ----------
-        new_grid: array-like
+        grid : ArrayLike
             Grid on which to evaluate distribution
 
         Returns
         -------
-        mode: array-like
-            The modes of the distributions evaluated on new_grid, with shape (npdf, 1)
+        mode : ArrayLike
+            The modes of the distributions evaluated on grid, with shape (npdf, 1)
 
         """
         new_grid, griddata = self.gridded(grid)
@@ -632,7 +630,7 @@ class Ensemble:
 
         Parameters
         ----------
-        grid : array-like
+        grid : ArrayLike
             The grid points to evaluate the PDF at.
 
         Returns
@@ -659,10 +657,10 @@ class Ensemble:
 
         Parameters
         ----------
-        filename : `str`
+        filename : str
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -681,7 +679,7 @@ class Ensemble:
 
         Parameters
         ----------
-        x: ArrayLike
+        x : ArrayLike
             Location(s) at which to evaluate the PDF for each distribution.
 
         Returns
@@ -689,8 +687,8 @@ class Ensemble:
         pdf : ArrayLike
             The PDF value(s) at the given location(s).
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -727,8 +725,8 @@ class Ensemble:
         logpdf : ArrayLike
             The log of the PDF at the given location(s)
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -763,8 +761,8 @@ class Ensemble:
         cdf : ArrayLike
             The CDF at the given location(s)
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -799,8 +797,8 @@ class Ensemble:
         cdf : ArrayLike
             The log of the CDF at the given location(s)
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -835,8 +833,8 @@ class Ensemble:
         ppf : ArrayLike
             The PPF at the given location(s)
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -868,8 +866,8 @@ class Ensemble:
         sf : ArrayLike
             The SF at the given location(s)
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -901,8 +899,8 @@ class Ensemble:
         sf : ArrayLike
             The log of the SF at the given location(s)
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -935,8 +933,8 @@ class Ensemble:
         sf : ArrayLike
             The inverse of the survival fraction at the given location(s)
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -970,16 +968,16 @@ class Ensemble:
         ----------
         size : int, optional
             Number of samples to return, by default 1.
-        random_state : `int`, `np.random.Generator`, `None`, optional
+        random_state : int, numpy.random.Generator, None, optional
             The random state to use. Can be provided with a random seed for consistency. By default None.
 
         Returns
         -------
-        samples : `arraylike`
+        samples : ArrayLike
             The array of samples for each distribution in the ensemble, shape (npdf,size)
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -1013,8 +1011,8 @@ class Ensemble:
         stats : tuple[ArrayLike, ... ]
             A sequence of arrays of the moments requested, where the shape of the arrays is (npdf, 1)
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -1034,12 +1032,12 @@ class Ensemble:
 
         Returns
         -------
-        medians : `arraylike`
+        medians : ArrayLike
             The median for each distribution, returns a float if there is only one
             distribution, or the shape of the array is (npdf, 1)
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -1062,12 +1060,12 @@ class Ensemble:
 
         Returns
         -------
-        means : `arraylike`
+        means : ArrayLike
             The mean for each distribution, returns a float if there is only one
             distribution, or the shape of the array is (npdf, 1)
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -1091,12 +1089,12 @@ class Ensemble:
 
         Returns
         -------
-        variances : `arraylike`
+        variances : ArrayLike
             The variance for each distribution, returns a float if there is only one
             distribution, or the shape of the array is (npdf, 1)
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -1120,11 +1118,11 @@ class Ensemble:
 
         Returns
         -------
-        stds : `arraylike`
+        stds : ArrayLike
             The standard deviations for each distribution, the shape of the array is (npdf, 1)
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -1147,16 +1145,16 @@ class Ensemble:
 
         Parameters
         ----------
-        n : `int`
+        n : int
             The order of the moment
 
         Returns
         -------
-        moments : `arraylike`
+        moments : ArrayLike
             The nth moment for each distribution, the shape of the array is (npdf, 1)
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -1180,12 +1178,12 @@ class Ensemble:
 
         Returns
         -------
-        entropy : `arraylike`
+        entropy : ArrayLike
             The entropy for each distribution, the shape of the array is (npdf, 1)
 
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -1219,7 +1217,7 @@ class Ensemble:
 
         Parameters
         ----------
-        alpha : `arraylike`
+        alpha : ArrayLike
             The array of values to return intervals for. These should be the probability that a random variable will be
             drawn from the returned range. Each value should be in the range [0,1].
 
@@ -1229,8 +1227,8 @@ class Ensemble:
             A tuple of the arrays containing the intervals for each distribution, where the
             shape of the arrays is (npdf, len(alpha))
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -1260,8 +1258,8 @@ class Ensemble:
             The first array in the tuple is the bin edges that were input. The second
             array in the tuple is an (npdf, N) array of the values in the bins.
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -1303,17 +1301,17 @@ class Ensemble:
 
         Parameters
         ----------
-        comps: int, optional
-            number of components to consider
-        using: string, optional
-            which existing approximation to use, defaults to first approximation
-        vb: boolean
+        comps : int, optional
+            Number of components to consider
+        using : str, optional
+            Which existing approximation to use, defaults to first approximation
+        vb : bool
             Report progress
 
         Returns
         -------
-        self.mix_mod: list, qp.Composite objects
-            list of qp.Composite objects approximating the PDFs
+        self.mix_mod: list [ `qp.Composite` ]
+            List of `qp.Composite` objects approximating the PDFs
 
         Notes
         -----
@@ -1357,13 +1355,13 @@ class Ensemble:
 
         Parameters
         ----------
-        key : `int` or `slice`
+        key : int or slice, optional
             The index or slice of the distribution or distributions from this ensemble
             to plot, by default 0.
 
         Other Parameters
         ----------------
-        axes : `matplotlib.axes`
+        axes : Axes
             The axes to plot on. Either this or xlim must be provided.
         xlim : (float, float)
             The x-axis limits. Either this or axes must be provided.
@@ -1372,7 +1370,7 @@ class Ensemble:
 
         Returns
         -------
-        axes : `matplotlib.axes`
+        axes : Axes
             The plot axes
         """
         return self._gen_class.plot(self[key], **kwargs)
@@ -1380,12 +1378,12 @@ class Ensemble:
     def plot_native(self, key: Union[int, slice] = 0, **kwargs: str) -> Axes:
         """Plot the selected distribution in the default format for this parameterization. To find what arguments are
         required for specific parameterizations, you can check the docstrings
-        of qp.[parameterization].plot_native, where [parameterization] is the parameterization
+        of ``qp.[parameterization].plot_native``, where ``[parameterization]`` is the parameterization
         class for the current ensemble.
 
         Parameters
         ----------
-        key : `int` or `slice`
+        key : int or slice, optional
             The index or slice of the distribution or distributions from this ensemble
             to plot, by default 0.
         kwargs :
@@ -1420,19 +1418,19 @@ class Ensemble:
 
         Parameters
         ----------
-        filename : `str`
+        filename : str
             Name of the file to create
-        npdf : `int`
+        npdf : int
             Total number of distributions that the file will contain,
             usually larger then the size of the current ensemble
-        comm : `MPI communicator`
+        comm : MPI communicator
             Optional MPI communicator to allow parallel writing
 
         Returns
         -------
-        group : `dict` of `h5py.File` or `h5py.Group`
+        group : dict[str, h5py.File | h5py.Group]
             A dictionary of the groups to write to.
-        fout : `h5py.File`
+        fout : h5py.File
             The output file object that has been created.
         """
         kwds = self._get_allocation_kwds(npdf)
@@ -1448,11 +1446,11 @@ class Ensemble:
 
         Parameters
         ----------
-        fname : h5py `File object` or `group`
+        fname : h5py.File | h5py.Group
             The file or group object to write to
-        start : `int`
+        start : int
             Starting index of data to write in the h5py file
-        end : `int`
+        end : int
             Ending index of data to write in the h5py file
         """
         odict = self.build_tables(encode=True, ext="hdf5").copy()
@@ -1464,7 +1462,7 @@ class Ensemble:
 
         Parameters
         ----------
-        filename : h5py `File object` or `group`
+        filename : h5py.File | h5py.Group
             The file or group object to complete writing and close.
         """
         mdata = make_len_equal(self.metadata)
