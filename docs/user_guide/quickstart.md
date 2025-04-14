@@ -87,6 +87,6 @@ The available file formats can be found in <project:basicusage.md#writing-an-ens
 
 - <project:qpprimer.md> covers some of the statistics basics necessary for using `qp`
 - <project:basicusage.md> provides more detailed explanations of topics discussed here
-- <project:cookbook.md> contains detailed examples for specific use cases, i.e. conversion, plotting, iteration
+- <project:./cookbook/index.md> contains detailed examples for specific use cases, i.e. conversion, plotting, iteration
 - <project:./parameterizations/index.md> contains more details on specific parameterizations
 - <project:troubleshooting.md> for common pitfalls and errors

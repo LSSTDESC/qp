@@ -35,6 +35,19 @@ qp : quantile-parametrized PDF approximation
 
         The user guide is a good starting place for new users who have never used ``qp`` before. 
 
+
+    .. grid-item-card::
+        :link: user_guide/cookbook/index
+        :link-type: doc
+        :link-alt: cookbook
+        :text-align: center
+
+        :fas:`fa-solid fa-terminal; fa-5x`
+
+        **Cookbook**
+
+        The cookbook contains useful examples of ``qp`` usage. These examples range from quick reference one-liners to in-depth tutorials of more complex usage cases.
+
     .. grid-item-card::
         :link: developer_docs/setup
         :link-type: doc
@@ -45,19 +58,7 @@ qp : quantile-parametrized PDF approximation
 
         **Developer Documentation**
 
-        Detailed setup and contribution workflow for new developers.
-
-    .. grid-item-card::
-        :link: cookbook/index
-        :link-type: doc
-        :link-alt: cookbook
-        :text-align: center
-
-        :fas:`fa-solid fa-terminal; fa-5x`
-
-        **Cookbook**
-
-        The cookbook contains useful examples of ``qp`` usage. These examples range from quick reference one-liners to in-depth tutorials of more complex usage cases.  
+        Detailed setup and contribution workflow for new developers, and a reference for ongoing issues in need of development.  
 
 .. toctree:: 
     :hidden:
@@ -76,7 +77,7 @@ qp : quantile-parametrized PDF approximation
     user_guide/basicusage
     user_guide/datastructure
     user_guide/parameterizations/index.md
-    user_guide/cookbook
+    user_guide/cookbook/index
     user_guide/methods
     user_guide/troubleshooting
 
