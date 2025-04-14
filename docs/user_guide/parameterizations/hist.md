@@ -36,11 +36,11 @@ See <project:../datastructure.md> for general details on the data structure of `
 
 | Key    | Example value                      | Description                                           |
 | ------ | ---------------------------------- | ----------------------------------------------------- |
-| "pdfs" | `array([[4,5,6],[1,2,3],[7,8,9]])` | The values within each bin, of shape ($n_{PDF}$, $n$) |
+| "pdfs" | `array([[4,5,6],[1,2,3],[7,8,9]])` | The values within each bin, of shape ($n_{pdf}$, $n$) |
 
 ```{note}
 
-Here $n_{PDF}$ is the number of distributions, and $n$ is the number of bins for each distribution.
+Here $n_{pdf}$ is the number of distributions, and $n$ is the number of bins for each distribution.
 
 ```
 
@@ -61,11 +61,11 @@ Ensemble(the_class=hist,shape=(1,4))
 **Required parameters:**
 
 - `bins`: The array containing the ($n+1$) bin edges
-- `pdfs`: The array containing the ($n_{PDF}$, $n$) bin values ($n_{PDF}$ is the number of distributions)
+- `pdfs`: The array containing the ($n_{pdf}$, $n$) bin values ($n_{pdf}$ is the number of distributions)
 
 **Optional parameters:**
 
-- `ancil`: The dictionary of arrays of additional data containing $n_{PDF}$ values
+- `ancil`: The dictionary of arrays of additional data containing $n_{pdf}$ values
 - `norm`: If True, normalizes the input distributions. If False, assumes the given distributions are already normalized. By default True.
 - `warn`: If True, raises warnings if input is not valid PDF data (i.e. if data is negative). If False, no warnings are raised. By default True.
 

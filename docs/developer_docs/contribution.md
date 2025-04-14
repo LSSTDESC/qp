@@ -8,6 +8,8 @@ Generally, the code should follow the guidelines given in the [LSST DM Developer
 
 It is recommended to use type hints for the arguments and outputs of functions to improve the ability to develop and understand code. For some tips on how to get started see this [cheat sheet](https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html)
 
+- Anything that requires a parameterization class can be typed using the base parameterization class, `Pdf_gen`
+
 ### Naming and placement
 
 - Parameterization classes get their own folder within the `parameterizations/` folder. The folder should be called `[name]/`, where `name` is the name of the parameterization.
@@ -21,10 +23,7 @@ When creating new test files, they should be in the same location within the `te
 
 Test data should be stored in the `test_data/` folder. Any helper functions for tests that are not tests themselves should be placed in the `helpers/` folder.
 
-- what is expected in terms of code coverage, what tests need to be written, types of tests, etc
-- tests should exist purely in test folder
-- test data stored in tests/test_data
-  - what test data should look like
+- what tests need to be written, types of tests, etc
 - output of tests should be written to temporary path for ease of clean up
 
 ## Documentation
@@ -95,18 +94,18 @@ Read the Docs is linked to the [github repo](https://github.com/LSSTDESC/qp), an
 
 `qp` is a core package of the LSST DESC RAIL ecosystem. Consequently, the developers of the following packages should be informed about new versions:
 
-- [`qp_flexzboost`]()
+- [`qp_flexzboost`](https://github.com/LSSTDESC/qp_flexzboost)
 - [`rail`](https://github.com/LSSTDESC/rail)
-- [`rail_base`]()
-- [`rail_bpz`]()
-- [`rail_cmnn`]()
-- [`rail_delight`]()
-- [`rail_dnf`]()
-- [`rail_dsps`]()
-- [`rail_fsps`]()
-- [`rail_gpz_v1]()
-- [`rail_lephare`]()
-- [`rail_pzflow`]()
-- [`rail_sklearn`]()
-- [`rail_som`]()
-- [`rail_tpz`]()
+- [`rail_base`](https://github.com/LSSTDESC/rail_base)
+- [`rail_bpz`](https://github.com/LSSTDESC/rail_bpz)
+- [`rail_cmnn`](https://github.com/LSSTDESC/rail_cmnn)
+- [`rail_delight`](https://github.com/LSSTDESC/rail_delight)
+- [`rail_dnf`](https://github.com/LSSTDESC/rail_dnf)
+- [`rail_dsps`](https://github.com/LSSTDESC/rail_dsps)
+- [`rail_fsps`](https://github.com/LSSTDESC/rail_fsps)
+- [`rail_gpz_v1](https://github.com/LSSTDESC/rail_gpz_v1)
+- [`rail_lephare`](https://github.com/LSSTDESC/lephare)
+- [`rail_pzflow`](https://github.com/LSSTDESC/rail_pzflow)
+- [`rail_sklearn`](https://github.com/LSSTDESC/rail_sklearn)
+- [`rail_som`](https://github.com/LSSTDESC/rail_som)
+- [`rail_tpz`](https://github.com/LSSTDESC/rail_tpz)

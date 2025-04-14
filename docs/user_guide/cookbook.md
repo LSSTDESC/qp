@@ -2,6 +2,11 @@
 
 This page provides some more in-depth examples of commonly performed routines with `qp`. The longer ones are given as Jupyter Notebooks, which can be viewed here or downloaded from <project:../nb/index.md>.
 
+- add in a section on data manipulation of the `Ensemble`
+  - i.e has the qp file notebook
+  - also includes quick examples (how to get the pdfs for a histogram, or the x values for an interpolation, for example)
+  - how to update the data in an Ensemble
+
 (creating-an-ensemble-from-a-qp-stats-distribution)=
 
 ## Creating an `Ensemble` from a `qp.stats` distribution

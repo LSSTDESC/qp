@@ -21,7 +21,19 @@ qp : quantile-parametrized PDF approximation
 
         **Quickstart**
 
-        description
+        A quick introduction to some of the main functionality of ``qp``. This guide is short and sweet for when you're in a rush or need a quick refresher.
+        
+    .. grid-item-card::
+        :link: user_guide/installation
+        :link-type: doc
+        :link-alt: user-guide-installation
+        :text-align: center
+
+        :fas:`fa-solid fa-book; fa-5x`
+
+        **User guide**
+
+        The user guide is a good starting place for new users who have never used ``qp`` before. 
 
     .. grid-item-card::
         :link: developer_docs/setup
@@ -33,31 +45,19 @@ qp : quantile-parametrized PDF approximation
 
         **Developer Documentation**
 
-        description 
+        Detailed setup and contribution workflow for new developers.
 
     .. grid-item-card::
-        :link: api_docs/index
+        :link: cookbook/index
         :link-type: doc
-        :link-alt: api-documentation
+        :link-alt: cookbook
         :text-align: center
 
         :fas:`fa-solid fa-terminal; fa-5x`
 
-        **API Documentation**
+        **Cookbook**
 
-        description 
-
-    .. grid-item-card::
-        :link: nb/index
-        :link-type: doc
-        :link-alt: demo-notebooks
-        :text-align: center
-
-        :fas:`fa-solid fa-book; fa-5x`
-
-        **Demo Notebooks**
-
-        description 
+        The cookbook contains useful examples of ``qp`` usage. These examples range from quick reference one-liners to in-depth tutorials of more complex usage cases.  
 
 .. toctree:: 
     :hidden:

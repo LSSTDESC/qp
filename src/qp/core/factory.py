@@ -458,6 +458,38 @@ class Factory(OrderedDict):
         KeyError
             Raised if the ``pdf_name`` in the file is not one of the available parameterizations.
 
+
+        Example
+        -------
+
+        To iterate through an HDF5 Ensemble file, we can use the following code:
+
+        >>> data_file = "./test.hdf5"
+        >>> for start, end, ens_chunk in qp.iterator(data_file, chunk_size=11):
+        ...     print(f"Indices are: ({start}, {end})")
+        ...     print(ens_chunk)
+        Indices are: (0, 11)
+        Ensemble(the_class=mixmod,shape=(11, 3))
+        Indices are: (11, 22)
+        Ensemble(the_class=mixmod,shape=(11, 3))
+        Indices are: (22, 33)
+        Ensemble(the_class=mixmod,shape=(11, 3))
+        Indices are: (33, 44)
+        Ensemble(the_class=mixmod,shape=(11, 3))
+        Indices are: (44, 55)
+        Ensemble(the_class=mixmod,shape=(11, 3))
+        Indices are: (55, 66)
+        Ensemble(the_class=mixmod,shape=(11, 3))
+        Indices are: (66, 77)
+        Ensemble(the_class=mixmod,shape=(11, 3))
+        Indices are: (77, 88)
+        Ensemble(the_class=mixmod,shape=(11, 3))
+        Indices are: (88, 99)
+        Ensemble(the_class=mixmod,shape=(11, 3))
+        Indices are: (99, 100)
+        Ensemble(the_class=mixmod,shape=(1, 3))
+
+
         """
         extension = os.path.splitext(filename)[1]
         if extension not in [".hdf5"]:  # pragma: no cover
