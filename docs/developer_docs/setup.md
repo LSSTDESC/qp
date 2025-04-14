@@ -33,7 +33,7 @@ To run coverage tests, run the following on the command line from the base `qp` 
 
 ```
 
-The output is in the `cover` folder, which will output HTML files that provide an overview of the coverage status. For a pull request, the goal is to have 100% coverage.
+The output is in the `cover/` folder, which will output HTML files that provide an overview of the coverage status. For a pull request, the goal is to have 100% coverage.
 
 ## Building Documentation
 
@@ -52,7 +52,7 @@ make html
 
 ```
 
-The HTML files will be generated in the `_build` folder inside the `docs` folder.
+The HTML files will be generated in the `_build/` folder inside the `docs/` folder.
 
 ## Where to go from here
 

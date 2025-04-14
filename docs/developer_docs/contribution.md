@@ -8,20 +8,18 @@ Generally, the code should follow the guidelines given in the [LSST DM Developer
 
 It is recommended to use type hints for the arguments and outputs of functions to improve the ability to develop and understand code. For some tips on how to get started see this [cheat sheet](https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html)
 
-### Naming
+### Naming and placement
 
-- name_pdf for parameterizations
-
-### Placement
-
-- parameterizations go in the parameterizations folder
-- analytic parameterizations go in a separate folder
-- if you have one that needs supporting functions, create a folder and place the class file and the supporting files in that folder
-- conversion functions go in the conversion_funcs file
+- Parameterization classes get their own file in the `parameterizations/` folder. The file should be called `[name].py`, where `name` is the name of the parameterization.
+  - If they require supporting functions, then they should get a folder called `[name]`
+  - Supporting files should go in this folder in addition to the class file
+  - The class itself should be called `[name]_gen`
 
 ## Tests
 
-When creating new test files, they should be in the same location within the `tests/` folder as the file that is being tested. The test file should have the name `test_[filename].py`, where `filename` is the name of the file being tested. For example, a test for the `src/tables_io/conv/conv_table.py` module is called `test_conv_table.py` and located in the `tests/conv/` folder.
+When creating new test files, they should be in the same location within the `tests/` folder as the file that is being tested. The test file should have the name `test_[filename].py`, where `filename` is the name of the file being tested. For example, a test for the `qp/core/ensemble.py` module is called `test_ensemble.py` and located in the `tests/core/` folder.
+
+Test data should be stored in the `test_data/` folder. Any helper functions for tests that are not tests themselves should be placed in the `helpers/` folder.
 
 - what is expected in terms of code coverage, what tests need to be written, types of tests, etc
 - tests should exist purely in test folder
@@ -91,10 +89,24 @@ There is a Github Action that will publish the package to [PyPI](https://pypi.or
 
 ### Making the Documentation on "Read The Docs"
 
-Read the Docs is linked to the [github repo](https://github.com/LSSTDESC/tables_io), and will rebuild the docs when there are any changes to `main`. If there are any issues with this process, contact the project maintainer, Eric Charles.
+Read the Docs is linked to the [github repo](https://github.com/LSSTDESC/qp), and will rebuild the docs when there are any changes to `main`. If there are any issues with this process, contact the project maintainer, Eric Charles.
 
 ### Informing Developers of Downstream Packages
 
 `qp` is a core package of the LSST DESC RAIL ecosystem. Consequently, the developers of the following packages should be informed about new versions:
 
+- [`qp_flexzboost`]()
 - [`rail`](https://github.com/LSSTDESC/rail)
+- [`rail_base`]()
+- [`rail_bpz`]()
+- [`rail_cmnn`]()
+- [`rail_delight`]()
+- [`rail_dnf`]()
+- [`rail_dsps`]()
+- [`rail_fsps`]()
+- [`rail_gpz_v1]()
+- [`rail_lephare`]()
+- [`rail_pzflow`]()
+- [`rail_sklearn`]()
+- [`rail_som`]()
+- [`rail_tpz`]()

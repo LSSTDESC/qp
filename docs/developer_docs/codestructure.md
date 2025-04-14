@@ -1,5 +1,7 @@
 # Code Structure
 
+## Organization
+
 `qp` is split up into two main sections: `core` for the main functionality and `parameterizations` for the classes and supporting functions for each parameterization type.
 
 - core
@@ -87,3 +89,9 @@ qp
 └── version.py
 
 ```
+
+## How it works
+
+`qp` is built upon the functionality of `scipy.stats.rv_continous` distributions. The base parameterization classes inherit from the SciPy `rv_continuous` and `rv_frozen` classes. Each parameterization class must inherit from these classes, so it will have all the functionality of the SciPy classes, plus the additional `qp` functionality (metadata, normalization functions, etc). In each parameterization class, certain `rv_continuous` methods such as `_pdf` and `_cdf` are overridden by new methods specific to that parameterization (see <project:parameterizationcontribution.md> for more details).
+
+`Ensembles` are then created using one of these parameterization classes. The `Ensemble` class creates the `metadata` and `objdata` dictionaries in addition to the `ancil` dictionary. It also handles `qp` specific functionality such as the ability to convert between parameterizations, or write your `Ensemble` to file.
