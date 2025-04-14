@@ -9,6 +9,7 @@ from numpy.typing import ArrayLike
 
 
 import warnings
+from matplotlib.axes import Axes
 
 from .hist_utils import (
     evaluate_hist_x_multi_y,
@@ -34,30 +35,17 @@ class hist_gen(Pdf_rows_gen):
 
     Parameters
     ----------
-    bins : `arraylike`
+    bins : ArrayLike
         The array containing the (n+1) bin boundaries
-    pdfs : `arraylike`
+    pdfs : ArrayLike
         The array containing the (npdf, n) bin values
-    norm : `bool`, optional
+    norm : bool, optional
         If True, normalizes the input distribution. If False, assumes the
         given distribution is already normalized. By default True.
-    warn : `bool`, optional
+    warn : bool, optional
             If True, raises warnings if input is not valid PDF data (i.e. if
             data is negative). If False, no warnings are raised. By default True.
 
-
-    Attributes
-    ----------
-    bins
-    pdfs
-
-
-    Methods
-    -------
-    create_ensemble(bins,pdfs,ancil)
-        Create an Ensemble with this parameterization.
-    plot_native(xlim,axes,**kwargs)
-        Create a plot of a distribution with this parameterization.
 
     Notes
     -----
@@ -73,9 +61,9 @@ class hist_gen(Pdf_rows_gen):
     +------------------------+-----------------------------------------------------+------------+
     | Function               | Arguments                                           | Method key |
     +------------------------+-----------------------------------------------------+------------+
-    | `extract_hist_values`  | bins (array of bin edges)                           | None       |
+    | `.extract_hist_values` | bins (array of bin edges)                           | None       |
     +------------------------+-----------------------------------------------------+------------+
-    | `extract_hist_samples` | bins (array of bin edges),                          | samples    |
+    | `.extract_hist_samples`| bins (array of bin edges),                          | samples    |
     |                        | size (int, optional, number of samples to generate) |            |
     +------------------------+-----------------------------------------------------+------------+
 
@@ -107,20 +95,20 @@ class hist_gen(Pdf_rows_gen):
         warn: bool = True,
         *args,
         **kwargs,
-    ):
+    ) -> None:
         """
         Create a new distribution using the given histogram.
 
         Parameters
         ----------
-        bins : `array_like`
+        bins : ArrayLike
           The array containing the (n+1) bin boundaries
-        pdfs : `array_like`
+        pdfs : ArrayLike
           The array containing the (npdf, n) bin values
-        norm : `bool`, optional
+        norm : bool, optional
             If True, normalizes the input distribution. If False, assumes the
             given distribution is already normalized. By default True.
-        warn : `bool`, optional
+        warn : bool, optional
             If True, raises warnings if input is not valid PDF data (i.e. if
             data is negative). If False, no warnings are raised. By default True.
         """
@@ -185,12 +173,12 @@ class hist_gen(Pdf_rows_gen):
         self._hcdfs[:, 0] = 0.0
         self._hcdfs[:, 1:] = np.cumsum(self._hpdfs * self._hbin_widths, axis=1)
 
-    def normalize(self) -> Mapping[str, np.ndarray]:
+    def normalize(self) -> Mapping[str, np.ndarray[float]]:
         """Normalizes the input distribution values.
 
         Returns
         -------
-        Mapping[str, np.ndarray]
+        Mapping [str, np.ndarray[float]]
             An (npdf, n) array of pdf values in the n bins for the npdf distributions
 
         Raises
@@ -213,16 +201,16 @@ class hist_gen(Pdf_rows_gen):
         return {"pdfs": (pdfs_2d.T / sums).T}
 
     @property
-    def bins(self):
+    def bins(self) -> np.ndarray[float]:
         """Return the histogram bin edges"""
         return self._hbins
 
     @property
-    def pdfs(self):
+    def pdfs(self) -> np.ndarray[float]:
         """Return the histogram bin values"""
         return self._hpdfs
 
-    def x_samples(self):
+    def x_samples(self) -> np.ndarray[float]:
         """Return a set of x values that can be used to plot all the PDFs."""
         # TODO: possibly add a bin to the left and right?
         return (self._hbins[:-1] + self._hbins[1:]) / 2
@@ -260,7 +248,7 @@ class hist_gen(Pdf_rows_gen):
             vals = self.custom_generic_moment(m)
         return vals
 
-    def custom_generic_moment(self, m):
+    def custom_generic_moment(self, m: ArrayLike) -> np.ndarray[float]:
         """Compute the mth moment"""
         m = np.asarray(m)
         dx = self._hbins[1] - self._hbins[0]
@@ -279,7 +267,9 @@ class hist_gen(Pdf_rows_gen):
         return dct
 
     @classmethod
-    def get_allocation_kwds(cls, npdf, **kwargs):
+    def get_allocation_kwds(
+        cls, npdf: int, **kwargs: str
+    ) -> dict[str, tuple[tuple[int, int], str]]:
         """Return the kwds necessary to create an `empty` HDF5 file with ``npdf`` entries
         for iterative write. We only need to allocate the data columns, as
         the metadata will be written when we finalize the file.
@@ -297,38 +287,39 @@ class hist_gen(Pdf_rows_gen):
 
         Returns
         -------
-        Mapping
+        dict [ str, tuple [ tuple [int , int], str]]
             A dictionary with a key for the objdata, a tuple with the shape of that data,
             and the data type of the data as a string.
-            i.e. ``{objdata_key = (npdf, n), "f4"}``
+            i.e. ``{objdata_key = ( (npdf, n), "f4" )}``
 
         Raises
         ------
         ValueError
             Raises an error if the bins is not provided."""
+
         if "bins" not in kwargs:  # pragma: no cover
             raise ValueError("required argument 'bins' not included in kwargs")
         nbins = len(kwargs["bins"].flatten())
         return dict(pdfs=((npdf, nbins - 1), "f4"))
 
     @classmethod
-    def plot_native(cls, pdf, **kwargs):
+    def plot_native(cls, pdf: Ensemble, **kwargs) -> Axes:
         """Plot the PDF in a way that is particular to this type of distribution
 
         For a histogram this shows the bin edges.
 
         Parameters
         ----------
-        axes : `matplotlib.axes`
+        axes : Axes
             The axes to plot on. Either this or xlim must be provided.
-        xlim : (float, float)
+        xlim : tuple [float, float]
             The x-axis limits. Either this or axes must be provided.
         kwargs :
-            Any keyword arguments to pass to matplotlib's axes.hist() method.
+            Any keyword arguments to pass to matplotlib's `matplotlib.axes.Axes.hist` method.
 
         Returns
         -------
-        axes : `matplotlib.axes`
+        axes : Axes
             The plot axes.
         """
         axes, _, kw = get_axes_and_xlims(**kwargs)
@@ -358,14 +349,14 @@ class hist_gen(Pdf_rows_gen):
 
         Parameters
         ----------
-        bins : `array_like`
+        bins : ArrayLike
           The array containing the (n+1) bin boundaries
-        pdfs : `array_like`
+        pdfs : ArrayLike
           The array containing the (npdf, n) bin values
-        norm : `bool`, optional
+        norm : bool, optional
             If True, normalizes the input distribution. If False, assumes the
             given distribution is already normalized. By default True.
-        warn : `bool`, optional
+        warn : bool, optional
             If True, raises warnings if input is not valid PDF data (i.e. if
             data is negative). If False, no warnings are raised. By default True.
         ancil : Optional[Mapping], optional
@@ -377,8 +368,8 @@ class hist_gen(Pdf_rows_gen):
         Ensemble
             An Ensemble object containing all of the given distributions.
 
-        Example
-        -------
+        Examples
+        --------
 
         To create an Ensemble with two distributions and an 'ancil' table that
         provides ids for the distributions, you can use the following code:

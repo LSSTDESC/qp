@@ -50,17 +50,17 @@ def normalize_quantiles(in_data, threshold=epsilon, vb=False):
 """
 
 
-def edge_to_center(edges):
+def edge_to_center(edges: ArrayLike) -> np.ndarray:
     """Return the centers of a set of bins given the edges"""
     return 0.5 * (edges[1:] + edges[:-1])
 
 
-def bin_widths(edges):
+def bin_widths(edges: ArrayLike) -> np.ndarray:
     """Return the widths of a set of bins given the edges"""
     return edges[1:] - edges[:-1]
 
 
-def get_bin_indices(bins, x):
+def get_bin_indices(bins: ArrayLike, x: ArrayLike) -> np.ndarray[int]:
     """Return the bin indexes for a set of values
 
     If the bins are equal width this will use arithmetic,
@@ -78,23 +78,23 @@ def get_bin_indices(bins, x):
     return idx.reshape(xshape).clip(0, n_bins - 1), mask.reshape(xshape)
 
 
-def get_eval_case(x, row):
+def get_eval_case(x: ArrayLike, row: ArrayLike) -> tuple[int, np.ndarray, np.ndarray]:
     """Figure out which of the various input formats scipy.stats has passed us
 
     Parameters
     ----------
-    x : array_like
+    x : ArrayLike
         Pdf x-vals
-    row : array_like
+    row : ArrayLike
         Pdf row indices
 
     Returns
     -------
-    case : `int`
+    case : int
         The case code
-    xx : array_like
+    xx : np.ndarray
         The x-values properly shaped
-    rr : array_like
+    rr : np.ndarrray
         The y-values, properly shaped
 
     Notes
@@ -132,25 +132,28 @@ def get_eval_case(x, row):
     return CASE_FACTOR, xx, np.expand_dims(rr, -1)
 
 
-def profile(x_data, y_data, x_bins, std=True):
+def profile(
+    x_data: ArrayLike, y_data: ArrayLike, x_bins: ArrayLike, std: bool = True
+) -> tuple[np.ndarray[float], np.ndarray[float]]:
     """Make a 'profile' plot
 
     Parameters
-    ---------
-    x_data : array_like (n)
+    ----------
+    x_data : ArrayLike, length n
         The x-values
-    y_data : array_like (n)
+    y_data : ArrayLike, length n
         The y-values
-    x_bins : array_like (nbins+1)
+    x_bins : ArrayLike, length nbins+1
         The values of the bin edges
-    std : bool
-        If true, return the standard deviations, if false return the errors on the means
+    std : bool, optional
+        If true, return the standard deviations, if false return the errors on the
+        means, default True.
 
     Returns
     -------
-    vals : array_like (nbins)
+    vals : np.ndarray[float], length nbins
         The means
-    errs : array_like (nbins)
+    errs : np.ndarray[float], length nbins
         The standard deviations or errors on the means
     """
     idx, mask = get_bin_indices(x_bins, x_data)
@@ -172,19 +175,19 @@ def profile(x_data, y_data, x_bins, std=True):
     return vals, errs
 
 
-def reshape_to_pdf_size(vals: np.ndarray, split_dim):
+def reshape_to_pdf_size(vals: np.ndarray, split_dim: int) -> np.ndarray:
     """Reshape an array to match the number of PDFs in a distribution
 
     Parameters
     ----------
-    vals : array
+    vals : np.ndarray
         The input array
     split_dim : int
         The dimension at which to split between pdf indices and per_pdf indices
 
     Returns
     -------
-    out : array
+    out : np.ndarray
         The reshaped array
     """
     in_shape = np.shape(vals)
@@ -194,39 +197,41 @@ def reshape_to_pdf_size(vals: np.ndarray, split_dim):
     return vals.reshape(out_shape)
 
 
-def reshape_to_pdf_shape(vals: np.ndarray, pdf_shape, per_pdf):
+def reshape_to_pdf_shape(
+    vals: np.ndarray, pdf_shape: int, per_pdf: int | ArrayLike
+) -> np.ndarray:
     """Reshape an array to match the shape of PDFs in a distribution
 
     Parameters
     ----------
-    vals : array
+    vals : np.ndarray
         The input array
     pdf_shape : int
         The shape for the pdfs
-    per_pdf : int or array_like
+    per_pdf : int | ArrayLike
         The shape per pdf
 
     Returns
     -------
-    out : array
+    out : np.ndarray
         The reshaped array
     """
     outshape = np.hstack([pdf_shape, per_pdf])
     return vals.reshape(outshape)
 
 
-def encode_strings(data: Mapping) -> Mapping[str, np.ndarray]:
+def encode_strings(data: Mapping[str, np.ndarray]) -> Mapping[str, np.ndarray]:
     """Encodes any dictionary values that are Unicode strings (or just strings
     if not numpy arrays). Other data types are not affected.
 
     Parameters
     ----------
-    data : Mapping
+    data : Mapping[str, np.ndarray]
         Dictionary of data to encode.
 
     Returns
     -------
-    Mapping
+    Mapping[str, np.ndarray]
         Dictionary of data with strings encoded.
     """
 
@@ -247,7 +252,7 @@ def encode_strings(data: Mapping) -> Mapping[str, np.ndarray]:
     return converted_data
 
 
-def decode_strings(data: Mapping[str, np.ndarray]) -> Mapping:
+def decode_strings(data: Mapping[str, np.ndarray]) -> Mapping[str, np.ndarray]:
     """Decodes dictionary values that have been encoded (dtype = bytes). Other
     data types are not affected.
 
@@ -258,7 +263,7 @@ def decode_strings(data: Mapping[str, np.ndarray]) -> Mapping:
 
     Returns
     -------
-    Mapping
+    Mapping[str, np.ndarray]
         The dictionary of data with any strings decoded.
     """
     converted_data = {}

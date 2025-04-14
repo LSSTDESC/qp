@@ -1,29 +1,32 @@
 from __future__ import annotations
 
 import numpy as np
+from numpy.typing import ArrayLike
 from scipy.interpolate import interp1d
 
 from .array import get_eval_case, CASE_PRODUCT, CASE_FACTOR, CASE_2D, CASE_FLAT
 
 
-def interpolate_multi_x_y(x, row, xvals, yvals, **kwargs):
+def interpolate_multi_x_y(
+    x: ArrayLike, row: ArrayLike, xvals: ArrayLike, yvals: ArrayLike, **kwargs
+) -> np.ndarray:
     """
     Interpolate a set of values
 
     Parameters
     ----------
-    x : array_like (npdf, n)
+    x : ArrayLike, shape (npdf, n)
         X values to interpolate at
-    row : array_like (npdf, 1)
+    row : ArrayLike, shape (npdf, 1)
         Which rows to interpolate at
-    xvals : array_like (npdf, npts)
+    xvals : ArrayLike, shape (npdf, npts)
         X-values used for the interpolation
-    yvals : array_like (npdf)
+    yvals : ArrayLike, shape (npdf)
         Y-values used for the interpolation
 
     Returns
     -------
-    vals : array_like
+    vals : np.ndarray
         The interpolated values
     """
     case_idx, xx, rr = get_eval_case(x, row)
@@ -34,24 +37,26 @@ def interpolate_multi_x_y(x, row, xvals, yvals, **kwargs):
     return interpolate_multi_x_y_flat(xx, rr, xvals, yvals, **kwargs)
 
 
-def interpolate_multi_x_y_product(x, row, xvals, yvals, **kwargs):
+def interpolate_multi_x_y_product(
+    x: ArrayLike, row: ArrayLike, xvals: ArrayLike, yvals: ArrayLike, **kwargs
+) -> np.ndarray:
     """
     Interpolate a set of values
 
     Parameters
     ----------
-    x : array_like (n)
+    x : ArrayLike, length n
         X values to interpolate at
-    row : array_like (npdf, 1)
+    row : ArrayLike, shape (npdf, 1)
         Which rows to interpolate at
-    xvals : array_like (npdf, npts)
+    xvals : ArrayLike, shape (npdf, npts)
         X-values used for the interpolation
-    yvals : array_like (npdf)
+    yvals : ArrayLike, length npdf
         Y-values used for the interpolation
 
     Returns
     -------
-    vals : array_like (npdf, n)
+    vals : np.ndarray, shape (npdf, n)
         The interpolated values
     """
     rr = np.squeeze(row)
@@ -64,24 +69,26 @@ def interpolate_multi_x_y_product(x, row, xvals, yvals, **kwargs):
     return vv(rr)
 
 
-def interpolate_multi_x_y_2d(x, row, xvals, yvals, **kwargs):
+def interpolate_multi_x_y_2d(
+    x: ArrayLike, row: ArrayLike, xvals: ArrayLike, yvals: ArrayLike, **kwargs
+) -> np.ndarray:
     """
     Interpolate a set of values
 
     Parameters
     ----------
-    x : array_like (npdf, n)
+    x : ArrayLike, shape (npdf, n)
         X values to interpolate at
-    row : array_like (npdf, 1)
+    row : ArrayLike, shape (npdf, 1)
         Which rows to interpolate at
-    xvals : array_like (npdf, npts)
+    xvals : ArrayLike, shape (npdf, npts)
         X-values used for the interpolation
-    yvals : array_like (npdf)
+    yvals : ArrayLike, length npdf
         Y-values used for the interpolation
 
     Returns
     -------
-    vals : array_like (npdf, n)
+    vals : np.ndarray, shape (npdf, n)
         The interpolated values
     """
     nx = np.shape(x)[-1]
@@ -93,24 +100,26 @@ def interpolate_multi_x_y_2d(x, row, xvals, yvals, **kwargs):
     return vv(np.squeeze(row), x)
 
 
-def interpolate_multi_x_y_flat(x, row, xvals, yvals, **kwargs):
+def interpolate_multi_x_y_flat(
+    x: ArrayLike, row: ArrayLike, xvals: ArrayLike, yvals: ArrayLike, **kwargs
+) -> np.ndarray:
     """
     Interpolate a set of values
 
     Parameters
     ----------
-    x : array_like (n)
+    x : ArrayLike, length n
         X values to interpolate at
-    row : array_like (n)
+    row : ArrayLike, length n
         Which rows to interpolate at
-    xvals : array_like (npdf, npts)
+    xvals : ArrayLike, shape (npdf, npts)
         X-values used for the interpolation
-    yvals : array_like (npdf)
+    yvals : ArrayLike, length npdf
         Y-values used for the interpolation
 
     Returns
     -------
-    vals : array_like (npdf, n)
+    vals : np.ndarray, shape (npdf, n)
         The interpolated values
     """
 
@@ -121,48 +130,52 @@ def interpolate_multi_x_y_flat(x, row, xvals, yvals, **kwargs):
     return vv(x, row)
 
 
-def interpolate_x_multi_y_product(x, row, xvals, yvals, **kwargs):
+def interpolate_x_multi_y_product(
+    x: ArrayLike, row: ArrayLike, xvals: ArrayLike, yvals: ArrayLike, **kwargs
+) -> np.ndarray:
     """
     Interpolate a set of values
 
     Parameters
     ----------
-    x : array_like (n)
+    x : ArrayLike, length n
         X values to interpolate at
-    row : array_like (npdf, 1)
+    row : ArrayLike, shape (npdf, 1)
         Which rows to interpolate at
-    xvals : array_like (npts)
+    xvals : ArrayLike, length npts
         X-values used for the interpolation
-    yvals : array_like (npdf, npts)
+    yvals : ArrayLike, shape (npdf, npts)
         Y-values used for the interpolation
 
     Returns
     -------
-    vals : array_like (npdf, n)
+    vals : np.ndarray, shape (npdf, n)
         The interpolated values
     """
     rr = np.squeeze(row)
     return interp1d(xvals, yvals[rr], **kwargs)(x)
 
 
-def interpolate_x_multi_y(x, row, xvals, yvals, **kwargs):
+def interpolate_x_multi_y(
+    x: ArrayLike, row: ArrayLike, xvals: ArrayLike, yvals: ArrayLike, **kwargs
+) -> np.ndarray:
     """
     Interpolate a set of values
 
     Parameters
     ----------
-    x : array_like (npdf, n)
+    x : ArrayLike, shape (npdf, n)
         X values to interpolate at
-    row : array_like (npdf, 1)
+    row : ArrayLike, shape (npdf, 1)
         Which rows to interpolate at
-    xvals : array_like (npts)
+    xvals : ArrayLike, length npts
         X-values used for the interpolation
-    yvals : array_like (npdf, npts)
+    yvals : ArrayLike, shape (npdf, npts)
         Y-values used for the interpolation
 
     Returns
     -------
-    vals : array_like
+    vals : np.ndarray
         The interpolated values
     """
     case_idx, xx, rr = get_eval_case(x, row)
@@ -173,24 +186,26 @@ def interpolate_x_multi_y(x, row, xvals, yvals, **kwargs):
     return interpolate_x_multi_y_flat(xx, rr, xvals, yvals, **kwargs)
 
 
-def interpolate_x_multi_y_2d(x, row, xvals, yvals, **kwargs):
+def interpolate_x_multi_y_2d(
+    x: ArrayLike, row: ArrayLike, xvals: ArrayLike, yvals: ArrayLike, **kwargs
+) -> np.ndarray:
     """
     Interpolate a set of values
 
     Parameters
     ----------
-    x : array_like (npdf, n)
+    x : ArrayLike, shape (npdf, n)
         X values to interpolate at
-    row : array_like (npdf, 1)
+    row : ArrayLike, shape (npdf, 1)
         Which rows to interpolate at
-    xvals : array_like (npts)
+    xvals : ArrayLike, length npts
         X-values used for the interpolation
-    yvals : array_like (npdf, npts)
+    yvals : ArrayLike, shape (npdf, npts)
         Y-values used for the interpolation
 
     Returns
     -------
-    vals : array_like (npdf, n)
+    vals : np.ndarray, shape (npdf, n)
         The interpolated values
     """
     nx = np.shape(x)[-1]
@@ -202,24 +217,26 @@ def interpolate_x_multi_y_2d(x, row, xvals, yvals, **kwargs):
     return vv(row, x)
 
 
-def interpolate_x_multi_y_flat(x, row, xvals, yvals, **kwargs):
+def interpolate_x_multi_y_flat(
+    x: ArrayLike, row: ArrayLike, xvals: ArrayLike, yvals: ArrayLike, **kwargs
+) -> np.ndarray:
     """
     Interpolate a set of values
 
     Parameters
     ----------
-    x : array_like (n)
+    x : ArrayLike, length n
         X values to interpolate at
-    row : array_like (n)
+    row : ArrayLike, length n
         Which rows to interpolate at
-    xvals : array_like (npts)
+    xvals : ArrayLike, length npts
         X-values used for the interpolation
-    yvals : array_like (npdf, npts)
+    yvals : ArrayLike, shape (npdf, npts)
         Y-values used for the interpolation
 
     Returns
     -------
-    vals : array_like (npdf, n)
+    vals : np.ndarray, shape (npdf, n)
         The interpolated values
     """
 
@@ -230,24 +247,26 @@ def interpolate_x_multi_y_flat(x, row, xvals, yvals, **kwargs):
     return vv(x, row)
 
 
-def interpolate_multi_x_multi_y_flat(x, row, xvals, yvals, **kwargs):
+def interpolate_multi_x_multi_y_flat(
+    x: ArrayLike, row: ArrayLike, xvals: ArrayLike, yvals: ArrayLike, **kwargs
+) -> np.ndarray:
     """
     Interpolate a set of values
 
     Parameters
     ----------
-    x : array_like (n)
+    x : ArrayLike, length n
         X values to interpolate at
-    row : array_like (n)
+    row : ArrayLike, length n
         Which rows to interpolate at
-    xvals : array_like (npdf, npts)
+    xvals : ArrayLike, shape (npdf, npts)
         X-values used for the interpolation
-    yvals : array_like (npdf, npts)
+    yvals : ArrayLike, shape (npdf, npts)
         Y-values used for the interpolation
 
     Returns
     -------
-    vals : array_like (npdf, n)
+    vals : np.ndarray, shape (npdf, n)
         The interpolated values
     """
 
@@ -258,24 +277,26 @@ def interpolate_multi_x_multi_y_flat(x, row, xvals, yvals, **kwargs):
     return vv(x, row)
 
 
-def interpolate_multi_x_multi_y_product(x, row, xvals, yvals, **kwargs):
+def interpolate_multi_x_multi_y_product(
+    x: ArrayLike, row: ArrayLike, xvals: ArrayLike, yvals: ArrayLike, **kwargs
+) -> np.ndarray:
     """
     Interpolate a set of values
 
     Parameters
     ----------
-    x : array_like (n)
+    x : ArrayLike, length n
         X values to interpolate at
-    row : array_like (npdf, 1)
+    row : ArrayLike, shape (npdf, 1)
         Which rows to interpolate at
-    xvals : array_like (npdf, npts)
+    xvals : ArrayLike, shape (npdf, npts)
         X-values used for the interpolation
-    yvals : array_like (npdf, npts)
+    yvals : ArrayLike, shape (npdf, npts)
         Y-values used for the interpolation
 
     Returns
     -------
-    vals : array_like (npdf, n)
+    vals : np.ndarray, shape (npdf, n)
         The interpolated values
     """
     rr = np.squeeze(row)
@@ -288,24 +309,26 @@ def interpolate_multi_x_multi_y_product(x, row, xvals, yvals, **kwargs):
     return vv(rr)
 
 
-def interpolate_multi_x_multi_y_2d(x, row, xvals, yvals, **kwargs):
+def interpolate_multi_x_multi_y_2d(
+    x: ArrayLike, row: ArrayLike, xvals: ArrayLike, yvals: ArrayLike, **kwargs
+) -> np.ndarray:
     """
     Interpolate a set of values
 
     Parameters
     ----------
-    x : array_like (npdf, n)
+    x : ArrayLike, shape (npdf, n)
         X values to interpolate at
-    row : array_like (npdf, 1)
+    row : ArrayLike, shape (npdf, 1)
         Which rows to interpolate at
-    xvals : array_like (npdf, npts)
+    xvals : ArrayLike, shape (npdf, npts)
         X-values used for the interpolation
-    yvals : array_like (npdf, npts)
+    yvals : ArrayLike, shape (npdf, npts)
         Y-values used for the interpolation
 
     Returns
     -------
-    vals : array_like (npdf, n)
+    vals : np.ndarray, shape (npdf, n)
         The interpolated values
     """
     nx = np.shape(x)[-1]
@@ -317,24 +340,26 @@ def interpolate_multi_x_multi_y_2d(x, row, xvals, yvals, **kwargs):
     return vv(np.squeeze(row), x)
 
 
-def interpolate_multi_x_multi_y(x, row, xvals, yvals, **kwargs):
+def interpolate_multi_x_multi_y(
+    x: ArrayLike, row: ArrayLike, xvals: ArrayLike, yvals: ArrayLike, **kwargs
+) -> np.ndarray:
     """
     Interpolate a set of values
 
     Parameters
     ----------
-    x : array_like (npdf, n)
+    x : ArrayLike, shape (npdf, n)
         X values to interpolate at
-    row : array_like (npdf, 1)
+    row : ArrayLike, shape (npdf, 1)
         Which rows to interpolate at
-    xvals : array_like (npdf, npts)
+    xvals : ArrayLike, shape (npdf, npts)
         X-values used for the interpolation
-    yvals : array_like (npdf, npts)
+    yvals : ArrayLike, shape (npdf, npts)
         Y-values used for the interpolation
 
     Returns
     -------
-    vals : array_like
+    vals : np.ndarray
         The interpolated values
     """
     case_idx, xx, rr = get_eval_case(x, row)

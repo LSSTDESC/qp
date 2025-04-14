@@ -4,6 +4,7 @@ from __future__ import annotations
 import numpy as np
 from scipy.stats import rv_continuous
 from typing import Mapping, Optional
+from matplotlib.axes import Axes
 from numpy.typing import ArrayLike
 import warnings
 
@@ -32,29 +33,17 @@ class interp_gen(Pdf_rows_gen):
 
 
     Parameters
-    ---------
-    xvals : array_like
-        The n x-values that are used by all the distributions
-    yvals : array_like
-        The y-values that represent each distribution, with shape (npdf,n)
-    norm : `bool`, optional
-        If True, normalizes the input distribution. If False, assumes the
-        given distribution is already normalized. By default True.
-    warn : `bool`, optional
-        If True, raises warnings if input is not valid PDF data (i.e. if
-        data is negative). If False, no warnings are raised. By default True.
-
-    Attributes
     ----------
-    xvals
-    yvals
-
-    Methods
-    -------
-    create_ensemble(xvals, yvals,ancil)
-        Create an Ensemble with this parameterization.
-    plot_native(xlim,axes,**kwargs)
-        Create a plot of a distribution with this parameterization.
+    xvals : ArrayLike
+        The n x-values that are used by all the distributions
+    yvals : ArrayLike
+        The y-values that represent each distribution, with shape (npdf,n)
+    norm : bool, optional
+        If `True`, normalizes the input distribution. If `False`, assumes the
+        given distribution is already normalized. By default `True`.
+    warn : bool, optional
+        If `True`, raises warnings if input is not valid PDF data (i.e. if
+        data is negative). If `False`, no warnings are raised. By default `True`.
 
 
     Notes
@@ -69,14 +58,14 @@ class interp_gen(Pdf_rows_gen):
     +---------------------+-----------+------------+
     | Function            | Arguments | Method key |
     +---------------------+-----------+------------+
-    | `extract_vals_at_x` | xvals     | None       |
+    | `.extract_vals_at_x`| xvals     | None       |
     +---------------------+-----------+------------+
 
     Implementation notes:
 
-    This uses the same xvals for all the the PDFs, unlike `irreg_interp_gen` which
+    This uses the same xvals for all the the PDFs, unlike `interp_irregular_gen` which
     has a different set of xvals for each distribution.
-    `interp` therefore allows for much faster evaluation than `irreg_interp_gen`,
+    `interp_gen` therefore allows for much faster evaluation than `interp_irregular_gen`,
     and reduces the memory usage by a factor of 2.
 
     Inside the range of given xvals it takes a set of x and y values
@@ -114,16 +103,16 @@ class interp_gen(Pdf_rows_gen):
 
         Parameters
         ----------
-        xvals : array_like
+        xvals : ArrayLike
             The n x-values that are used by all the distributions
-        yvals : array_like
+        yvals : ArrayLike
             The y-values that represent each distribution, with shape (npdf,n)
-        norm : `bool`, optional
-            If True, normalizes the input distribution. If False, assumes the
-            given distribution is already normalized. By default True.
-        warn : `bool`, optional
+        norm : bool, optional
+            If `True`, normalizes the input distribution. If `False`, assumes the
+            given distribution is already normalized. By default `True`.
+        warn : bool, optional
             If True, raises warnings if input is not valid PDF data (i.e. if
-            data is negative). If False, no warnings are raised. By default True.
+            data is negative). If `False`, no warnings are raised. By default `True`.
         """
         if np.size(xvals) != np.shape(yvals)[-1]:  # pragma: no cover
             raise ValueError(
@@ -176,7 +165,7 @@ class interp_gen(Pdf_rows_gen):
         self._addmetadata("xvals", self._xvals)
         self._addobjdata("yvals", self._yvals)
 
-    def _compute_ycumul(self):
+    def _compute_ycumul(self) -> None:
         """Compute the integral under the distribution"""
         copy_shape = np.array(self._yvals.shape)
         self._ycumul = np.ndarray(copy_shape)
@@ -200,12 +189,12 @@ class interp_gen(Pdf_rows_gen):
                 f"The distributions at indices = {indices[0]} have an integral of 0."
             )
 
-    def normalize(self) -> Mapping[str, np.ndarray]:
+    def normalize(self) -> Mapping[str, np.ndarray[float]]:
         """Normalizes the input distribution values.
 
         Returns
         -------
-        Mapping[str,np.ndarray]
+        Mapping [str, np.ndarray[float]]
             An (npdf, n) array of y values for the npdf distributions
 
         Raises
@@ -221,16 +210,16 @@ class interp_gen(Pdf_rows_gen):
         return {"yvals": new_yvals}
 
     @property
-    def xvals(self):
+    def xvals(self) -> np.ndarray[float]:
         """Return the x-values used to do the interpolation"""
         return self._xvals
 
     @property
-    def yvals(self):
+    def yvals(self) -> np.ndarray[float]:
         """Return the y-values used to do the interpolation"""
         return self._yvals
 
-    def x_samples(self):
+    def x_samples(self) -> np.ndarray[float]:
         """Return a set of x values that can be used to plot all the PDFs."""
         return self._xvals
 
@@ -290,7 +279,9 @@ class interp_gen(Pdf_rows_gen):
         return dct
 
     @classmethod
-    def get_allocation_kwds(cls, npdf: int, **kwargs):
+    def get_allocation_kwds(
+        cls, npdf: int, **kwargs
+    ) -> dict[str, tuple[tuple[int, int], str]]:
         """Return the kwds necessary to create an `empty` HDF5 file with ``npdf`` entries
         for iterative write. We only need to allocate the data columns, as
         the metadata will be written when we finalize the file.
@@ -308,10 +299,10 @@ class interp_gen(Pdf_rows_gen):
 
         Returns
         -------
-        Mapping
+        dict[str, tuple[tuple[int, int], str]]
             A dictionary with a key for the objdata, a tuple with the shape of that data,
             and the data type of the data as a string.
-            i.e. ``{objdata_key = (npdf, n), "f4"}``
+            i.e. ``{objdata_key = ( (npdf, n), "f4" )}``
 
         Raises
         ------
@@ -324,30 +315,30 @@ class interp_gen(Pdf_rows_gen):
         return dict(yvals=((npdf, ngrid), "f4"))
 
     @classmethod
-    def plot_native(cls, pdf, **kwargs):
+    def plot_native(cls, pdf, **kwargs) -> Axes:
         """Plot the PDF in a way that is particular to this type of distribution
 
         For a interpolated PDF this uses the interpolation points.
 
         Parameters
         ----------
-        axes : `matplotlib.axes`
+        axes : Axes
             The axes to plot on. Either this or xlim must be provided.
-        xlim : (float, float)
+        xlim : tuple[float, float]
             The x-axis limits. Either this or axes must be provided.
         kwargs :
-            Any keyword arguments to pass to matplotlib's axes.hist() method.
+            Any keyword arguments to pass to `matplotlib.axes.Axes.hist`.
 
         Returns
         -------
-        axes : `matplotlib.axes`
+        axes : Axes
             The plot axes.
         """
         axes, _, kw = get_axes_and_xlims(**kwargs)
         return plot_pdf_on_axes(axes, pdf, pdf.dist.xvals, **kw)
 
     @classmethod
-    def add_mappings(cls):
+    def add_mappings(cls) -> None:
         """
         Add this classes mappings to the conversion dictionary
         """
@@ -368,15 +359,15 @@ class interp_gen(Pdf_rows_gen):
 
         Parameters
         ----------
-        xvals : `array_like`
+        xvals : ArrayLike
           The x-values used to do the interpolation, shape is n
-        yvals : `array_like`
+        yvals : ArrayLike
           The y-values used to do the interpolation, shape is (npdfs, n), where
           npdfs is the number of distributions
-        norm : `bool`, optional
+        norm : bool, optional
             If True, normalizes the input distribution. If False, assumes the
             given distribution is already normalized. By default True.
-        warn : `bool`, optional
+        warn : bool, optional
             If True, raises warnings if input is not valid PDF data (i.e. if
             data is negative). If False, no warnings are raised. By default True.
         ancil : Optional[Mapping]
@@ -388,8 +379,8 @@ class interp_gen(Pdf_rows_gen):
         Ensemble
             An Ensemble object containing all of the given distributions.
 
-        Example
-        -------
+        Examples
+        --------
 
         To create an ensemble with two distributions and their associated ids:
 
@@ -419,29 +410,17 @@ class interp_irregular_gen(Pdf_rows_gen):
     `scipy.interpolate.interp1d`, with the default interpolation method (linear).
 
     Parameters
-    ---------
-    xvals : array_like
+    ----------
+    xvals : ArrayLike
         The x-values that are used by each distribution, with shape (npdf,n)
-    yvals : array_like
+    yvals : ArrayLike
         The y-values that represent each distribution, with shape (npdf,n)
-    norm : `bool`, optional
+    norm : bool, optional
         If True, normalizes the input distribution. If False, assumes the
         given distribution is already normalized. By default True.
-    warn : `bool`, optional
+    warn : bool, optional
         If True, raises warnings if input is not valid PDF data (i.e. if
         data is negative). If False, no warnings are raised. By default True.
-
-    Attributes
-    ----------
-    xvals
-    yvals
-
-    Methods
-    -------
-    create_ensemble(xvals, yvals, ancil)
-        Create an Ensemble with this parameterization.
-    plot_native(xlim,axes,**kwargs)
-        Create a plot of a distribution with this parameterization.
 
 
     Notes
@@ -453,11 +432,11 @@ class interp_irregular_gen(Pdf_rows_gen):
     their required arguments, and their method keys. If the key is `None`, this is
     the default conversion method.
 
-    +--------------------------------+-----------+------------+
-    | Function                       | Arguments | Method key |
-    +--------------------------------+-----------+------------+
-    | `irreg_interp_extract_xy_vals` | xvals     | None       |
-    +--------------------------------+-----------+------------+
+    +-------------------------------------+-----------+------------+
+    | Function                            | Arguments | Method key |
+    +-------------------------------------+-----------+------------+
+    | `.interp_irregular_extract_xy_vals` | xvals     | None       |
+    +-------------------------------------+-----------+------------+
 
     Implementation notes:
 
@@ -497,15 +476,15 @@ class interp_irregular_gen(Pdf_rows_gen):
 
         Parameters
         ----------
-        xvals : array_like
+        xvals : ArrayLike
           The x-values for each distribution, with shape (npdf, n), where n is
           the number of x-values
-        yvals : array_like
+        yvals : ArrayLike
           The y-values that represent each distribution, with shape (npdf,n)
-        norm : `bool`, optional
+        norm : bool, optional
             If True, normalizes the input distribution. If False, assumes the
             given distribution is already normalized. By default True.
-        warn : `bool`, optional
+        warn : bool, optional
             If True, raises warnings if input is not valid PDF data (i.e. if
             data is negative). If False, no warnings are raised. By default True.
         """
@@ -581,13 +560,13 @@ class interp_irregular_gen(Pdf_rows_gen):
                 f"The distributions at indices = {indices[0]} have an integral of 0."
             )
 
-    def normalize(self) -> Mapping[str, np.ndarray]:
+    def normalize(self) -> Mapping[str, np.ndarray[float]]:
         """
         Normalize a set of 1D interpolators
 
         Returns
         -------
-        ynorm: Mapping[str, np.ndarray]
+        ynorm : Mapping[str, np.ndarray[float]]
             Normalized y-vals
         """
         # def row_integral(irow):
@@ -616,16 +595,16 @@ class interp_irregular_gen(Pdf_rows_gen):
         return {"yvals": (self._yvals.T / integrals).T}
 
     @property
-    def xvals(self):
+    def xvals(self) -> np.ndarray[float]:
         """Return the x-values used to do the interpolation"""
         return self._xvals
 
     @property
-    def yvals(self):
+    def yvals(self) -> np.ndarray[float]:
         """Return the y-valus used to do the interpolation"""
         return self._yvals
 
-    def x_samples(self) -> np.ndarray:
+    def x_samples(self) -> np.ndarray[float]:
         """Return a set of x values that can be used to plot all the PDFs."""
         dx = np.min(np.diff(self._yvals))
         return np.arange(np.min(self._xvals), np.max(self._yvals), dx)
@@ -669,7 +648,9 @@ class interp_irregular_gen(Pdf_rows_gen):
         return dct
 
     @classmethod
-    def get_allocation_kwds(cls, npdf, **kwargs):
+    def get_allocation_kwds(
+        cls, npdf: int, **kwargs
+    ) -> dict[str, tuple[tuple[int, int], str]]:
         """Return the kwds necessary to create an `empty` HDF5 file with ``npdf`` entries
         for iterative write. We only need to allocate the data columns, as
         the metadata will be written when we finalize the file.
@@ -687,10 +668,10 @@ class interp_irregular_gen(Pdf_rows_gen):
 
         Returns
         -------
-        Mapping
+        dict[str, tuple[tuple[int, int], str]]
             A dictionary with a key for the objdata, a tuple with the shape of that data,
             and the data type of the data as a string.
-            i.e. ``{objdata_key = (npdf, n), "f4"}``
+            i.e. ``{objdata_key = ((npdf, n), "f4")}``
 
         Raises
         ------
@@ -703,23 +684,23 @@ class interp_irregular_gen(Pdf_rows_gen):
         return dict(xvals=((npdf, ngrid), "f4"), yvals=((npdf, ngrid), "f4"))
 
     @classmethod
-    def plot_native(cls, pdf, **kwargs):
+    def plot_native(cls, pdf, **kwargs) -> Axes:
         """Plot the PDF in a way that is particular to this type of distribution
 
         For a interpolated PDF this uses the interpolation points.
 
         Parameters
         ----------
-        axes : `matplotlib.axes`
+        axes : Axes
             The axes to plot on. Either this or xlim must be provided.
-        xlim : (float, float)
+        xlim : tuple[float, float]
             The x-axis limits. Either this or axes must be provided.
         kwargs :
             Any keyword arguments to pass to matplotlib's axes.hist() method.
 
         Returns
         -------
-        axes : `matplotlib.axes`
+        axes : Axes
             The plot axes.
         """
         axes, _, kw = get_axes_and_xlims(**kwargs)
@@ -727,7 +708,7 @@ class interp_irregular_gen(Pdf_rows_gen):
         return plot_pdf_on_axes(axes, pdf, xvals_row, **kw)
 
     @classmethod
-    def add_mappings(cls):
+    def add_mappings(cls) -> None:
         """
         Add this classes mappings to the conversion dictionary
         """
@@ -748,15 +729,15 @@ class interp_irregular_gen(Pdf_rows_gen):
 
         Parameters
         ----------
-        xvals : array_like
+        xvals : ArrayLike
           The x-values for each distribution, with shape (npdf, n), where n is
           the number of x-values
-        yvals : array_like
+        yvals : ArrayLike
           The y-values that represent each distribution, with shape (npdf,n)
-        norm : `bool`, optional
+        norm : bool, optional
             If True, normalizes the input distribution. If False, assumes the
             given distribution is already normalized. By default True.
-        warn : `bool`, optional
+        warn : bool, optional
             If True, raises warnings if input is not valid PDF data (i.e. if
             data is negative). If False, no warnings are raised. By default True.
         ancil : Optional[Mapping]
@@ -767,8 +748,8 @@ class interp_irregular_gen(Pdf_rows_gen):
         Ensemble
             An Ensemble object containing all of the given distributions.
 
-        Example
-        -------
+        Examples
+        --------
 
         To create an Ensemble with two distributions and their associated ids:
 

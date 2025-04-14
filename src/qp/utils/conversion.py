@@ -15,19 +15,19 @@ from ..parameterizations.sparse_interp.sparse_rep import (
 )
 
 
-def extract_xy_vals(in_dist, xvals):
+def extract_xy_vals(in_dist: "Ensemble", xvals: np.ndarray) -> dict[str, np.ndarray]:
     """Convert using a set of x and y values.
 
     Parameters
     ----------
-    in_dist : `qp.Ensemble`
+    in_dist : Ensemble
         Input distributions
-    xvals : `np.array`
+    xvals : np.ndarray
         Locations at which the pdf is evaluated
 
     Returns
     -------
-    data : `dict`
+    data : dict[str, np.ndarray]
         The extracted data
     """
 
@@ -46,7 +46,7 @@ def extract_fit(in_dist, **kwargs):  # pragma: no cover
 
     Parameters
     ----------
-    in_dist : `qp.Ensemble`
+    in_dist : Ensemble
         Input distributions
 
     Other Parameters
@@ -56,7 +56,7 @@ def extract_fit(in_dist, **kwargs):  # pragma: no cover
 
     Returns
     -------
-    data : `dict`
+    data : dict
         The extracted data
     """
     raise NotImplementedError("extract_fit")
@@ -72,12 +72,12 @@ def extract_voigt_mixmod(in_dist, **kwargs):  # pragma: no cover
 
     Parameters
     ----------
-    in_dist : `qp.Ensemble`
+    in_dist : Ensemble
         Input distributions
 
     Returns
     -------
-    data : `dict`
+    data : dict
         The extracted data
     """
     objdata = in_dist.objdata
@@ -93,12 +93,12 @@ def extract_voigt_xy(in_dist, **kwargs):  # pragma: no cover
 
     Parameters
     ----------
-    in_dist : `qp.Ensemble`
+    in_dist : Ensemble
         Input distributions
 
     Returns
     -------
-    data : `dict`
+    data : dict
         The extracted data as sparse indices, basis, and metadata to rebuild the basis
     """
 
@@ -115,12 +115,12 @@ def extract_voigt_xy_sparse(in_dist, **kwargs):  # pragma: no cover
 
     Parameters
     ----------
-    in_dist : `qp.Ensemble`
+    in_dist : Ensemble
         Input distributions
 
     Returns
     -------
-    data : `dict`
+    data : dict
         The extracted data as shaped parameters means, stds, weights, gammas
     """
 

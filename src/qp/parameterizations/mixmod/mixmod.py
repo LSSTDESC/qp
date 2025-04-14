@@ -27,11 +27,11 @@ class mixmod_gen(Pdf_rows_gen):
 
     Parameters
     ----------
-    means : array_like
+    means : ArrayLike
         The means of the Gaussians, with shape (npdf, ncomp)
-    stds : array_like
+    stds : ArrayLike
         The standard deviations of the Gaussians, with shape (npdf, ncomp)
-    weights : array_like
+    weights : ArrayLike
         The weights to attach to the Gaussians, with shape (npdf, ncomp).
         Weights should sum up to one. If not, the weights are interpreted
         as relative weights.
@@ -57,7 +57,7 @@ class mixmod_gen(Pdf_rows_gen):
     +------------------------------+--------------------------------------------+------------+
     | Function                     | Arguments                                  | Method key |
     +------------------------------+--------------------------------------------+------------+
-    | `extract_mixmod_fit_samples` | ncomps=3, nsamples=1000, random_state=None | None       |
+    |`.extract_mixmod_fit_samples` | ncomps=3, nsamples=1000, random_state=None | None       |
     +------------------------------+--------------------------------------------+------------+
 
     Implementation Notes:
@@ -96,15 +96,15 @@ class mixmod_gen(Pdf_rows_gen):
 
         Parameters
         ----------
-        means : array_like
+        means : ArrayLike
             The means of the Gaussians, with shape (npdf, ncomp)
-        stds : array_like
+        stds : ArrayLike
             The standard deviations of the Gaussians, with shape (npdf, ncomp)
-        weights : array_like
+        weights : ArrayLike
             The weights to attach to the Gaussians, with shape (npdf, ncomp).
             Weights should sum up to one. If not, the weights are interpreted
             as relative weights.
-        warn : `bool`, optional
+        warn : bool, optional
             If True, raises warnings if input is not finite. If False, no warnings
             are raised. By default True.
         """
@@ -188,21 +188,21 @@ class mixmod_gen(Pdf_rows_gen):
         )
 
     @property
-    def weights(self):
+    def weights(self) -> np.ndarray[float]:
         """Return weights to attach to the Gaussians"""
         return self._weights
 
     @property
-    def means(self):
+    def means(self) -> np.ndarray[float]:
         """Return means of the Gaussians"""
         return self._means
 
     @property
-    def stds(self):
+    def stds(self) -> np.ndarray[float]:
         """Return standard deviations of the Gaussians"""
         return self._stds
 
-    def x_samples(self):
+    def x_samples(self) -> np.ndarray[float]:
         """Return a set of x values that can be used to plot all the PDFs."""
 
         # make sure the number of points is reasonable
@@ -218,7 +218,7 @@ class mixmod_gen(Pdf_rows_gen):
             return np.linspace(xmin, xmax, npts_min)
         elif npts >= npts_min and npts <= npts_max:
             return np.linspace(xmin, xmax, int(npts))
-        elif npts > npts_max:
+        else:  # npts > npts_max
             return np.linspace(xmin, xmax, npts_max)
 
     def _pdf(self, x, row):
@@ -275,7 +275,9 @@ class mixmod_gen(Pdf_rows_gen):
         return dct
 
     @classmethod
-    def get_allocation_kwds(cls, npdf, **kwargs):
+    def get_allocation_kwds(
+        cls, npdf, **kwargs
+    ) -> dict[str, tuple[tuple[int, int], str]]:
         """Return the kwds necessary to create an `empty` HDF5 file with ``npdf`` entries
         for iterative write. We only need to allocate the data columns, as
         the metadata will be written when we finalize the file.
@@ -293,10 +295,10 @@ class mixmod_gen(Pdf_rows_gen):
 
         Returns
         -------
-        Mapping
+        dict[str, tuple[tuple[int, int], str]]
             A dictionary with a key for the objdata, a tuple with the shape of that data,
             and the data type of the data as a string.
-            i.e. ``{objdata_key = (npdf, n), "f4"}``
+            i.e. ``{objdata_key = ( (npdf, n), "f4" )}``
 
         Raises
         ------
@@ -314,7 +316,7 @@ class mixmod_gen(Pdf_rows_gen):
         )
 
     @classmethod
-    def add_mappings(cls):
+    def add_mappings(cls) -> None:
         """
         Add this classes mappings to the conversion dictionary
         """
@@ -333,19 +335,20 @@ class mixmod_gen(Pdf_rows_gen):
         """Creates an Ensemble of distributions parameterized as Gaussian Mixture models.
 
         `npdf` = the number of distributions
+
         `ncomp` = the number of Gaussians in the mixture model
 
         Parameters
         ----------
-        means : array_like
+        means : ArrayLike
             The means of the Gaussians, with shape (npdf, ncomp)
-        stds:  array_like
+        stds : ArrayLike
             The standard deviations of the Gaussians, with shape (npdf, ncomp)
-        weights : array_like
+        weights : ArrayLike
             The weights to attach to the Gaussians, with shape (npdf, ncomp).
             Weights should sum up to one. If not, the weights are interpreted
             as relative weights.
-        warn : `bool`, optional
+        warn : bool, optional
             If True, raises warnings if input is not finite. If False, no warnings
             are raised. By default True.
         ancil : Optional[Mapping], optional
@@ -358,8 +361,8 @@ class mixmod_gen(Pdf_rows_gen):
         Ensemble
             An Ensemble object containing all of the given distributions.
 
-        Example
-        -------
+        Examples
+        --------
 
         To create an Ensemble of two distributions with associated ids:
 

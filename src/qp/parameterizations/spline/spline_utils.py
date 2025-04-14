@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import numpy as np
+from numpy.typing import ArrayLike
 from scipy import stats as sps
 from scipy.integrate import quad
 from scipy.interpolate import splev, splrep
@@ -9,26 +10,26 @@ from scipy.special import errstate  # pylint: disable=no-name-in-module
 from ...utils.conversion import extract_xy_vals
 
 
-def normalize_spline(xvals, yvals, limits, **kwargs):
+def normalize_spline(
+    xvals: ArrayLike, yvals: ArrayLike, limits: tuple[float, float], **kwargs
+) -> np.ndarray[float]:
     """
     Normalize a set of 1D interpolators
 
     Parameters
     ----------
-    xvals : array-like
+    xvals : ArrayLike
         X-values used for the spline, should be a 2D array.
-    yvals : array-like
+    yvals : ArrayLike
         Y-values used for the spline, should be a 2D array.
-    limits : tuple (2)
+    limits : tuple[float, float]
         Lower and Upper limits of integration
-
-    Keywords
-    --------
-    Passed to the `scipy.quad` integration function
+    kwargs :
+        Passed to the `scipy.integrate.quad` integration function
 
     Returns
     -------
-    ynorm: array-like
+    ynorm : np.ndarray[float]
         Normalized y-vals
     """
 
@@ -44,24 +45,26 @@ def normalize_spline(xvals, yvals, limits, **kwargs):
     return (yvals.T / integrals).T
 
 
-def build_splines(xvals, yvals):
+def build_splines(
+    xvals: ArrayLike, yvals: ArrayLike
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Build a set of 1D spline representations
 
     Parameters
     ----------
-    xvals : array-like
+    xvals : ArrayLike
         X-values used for the spline
-    yvals : array-like
+    yvals : ArrayLike
         Y-values used for the spline
 
     Returns
     -------
-    splx : array-like
+    splx : np.ndarray
         Spline knot xvalues
-    sply : array-like
+    sply : np.ndarray
         Spline knot yvalues
-    spln : array-like
+    spln : np.ndarray
         Spline knot order parameters
     """
     l_x = []
@@ -78,20 +81,21 @@ def build_splines(xvals, yvals):
 # Conversion utility functions
 
 
-def spline_extract_xy_vals(in_dist, **kwargs):
+def spline_extract_xy_vals(in_dist: "Ensemble", **kwargs) -> dict[str, Any]:
     """Wrapper for extract_xy_vals. Convert using a set of x and y values.
 
     Parameters
     ----------
-    in_dist : `qp.Ensemble`
+    in_dist : Ensemble
         Input distributions
-    xvals : `np.array`
+    xvals : ArrayLike
         Locations at which the pdf is evaluated
 
     Returns
     -------
-    data : `dict`
-        The extracted data"""
+    data : dict[str, Any]
+        The extracted data
+    """
 
     xvals = kwargs.pop("xvals", None)
     if xvals is None:  # pragma: no cover
@@ -99,22 +103,22 @@ def spline_extract_xy_vals(in_dist, **kwargs):
     return extract_xy_vals(in_dist, xvals)
 
 
-def extract_samples(in_dist, **kwargs):
+def extract_samples(in_dist: "Ensemble", **kwargs) -> dict[str, np.ndarray | None]:
     """Convert using a set of values sampled from the PDF
 
     Parameters
     ----------
-    in_dist : `qp.Ensemble`
+    in_dist : Ensemble
         Input distributions
 
     Other Parameters
     ----------------
-    size : `int`
+    size : int
         Number of samples to generate
 
     Returns
     -------
-    data : `dict`
+    data : dict[str, np.ndarray | None]
         The extracted data
     """
     samples = in_dist.rvs(size=kwargs.pop("size", 1000))
@@ -125,40 +129,38 @@ def extract_samples(in_dist, **kwargs):
 # Creation utility functions
 
 
-def build_kdes(samples, **kwargs):
+def build_kdes(samples: ArrayLike, **kwargs) -> list[sps.gaussian_kde]:
     """
     Build a set of Gaussian Kernel Density Estimates
 
     Parameters
     ----------
-    samples : array-like
+    samples : ArrayLike
         X-values used for the spline
-
-    Keywords
-    --------
-    Passed to the `scipy.stats.gaussian_kde` constructor
+    kwargs
+        Passed to the `scipy.stats.gaussian_kde` constructor
 
     Returns
     -------
-    kdes : list of `scipy.stats.gaussian_kde` objects
+    kdes : list[sps.gaussian_kde]
     """
     return [sps.gaussian_kde(row, **kwargs) for row in samples]
 
 
-def evaluate_kdes(xvals, kdes):
+def evaluate_kdes(xvals: ArrayLike, kdes: list[sps.gaussian_kde]) -> np.ndarray:
     """
     Build a evaluate a set of kdes
 
     Parameters
     ----------
-    xvals : array_like
+    xvals : ArrayLike
         X-values used for the spline
-    kdes : list of `sps.gaussian_kde`
+    kdes : list[sps.gaussian_kde]
         The kernel density estimates
 
     Returns
     -------
-    yvals : array_like
+    yvals : np.ndarray
         The kdes evaluated at the xvals
     """
     return np.vstack([kde(xvals) for kde in kdes])

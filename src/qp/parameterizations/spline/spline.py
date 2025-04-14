@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 import numpy as np
+from matplotlib.axes import Axes
 from scipy.interpolate import splev, splint, splrep
 from scipy.special import errstate  # pylint: disable=no-name-in-module
 from scipy.stats import rv_continuous
@@ -32,17 +33,15 @@ class spline_gen(Pdf_rows_gen):
 
     The relevant data members are:
 
-    splx:  (npdf, n) spline-knot x-values
-
-    sply:  (npdf, n) spline-knot y-values
-
-    spln:  (npdf) spline-knot order parameters
+    - `splx`:  (npdf, n) spline-knot x-values
+    - `sply`:  (npdf, n) spline-knot y-values
+    - `spln`:  (npdf) spline-knot order parameters
 
     The pdf() for the ith pdf will return the result of
-    scipy.interpolate.splev(x, splx[i], sply[i], spln[i))
+    `scipy.interpolate.splev(x, splx[i], sply[i], spln[i))`
 
     The cdf() for the ith pdf will return the result of
-    scipy.interpolate.splint(x, splx[i], sply[i], spln[i))
+    `scipy.interpolate.splint(x, splx[i], sply[i], spln[i))`
 
     The ppf() will use the default scipy implementation, which
     inverts the cdf() as evaluated on an adaptive grid.
@@ -59,17 +58,17 @@ class spline_gen(Pdf_rows_gen):
         self,
         *args,
         **kwargs,
-    ):
+    ) -> None:
         """
         Create a new distribution using the given histogram
 
         Parameters
         --------
-        splx : array_like
+        splx : ArrayLike
           The x-values of the spline knots
-        sply : array_like
+        sply : ArrayLike
           The y-values of the spline knots
-        spln : array_like, optional
+        spln : ArrayLike, optional
           The order of the spline knots, by default None
 
         Notes
@@ -108,18 +107,18 @@ class spline_gen(Pdf_rows_gen):
 
         Parameters
         ----------
-        xvals : array_like
+        xvals : ArrayLike
           The x-values used to do the interpolation
-        yvals : array_like
+        yvals : ArrayLike
           The y-values used to do the interpolation
 
         Returns
         -------
-        splx : array_like
+        splx : ArrayLike
           The x-values of the spline knots
-        sply : array_like
+        sply : ArrayLike
           The y-values of the spline knots
-        spln : array_like
+        spln : ArrayLike
           The order of the spline knots
         """
         if xvals.shape != yvals.shape:  # pragma: no cover
@@ -146,14 +145,14 @@ class spline_gen(Pdf_rows_gen):
 
         Parameters
         ----------
-        xvals : array_like
+        xvals : ArrayLike
           The x-values used to do the interpolation
-        yvals : array_like
+        yvals : ArrayLike
           The y-values used to do the interpolation
 
         Returns
         -------
-        pdf_obj : `spline_gen`
+        pdf_obj : spline_gen
             The requested PDF
         """
         splx, sply, spln = spline_gen.build_normed_splines(xvals, yvals, **kwargs)
@@ -167,14 +166,14 @@ class spline_gen(Pdf_rows_gen):
 
         Parameters
         ----------
-        xvals : array_like
+        xvals : ArrayLike
           The x-values used to do the interpolation
-        samples : array_like
+        samples : ArrayLike
           The sample values used to build the KDE
 
         Returns
         -------
-        pdf_obj : `spline_gen`
+        pdf_obj : spline_gen
             The requested PDF
         """
         kdes = build_kdes(samples)
@@ -184,17 +183,17 @@ class spline_gen(Pdf_rows_gen):
         return cls.create_from_xy_vals(xvals_expand, yvals, **kwargs)
 
     @property
-    def splx(self):
+    def splx(self) -> np.ndarray:
         """Return x-values of the spline knots"""
         return self._splx
 
     @property
-    def sply(self):
+    def sply(self) -> np.ndarray:
         """Return y-values of the spline knots"""
         return self._sply
 
     @property
-    def spln(self):
+    def spln(self) -> np.ndarray:
         """Return order of the spline knots"""
         return self._spln
 
@@ -233,7 +232,9 @@ class spline_gen(Pdf_rows_gen):
         return dct
 
     @classmethod
-    def get_allocation_kwds(cls, npdf, **kwargs):
+    def get_allocation_kwds(
+        cls, npdf: int, **kwargs
+    ) -> dict[str, tuple[tuple[int, int], str]]:
         """
         Return the keywords necessary to create an 'empty' hdf5 file with npdf entries
         for iterative file writeout.  We only need to allocate the objdata columns, as
@@ -241,10 +242,14 @@ class spline_gen(Pdf_rows_gen):
 
         Parameters
         ----------
-        npdf: int
+        npdf : int
             number of *total* PDFs that will be written out
-        kwargs: dict
+        kwargs
             dictionary of kwargs needed to create the ensemble
+
+        Returns
+        -------
+        dict[str, tuple[tuple[int, int], str]]
         """
         if "splx" not in kwargs:  # pragma: no cover
             raise ValueError("required argument splx not included in kwargs")
@@ -253,7 +258,7 @@ class spline_gen(Pdf_rows_gen):
         return dict(splx=(shape, "f4"), sply=(shape, "f4"), spln=((shape[0], 1), "i4"))
 
     @classmethod
-    def plot_native(cls, pdf, **kwargs):
+    def plot_native(cls, pdf, **kwargs) -> Axes:
         """Plot the PDF in a way that is particular to this type of distibution
 
         For a spline this shows the spline knots
@@ -263,7 +268,7 @@ class spline_gen(Pdf_rows_gen):
         return plot_pdf_on_axes(axes, pdf, xvals, **kw)
 
     @classmethod
-    def add_mappings(cls):
+    def add_mappings(cls) -> None:
         """
         Add this classes mappings to the conversion dictionary
         """
@@ -287,11 +292,11 @@ class spline_gen(Pdf_rows_gen):
 
         Parameters
         ----------
-        splx : array_like
+        splx : ArrayLike
           The x-values of the spline knots
-        sply : array_like
+        sply : ArrayLike
           The y-values of the spline knots
-        spln : array_like, optional
+        spln : ArrayLike, optional
           The order of the spline knots, by default None
         ancil : Optional[Mapping], optional
             A dictionary of metadata for the distributions, where any arrays have the same length as the number of

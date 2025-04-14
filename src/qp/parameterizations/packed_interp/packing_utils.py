@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import enum
+
 import numpy as np
+from numpy.typing import ArrayLike
 
 
 class PackingType(enum.Enum):
@@ -11,64 +13,68 @@ class PackingType(enum.Enum):
     log_from_rowmax = 1
 
 
-def linear_pack_from_rowmax(input_array):
+def linear_pack_from_rowmax(input_array: ArrayLike) -> tuple[np.ndarray, np.ndarray]:
     """Pack an array into 8bit unsigned integers, using the maximum of each row as a reference
 
     This packs the values onto a linear grid for each row, running from 0 to row_max
 
     Parameters
     ----------
-    input_array : array_like
+    input_array : ArrayLike
         The values we are packing
 
     Returns
     -------
-    packed_array : array_like
+    packed_array : np.ndarray
         The packed values
-    row_max : array_like
+    row_max : np.ndarray
         The max for each row, need to unpack the array
     """
     row_max = np.expand_dims(input_array.max(axis=1), -1)
     return np.round(255 * input_array / row_max).astype(np.uint8), row_max
 
 
-def linear_unpack_from_rowmax(packed_array, row_max):
+def linear_unpack_from_rowmax(
+    packed_array: ArrayLike, row_max: ArrayLike
+) -> np.ndarray[float]:
     """Unpack an array into 8bit unsigned integers, using the maximum of each row as a reference
 
     Parameters
     ----------
-    packed_array : array_like
+    packed_array : ArrayLike
         The packed values
-    row_max : array_like
+    row_max : ArrayLike
         The max for each row, need to unpack the array
 
 
     Returns
     -------
-    unpacked_array : array_like
+    unpacked_array : np.ndarray[float]
         The unpacked values
     """
     unpacked_array = row_max * packed_array / 255.0
     return unpacked_array
 
 
-def log_pack_from_rowmax(input_array, log_floor=-3.0):
+def log_pack_from_rowmax(
+    input_array: ArrayLike, log_floor: float = -3.0
+) -> tuple[np.ndarray[np.uint8], np.ndarray]:
     """Pack an array into 8bit unsigned integers, using the maximum of each row as a reference
 
     This packs the values onto a log grid for each row, running from row_max / 10**log_floor to row_max
 
     Parameters
     ----------
-    input_array : array_like
+    input_array : ArrayLike
         The values we are packing
-    log_floor: float
-        The logarithmic floor used for the packing
+    log_floor : float, optional
+        The logarithmic floor used for the packing, by default -3.
 
     Returns
     -------
-    packed_array : array_like
+    packed_array : np.ndarray[np.uint8]
         The packed values
-    row_max : array_like
+    row_max : np.ndarray
         The max for each row, need to unpack the array
     """
     neg_log_floor = -1.0 * log_floor
@@ -86,21 +92,23 @@ def log_pack_from_rowmax(input_array, log_floor=-3.0):
     )
 
 
-def log_unpack_from_rowmax(packed_array, row_max, log_floor=-3.0):
+def log_unpack_from_rowmax(
+    packed_array: ArrayLike, row_max: ArrayLike, log_floor: float = -3.0
+) -> np.ndarray:
     """Unpack an array into 8bit unsigned integers, using the maximum of each row as a reference
 
     Parameters
     ----------
-    packed_array : array_like
+    packed_array : ArrayLike
         The packed values
-    row_max : array_like
+    row_max : ArrayLike
         The max for each row, need to unpack the array
-    log_floor: float
-        The logarithmic floor used for the packing
+    log_floor : float, optional
+        The logarithmic floor used for the packing, -3 by default.
 
     Returns
     -------
-    unpacked_array : array_like
+    unpacked_array : np.ndarray
         The unpacked values
     """
     neg_log_floor = -1.0 * log_floor
@@ -112,17 +120,22 @@ def log_unpack_from_rowmax(packed_array, row_max, log_floor=-3.0):
     return unpacked_array
 
 
-def pack_array(packing_type, input_array, **kwargs):
+def pack_array(packing_type: PackingType, input_array: ArrayLike, **kwargs):
     """Pack an array into 8bit unsigned integers
 
     Parameters
     ----------
     packing_type : PackingType
         Enum specifying the type of packing to use
-    input_array : array_like
+    input_array : ArrayLike
         The values we are packing
+    kwargs
+        depend on the packing type used
 
-    Return values and keyword argument depend on the packing type used
+    Returns
+    -------
+    np.ndarray
+        Details depend on packing type used
     """
 
     if packing_type == PackingType.linear_from_rowmax:
@@ -134,17 +147,22 @@ def pack_array(packing_type, input_array, **kwargs):
     )  # pragma: no cover
 
 
-def unpack_array(packing_type, packed_array, **kwargs):
+def unpack_array(packing_type: PackingType, packed_array: ArrayLike, **kwargs):
     """Unpack an array from 8bit unsigned integers
 
     Parameters
     ----------
     packing_type : PackingType
         Enum specifying the type of packing to use
-    packed_array : array_like
+    packed_array : ArrayLike
         The packed values
+    kwargs
+        depend on the packing type used
 
-    Return values and keyword argument depend on the packing type used
+    Returns
+    -------
+    np.ndarray
+        Details depend on packing type used
     """
     if packing_type == PackingType.linear_from_rowmax:
         return linear_unpack_from_rowmax(packed_array, row_max=kwargs.get("row_max"))

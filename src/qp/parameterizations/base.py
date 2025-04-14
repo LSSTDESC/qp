@@ -171,7 +171,7 @@ class rv_frozen_func(rv_continuous_frozen):
         ----------
         dist : `scipy.stats.rv_continuous`
             The underlying distribution
-        npdf : `int`
+        npdf : int
             The number of PDFs this object represents
         """
         super().__init__(dist, *args, **kwds)
@@ -354,7 +354,7 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
 
         Parameters
         ----------
-        arg1, arg2, arg3,... : array_like
+        arg1, arg2, arg3,... : ArrayLike
             The shape parameter(s) for the distribution.  Should include all
             the non-optional arguments, may include ``loc`` and ``scale``.
 
@@ -389,7 +389,7 @@ class Pdf_rows_gen(rv_continuous, Pdf_gen):
 
         Returns
         -------
-        moments : array_like
+        moments : ArrayLike
             The requested moments
         """
         self._scipy_version_warning()
@@ -413,7 +413,7 @@ class Pdf_gen_wrap(Pdf_gen):
 
         Parameters
         ----------
-        arg1, arg2, arg3,... : array_like
+        arg1, arg2, arg3,... : ArrayLike
             The shape parameter(s) for the distribution.  Should include all
             the non-optional arguments, may include ``loc`` and ``scale``.
 

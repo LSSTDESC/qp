@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Any
 import numpy as np
 from scipy import integrate as sciint
 from scipy import interpolate as sciinterp
@@ -14,19 +15,19 @@ from ..sparse_interp.sparse_rep import (
 # Conversion functions
 
 
-def irreg_interp_extract_xy_vals(in_dist, **kwargs):
+def irreg_interp_extract_xy_vals(in_dist: "Ensemble", **kwargs):  # -> dict[str, Any]:
     """Wrapper for extract_xy_vals. Convert using a set of x and y values.
 
     Parameters
     ----------
-    in_dist : `qp.Ensemble`
+    in_dist : Ensemble
         Input distributions
-    xvals : `np.array`
+    xvals : np.ndarray[float]
         Locations at which the pdf is evaluated
 
     Returns
     -------
-    data : `dict`
+    data : dict
         The extracted data"""
 
     xvals = kwargs.pop("xvals", None)
@@ -35,22 +36,22 @@ def irreg_interp_extract_xy_vals(in_dist, **kwargs):
     return extract_xy_vals(in_dist, xvals)
 
 
-def extract_vals_at_x(in_dist, **kwargs):
+def extract_vals_at_x(in_dist: "Ensemble", **kwargs) -> dict[str, np.ndarray[float]]:
     """Convert using a set of x and y values.
 
     Parameters
     ----------
-    in_dist : `qp.Ensemble`
+    in_dist : Ensemble
         Input distributions
 
     Other Parameters
     ----------------
-    xvals : `np.array`
+    xvals : np.ndarray[float]
         Locations at which the pdf is evaluated
 
     Returns
     -------
-    data : `dict`
+    data : dict[str, np.ndarray[float]]
         The extracted data
     """
     xvals = kwargs.pop("xvals", None)
@@ -60,26 +61,28 @@ def extract_vals_at_x(in_dist, **kwargs):
     return dict(xvals=xvals, yvals=yvals)
 
 
-def extract_xy_sparse(in_dist, **kwargs):  # pragma: no cover
+def extract_xy_sparse(
+    in_dist: "Ensemble", **kwargs
+) -> dict[str, Any]:  # pragma: no cover
     """Extract xy-interpolated representation from an sparse representation
 
     Parameters
     ----------
-    in_dist : `qp.Ensemble`
+    in_dist : Ensemble
         Input distributions
 
     Other Parameters
     ----------------
-    xvals : array-like
+    xvals : ArrayLike
         Used to override the y-values
-    xvals : array-like
+    xvals : ArrayLike
         Used to override the x-values
     nvals : int
         Used to override the number of bins
 
     Returns
     -------
-    metadata : `dict`
+    metadata : dict[str, Any]
         Dictionary with data for interpolated representation
 
     Notes
