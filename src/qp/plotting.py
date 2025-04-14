@@ -1,5 +1,7 @@
 """Functions to plot PDFs"""
 
+from __future__ import annotations
+
 import numpy as np
 
 from .core.lazy_modules import mpl, plt

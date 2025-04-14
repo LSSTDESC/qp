@@ -3,6 +3,8 @@ These functions should then be registered with the `qp.ConversionDict` using `qp
 That will allow the automated conversion mechanisms to work.
 """
 
+from __future__ import annotations
+
 import numpy as np
 from scipy import integrate as sciint
 from scipy import interpolate as sciinterp

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 from scipy import integrate as sciint
 from scipy import interpolate as sciinterp

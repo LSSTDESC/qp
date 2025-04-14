@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 from scipy import interpolate as sciinterp
 from .sparse_rep import build_sparse_representation

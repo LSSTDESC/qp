@@ -1,3 +1,4 @@
+from __future__ import annotations  # for autodoc type annotations
 import numpy as np
 
 from ...utils.array import (

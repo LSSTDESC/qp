@@ -1,5 +1,6 @@
 """This module implements a factory that manages different types of Ensembles"""
 
+from __future__ import annotations
 import sys
 import os
 

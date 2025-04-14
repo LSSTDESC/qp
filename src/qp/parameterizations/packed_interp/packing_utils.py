@@ -1,5 +1,7 @@
 """Integer packing utilities for qp"""
 
+from __future__ import annotations
+
 import enum
 import numpy as np
 

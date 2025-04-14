@@ -16,6 +16,8 @@ _logpdf, _cdf, _logcdf, _ppf, _rvs, _isf, _sf, _logsf could speed the code up a 
 
 """
 
+from __future__ import annotations
+
 import sys
 
 import numpy as np
