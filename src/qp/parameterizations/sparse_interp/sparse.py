@@ -1,5 +1,7 @@
 """This module implements a PDT distribution sub-class using a Gaussian mixture model"""
 
+from __future__ import annotations
+
 import os
 import sys
 import numpy as np
@@ -79,7 +81,9 @@ class sparse_gen(interp_gen):
         return dct
 
     @classmethod
-    def get_allocation_kwds(cls, npdf, **kwargs):
+    def get_allocation_kwds(
+        cls, npdf, **kwargs
+    ) -> dict[str, tuple[tuple[int, int], str]]:
         if "dims" not in kwargs:
             raise ValueError("required argument dims not in kwargs")  # pragma: no cover
         nsp = np.array(kwargs["dims"]).flatten()[4]

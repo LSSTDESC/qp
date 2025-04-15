@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import List
 
 import numpy as np
@@ -45,7 +47,7 @@ class CdfSplineDerivative(AbstractQuantilePdfConstructor):
         Parameters
         ----------
         spline_order : int
-            Defines the order of the spline fit, defaults to 4
+            Defines the order of the spline fit, defaults to 3
         """
         number_of_locations = len(self._locations[:, 0])
 
@@ -65,14 +67,14 @@ class CdfSplineDerivative(AbstractQuantilePdfConstructor):
         Parameters
         ----------
         grid : List[float]
-            The x values to pass to self._interpolation_functions
+            The x values to pass to `self._interpolation_functions`
         row : List[int], optional
-            Defines which interpolation_functions to return values for, by default None
+            Defines which interpolation_functions to return values for, by default `None`
 
         Returns
         -------
         List[List[float]]
-            The lists of y values returned from self._interpolation_functions
+            The lists of y values returned from `self._interpolation_functions`
         """
 
         # Generate the fitted spline derivatives if they don't already exist.

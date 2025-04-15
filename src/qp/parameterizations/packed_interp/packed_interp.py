@@ -15,17 +15,17 @@ from ...utils.array import reshape_to_pdf_size
 from ...utils.interpolation import interpolate_multi_x_y, interpolate_x_multi_y
 
 
-def extract_and_pack_vals_at_x(in_dist, **kwargs):
+def extract_and_pack_vals_at_x(in_dist: "Ensemble", **kwargs):
     """Convert using a set of x and packed y values
 
     Parameters
     ----------
-    in_dist : `qp.Ensemble`
+    in_dist : Ensemble
         Input distributions
 
-    Keywords
-    --------
-    xvals : `np.array`
+    Other Parameters
+    ----------------
+    xvals : np.ndarray
         Locations at which the pdf is evaluated
 
     packing_type : PackingType
@@ -33,7 +33,7 @@ def extract_and_pack_vals_at_x(in_dist, **kwargs):
 
     Returns
     -------
-    data : `dict`
+    data : dict
         The extracted data
     """
     xvals = kwargs.pop("xvals", None)
@@ -81,11 +81,11 @@ class packed_interp_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attr
 
         Parameters
         ----------
-        xvals : array_like
+        xvals : ArrayLike
           The x-values used to do the interpolation
-        ypacked : array_like
+        ypacked : ArrayLike
           The packed version of the y-values used to do the interpolation
-        ymax : array_like
+        ymax : ArrayLike
           The maximum y-values for each pdf
         packing_type: PackingType
             By default `PackingType.linear_from_rowmax`
@@ -239,7 +239,9 @@ class packed_interp_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attr
         return dct
 
     @classmethod
-    def get_allocation_kwds(cls, npdf, **kwargs):
+    def get_allocation_kwds(
+        cls, npdf, **kwargs
+    ) -> dict[str, tuple[tuple[int, int], str]]:
         """Return the keywords necessary to create an 'empty' hdf5 file with npdf entries
         for iterative file writeout.  We only need to allocate the objdata columns, as
         the metadata can be written when we finalize the file.
@@ -250,6 +252,10 @@ class packed_interp_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attr
             number of *total* PDFs that will be written out
         kwargs: dict
             dictionary of kwargs needed to create the ensemble
+
+        Returns
+        -------
+        dict[str, tuple[tuple[int, int], str]]
         """
         if "xvals" not in kwargs:  # pragma: no cover
             raise ValueError("required argument xvals not included in kwargs")
@@ -291,11 +297,11 @@ class packed_interp_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attr
 
         Parameters
         ----------
-        xvals : array_like
+        xvals : ArrayLike
           The x-values used to do the interpolation
-        ypacked : array_like
+        ypacked : ArrayLike
           The packed version of the y-values used to do the interpolation
-        ymax : array_like
+        ymax : ArrayLike
           The maximum y-values for each pdf
         packing_type: PackingType
             By default `PackingType.linear_from_rowmax`

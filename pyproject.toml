@@ -59,7 +59,8 @@ docs = [
     "sphinx_design",
     "myst-nb", # used to render notebooks in markdown 
     "myst-parser>=4", # used to write documentation in markdown
-    "sphinx-copybutton"   
+    "sphinx-copybutton",
+    "numpydoc", # alternative to sphinx napoleon
 ]
 
 

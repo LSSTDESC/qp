@@ -1,5 +1,6 @@
 """This module implements a factory that manages different types of Ensembles"""
 
+from __future__ import annotations
 import sys
 import os
 
@@ -123,7 +124,7 @@ class Factory(OrderedDict):
             if isinstance(attr, sps.rv_continuous):
                 self._make_scipy_wrapped_class(name, type(attr))
 
-    def add_class(self, the_class: Pdf_gen):
+    def add_class(self, the_class: Pdf_gen) -> None:
         """Add a parameterization class to the factory dictionary, so that it is
         included in the set of known parameterization classes. It includes an
         entry both for the actual class name, which ends in ``_gen``, and the
@@ -131,8 +132,8 @@ class Factory(OrderedDict):
 
         Parameters
         ----------
-        the_class : Pdf_gen-based class
-            The parameterization class we are adding, which must inherit from Pdf_gen.
+        the_class : Pdf_gen subclass
+            The parameterization class we are adding, which must inherit from `Pdf_gen`.
         """
         # if not isinstance(the_class, Pdf_gen): #pragma: no cover
         #    raise TypeError("Can only add sub-classes of Pdf_Gen to factory")
@@ -170,22 +171,22 @@ class Factory(OrderedDict):
 
         Parameters
         ----------
-        class_name : `str` or `class`
+        class_name : str or class
             The name of the parameterization to make a distribution from.
-        data : `dict`
+        data : Mapping
             Dictionary of values passed to the parameterization create function.
-        method : `str` [`None`]
+        method : str | None, optional
             Used to select which creation method to invoke if there are multiple.
-        ancil : `dict`
-            Dictionary with ancillary data, by default None
+        ancil : Mapping, optional
+            Dictionary with ancillary data, by default `None`
 
         Returns
         -------
-        ens : `qp.Ensemble`
+        ens : Ensemble
             The newly created Ensemble
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -213,20 +214,20 @@ class Factory(OrderedDict):
     def from_tables(
         self, tables: Mapping, decode: bool = False, ext: str = None
     ) -> Ensemble:
-        """Build this Ensemble from a dictionary of tables, where the metadata has key 'meta',
-        and the data has key 'data'. If there is an ancillary data table, it should have the
-        key 'ancil'.
+        """Build this Ensemble from a dictionary of tables, where the metadata has key `meta`,
+        and the data has key `data`. If there is an ancillary data table, it should have the
+        key `ancil`.
 
-        The function will create the ensemble with the parameterization given in the 'meta'
-        table, and will use any other information in the 'meta' table necessary to figure out
+        The function will create the ensemble with the parameterization given in the `meta`
+        table, and will use any other information in the `meta` table necessary to figure out
         how to construct the ensemble (i.e. construction method).
 
         Parameters
         ----------
-        tables: `Mapping`
+        tables : Mapping
             The dictionary of tables to turn into an Ensemble.
         decode : bool
-            If True and `ext` is 'hdf5', will decode any string type columns in `ancil`,
+            If `True` and `ext` is 'hdf5', will decode any string type columns in `ancil`,
             by default False.
         ext : str, optional
             If 'hdf5' and `decode` is True, will decode any string type columns in `ancil`,
@@ -237,8 +238,8 @@ class Factory(OrderedDict):
         ens : Ensemble
             The ensemble constructed from the data in the tables.
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -293,7 +294,7 @@ class Factory(OrderedDict):
 
         Parameters
         ----------
-        filename : `str`
+        filename : str
             The full path to the file.
 
         Returns
@@ -301,8 +302,8 @@ class Factory(OrderedDict):
         meta : Mapping
             Returns the metadata table as a dictionary of numpy arrays.
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> qp.read_metadata("hist-ensemble.hdf5")
@@ -320,7 +321,7 @@ class Factory(OrderedDict):
 
         Parameters
         ----------
-        filename : `str`
+        filename : str
             Path to file to test.
 
         Returns
@@ -328,8 +329,8 @@ class Factory(OrderedDict):
         value : bool
             True if the file is a qp file
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> qp.is_qp_file("test-qpfile.hdf5")
@@ -355,9 +356,9 @@ class Factory(OrderedDict):
 
         Parameters
         ----------
-        filename : `str`
+        filename : str
             Path to the file.
-        fmt : `str` or `None`
+        fmt : Optional[str], optional
             File format, if `None` it will be taken from the file extension.
             Allowed formats are: 'hdf5','h5','hf5','hd5','fits','fit','pq',
             'parq','parquet'
@@ -367,8 +368,8 @@ class Factory(OrderedDict):
         ens : Ensemble
             The ensemble constructed from the data in the file.
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> ens = qp.read("test-qpfile.hdf5")
@@ -403,16 +404,16 @@ class Factory(OrderedDict):
 
         Parameters
         ----------
-        filename : `str`
+        filename : str
             The path to the file with the data.
 
         Returns
         -------
-        nrows : `int`
+        nrows : int
             The length of the data, or the number of distributions in the data.
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> qp.data_length("hist-ensemble.hdf5")
@@ -536,20 +537,20 @@ class Factory(OrderedDict):
 
         Parameters
         ----------
-        in_dist : `qp.Ensemble`
+        in_dist : Ensemble
             The input Ensemble object to convert.
-        class_name : `str`
+        class_name : str
             Name of the representation to convert to as a string
         kwds : Mapping
             The arguments required to convert to a function of the given type.
 
         Returns
         -------
-        ens : `qp.Ensemble`
+        ens : Ensemble
             The ensemble we converted to
 
-        Example
-        -------
+        Examples
+        --------
 
         The following example demonstrates converting from a histogram parameterization
         to an interpolation parameterization. The arguments given will not be the same
@@ -583,7 +584,7 @@ class Factory(OrderedDict):
         data = extract_func(in_dist, **kwds_copy)
         return self.create(class_name, data, method)
 
-    def pretty_print(self, stream=sys.stdout):
+    def pretty_print(self, stream=sys.stdout) -> None:
         """Print a level of the conversion dictionary in a human-readable format
 
         Parameters
@@ -603,16 +604,16 @@ class Factory(OrderedDict):
 
         Parameters
         ----------
-        ensembles : `list`
+        ensembles : list[Ensemble]
             The list of ensembles we are concatenating
 
         Returns
         -------
-        ens : `qp.Ensemble`
+        ens : Ensemble
             The output
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -679,8 +680,8 @@ class Factory(OrderedDict):
         ValueError
             Raised if the dictionary contains any values that are not Ensembles.
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> import numpy as np
@@ -718,8 +719,8 @@ class Factory(OrderedDict):
         Mapping[str, Ensemble]
             A dictionary with the Ensembles contained in the file.
 
-        Example
-        -------
+        Examples
+        --------
 
         >>> import qp
         >>> ens_dict = qp.read_dict("qp-ensembles.hdf5")

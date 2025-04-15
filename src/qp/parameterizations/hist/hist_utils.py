@@ -1,3 +1,4 @@
+from __future__ import annotations  # for autodoc type annotations
 import numpy as np
 
 from ...utils.array import (
@@ -7,6 +8,9 @@ from ...utils.array import (
     CASE_FACTOR,
     CASE_2D,
 )
+from typing import Any
+
+from numpy.typing import ArrayLike
 
 
 #
@@ -14,24 +18,26 @@ from ...utils.array import (
 #
 
 
-def evaluate_hist_x_multi_y(x, row, bins, vals, derivs=None):
+def evaluate_hist_x_multi_y(
+    x: ArrayLike, row: ArrayLike, bins: ArrayLike, vals: ArrayLike, derivs=None
+) -> np.ndarray[float]:
     """
     Evaluate a set of values from histograms
 
     Parameters
     ----------
-    x : array_like
+    x : ArrayLike
         X values to interpolate at
-    row : array_like
+    row : ArrayLike
         Which rows to interpolate at
-    bins : array_like (N+1)
+    bins : ArrayLike, length N+1
         'x' bin edges
-    vals : array_like (npdf, N)
+    vals : ArrayLike, shape (npdf,N)
         'y' bin contents
 
     Returns
     -------
-    out : array_like
+    out : np.ndarray[float]
         The histogram values
 
     Notes
@@ -48,25 +54,25 @@ def evaluate_hist_x_multi_y(x, row, bins, vals, derivs=None):
 
 
 def evaluate_hist_x_multi_y_product(
-    x, row, bins, vals, derivs=None
-):  # pragma: no cover
+    x: ArrayLike, row: ArrayLike, bins: ArrayLike, vals: ArrayLike, derivs=None
+) -> np.ndarray[float]:  # pragma: no cover
     """
     Evaluate a set of values from histograms
 
     Parameters
     ----------
-    x : array_like (npts)
+    x : ArrayLike, length npts
         X values to interpolate at
-    row : array_like (npdf, 1)
+    row : ArrayLike, shape (npdf, 1)
         Which rows to interpolate at
-    bins : array_like (N+1)
+    bins : ArrayLike, length (N+1)
         'x' bin edges
-    vals : array_like (npdf, N)
+    vals : ArrayLike, shape (npdf, N)
         'y' bin contents
 
     Returns
     -------
-    out : array_like (npdf, npts)
+    out : np.ndarray[float], shape (npdf, npts)
         The histogram values
     """
     # assert np.ndim(x) < 2 and np.ndim(row) == 2
@@ -82,24 +88,26 @@ def evaluate_hist_x_multi_y_product(
     )
 
 
-def evaluate_hist_x_multi_y_2d(x, row, bins, vals, derivs=None):  # pragma: no cover
+def evaluate_hist_x_multi_y_2d(
+    x: ArrayLike, row: ArrayLike, bins: ArrayLike, vals: ArrayLike, derivs=None
+) -> np.ndarray[float]:  # pragma: no cover
     """
     Evaluate a set of values from histograms
 
     Parameters
     ----------
-    x : array_like (npdf, npts)
+    x : ArrayLike, shape (npdf, npts)
         X values to interpolate at
-    row : array_like (npdf, 1)
+    row : ArrayLike, shape (npdf, 1)
         Which rows to interpolate at
-    bins : array_like (N+1)
+    bins : ArrayLike, length (N+1)
         'x' bin edges
-    vals : array_like (npdf, N)
+    vals : ArrayLike, shape (npdf, N)
         'y' bin contents
 
     Returns
     -------
-    out : array_like (npdf, npts)
+    out : np.ndarray[float], shape (npdf, npts)
         The histogram values
     """
     assert np.ndim(x) >= 2 and np.ndim(row) >= 2
@@ -118,24 +126,26 @@ def evaluate_hist_x_multi_y_2d(x, row, bins, vals, derivs=None):  # pragma: no c
     return vv(idx, mask, row, deltas)
 
 
-def evaluate_hist_x_multi_y_flat(x, row, bins, vals, derivs=None):  # pragma: no cover
+def evaluate_hist_x_multi_y_flat(
+    x: ArrayLike, row: ArrayLike, bins: ArrayLike, vals: ArrayLike, derivs=None
+) -> np.ndarray[float]:  # pragma: no cover
     """
     Evaluate a set of values from histograms
 
     Parameters
     ----------
-    x : array_like (n)
+    x : ArrayLike, length n
         X values to interpolate at
-    row : array_like (n)
+    row : ArrayLike, length n
         Which rows to interpolate at
-    bins : array_like (N+1)
+    bins : ArrayLike, length N+1
         'x' bin edges
-    vals : array_like (npdf, N)
+    vals : ArrayLike, shape (npdf, N)
         'y' bin contents
 
     Returns
     -------
-    out : array_like (n)
+    out : np.ndarray[float], length n
         The histogram values
     """
     assert np.ndim(x) < 2 and np.ndim(row) < 2
@@ -159,23 +169,25 @@ def evaluate_hist_x_multi_y_flat(x, row, bins, vals, derivs=None):  # pragma: no
 #
 
 
-def extract_hist_values(in_dist, **kwargs):
+def extract_hist_values(
+    in_dist: "Ensemble", **kwargs
+) -> dict[str, Any]:  # -> dict[str, Any]:
     """Convert to a histogram by using the CDF values at the given bin edges
     to calculate the value within each bin.
 
     Parameters
     ----------
-    in_dist : `qp.Ensemble`
+    in_dist : Ensemble
         Input Ensemble of distributions.
 
     Other Parameters
     ----------------
-    bins : `np.array`
+    bins : np.ndarray[float]
         The bin edges for the new histogram.
 
     Returns
     -------
-    data : `dict`
+    data : dict[str, Any]
         The extracted data
     """
     bins = kwargs.pop("bins", None)
@@ -185,25 +197,25 @@ def extract_hist_values(in_dist, **kwargs):
     return dict(bins=bins, pdfs=pdfs)
 
 
-def extract_hist_samples(in_dist, **kwargs):
+def extract_hist_samples(in_dist: "Ensemble", **kwargs) -> dict[str, Any]:
     """Convert to a histogram by sampling the input distributions, then turning
     those samples into a histogram with given bin edges.
 
     Parameters
     ----------
-    in_dist : `qp.Ensemble`
+    in_dist : Ensemble
         Input Ensemble of distributions
 
     Other Parameters
     ----------------
-    bins : `np.array`
+    bins : np.ndarray[float]
         The bin edges for the new histogram
-    size : `int`
+    size : int
         Number of samples to generate, by default 1000
 
     Returns
     -------
-    data : `dict`
+    data : dict[str, Any]
         The extracted data
     """
     bins = kwargs.pop("bins", None)

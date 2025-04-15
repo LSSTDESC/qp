@@ -58,7 +58,7 @@ class parameterization_gen(Pdf_rows_gen):
         [description]
     [arg2] : [dtype]
         [description]
-    [warn] : `bool`, optional
+    [warn] : bool, optional
             If True, raises warnings if input is not valid input data (i.e. if
             data is negative). If False, no warnings are raised. By default True.
     [[norm] : bool, optional
@@ -107,11 +107,11 @@ class parameterization_gen(Pdf_rows_gen):
 
         Parameters
         ----------
-        [arg1] : array_like
+        [arg1] : ArrayLike
           [description]
-        [arg2] : array_like
+        [arg2] : ArrayLike
           [description]
-        warn : `bool`, optional
+        warn : bool, optional
             If True, raises warnings if input is not valid input data (i.e. if
             data is negative). If False, no warnings are raised. By default True.
         [norm : bool, optional
@@ -315,7 +315,7 @@ class parameterization_gen(Pdf_rows_gen):
         Mapping
             A dictionary with a key for the objdata, a tuple with the shape of that data,
             and the data type of the data as a string.
-            i.e. ``{objdata_key = (npdf, n), "f4"}``
+            i.e. ``{objdata_key = ( (npdf, n), "f4" )}``
 
         Raises
         ------
@@ -348,11 +348,11 @@ class parameterization_gen(Pdf_rows_gen):
 
         Parameters
         ----------
-        [arg1] : array_like
+        [arg1] : ArrayLike
           [description]
-        [arg2] : array_like
+        [arg2] : ArrayLike
           [description]
-        [warn] : `bool`, optional
+        [warn] : bool, optional
             If True, raises warnings if input is not valid input data (i.e. if
             data is negative). If False, no warnings are raised. By default True.
         ancil : Optional[Mapping], optional
@@ -364,8 +364,8 @@ class parameterization_gen(Pdf_rows_gen):
         Ensemble
             An Ensemble object containing all of the given distributions.
 
-        Example
-        -------
+        Examples
+        --------
 
         To create an Ensemble with two distributions and an 'ancil' table that provides ids for the distributions, you can use the following code:
 

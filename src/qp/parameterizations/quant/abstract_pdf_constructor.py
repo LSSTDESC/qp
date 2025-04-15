@@ -1,10 +1,10 @@
 from typing import List
 
-class AbstractQuantilePdfConstructor():
-    """Abstract class to define an interface for concrete PDF Constructor classes
-    """
 
-    def __init__(self, quantiles:List[float], locations: List[List[float]]) -> None:
+class AbstractQuantilePdfConstructor:
+    """Abstract class to define an interface for concrete PDF Constructor classes"""
+
+    def __init__(self, quantiles: List[float], locations: List[List[float]]) -> None:
         """Constructor to instantiate this class.
 
         Parameters
@@ -20,16 +20,18 @@ class AbstractQuantilePdfConstructor():
         """All the intermediate math for a constructor should happen here.
         This is public so that the user can trigger a recalculation of the of
         variables needed to construct the original PDF.
-        This method should either return functions or set variables that will 
+        This method should either return functions or set variables that will
         receive x values and return y values.
         """
 
-    def construct_pdf(self, grid: List[float], row: List[int] = None) -> List[List[float]]:
+    def construct_pdf(
+        self, grid: List[float], row: List[int] = None
+    ) -> List[List[float]]:
         """This is the method that the user would most often be interacting with by
         passing a grid (set of x values) and optionally a list of indexes for
         for filtering.
 
-        This is also the method that is called by `quant_gen._pdf`.
+        This is also the method that is called by `quant_gen._pdf <qp.parameterizations.quant.quant_gen._pdf>`.
 
         Parameters
         ----------

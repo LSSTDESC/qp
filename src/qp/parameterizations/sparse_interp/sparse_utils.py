@@ -1,28 +1,35 @@
+from __future__ import annotations
+
+from typing import Any
+
 import numpy as np
 from scipy import interpolate as sciinterp
+
 from .sparse_rep import build_sparse_representation
 
 
-def extract_sparse_from_xy(in_dist, **kwargs):  # pragma: no cover
+def extract_sparse_from_xy(
+    in_dist: "Ensemble", **kwargs
+) -> dict[str, Any]:  # pragma: no cover
     """Extract sparse representation from an xy interpolated representation
 
     Parameters
     ----------
-    in_dist : `qp.Ensemble`
+    in_dist : Ensemble
         Input distributions
 
     Other Parameters
     ----------------
-    xvals : array-like
+    xvals : ArrayLike
         Used to override the y-values
-    xvals : array-like
+    xvals : ArrayLike
         Used to override the x-values
     nvals : int
         Used to override the number of bins
 
     Returns
     -------
-    metadata : `dict`
+    metadata : dict[str, Any]
         Dictionary with data for sparse representation
 
     Notes

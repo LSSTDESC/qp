@@ -7,6 +7,7 @@ import sys
 import numpy as np
 from scipy.stats import rv_continuous
 from typing import Mapping, Optional
+from matplotlib.axes import Axes
 from numpy.typing import ArrayLike
 import warnings
 
@@ -43,9 +44,9 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
 
     Parameters
     ----------
-    quants : array_like
+    quants : ArrayLike
         The quantiles of the CDF, of shape n
-    locs : array_like
+    locs : ArrayLike
         The locations at which those quantiles are reached, of shape (npdf, n)
     pdf_constructor_name : str, optional
         The constructor or interpolator to use to create the PDF, by default "piecewise_linear".
@@ -57,19 +58,6 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
         If True, raises warnings if input is not valid data (i.e. if
         data is not finite). If False, no warnings are raised. By default True.
 
-    Attributes
-    ----------
-    quants
-    locs
-    pdf_constructor_name
-    pdf_constructor
-
-    Methods
-    -------
-    create_ensemble(quants,locs,pdf_constructor_name,ancil)
-        Create an Ensemble with this parameterization.
-    plot_native(xlim,axes,**kwargs)
-        Create a plot of a distribution with this parameterization.
 
     Notes
     -----
@@ -83,7 +71,7 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
     +---------------------+-----------+------------+
     | Function            | Arguments | Method key |
     +---------------------+-----------+------------+
-    | `extract_quantiles` | quants    | None       |
+    |`.extract_quantiles` | quants    | None       |
     +---------------------+-----------+------------+
 
     Implementation notes:
@@ -123,9 +111,9 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
 
         Parameters
         ----------
-        quants : array_like
+        quants : ArrayLike
            The quantiles of the CDF, of shape n
-        locs : array_like
+        locs : ArrayLike
            The locations at which those quantiles are reached, of shape (npdf, n)
         pdf_constructor_name : str, optional
             The constructor to use to create the PDF, by default "piecewise_linear".
@@ -210,36 +198,36 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
             )
 
     @property
-    def quants(self):
+    def quants(self) -> np.ndarray[float]:
         """Return quantiles used to build the CDF"""
         return self._quants
 
     @property
-    def locs(self):
+    def locs(self) -> np.ndarray[float]:
         """Return the locations at which those quantiles are reached"""
         return self._locs
 
     @property
-    def pdf_constructor_name(self):
+    def pdf_constructor_name(self) -> str:
         """Returns the name of the current pdf constructor. Matches a key in
-        the PDF_CONSTRUCTORS dictionary."""
+        the `PDF_CONSTRUCTORS` dictionary."""
         return self._pdf_constructor_name
 
     @pdf_constructor_name.setter
-    def pdf_constructor_name(self, value: str):
+    def pdf_constructor_name(self, value: str) -> None:
         """Allows users to specify a different interpolator without having to recreate
         the ensemble.
 
         Parameters
         ----------
         value : str
-            One of the supported interpolators. See PDF_CONSTRUCTORS
+            One of the supported interpolators. See `PDF_CONSTRUCTORS`
             dictionary for supported interpolators.
 
         Raises
         ------
         ValueError
-            If the value provided isn't a key in PDF_CONSTRUCTORS, raise
+            If the value provided isn't a key in `PDF_CONSTRUCTORS`, raise
             a value error.
         """
         if value not in PDF_CONSTRUCTORS:
@@ -272,7 +260,7 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
             self._quants, self._locs
         )
 
-    def x_samples(self):
+    def x_samples(self) -> np.ndarray[float]:
         """Return a set of x values that can be used to plot all the CDFs."""
 
         # get the range and median distance between points
@@ -331,7 +319,9 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
         return dct
 
     @classmethod
-    def get_allocation_kwds(cls, npdf, **kwargs):
+    def get_allocation_kwds(
+        cls, npdf, **kwargs
+    ) -> dict[str, tuple[tuple[int, int], str]]:
         """Return the kwds necessary to create an `empty` HDF5 file with ``npdf`` entries
         for iterative write. We only need to allocate the data columns, as
         the metadata will be written when we finalize the file.
@@ -349,10 +339,10 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
 
         Returns
         -------
-        Mapping
+        dict[str, tuple[tuple[int, int], str]]
             A dictionary with a key for the objdata, a tuple with the shape of that data,
             and the data type of the data as a string.
-            i.e. ``{objdata_key = (npdf, n), "f4"}``
+            i.e. ``{objdata_key = ((npdf, n), "f4")}``
 
         Raises
         ------
@@ -367,16 +357,16 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
         return dict(locs=((npdf, nquants), "f4"))
 
     @classmethod
-    def plot_native(cls, pdf, **kwargs):
+    def plot_native(cls, pdf, **kwargs) -> Axes:
         """Plot the PDF in a way that is particular to this type of distribution
 
         For a quantile this shows the quantiles points.
 
         Parameters
         ----------
-        axes : `matplotlib.axes`
+        axes : Axes
             The axes to plot on. Either this or xlim must be provided.
-        xlim : (float, float)
+        xlim : tuple[float, float]
             The x-axis limits. Either this or axes must be provided.
 
         Other Parameters
@@ -388,7 +378,7 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
 
         Returns
         -------
-        axes : `matplotlib.axes`
+        axes : Axes
             The plot axes.
         """
         axes, xlim, kw = get_axes_and_xlims(**kwargs)
@@ -401,7 +391,7 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
         )
 
     @classmethod
-    def add_mappings(cls):
+    def add_mappings(cls) -> None:
         """
         Add this classes mappings to the conversion dictionary
         """
@@ -427,9 +417,9 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
 
         Parameters
         ----------
-        quants : array_like
+        quants : ArrayLike
            The quantiles used to build the CDF, shape n
-        locs : array_like
+        locs : ArrayLike
            The locations at which those quantiles are reached, shape (npdfs, n),
            where npdfs is the number of distributions.
         pdf_constructor_name : str, optional
@@ -451,8 +441,8 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
         Ensemble
             An Ensemble object containing all of the given distributions.
 
-        Example
-        -------
+        Examples
+        --------
 
         To create an Ensemble with two distributions and associated ids, using the
         `dual_spline_average` constructor:

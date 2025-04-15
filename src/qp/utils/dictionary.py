@@ -1,25 +1,26 @@
 """This module implements tools to handle dictionaries"""
 
 import sys
+from typing import Any, Mapping
 
 import numpy as np
-from typing import Mapping
+
 from .array import reshape_to_pdf_shape
 
 
-def get_val_or_default(in_dict, key):
+def get_val_or_default(in_dict: dict, key: str) -> Any | None:
     """Helper functions to return either an item in a dictionary or the default value of the dictionary
 
     Parameters
     ----------
-    in_dict : `dict`
+    in_dict : dict
         input dictionary
-    key : `str`
+    key : str
         key to search for
 
     Returns
     -------
-    out : `dict` or `function`
+    out : Any | None
         The requested item
 
     Notes
@@ -38,31 +39,29 @@ def get_val_or_default(in_dict, key):
     return None
 
 
-def set_val_or_default(in_dict, key, val):
+def set_val_or_default(in_dict: dict, key: str, val: Any):
     """Helper functions to either get and item from or add an item to a dictionary and return that item
 
     Parameters
     ----------
-    in_dict : `dict`
+    in_dict : dict
         input dictionary
-    key : `str`
+    key : str
         key to search for
-    val : `dict` or `function`
+    val : Any
         item to add to the dictionary
 
     Returns
     -------
-    out : `dict` or `function`
-        The requested item
+    out : Any
+        If the key already existed, return the current value. Otherwise, return `val`.
 
     Notes
     -----
     This will first try to return:
       in_dict[key] : i.e., the requested item.
-    If that fails it will try
-      in_dict[None] : i.e., the default for that dictionary.
     If that fails it will return
-      None
+      `val`
     """
     if key in in_dict:
         return in_dict[key]
@@ -70,16 +69,16 @@ def set_val_or_default(in_dict, key, val):
     return val
 
 
-def pretty_print(in_dict, prefixes, idx=0, stream=sys.stdout):
+def pretty_print(in_dict: dict, prefixes: list, idx=0, stream=sys.stdout) -> None:
     """Print a level of the converstion dictionary in a human-readable format
 
     Parameters
     ----------
-    in_dict : `dict`
+    in_dict : dict
         input dictionary
-    prefixs : `list`
+    prefixs : list
         The prefixs to use at each level of the printing
-    idx : `int`
+    idx : int
         The level of the input dictionary we are currently printing
     stream : `stream`
         The stream to print to
@@ -97,32 +96,32 @@ def pretty_print(in_dict, prefixes, idx=0, stream=sys.stdout):
             stream.write("%s%s : %s\n" % (prefix, key_str, val))
 
 
-def print_dict_shape(in_dict):
+def print_dict_shape(in_dict: dict) -> None:
     """Print the shape of arrays in a dictionary.
     This is useful for debugging table creation.
 
     Parameters
     ----------
-    in_dict : `dict`
+    in_dict : dict
         The dictionary to print
     """
     for key, val in in_dict.items():
         print(key, np.shape(val))
 
 
-def slice_dict(in_dict, subslice):
-    """Create a new `dict` by taking a slice of of every array in a `dict`
+def slice_dict(in_dict: dict, subslice: int | slice) -> dict:
+    """Create a new dict by taking a slice of of every array in a dict
 
     Parameters
     ----------
-    in_dict : `dict`
+    in_dict : dict
         The dictionary to conver
-    subslice : `int` or `slice`
+    subslice : int or slice
         Used to slice the arrays
 
     Returns
     -------
-    out_dict : `dict`
+    out_dict : dict
         The converted dictionary
     """
 
@@ -135,7 +134,7 @@ def slice_dict(in_dict, subslice):
     return out_dict
 
 
-def check_keys(in_dicts):
+def check_keys(in_dicts: list[dict]) -> None:
     """Check that the keys in all the in_dicts match
 
     Raises KeyError if one does not match.
@@ -150,17 +149,17 @@ def check_keys(in_dicts):
             )
 
 
-def concatenate_dicts(in_dicts):
-    """Create a new `dict` by concatenate each array in `in_dicts`
+def concatenate_dicts(in_dicts: list[dict]) -> dict:
+    """Create a new dict by concatenate each array in `in_dicts`
 
     Parameters
     ----------
-    in_dicts : `list`
+    in_dicts : list[dict]
         The dictionaries to stack
 
     Returns
     -------
-    out_dict : `dict`
+    out_dict : dict
         The stacked dicionary
     """
     if not in_dicts:  # pragma: no cover
@@ -172,7 +171,7 @@ def concatenate_dicts(in_dicts):
     return out_dict
 
 
-def check_array_shapes(in_dict, npdf):
+def check_array_shapes(in_dict: dict, npdf: int) -> None:
     """Check that all the arrays in in_dict match the number of pdfs
 
     Raises ValueError if one does not match.
@@ -189,12 +188,12 @@ def check_array_shapes(in_dict, npdf):
             )
 
 
-def compare_two_dicts(d1, d2):
+def compare_two_dicts(d1: dict, d2: dict) -> bool:
     """Check that all the items in d1 and d2 match
 
     Returns
     -------
-    match : `bool`
+    match : bool
         True if they all match, False otherwise
     """
     if d1.keys() != d2.keys():  # pragma: no cover
@@ -210,12 +209,12 @@ def compare_two_dicts(d1, d2):
     return True
 
 
-def compare_dicts(in_dicts):
+def compare_dicts(in_dicts:list[dict]) -> bool:
     """Check that all the dicts in in_dicts match
 
     Returns
     -------
-    match : `bool`
+    match : bool
         True if they all match, False otherwise
     """
     if not in_dicts:  # pragma: no cover

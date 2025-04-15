@@ -40,7 +40,9 @@ def create_basis(metadata, cut=1.0e-5):
     return create_voigt_basis(xvals, mu, Nmu, sigma, Nsigma, Nv, cut=cut)
 
 
-def create_voigt_basis(xvals, mu, Nmu, sigma, Nsigma, Nv, cut=1.0e-5):  # pylint: disable=too-many-arguments
+def create_voigt_basis(
+    xvals, mu, Nmu, sigma, Nsigma, Nv, cut=1.0e-5
+):  # pylint: disable=too-many-arguments
     """
     Creates a gaussian-voigt dictionary at the same resolution as the original PDF
 
@@ -143,7 +145,7 @@ def combine_int(Ncoef, Nbase):
     combine index of base (up to 62500 bases) and value (16 bits integer with sign) in a 32 bit integer
     First half of word is for the value and second half for the index
 
-    :param int Ncoef: Integer with sign to represent the value associated with a base, 
+    :param int Ncoef: Integer with sign to represent the value associated with a base,
            this is a sign 16 bits integer
     :param int Nbase: Integer representing the base, unsigned 16 bits integer
     :return: 32 bits integer
@@ -183,7 +185,7 @@ def indices2shapes(sparse_indices, meta):
     sparse_index: `np.array`
         1D Array of indices for each object in the ensemble
 
-    meta: `dict`
+    meta: dict
         Dictionary of metadata to decode the sparse indices
     """
     Nmu = meta["dims"][0]

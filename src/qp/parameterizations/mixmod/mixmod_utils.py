@@ -1,27 +1,32 @@
+from __future__ import annotations
+
 import numpy as np
+
 from ...core.lazy_modules import mixture
 
 
-def extract_mixmod_fit_samples(in_dist, **kwargs):
+def extract_mixmod_fit_samples(
+    in_dist: "Ensemble", **kwargs
+) -> dict[str, np.ndarray[float]]:
     """Convert to a mixture model using a set of values sampled from the pdf
 
     Parameters
     ----------
-    in_dist : `qp.Ensemble`
+    in_dist : Ensemble
         Input distributions
 
     Other Parameters
     ----------------
-    ncomps : `int`
+    ncomps : int
         Number of components in mixture model to use
-    nsamples : `int`
+    nsamples : int
         Number of samples to generate
-    random_state : `int`
+    random_state : int
         Used to reproducibly generate random variate from in_dist
 
     Returns
     -------
-    data : `dict`
+    data : dict[str, np.ndarray[float]]
         The extracted data
     """
     n_comps = kwargs.pop("ncomps", 3)
