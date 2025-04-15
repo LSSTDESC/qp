@@ -435,7 +435,7 @@ class interp_irregular_gen(Pdf_rows_gen):
     +-------------------------------------+-----------+------------+
     | Function                            | Arguments | Method key |
     +-------------------------------------+-----------+------------+
-    | `.interp_irregular_extract_xy_vals` | xvals     | None       |
+    | `.irreg_interp_extract_xy_vals`     | xvals     | None       |
     +-------------------------------------+-----------+------------+
 
     Implementation notes:

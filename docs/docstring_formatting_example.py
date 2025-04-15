@@ -10,7 +10,7 @@ We can link to any external Python function or class (from a package included in
 intersphinx configuration) by adding the full path: `scipy.stats.norm`. The package does
 not need to be imported.
 
-In any case, to provide a link title: `title <MyClass`.
+In any case, to provide a link title: `title <MyClass>`.
 """
 
 #### Sphinx Configuration
