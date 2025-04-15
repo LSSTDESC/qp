@@ -29,7 +29,7 @@ There are three available methods to create an `Ensemble` from in-memory data, a
 
 The first method is to use the `create_ensemble()` function that exists for each parameterization. This function will take as arguments the required metadata coordinates and data values for the parameterization, as well as the argument `ancil` for any ancillary data.
 
-For example, to create an interpolated parameterization, where the distributions are given by a set of $x$ and $y$ values, you can use {py:meth}`qp.interp.create_ensemble() <qp.interp_gen.create_ensemble>`, where the data is passed as arguments to the function. Below, we do just that. First we have to set up a distribution with $x$ and $y$ values, which we do by using the `scipy.stats.norm` distribution:
+For example, to create an interpolated parameterization, where the distributions are given by a set of $x$ and $y$ values, you can use {py:meth}`qp.interp.create_ensemble() <qp.interp_gen.create_ensemble>`, where the data is passed as arguments to the function. Below, we do just that. First we have to set up a distribution with $x$ and $y$ values, which we do by using the <inv:scipy#scipy.stats.norm> distribution:
 
 ```{doctest}
 

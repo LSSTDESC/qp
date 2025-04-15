@@ -103,7 +103,7 @@ Read the Docs is linked to the [github repo](https://github.com/LSSTDESC/qp), an
 - [`rail_dnf`](https://github.com/LSSTDESC/rail_dnf)
 - [`rail_dsps`](https://github.com/LSSTDESC/rail_dsps)
 - [`rail_fsps`](https://github.com/LSSTDESC/rail_fsps)
-- [`rail_gpz_v1](https://github.com/LSSTDESC/rail_gpz_v1)
+- [`rail_gpz_v1`](https://github.com/LSSTDESC/rail_gpz_v1)
 - [`rail_lephare`](https://github.com/LSSTDESC/lephare)
 - [`rail_pzflow`](https://github.com/LSSTDESC/rail_pzflow)
 - [`rail_sklearn`](https://github.com/LSSTDESC/rail_sklearn)

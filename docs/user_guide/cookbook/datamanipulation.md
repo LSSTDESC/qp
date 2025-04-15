@@ -149,4 +149,21 @@ If you'd like to change not only the data but also the metadata of the `Ensemble
 
 ## Normalizing an `Ensemble`
 
-If you have an `Ensemble` and want to ensure it's normalized, you can use the {py:meth}`qp.Ensemble.normalize` method.
+If you have an `Ensemble` and want to ensure it's normalized, you can use the {py:meth}`qp.Ensemble.norm` method. This method will only work for interpolation, irregular interpolation, and histogram `Ensembles`.
+
+Let's say you created an `Ensemble` without normalizing, but now you've changed your mind and want it normalized:
+
+```{doctest}
+
+>>> xvals= np.array([0,0.5,1,1.5,2])
+>>> yvals = np.array([[0.01, 0.2,0.3,0.2,0.01],[0.09,0.25,0.2,0.1,0.01]])
+>>> ens_i = qp.interp.create_ensemble(xvals=xvals, yvals=yvals,norm=False)
+>>> ens_i.objdata["yvals"]
+array([[0.01, 0.2 , 0.3 , 0.2 , 0.01],
+       [0.09, 0.25, 0.2 , 0.1 , 0.01]])
+>>> ens_i.norm()
+>>> ens_i.objdata["yvals"]
+array([[0.02816901, 0.56338028, 0.84507042, 0.56338028, 0.02816901],
+       [0.3       , 0.83333333, 0.66666667, 0.33333333, 0.03333333]])
+
+```
