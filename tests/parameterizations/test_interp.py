@@ -205,7 +205,7 @@ def test_irreg_warnings(xvals, yvals, match_string):
         (
             np.array([0, 0.5, 1]),
             np.array([-0.5, -1, -0.5]),
-            "The integral is <= 0 for distributions at indices",
+            "The integral is < 0 for distributions at indices",
         ),
     ],
 )
@@ -227,6 +227,6 @@ def test_compute_ycumul_error():
         xvals=xvals, yvals=yvals, norm=False, warn=False
     )
     with pytest.raises(
-        ValueError, match="The integral is <= 0 for distributions at indices"
+        ValueError, match="The integral is < 0 for distributions at indices"
     ):
         value = ens_i.cdf(1.0)

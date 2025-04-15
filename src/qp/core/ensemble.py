@@ -363,6 +363,8 @@ class Ensemble:
         >>> import numpy as np
         >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
         ... pdfs = np.array([0,0.1,0.1,0.4,0.2]))
+        >>> ens_h.objdata
+        {'pdfs': array([0.   , 0.125, 0.125, 0.5  , 0.25 ])}
         >>> ens_h.update_objdata(data={'pdfs': np.array([0.05,0.09,0.2,0.3,0.15])})
         >>> ens_h.objdata
         {'pdfs': array([[0.06329114, 0.11392405, 0.25316456, 0.37974684, 0.18987342]])}
