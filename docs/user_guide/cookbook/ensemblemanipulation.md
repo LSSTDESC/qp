@@ -84,6 +84,40 @@ Ensemble(the_class=hist,shape=(2,8))
 
 Our new `Ensemble` now contains both distributions.
 
+## Concatenating a list of `Ensembles` of the same type
+
+If you have created multiple `Ensembles` with the same parameterization, it can be easier to handle if they are all part of one `Ensemble`. You can use the {py:meth}`qp.concatenate() <qp.core.factory.Factory.concatenate>` method to add multiple `Ensembles` of the same type together. This can only be done if the metadata for all `Ensembles` are the same. In particular, the coordinates (i.e. "xvals" or "bins") must be the same for both `Ensembles`. For example, to append three interpolated `Ensembles` together, first we create the three separate `Ensembles`:
+
+```{doctest}
+
+>>> import qp
+>>> import numpy as np
+>>> xvals = np.linspace(0,2,9)
+>>> yvals = np.array([1,2,4,3,3.5,2,1.5,1,0.5])
+>>> ens_1 = qp.interp.create_ensemble(xvals=xvals,yvals=yvals)
+>>> ens_1
+Ensemble(the_class=interp,shape=(1,9))
+>>> yvals_2 = np.array([0.5,0.9,1.5,3,4.5,3,1.5,1.,0.5])
+>>> ens_2 = qp.interp.create_ensemble(xvals=xvals,yvals=yvals_2)
+>>> ens_2
+Ensemble(the_class=interp,shape=(1,9))
+>>> yvals_3 = np.array([0.3,0.5,0.9,1.2,2,2.5,2,1.5,0.5])
+>>> ens_3 = qp.interp.create_ensemble(xvals=xvals,yvals=yvals_3)
+>>> ens_3
+Ensemble(the_class=interp,shape=(1,9))
+
+```
+
+Then we use {py:meth}`qp.concatenate() <qp.core.factory.Factory.concatenate>` to put them all into one `Ensemble`.
+
+```{doctest}
+
+>>> ens_all = qp.concatenate([ens, ens_2, ens_3])
+>>> ens_all.npdf
+3
+
+```
+
 ## Iteration example
 
 This tutorial notebook covers the use of the {py:meth}`qp.iterator() <qp.factory.Factory.iterator>` function to read in `Ensembles` from a file, as well as how to iteratively write `Ensembles` to HDF5 files in series and in parallel: <project:../../nb/iterator_demo.md> (download [here](../../nb/iterator_demo.ipynb)).
