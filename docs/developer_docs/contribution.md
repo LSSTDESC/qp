@@ -9,6 +9,7 @@ Generally, the code should follow the guidelines given in the [LSST DM Developer
 It is recommended to use type hints for the arguments and outputs of functions to improve the ability to develop and understand code. For some tips on how to get started see this [cheat sheet](https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html)
 
 - Anything that requires a parameterization class can be typed using the base parameterization class, `Pdf_gen`
+- Use the type `ArrayLike` for a parameter or output that can be anything from a float to a `numpy.ndarray`.
 
 ### Naming and placement
 
@@ -23,8 +24,7 @@ When creating new test files, they should be in the same location within the `te
 
 Test data should be stored in the `test_data/` folder. Any helper functions for tests that are not tests themselves should be placed in the `helpers/` folder.
 
-- what tests need to be written, types of tests, etc
-- output of tests should be written to temporary path for ease of clean up
+We recommend using temporary files and directories when writing files during tests, either through [pytest's fixtures](https://docs.pytest.org/en/stable/how-to/tmp_path.html) or through [tempfile](https://docs.python.org/3/library/tempfile.html). This means that if tests fail, then cleanup still functions appropriately and the developer will not be left with an excess of files to clean up.
 
 ## Documentation
 
@@ -32,12 +32,17 @@ All documentation is created using [Sphinx](https://www.sphinx-doc.org/en/master
 
 ### Writing Documentation Pages
 
-When writing new documentation pages, make sure to add them to the relevant `toctree` in [`index.rst`](https://github.com/LSSTDESC/qp/blob/main/docs/index.rst).
+When writing new documentation pages, make sure to add them to the relevant `toctree`, either in [`index.rst`](https://github.com/LSSTDESC/qp/blob/main/docs/index.rst) or in the relevant `index.md` file if it is a sub-page.
 
 Tutorial Jupyter notebooks can be placed directly in the `nb/` directory, and then linked to on the `nb/index.md` page. Notebooks will be automatically evaluated and turned into MarkDown via the [myst-nb](https://myst-nb.readthedocs.io/en/v0.13.2/index.html) extension.
 
-- every function should have docstrings describing what the function does
-- what is expected in terms of documentation upkeep (i.e. if you change something and the documentation is now out of date)
+### Docstrings
+
+Ideally, all functions and classes should have docstrings, which should be written using [NumPy documentation format](https://numpydoc.readthedocs.io/en/latest/format.html). An example of how to format docstrings for a class using this format is given below:
+
+```{literalinclude} ./docstring_formatting_example.py
+
+```
 
 ## Contribution workflow
 
@@ -54,7 +59,7 @@ If your branch is addressing a specific issue, the branch name should be `issue/
 
 While developing in a branch, don’t forget to pull from main regularly (at least daily) to make sure your work is compatible with other recent changes.
 
-Make sure that if the issue solves one of the items listed in <project:techdebt.md>, you remove that item from the documentation page.
+Make sure that if the issue solves one of the items listed in <project:techdebt.md>, you remove that item from the documentation page. And make sure to update the documentation with any changes that alter `qp`'s functionality, or add examples and additional pages as necessary to explain any additions.
 
 When you’re ready to merge your branch into the main branch, create a pull request (PR) in the `qp` repository. GitHub has instructions [here](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request).
 

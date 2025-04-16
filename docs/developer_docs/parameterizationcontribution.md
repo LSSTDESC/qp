@@ -6,17 +6,11 @@ Before creating a new parameterization, we recommend you take a look at how some
 
 The [parameterization template](./parameterization_template.py) provides an easy to use starting point for creating a new parameterization. To get started, make a copy of it in a folder inside the `parameterizations/` folder (see <project:contribution.md#naming-and-placement> for instructions on naming). You can copy the file `parameterization_template.py` from the `docs/developer_docs/` folder.
 
-Once you have done so, follow the instructions in the template to get started on your new parameterization.
+Once you have done so, follow the instructions in the template to get started on your new parameterization. Keep in mind when writing functions that there exist some conversion functions that may be applicable to your parameterization in the `utils/conversion.py` file, and some generically useful interpolation functions that work with the inputs given to `_pdf()` and `_cdf()` functions can be found in `utils/interpolation.py`. Make sure to check the `utils/` directory for a variety of helpful functions when writing your parameterization.
 
-- init function
-  - should include functions to store values needed, pass pdf shape to base class constructor
-  - should call addmetadata and addobjdata methods
-- functions to access each of the data and metadata fields
-- \_pdf and \_cdf hook functions
-  - useful functions to help implement pdfs can be found in utils files
-- implement \_updated_ctor_param function
-- define functions to convert other ensembles to this representation
-- register class with the factor and make function available
+```{tip}
+Keep in mind that `ppf(0)` and `ppf(1)` return negative infinity and positive infinity respectively for all of the parameterizations written in `qp`.
+```
 
 ### Testing
 
@@ -46,8 +40,23 @@ Optional keys:
 - **atol_diff**: Used in conversion tests as the allowed tolerance between converted `Ensembles` when using `ens.convert_to()`, by default $1 \times 10^{-2}$
 - **atol_diff2**: Used in the conversion test as the allowed tolerance between converted `Ensembles` when using `qp.convert()`, by default $1 \times 10^{-2}$
 
-## Optional
+## Documentation
 
-- \_sf, \_ppf, \_isf, \_rvs functions for faster evaluation
-  - Keep in mind that the `_ppf()` function will return -inf at 0 and inf at 1, and the `_ppf()` function will not be called at all to return those values.
-- plotting (plot_native)
+Once your parameterization is functional and has been tested, we recommend that you add it to the API documentation. You can add it to the `docs/api_docs/parameterizations.rst` file using the following markdown format:
+
+```markdown
+## Your parameterization name here
+
+.. autoclass :: qp.[parameterization_name]\_gen
+:members:
+:show-inheritance:
+:undoc-members:
+
+Utility functions
+^^^^^^^^^^^^^^^^^
+
+.. automodule:: qp.parameterizations.[parameterization_name].[parameterization_name]\_utils
+:members:
+```
+
+We recommend consulting the RAIL group before adding a new parameterization documentation page to the `docs/user_guide/parameterizations/` folder, however, as this page covers those parameterizations that are fully supported by the code.

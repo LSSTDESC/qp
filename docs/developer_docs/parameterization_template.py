@@ -408,6 +408,8 @@ class parameterization_gen(Pdf_rows_gen):
     # -> Uncomment any method below if using
 
     # def _ppf():
+    #     Keep in mind that by default ppf(0) and ppf(1) will not call this function
+    #     and will instead return negative and positive infinity, respectively.
     #     pass
 
     # def _sf():

@@ -92,8 +92,8 @@ class Factory(OrderedDict):
             Ensemble
                 An Ensemble object containing all of the given distributions.
 
-            Example
-            -------
+            Examples
+            --------
 
             To create an Ensemble with two Gaussian distributions and their associated ids:
 
@@ -460,8 +460,8 @@ class Factory(OrderedDict):
             Raised if the ``pdf_name`` in the file is not one of the available parameterizations.
 
 
-        Example
-        -------
+        Examples
+        --------
 
         To iterate through an HDF5 Ensemble file, we can use the following code:
 
