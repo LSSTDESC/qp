@@ -2,7 +2,9 @@
 qp : quantile-parametrized PDF approximation
 ============================================
 
-* quick introduction to qp
+`qp` is a software package that ....
+
+`Source repository <https://github.com/LSSTDESC/qp>`_
 
 .. _cards-clickable: 
 
@@ -21,7 +23,7 @@ qp : quantile-parametrized PDF approximation
 
         **Quickstart**
 
-        A quick introduction to some of the main functionality of ``qp``. This guide is short and sweet for when you're in a rush or need a quick refresher.
+        A quick introduction to some of the main functionality of `qp`. This guide is short and sweet for when you're in a rush or need a quick refresher.
         
     .. grid-item-card::
         :link: user_guide/installation
@@ -33,7 +35,7 @@ qp : quantile-parametrized PDF approximation
 
         **User guide**
 
-        The user guide is a good starting place for new users who have never used ``qp`` before. 
+        The user guide is a good starting place for new users who have never used `qp` before. 
 
 
     .. grid-item-card::
@@ -46,7 +48,7 @@ qp : quantile-parametrized PDF approximation
 
         **Cookbook**
 
-        The cookbook contains useful examples of ``qp`` usage. These examples range from quick reference one-liners to in-depth tutorials of more complex usage cases.
+        The cookbook contains useful examples of `qp` usage. These examples range from quick reference one-liners to in-depth tutorials of more complex usage cases.
 
     .. grid-item-card::
         :link: developer_docs/setup

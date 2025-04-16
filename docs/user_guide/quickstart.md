@@ -16,7 +16,7 @@ For more information on alternate installation methods see <project:installation
 
 ## How to use `qp`
 
-`qp` is meant to allow users to store and manipulate sets of probability distributions that can be represented, or parameterized, in different ways. The different parameterization options allow users to store analytically parameterized distributions, such as Gaussian mixture models, in addition to more data-based parameterizations such as histograms or distributions interpolated from a set of $x$ and $y$ values. It also allows for use of any of the `scipy.stats.rv_continuous` distributions as parameterization types under the `qp.stats` module. For a full list of supported parameterizations and more detailed explanations, see <project:./parameterizations/index.md>.
+`qp` is meant to allow users to store and manipulate sets of probability distributions that can be represented, or parameterized, in different ways. The different parameterization options allow users to store analytically parameterized distributions, such as Gaussian mixture models, in addition to more data-based parameterizations such as histograms or distributions interpolated from a set of $x$ and $y$ values. It also allows for use of any of the <inv:scipy#scipy.stats.rv_continuous> distributions as parameterization types under the `qp.stats` module. For a full list of supported parameterizations and more detailed explanations, see <project:./parameterizations/index.md>.
 
 The main object of `qp` that stores these distributions is the {py:class}`qp.Ensemble`. It can store one or more distributions of the same parameterization. It has three main data dictionaries:
 
@@ -85,8 +85,14 @@ The available file formats can be found in <project:basicusage.md#writing-an-ens
 
 ## Where to find more information
 
+Take a look at the more in-depth user guide:
+
 - <project:qpprimer.md> covers some of the statistics basics necessary for using `qp`
 - <project:basicusage.md> provides more detailed explanations of topics discussed here
-- <project:./cookbook/index.md> contains detailed examples for specific use cases, i.e. conversion, plotting, iteration
 - <project:./parameterizations/index.md> contains more details on specific parameterizations
 - <project:troubleshooting.md> for common pitfalls and errors
+
+Or for quick reference pages:
+
+- <project:./cookbook/index.md> contains detailed examples for specific use cases, i.e. conversion, plotting, iteration
+- <project:methods.md> lists all the available `Ensemble` methods

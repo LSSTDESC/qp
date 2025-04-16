@@ -29,23 +29,23 @@ Each test data sub-dictionary should contain the following keys:
 Optional keys:
 
 - **ancil**: Any ancillary data that you want to add to the test `Ensemble`
-- **test_pdf**: If `test_auto` will run the basic `Ensemble` method tests (i.e. `pdf()`, `.cdf()`). By default True.
+- **test_pdf**: If `test_auto` will run the basic `Ensemble` method tests (i.e. {py:meth}`qp.Ensemble.pdf`, {py:meth}`qp.Ensemble.cdf`). By default True.
 - **test_persist**: If `test_auto` will test that `Ensemble` read and write functionality returns the same `Ensemble`. By default True.
 - **test_convert**: If `test_auto` will test conversion to this parameterization from others. By default True.
 - **test_plot**: If `test_auto` will test plotting of this parameterization. By default True.
-- **test_xvals**: The x values used when testing `Ensemble` methods (i.e. `.pdf()`)
+- **test_xvals**: The x values used when testing `Ensemble` methods (i.e. {py:meth}`qp.Ensemble.pdf`)
 - **filekey**: a key that differentiates the files written out for different test data dictionary
-- **do_samples**: If true, will run `qp.plotting.plot_pdf_samples_on_axes()` during plotting tests. By default False.
+- **do_samples**: If true, will run {py:func}`qp.plotting.plot_pdf_samples_on_axes()` during plotting tests. By default False.
 - **npdf**: the number of distributions in the `Ensemble`. If not included will use the built in method to get `npdf`.
-- **atol_diff**: Used in conversion tests as the allowed tolerance between converted `Ensembles` when using `ens.convert_to()`, by default $1 \times 10^{-2}$
-- **atol_diff2**: Used in the conversion test as the allowed tolerance between converted `Ensembles` when using `qp.convert()`, by default $1 \times 10^{-2}$
+- **atol_diff**: Used in conversion tests as the allowed tolerance between converted `Ensembles` when using {py:meth}`qp.Ensemble.convert_to`, by default $1 \times 10^{-2}$
+- **atol_diff2**: Used in the conversion test as the allowed tolerance between converted `Ensembles` when using {py:meth}`qp.convert() <qp.factory.Factory.convert>`, by default $1 \times 10^{-2}$
 
 ## Documentation
 
 Once your parameterization is functional and has been tested, we recommend that you add it to the API documentation. You can add it to the `docs/api_docs/parameterizations.rst` file using the following markdown format:
 
 ```markdown
-## Your parameterization name here
+## [One line description of parameterization]
 
 .. autoclass :: qp.[parameterization_name]\_gen
 :members:
