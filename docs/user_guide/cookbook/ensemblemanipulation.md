@@ -61,7 +61,7 @@ If you have created multiple `Ensembles` with the same parameterization, it can 
 >>> import qp
 >>> import numpy as np
 >>> bins = np.linspace(0,2,9)
->>> pdfs = np.array([1,2,4,3,3.5,2,1, 0.5])
+>>> pdfs = np.array([1,2,4,3,3.5,2,1,0.5])
 >>> ens_1 = qp.hist.create_ensemble(bins=bins,pdfs=pdfs)
 >>> ens_1
 Ensemble(the_class=hist,shape=(1,8))
