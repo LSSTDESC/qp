@@ -4,7 +4,7 @@ This notebook covers use cases of accessing and manipulating the data contained 
 
 ## What's in an Ensemble file
 
-This tutorial notebook does an in-depth look of what the actual data structure of an `Ensemble` file looks like, and how to create one from data tables: <project:../../nb/ensemble_file.md> (download [here](../../nb/ensemble_file.ipynb)).
+This tutorial notebook does an in-depth look of what the actual data structure of an `Ensemble` file looks like, and how to create one from data tables: <project:../../nb/ensemble_file.md> (download {download}`here <../../nb/ensemble_file.ipynb>`).
 
 ## Accessing `Ensemble` data
 
@@ -145,7 +145,7 @@ array([[0.5 ],
 
 ```
 
-This is true of all the {py:class}`qp.stats` distributions, though some will have different variables you can access. To find out what variables exist for a specific {py:class}`qp.stats` distribution, take a look at the <project:../parameterizations/index> page.
+This is true of all the {py:class}`qp.stats` distributions, though some will have different variables you can access. To find out what variables exist for a specific {py:class}`qp.stats` distribution, take a look at the <project:../parameterizations/index.md> page.
 
 ## Updating the data in an `Ensemble`
 

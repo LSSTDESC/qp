@@ -4,7 +4,7 @@ This page covers examples of `Ensemble` creation and some basic usage.
 
 (creating-an-ensemble-from-a-qp-stats-distribution)=
 
-## Creating an `Ensemble` from a `qp.stats` distribution
+## Creating an `Ensemble` from a parameterization inherited from SciPy
 
 The `create_ensemble` function for the `qp.stats` distributions is slightly different than for the other parameterizations, as it requires a dictionary of the data to create the Ensemble, instead of being able to take individual arguments. See below for an example using the `qp.stats.norm` distribution:
 
@@ -120,7 +120,7 @@ Then we use {py:meth}`qp.concatenate() <qp.core.factory.Factory.concatenate>` to
 
 ## Iteration example
 
-This tutorial notebook covers the use of the {py:meth}`qp.iterator() <qp.factory.Factory.iterator>` function to read in `Ensembles` from a file, as well as how to iteratively write `Ensembles` to HDF5 files in series and in parallel: <project:../../nb/iterator_demo.md> (download [here](../../nb/iterator_demo.ipynb)).
+This tutorial notebook covers the use of the {py:meth}`qp.iterator() <qp.factory.Factory.iterator>` function to read in `Ensembles` from a file, as well as how to iteratively write `Ensembles` to HDF5 files in series and in parallel: <project:../../nb/iterator_demo.md> (download {download}`here <../../nb/iterator_demo.ipynb>`).
 
 The {py:meth}`qp.iterator() <qp.factory.Factory.iterator>` function can also be used in parallel, allowing for each process to iterate through some of the distributions. Let's test this out on a sample file of `Ensembles`. First we need to know how many distributions are in the file:
 
@@ -133,7 +133,7 @@ The {py:meth}`qp.iterator() <qp.factory.Factory.iterator>` function can also be 
 
 ```
 
-We can now decide on a chunk size. Let's say that we're using 4 cores, so each core will have access to 25 distributions. So let's go with a chunk size of 5, so the data is easily divisible by the chunk size. Now we can write our little program to iterate through the data (you can download the file [here](../../assets/mpi-example.py)):
+We can now decide on a chunk size. Let's say that we're using 4 cores, so each core will have access to 25 distributions. So let's go with a chunk size of 5, so the data is easily divisible by the chunk size. Now we can write our little program to iterate through the data (you can download the file {download}`here <../../assets/mpi-example.py>`):
 
 ```{literalinclude} ../../assets/mpi-example.py
 
