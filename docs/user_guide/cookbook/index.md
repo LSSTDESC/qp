@@ -1,6 +1,6 @@
 # Cookbook
 
-This cookbook is a reference page for a variety of `qp` use cases.
+This cookbook contains quick references and more involved tutorials for a variety of `qp` use cases.
 
 - **<project:./ensemblemanipulation.md>**
   - contains examples of `Ensemble` creation and basic usage.

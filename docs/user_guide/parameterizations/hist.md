@@ -104,4 +104,4 @@ Ensemble(the_class=hist,shape=(3,20))
 
 **Optional argument:** `size`, which is the number of values to sample from the distribution.
 
-This method samples from the input distribution, and then uses `np.histogram` to create a histogram from these samples, using the provided `bins` as bin edges. This does mean that too few samples may result in quite a different distribution, so it is recommended to use a large number of samples.
+This method samples from the input distribution, and then uses <inv:#numpy.histogram> to create a histogram from these samples, using the provided `bins` as bin edges. This does mean that too few samples may result in quite a different distribution, so it is recommended to use a large number of samples.

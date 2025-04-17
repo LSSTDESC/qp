@@ -26,7 +26,7 @@ Strings are byte-encoded here to allow them to be easily written to HDF5 files.
 
 ### Data table (objdata)
 
-The **data** table in an `Ensemble` is where the data specific to each distribution is stored. For example, in a histogram this is the bin values. The arrays are typically of shape ($npdfs$, $ndata$), where $npdf$ is the number of distributions in the `Ensemble`, and $ndata$ is the number of data points per distribution. Typically $ndata$ corresponds to the number of coordinate values ($ncoords$), though in a histogram $ndata = ncoords - 1$.
+The **data** table in an `Ensemble` is where the data specific to each distribution is stored. For example, in a histogram this is the bin values. The arrays are typically of shape ($n_{pdf}$, $n_{data}$), where $n_{pdf}$ is the number of distributions in the `Ensemble`, and $n_{data}$ is the number of data points per distribution. Typically $n_{data}$ corresponds to the number of coordinate values ($n_{coords}$), though in a histogram $n_{data} = n_{coords} - 1$.
 
 An example of the **data** table for a histogram:
 
@@ -36,7 +36,7 @@ An example of the **data** table for a histogram:
 
 ### Ancillary data table
 
-The **ancillary** table is optional, and can be used to store additional data about the distributions which does not affect the distribution itself. It is a dictionary of arrays of length (or first dimension) $npdf$, so that each array has one value or row that corresponds to one distribution.
+The **ancillary** table is optional, and can be used to store additional data about the distributions which does not affect the distribution itself. It is a dictionary of arrays of length (or first dimension) $n_{pdf}$, so that each array has one value or row that corresponds to one distribution.
 
 An example **ancillary** table:
 

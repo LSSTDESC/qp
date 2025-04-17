@@ -16,7 +16,7 @@ For more information on alternate installation methods see <project:installation
 
 ## How to use `qp`
 
-`qp` is meant to allow users to store and manipulate sets of probability distributions that can be represented, or parameterized, in different ways. The different parameterization options allow users to store analytically parameterized distributions, such as Gaussian mixture models, in addition to more data-based parameterizations such as histograms or distributions interpolated from a set of $x$ and $y$ values. It also allows for use of any of the <inv:scipy#scipy.stats.rv_continuous> distributions as parameterization types under the `qp.stats` module. For a full list of supported parameterizations and more detailed explanations, see <project:./parameterizations/index.md>.
+`qp` stores and manipulates sets of probability distributions that can be represented, or parameterized, in different ways. The different parameterization options allow users to store analytically parameterized distributions, such as Gaussian mixture models, in addition to more data-based parameterizations such as histograms or distributions interpolated from a set of $x$ and $y$ values. It also allows for use of any of the <inv:scipy#scipy.stats.rv_continuous> distributions as parameterization types under the `qp.stats` module. For a full list of supported parameterizations and more detailed explanations, see <project:./parameterizations/index.md>.
 
 The main object of `qp` that stores these distributions is the {py:class}`qp.Ensemble`. It can store one or more distributions of the same parameterization. It has three main data dictionaries:
 
@@ -25,13 +25,13 @@ The main object of `qp` that stores these distributions is the {py:class}`qp.Ens
 - **Data values** ({py:attr}`qp.Ensemble.objdata`)
   - the data values for each distribution, where one row = one distribution
 - _(optional)_ **Ancillary data table** ({py:attr}`qp.Ensemble.ancil`)
-  - any additional data for the distributions, where there must be one row for every distribution
+  - any additional data for the distributions, where there must be one row per distribution
 
 The printed representation of an `Ensemble` tells you the parameterization type and the shape of the arrays in the `objdata`, which is essentially ($n_{pdf}$, $n_{vals}$), where $n_{pdf}$ is the number of distributions and $n_{vals}$ is the number of values or data points for each distribution in the `Ensemble`.
 
 ### Creating an Ensemble
 
-To create an `Ensemble` of any number of distributions, you can use the `create_ensemble` method of any of the existing parameterization classes. For example, to create an `Ensemble` of interpolations:
+To create an `Ensemble` of any number of distributions, you can use the `create_ensemble` method of any of the existing parameterization classes. For example, to create an `Ensemble` of interpolations use {py:class}`qp.interp <qp.parameterizations.interp.interp.interp_gen>`:
 
 ```{doctest}
 
@@ -63,7 +63,7 @@ Now that you have created an `Ensemble`, you can get a sense of what's in it by 
 - {py:attr}`qp.Ensemble.shape`: Shape of the data, ($n_{pdf}$, $n_{vals}$)
 - {py:attr}`qp.Ensemble.metadata` : The metadata dictionary
 - {py:attr}`qp.Ensemble.objdata` : The data dictionary
-- {py:attr}`qp.Ensemble.ancil` : The ancillary data (will not work if there is no ancillary data table)
+- {py:attr}`qp.Ensemble.ancil` : The ancillary data (only works if there is an ancillary data table)
 
 You can also use the available [`Ensemble` methods](methods.md). These allow you to manipulate your `Ensemble`, or get statistical information about your `Ensembles`. For example, here are some useful methods:
 
@@ -71,7 +71,7 @@ You can also use the available [`Ensemble` methods](methods.md). These allow you
 - {py:meth}`qp.Ensemble.cdf`: Get the CDF values at specified $x$ values
 - {py:meth}`qp.Ensemble.convert`: Convert the `Ensemble` to a different parameterization
 
-### Saving an `Ensemble` for later
+### Writing an `Ensemble` to file
 
 To write an `Ensemble` to file, simply use the {py:meth}`qp.Ensemble.write_to` method. The only required argument is the full path to the file you would like to write. For example, we can write out the `Ensemble` we created like so:
 
@@ -85,8 +85,9 @@ The available file formats can be found in <project:basicusage.md#writing-an-ens
 
 ## Where to find more information
 
-Take a look at the more in-depth user guide:
+For more detailed explanations, take a look at the user guide:
 
+- <project:installation.md> explains installation for parallel use
 - <project:qpprimer.md> covers some of the statistics basics necessary for using `qp`
 - <project:basicusage.md> provides more detailed explanations of topics discussed here
 - <project:./parameterizations/index.md> contains more details on specific parameterizations

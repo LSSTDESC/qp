@@ -26,7 +26,7 @@ Then we convert it to a histogram `Ensemble` using the default conversion method
 
 ```
 
-For more details on the available methods for conversion to a histogram parameterization and how they work, see <project:../parameterizations/hist>.
+For more details on the available methods for conversion to a histogram parameterization and how they work, see <project:../parameterizations/hist.md>.
 
 ## Converting a Gaussian `Ensemble` to an interpolation
 
@@ -49,7 +49,7 @@ Ensemble(the_class=interp,shape=(2, 10))
 
 ```
 
-For more details on the available methods for conversion to a interpolation parameterization and how they work, see <project:../parameterizations/interp>.
+For more details on the available methods for conversion to a interpolation parameterization and how they work, see <project:../parameterizations/interp.md>.
 
 ## Converting a Gaussian `Ensemble` to an irregular interpolation
 
@@ -72,7 +72,7 @@ Ensemble(the_class=interp_irregular,shape=(2, 10))
 
 ```
 
-For more details on the available methods for conversion to an irregular interpolation parameterization and how they work, see <project:../parameterizations/irregularinterp>.
+For more details on the available methods for conversion to an irregular interpolation parameterization and how they work, see <project:../parameterizations/irregularinterp.md>.
 
 ## Converting a Gaussian `Ensemble` to a quantile
 
@@ -95,7 +95,7 @@ Ensemble(the_class=quant,shape=(2, 12))
 
 ```
 
-Since we did not provide 0 or 1, the shape of the quantiles has been expanded to include 0 and 1, resulting in 12 quantiles instead of 10. For more details on the available methods for conversion to a quantile parameterization and how they work, see <project:../parameterizations/quant>.
+Since we did not provide 0 or 1, the shape of the quantiles has been expanded to include 0 and 1, resulting in 12 quantiles instead of 10. For more details on the available methods for conversion to a quantile parameterization and how they work, see <project:../parameterizations/quant.md>.
 
 ## Converting a histogram `Ensemble` to a Gaussian mixture model
 
@@ -120,4 +120,4 @@ Ensemble(the_class=mixmod,shape=(2, 2))
 
 ```
 
-For more details on the available methods for conversion to a Gaussian mixture model parameterization and how they work, see <project:../parameterizations/mixmod>.
+For more details on the available methods for conversion to a Gaussian mixture model parameterization and how they work, see <project:../parameterizations/mixmod.md>.

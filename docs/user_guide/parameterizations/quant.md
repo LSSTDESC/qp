@@ -17,14 +17,14 @@ One thing to note when using this parameterization is that it does not require t
 
 Quantile parameterized `Ensembles` behave in the following ways:
 
-- `Ensemble.cdf(x)` is created by interpolating quadratically between the quantiles using `scipy.interpolate.interp1d`.
+- `Ensemble.cdf(x)` is created by interpolating quadratically between the quantiles using <inv:#scipy.interpolate.interp1d>.
 - `Ensemble.ppf(0)` returns negative infinity and `Ensemble.ppf(1)` returns positive infinity.
 - `Ensemble.pdf(x)` is calculated in a variety of ways depending on the PDF constructor used (`pdf_constructor_name`, described below).
   - **piecewise_linear** (_Default_): Takes the numerical derivative of the CDF and linearly interpolates between those points. See {py:class}`PiecewiseLinear <qp.parameterizations.quant.piecewise_linear.PiecewiseLinear>` for more details.
   - **piecewise_constant**: Calculates the numerical derivative of the CDF. Assumes a constant value between points on the derivative to interpolate. See {py:class}`PiecewiseConstant <qp.parameterizations.quant.piecewise_constant.PiecewiseConstant>` for more details.
-  - **cdf_spline_derivative**: Uses `scipy.interpolate.InterpolatedUnivariateSpline` to fit a cubic spline to quantiles and locations, and then gets the derivative of that spline which provides the PDF values. See {py:class}`CdfSplineDerivative <qp.parameterizations.quant.cdf_spline_derivative.CdfSplineDerivative>` for more details.
+  - **cdf_spline_derivative**: Uses <inv:#scipy.interpolate.InterpolatedUnivariateSpline> to fit a cubic spline to quantiles and locations, and then gets the derivative of that spline which provides the PDF values. See {py:class}`CdfSplineDerivative <qp.parameterizations.quant.cdf_spline_derivative.CdfSplineDerivative>` for more details.
   - **dual_spline_average**: Solves for the PDF with a stepwise algorithm, then uses these values to create an upper bound and lower bound cubic spline of the PDF, which are then averaged to produce the PDF. See {py:class}`DualSplineAverage <qp.parameterizations.quant.dual_spline_average.DualSplineAverage>` for more details.
-- `Ensemble.x_samples()` returns a range of $x$ values that can be used to plot all of the distributions. The range is calculated using `np.linspace`, with a step size that is the median of the existing step sizes between the locations in the distributions, unless this gives more than 10 000 points, in which case the step size that returns 10 000 points is used.
+- `Ensemble.x_samples()` returns a range of $x$ values that can be used to plot all of the distributions. The range is calculated using <inv:#numpy.linspace>, with a step size that is the median of the existing step sizes between the locations in the distributions, unless this gives more than 10 000 points, in which case the step size that returns 10 000 points is used.
 
 ## Data structure
 
@@ -94,11 +94,11 @@ Ensemble(the_class=quant,shape=(2,5))
 
 **Required argument:** `quants`, the $n$ quantiles at which to evaluate each distribution.
 
-The conversion function calls the `ppf()` method of the input `Ensemble` at the given quantiles, and then uses the returned values with the given quantiles to create a new quantile parameterized `Ensemble`. This will use all of the defaults for optional parameters.
+The conversion function calls the {py:meth}`qp.Ensemble.ppf()` method of the input `Ensemble` at the given quantiles, and then uses the returned values with the given quantiles to create a new quantile parameterized `Ensemble`. This will use all of the defaults for optional parameters.
 
 ```{warning}
 
-We recommend you do not include 0 and 1 in your input quantiles for conversion from **most** parameterizations. All of the `qp` exclusive parameterizations return infinite values at `ppf(0)` and `ppf(1)`, and many of the `scipy.stats.rv_continous` distributions do as well (i.e. a normal distribution). Instead, do as in the example above and input quantiles that extend from some value close to 0 to a value close to 1. The parameterization will automatically interpolate the data out to 0 and 1 as explained in <project:#ensemble-creation>.
+We recommend you do not include 0 and 1 in your input quantiles for conversion from **most** parameterizations. All of the `qp` exclusive parameterizations return infinite values at `ppf(0)` and `ppf(1)`, and many of the <inv:#scipy.stats.rv_continuous> distributions do as well (i.e. a normal distribution). Instead, do as in the example above and input quantiles that extend from some value close to 0 to a value close to 1. The parameterization will automatically interpolate the data out to 0 and 1 as explained in <project:#ensemble-creation>.
 
 ```
 

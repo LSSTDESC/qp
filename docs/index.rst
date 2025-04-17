@@ -2,9 +2,27 @@
 qp : quantile-parametrized PDF approximation
 ============================================
 
-`qp` is a software package that ....
+`qp` is a software package for the storage and manipulation of probability distributions. 
+It aims to provide similar functionality as `scipy.stats` (i.e. performing 
+statistical functions on probability distributions), but expanded for users 
+who have probability distributions based on real-world data that do not easily fit to analytic functions. 
+It also expands upon that functionality by allowing users to write and read groups of distributions to 
+file, providing the ability to have persistent and easily shareable distributions.  
 
-`Source repository <https://github.com/LSSTDESC/qp>`_
+**Useful links**: `Source repository <https://github.com/LSSTDESC/qp>`_ | `PyPI <https://pypi.org/project/qp-prob/>`_
+
+
+Features
+--------
+
+- ability to read and write distributions to file
+- parameterizations exist for distributions that come from real data and don't fit easily to an analytic function
+- ability to convert between distribution parameterization types 
+- ability to perform statistical methods on many distributions at a time
+
+
+`qp` is currently a part of the `LSST DESC <https://lsstdesc.org/>`_ `RAIL <https://github.com/LSSTDESC/rail>`_ package and its sub-packages. 
+
 
 .. _cards-clickable: 
 
@@ -23,7 +41,8 @@ qp : quantile-parametrized PDF approximation
 
         **Quickstart**
 
-        A quick introduction to some of the main functionality of `qp`. This guide is short and sweet for when you're in a rush or need a quick refresher.
+        A quick introduction to some of the main functionality of `qp`. This guide is 
+        short and sweet for when you're in a rush or need a quick refresher.
         
     .. grid-item-card::
         :link: user_guide/installation
@@ -35,7 +54,9 @@ qp : quantile-parametrized PDF approximation
 
         **User guide**
 
-        The user guide is a good starting place for new users who have never used `qp` before. 
+        A good starting place for new users who have never used `qp` before. Includes a short 
+        primer on statistics and `qp` terminology, and detailed usage explanations and examples. 
+     
 
 
     .. grid-item-card::
@@ -48,7 +69,8 @@ qp : quantile-parametrized PDF approximation
 
         **Cookbook**
 
-        The cookbook contains useful examples of `qp` usage. These examples range from quick reference one-liners to in-depth tutorials of more complex usage cases.
+        Contains useful examples of `qp` usage. These examples range from quick reference one-liners 
+        to in-depth tutorials of more complex usage cases.
 
     .. grid-item-card::
         :link: developer_docs/setup
@@ -119,6 +141,7 @@ qp : quantile-parametrized PDF approximation
 
     license
     acknowledgements
+    GitHub <https://github.com/LSSTDESC/tables_io>
     
 Indices and tables
 ==================

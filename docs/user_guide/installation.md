@@ -5,7 +5,10 @@
 To install the basic version of `qp`, you can run the following commands:
 
 ```bash
+# Clone the repository
 git clone https://github.com/LSSTDESC/qp.git
+
+# Enter the new directory and install
 cd qp
 pip install .
 ```

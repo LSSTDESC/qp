@@ -107,7 +107,7 @@ What can we do with our `Ensemble`? <project:methods.md> lists all of the availa
 
 ### Attributes
 
-Now that we have an `Ensemble`, we can check the data it contains using {py:attr}`qp.Ensemble.metadata` or {py:attr}`qp.Ensemble.objdata`. These show the dictionaries of data that define our `Ensemble`. To select one or more of the distributions in our `Ensemble`, you can easily slice the `Ensemble` object itself, for example `ens[0]` will yield an `Ensemble` object with just the data for the first distribution. Another way to select just the data for a specific distribution is to slice the `objdata` dictionary, i.e. `ens.objdata["yvals"][0]` as used below.
+We can check the data an `Ensemble` contains using {py:attr}`qp.Ensemble.metadata` or {py:attr}`qp.Ensemble.objdata`. These show the dictionaries of data that define our `Ensemble`. To select one or more of the distributions in our `Ensemble`, you can easily slice the `Ensemble` object itself, for example `ens[0]` will yield an `Ensemble` object with just the data for the first distribution. Another way to select just the data for a specific distribution is to slice the `objdata` dictionary, i.e. `ens.objdata["yvals"][0]` as used below.
 
 Let's use these data dictionaries to quickly plot one of our distributions (for more details on plotting distributions see <project:./cookbook/ensemblemanipulation.md#plotting-using-x_samples>):
 
@@ -182,7 +182,7 @@ You can only convert to a parameterization that has a conversion method. This me
 
 :::
 
-For example, let's say we wanted to convert our `Ensemble` from an interpolation to a histogram (`hist`). The [`hist` parameterization](#qp.parameterizations.hist.hist.hist_gen) has two conversion methods, {py:func}`extract_hist_values() <qp.parameterizations.hist.hist_utils.extract_hist_values>` and {py:func}`extract_hist_samples() <qp.parameterizations.hist.hist_utils.extract_hist_samples>` (see <project:parameterizations/hist.md#conversion> for more details on these functions). For this example we'll use `extract_hist_values`, which requires the `bins` argument.
+For example, let's say we wanted to convert our `Ensemble` from an interpolation to a histogram ({py:class}`qp.hist <qp.parameterizations.hist.hist.hist_gen>`). The [histogram parameterization](./parameterizations/hist.md) has two conversion methods, {py:func}`extract_hist_values() <qp.parameterizations.hist.hist_utils.extract_hist_values>` and {py:func}`extract_hist_samples() <qp.parameterizations.hist.hist_utils.extract_hist_samples>` (see [the histogram documentation](./parameterizations/hist.md#conversion) for more details on these functions). For this example we'll use `extract_hist_values`, which requires the `bins` argument.
 
 ```{doctest}
 
@@ -222,7 +222,7 @@ array([[1.20683683],
 
 ```
 
-These values are slightly different, even though the distributions match up quite well. Depending on the scenario there can be even more significant differences in distribution shape. Typically, ensuring that your `Ensemble` has a higher density of coordinate values, and that the parameters you convert to have similarly high density, will aid in producing converted distributions that match their initial distributions more closely. Make sure to check your converted `Ensemble` looks the way you expect it to.
+These values are slightly different, even though the distributions match up quite well. Depending on the scenario there can be even more significant differences in distribution shape. Typically, ensuring that your `Ensemble` has a high density of coordinate values, and that the parameters you convert to have similarly high density, will aid in producing converted distributions that match their initial distributions more closely. **Make sure to check your converted `Ensemble` looks the way you expect it to.**
 
 ## Writing an Ensemble to file
 
