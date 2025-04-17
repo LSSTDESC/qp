@@ -5,13 +5,13 @@
 ### Breaking changes
 
 - file reorganization means that any functions that were previously accessed via full path may not be available
-- `qp.parameterization()` no longer aliases to a create function, which means that you cannot create a single distribution object using this call. However, Ensemble creation has been updated to take the class and not the creation function, so `Ensemble` functionality should be unbroken
+- `qp.[parameterization]` now aliases to the parameterization class instead of its create function. However, Ensemble creation has been updated to take the class and not the creation function, so `Ensemble` functionality should be unbroken. If you want to specify a specific creation method, it takes the `method` argument.
 - changed `qp.Ensemble.objdata()` and `qp.Ensemble.metadata()` calls to be properties, to match `qp.Ensemble.ancil`
-- `qp.Ensemble.metadata()['coord']`, where 'coord' is the coordinates value (i.e. bins or xvals), has been changed from a 2D array to a 1D array
+- `qp.Ensemble.metadata['coord']`, where 'coord' is the coordinates value (i.e. bins or xvals), has been changed from a 2D array to a 1D array in memory. It will still be changed to a 2D array for writing to file.
 - `check_input` has been changed as a parameter to be more descriptive, so it is `norm` or `ensure_extent` as appropriate
-- output of `qp.Ensemble` statistics functions, i.e. `pdf`, will have their dimensionality dictated by the dimensionality of the given `Ensemble` and the input value, as in `scipy.stats`.
+- output of `qp.Ensemble` statistics functions, i.e. `pdf`, will have their dimensionality dictated by the dimensionality of the given `Ensemble` and the input value, as in <inv:#scipy.stats>.
 - when slicing a `qp.Ensemble` for a single distribution, it will return 1D arrays in the `objdata` dictionary.
-- for parameterizations based on `scipy.stats` distributions, input is automatically reshaped into arrays that are (npdf, 1) in shape, to ensure that the `Ensemble` object behaves similarly to the other parameterization types
+- for parameterizations based on <inv:#scipy.stats> distributions, input is automatically reshaped into arrays that are ($n_{pdf}$, 1) in shape, to ensure that the `Ensemble` object behaves similarly across all parameterization types
 
 ## Moving forward
 

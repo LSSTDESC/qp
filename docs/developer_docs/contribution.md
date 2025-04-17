@@ -9,7 +9,7 @@ Generally, the code should follow the guidelines given in the [LSST DM Developer
 It is recommended to use type hints for the arguments and outputs of functions to improve the ability to develop and understand code. For some tips on how to get started see this [cheat sheet](https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html)
 
 - Anything that requires a parameterization class can be typed using the base parameterization class, `Pdf_gen`
-- Use the type `ArrayLike` for a parameter or output that can be anything from a float to a `numpy.ndarray`.
+- Use the type `ArrayLike` from <inv:#numpy.typing> for a parameter or output that can be anything from a float to a `numpy.ndarray`.
 
 ### Naming and placement
 
