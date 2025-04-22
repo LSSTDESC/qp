@@ -60,11 +60,13 @@ If you have created multiple `Ensembles` with the same parameterization, it can 
 
 >>> import qp
 >>> import numpy as np
+>>> # create first Ensemble
 >>> bins = np.linspace(0,2,9)
 >>> pdfs = np.array([1,2,4,3,3.5,2,1,0.5])
 >>> ens_1 = qp.hist.create_ensemble(bins=bins,pdfs=pdfs)
 >>> ens_1
 Ensemble(the_class=hist,shape=(1,8))
+>>> # create second Ensemble
 >>> pdfs_2 = np.array([0.5,0.9,1.5,3,4.5,3,1.5,0.5])
 >>> ens_2 = qp.hist.create_ensemble(bins=bins,pdfs=pdfs_2)
 >>> ens_2
@@ -92,15 +94,18 @@ If you have created multiple `Ensembles` with the same parameterization, it can 
 
 >>> import qp
 >>> import numpy as np
+>>> # create first Ensemble
 >>> xvals = np.linspace(0,2,9)
 >>> yvals = np.array([1,2,4,3,3.5,2,1.5,1,0.5])
 >>> ens_1 = qp.interp.create_ensemble(xvals=xvals,yvals=yvals)
 >>> ens_1
 Ensemble(the_class=interp,shape=(1,9))
+>>> # create second Ensemble
 >>> yvals_2 = np.array([0.5,0.9,1.5,3,4.5,3,1.5,1.,0.5])
 >>> ens_2 = qp.interp.create_ensemble(xvals=xvals,yvals=yvals_2)
 >>> ens_2
 Ensemble(the_class=interp,shape=(1,9))
+>>> # create third Ensemble
 >>> yvals_3 = np.array([0.3,0.5,0.9,1.2,2,2.5,2,1.5,0.5])
 >>> ens_3 = qp.interp.create_ensemble(xvals=xvals,yvals=yvals_3)
 >>> ens_3
@@ -162,10 +167,12 @@ As an example, let's take a look at the output of {py:meth}`qp.Ensemble.x_sample
 >>> import qp
 >>> import numpy as np
 >>> import matplotlib.pyplot as plt
+>>> # create a quantile Ensemble by converting from a normal Ensemble
 >>> ens_n = qp.stats.norm.create_ensemble({"loc": np.array([2.5, 3.5]),
 ... "scale": np.array([1.,0.85])})
 >>> quants = np.linspace(0.001,0.999,10)
 >>> ens_q = qp.convert(ens_n, "quant", quants=quants)
+>>> # take a look at the Ensemble data values
 >>> ens_q.x_samples()
 array([-0.6071293 , -0.30039342,  0.00634245,  0.31307832,  0.61981419,
         0.92655007,  1.23328594,  1.54002181,  1.84675769,  2.15349356,

@@ -4,7 +4,7 @@ This page covers a range of common issues and errors that you may encounter.
 
 ## Scipy update
 
-This code inherits a number of classes from <inv:#scipy.stats>, specifically `rv_continous` and `rv_frozen`. If you are suddenly experiencing issues where the code was previously working, it may be that SciPy has an update that has broken something.
+This code inherits a number of classes from <inv:#scipy.stats>, most importantly `rv_continous` and `rv_frozen`. If you are suddenly experiencing issues where the code was previously working, it may be that SciPy has an update that has broken something.
 
 ## Conversion
 
@@ -20,4 +20,4 @@ This code inherits a number of classes from <inv:#scipy.stats>, specifically `rv
 
 - Gaussian mixed models
 
-  - `rvs()` method is not currently functional
+  - {py:meth}`qp.Ensemble.rvs()` method is not currently functional

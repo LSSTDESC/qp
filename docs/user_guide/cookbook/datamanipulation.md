@@ -12,7 +12,7 @@ Below are examples of how to access the relevant metadata and data coordinates f
 
 ### Accessing the bins and pdf values of a histogram `Ensemble`
 
-The bin edges are common to all distributions, so they are found in the {py:attr}`qp.Ensemble.metadata` dictionary. The pdf values are unique to each distribution, and so they are found in the {py:attr}`qp.Ensemble.objdata` dictionary.
+The bin edges are common to all distributions, so they are found in the {py:attr}`qp.Ensemble.metadata` dictionary. The bin values ('pdfs') are unique to each distribution, and so they are found in the {py:attr}`qp.Ensemble.objdata` dictionary.
 
 ```{doctest}
 
@@ -155,13 +155,15 @@ To update the data in an `Ensemble` without changing its metadata, you can use t
 
 >>> import qp
 >>> import numpy as np
+>>> # create a histogram Ensemble
 >>> ens_h = qp.hist.create_ensemble(bins= np.array([0,1,2,3,4,5]),
 ... pdfs = np.array([0,0.1,0.1,0.4,0.2]))
->>> ens_h.objdata
+>>> ens_h.objdata # values before updating
 {'pdfs': array([0.   , 0.125, 0.125, 0.5  , 0.25 ])}
->>> ens_h_old = ens_h
+>>> ens_h_old = ens_h # assign Ensemble to new variable to keep old version
+>>> # update Ensemble with new data
 >>> ens_h.update_objdata(data={'pdfs': np.array([0.05,0.09,0.2,0.3,0.15])})
->>> ens_h.objdata
+>>> ens_h.objdata # values after updating
 {'pdfs': array([[0.06329114, 0.11392405, 0.25316456, 0.37974684, 0.18987342]])}
 
 ```
@@ -173,6 +175,8 @@ If you'd like to change not only the data but also the metadata of the `Ensemble
 >>> ens_h.update(data={'bins': np.array([0,1,2,3,4]),'pdfs': np.array([0.05,0.09,0.2,0.3])})
 >>> ens_h.objdata
 {'pdfs': array([0.078125, 0.140625, 0.3125  , 0.46875 ])}
+>>> ens_h.shape
+(1, 4)
 
 ```
 
@@ -184,14 +188,19 @@ Let's say you created an `Ensemble` without normalizing, but now you've changed 
 
 ```{doctest}
 
+>>> import qp
+>>> import numpy as np
+>>> # create interpolated Ensemble
 >>> xvals= np.array([0,0.5,1,1.5,2])
 >>> yvals = np.array([[0.01, 0.2,0.3,0.2,0.01],[0.09,0.25,0.2,0.1,0.01]])
 >>> ens_i = qp.interp.create_ensemble(xvals=xvals, yvals=yvals,norm=False)
->>> ens_i.objdata["yvals"]
+>>> ens_i.objdata["yvals"] # values before normalizing
 array([[0.01, 0.2 , 0.3 , 0.2 , 0.01],
        [0.09, 0.25, 0.2 , 0.1 , 0.01]])
+
+>>> # normalize the Ensemble
 >>> ens_i.norm()
->>> ens_i.objdata["yvals"]
+>>> ens_i.objdata["yvals"] # values after normalizing
 array([[0.02816901, 0.56338028, 0.84507042, 0.56338028, 0.02816901],
        [0.3       , 0.83333333, 0.66666667, 0.33333333, 0.03333333]])
 

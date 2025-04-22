@@ -1,6 +1,6 @@
 # Creating new parameterizations
 
-Before creating a new parameterization, we recommend you take a look at how some of the existing supported parameterizations are written (i.e. `qp.hist`, `qp.interp`). This will help give you a sense of how a parameterization class should function. Make sure you follow the contribution workflows described in <project:contribution.md>.
+Before creating a new parameterization, we recommend you take a look at how some of the existing supported parameterizations are written (i.e. {py:class}`qp.hist <qp.parameterizations.hist.hist.hist_gen>`, {py:class}`qp.interp <qp.parameterizations.interp.interp.interp_gen>`). This will help give you a sense of how a parameterization class should function. Make sure you follow the contribution workflows described in <project:contribution.md>.
 
 ## The basics
 
@@ -59,4 +59,4 @@ Utility functions
 :members:
 ```
 
-We recommend consulting the RAIL group before adding a new parameterization documentation page to the `docs/user_guide/parameterizations/` folder, however, as that documentation covers those parameterizations that are fully supported by the code.
+We recommend consulting the RAIL group before adding a new parameterization documentation page to the `docs/user_guide/parameterizations/` folder, however, as that documentation covers only parameterizations that are fully supported by the developers. To add a page, copy the format used for other parameterizations.

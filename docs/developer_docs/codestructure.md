@@ -2,7 +2,7 @@
 
 ## How it works
 
-`qp` is built upon the functionality of <inv:#scipy.stats.rv_continuous> distributions. The base parameterization classes inherit from the SciPy `rv_continuous` and `rv_frozen` classes. Each parameterization class must inherit from these classes, so it will have all the functionality of the SciPy classes, plus the additional `qp` functionality (metadata, normalization functions, etc). In each parameterization class, certain `rv_continuous` methods such as `_pdf` and `_cdf` are overridden by new methods specific to that parameterization (see <project:parameterizationcontribution.md> for more details).
+`qp` is built upon the functionality of <inv:#scipy.stats> distributions. The base parameterization classes inherit from the SciPy `rv_continuous` and `rv_frozen` classes. Each parameterization class must inherit from these classes, so it will have all the functionality of the SciPy classes, plus the additional `qp` functionality (metadata, normalization functions, etc). In each parameterization class, certain `rv_continuous` methods such as `_pdf()` and `_cdf()` are overridden by new methods specific to that parameterization (see <project:parameterizationcontribution.md> for more details).
 
 `Ensembles` are then created using one of these parameterization classes. The `Ensemble` class creates the `metadata` and `objdata` dictionaries in addition to the `ancil` dictionary. It also handles `qp` specific functionality such as the ability to convert between parameterizations, or write your `Ensemble` to file.
 
@@ -12,7 +12,7 @@
 
 - core
   - `Ensemble`: the primary code object
-  - `factory.py`: supporting functionality, wraps `scipy.stats` distributions as `qp` parameterizations, stores dictionary of all available parameterizations
+  - `factory.py`: supporting functionality, wraps <inv:#scipy.stats> distributions as `qp` parameterizations, stores dictionary of all available parameterizations
 - parameterizations
   - `base.py`: contains the base classes that all parameterization classes must inherit from
   - parameterization classes: contain the attributes and functions specific to that parameterization
