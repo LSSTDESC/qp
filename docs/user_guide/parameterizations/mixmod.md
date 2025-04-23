@@ -6,7 +6,7 @@ Gaussian mixture models are defined with:
 - **Standard deviations** (`stds`): The standard deviations for each of the $n$ Gaussians that makes up a distribution.
 - **Weights** (`weights`): The relative weight given to each of the $n$ Gaussians that make up a distribution.
 
-![mixmod-example](../../assets/mixmod-bimodal-example.svg)
+![mixmod-example](../../assets/mixmod-bimodal-example-annotated.svg)
 
 ## Use cases
 

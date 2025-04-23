@@ -88,7 +88,7 @@ array([[3.84729931e-22, 1.45447239e-19, 3.77974403e-17, 6.75191079e-15,
 
 The $x$ and $y$ values are unique to each distribution in an irregular interpolation `Ensemble`, so they are both found in the {py:attr}`qp.Ensemble.objdata` dictionary.
 
-```{doctstring}
+```{doctest}
 
 >>> ens_irr.objdata["xvals"]
 array([[0.  , 0.25, 0.5 , 0.75, 1.  ],

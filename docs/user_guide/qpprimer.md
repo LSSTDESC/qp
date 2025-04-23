@@ -90,7 +90,7 @@ A **parameterization** in `qp` refers to how a distribution of outcomes is repre
 - Interpolation: parameters are a set of $x$ and $y$ values
 - Quantiles: parameters are the quantiles and the corresponding locations or $x$ values
 
-![parameterizing-a-distribution](../assets/primer-parameterizations.svg)
+![parameterizing-a-distribution](../assets/primer-parameterizations-annotated.svg)
 
 In the case of a normal distribution, the analytic parameterization is clearly superior, as it contains the most accurate information in the least number of parameters. However, for the more complex, real-life distributions, the other parameterizations can provide more accuracy than attempting to fit to an analytic function. There is a trade-off for all of these parameterizations in that the more parameters, the more accurately your distribution will be represented, but the slower those distributions will be to work with and store.
 

@@ -5,7 +5,7 @@ Irregular interpolated distributions are defined with:
 - **$x$ values** (`xvals`): $n$ ordered values representing coordinates on a distribution.
 - **$y$ values** (`yvals`): $n$ values that correspond to the probability associated with each $x$ value.
 
-![interpolation-example](../../assets/interp-gamma-example.svg)
+![interpolation-example](../../assets/interp-gamma-example-annotated.svg)
 
 ## Use cases
 

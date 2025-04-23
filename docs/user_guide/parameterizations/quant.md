@@ -5,7 +5,7 @@ Quantile distributions are parameterized by values from the CDF. They have:
 - **quantiles** (`quants`): $n$ ordered quantiles of the distribution, from 0 to 1. These are evenly spaced cumulative probabilities (i.e. the probability $x \leq$ some value.)
 - **locations** (`locs`): The $n$ locations ($x$ values), on the distribution's CDF where the quantiles are reached.
 
-![quant-example](../../assets/quant-rayleigh-example.svg)
+![quant-example](../../assets/quant-rayleigh-example-annotated.svg)
 
 ## Use cases
 
