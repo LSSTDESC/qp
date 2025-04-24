@@ -4,14 +4,16 @@
 
 The main object of `qp` is the {py:class}`qp.Ensemble`. This is a data structure that can store one or more distributions with the same type, or **parameterization**. A **parameterization** is defined in this package as the way that the distribution is represented, for example a histogram represents a data set using bins and values inside those bins.
 
-An `Ensemble` object has three main data components, which exist as dictionaries:
+An `Ensemble` object has three main components, which exist as dictionaries:
 
-- **Metadata** ({py:attr}`qp.Ensemble.metadata`)
-  - This tells you the parameters shared by all distributions in the `Ensemble`, including the name of the parameterization, the version, and the coordinates of that parameterization (i.e. bins for a histogram).
-- **Data values** ({py:attr}`qp.Ensemble.objdata`)
-  - Contains the data values for each distribution in the `Ensemble`, where each row in a value's array corresponds to a distribution.
-- _(optional)_ **Ancillary data table** ({py:attr}`qp.Ensemble.ancil`)
-  - Contains any additional parameters pertaining to the data, where there is one value or row per distribution. The arrays for each parameter must have the same first dimension as the number of distributions.
+**Metadata** ({py:attr}`qp.Ensemble.metadata`)
+: This tells you the parameters shared by all distributions in the `Ensemble`, including the name of the parameterization, the version, and the coordinates of that parameterization (i.e. bins for a histogram).
+
+**Data values** ({py:attr}`qp.Ensemble.objdata`)
+: Contains the data values for each distribution in the `Ensemble`, where each row in a value's array corresponds to a distribution.
+
+_(optional)_ **Ancillary data table** ({py:attr}`qp.Ensemble.ancil`)
+: Contains any additional parameters pertaining to the data, where there is one value or row per distribution. The arrays for each parameter must have the same first dimension as the number of distributions. For example, in an `Ensemble` of galaxy redshifts, the ancillary data table could have each galaxy's magnitudes.
 
 ```{note}
 The exact configuration of the data within these dictionaries differs for each parameterization, so see <project:datastructure.md> for more details.
@@ -36,11 +38,17 @@ For example, to create an interpolated parameterization, where the distributions
 >>> import qp
 >>> import numpy as np
 >>> from scipy import stats
->>> npdf = 3
->>> nvals = 50
->>> xvals = np.linspace(-1,5,nvals)
->>> loc = np.expand_dims(np.linspace(1., 2., npdf),-1)
->>> scale = np.expand_dims(np.linspace(0.2, 1.15, npdf),-1)
+>>> npdf = 3 # number of distributions to create
+>>> nvals = 50 # number of values per distribution
+>>> xvals = np.linspace(-1,5,nvals) # x values for all distributions
+>>> loc = np.linspace(1., 2., npdf)
+>>> scale = np.linspace(0.2, 1.15, npdf)
+
+# changing array shapes to (npdf, 1)
+>>> loc = loc.reshape(-1,1)
+>>> scale = scale.reshape(-1,1)
+
+# getting the pdf values at each x value
 >>> yvals = stats.norm(loc=loc, scale=scale).pdf(xvals)
 >>> ancil = {'ids':[5,8,10]}
 
@@ -50,13 +58,15 @@ Then we use this data to create our `Ensemble`:
 
 ```{doctest}
 
->>> ens = qp.interp.create_ensemble(xvals, yvals,ancil=ancil)
+>>> ens = qp.interp.create_ensemble(xvals, yvals, ancil=ancil)
 >>> ens
 Ensemble(the_class=interp,shape=(3, 50))
 
 ```
 
-Note that the representation of the `Ensemble` tells us what the parameterization class is, and the shape of the `Ensemble` (also available via {py:attr}`qp.Ensemble.shape`). The first value is the number of distributions and the second value is the number of data values per distribution, which in this case is equal to the number of $xvals$.
+Note that the representation of the `Ensemble` tells us what the parameterization is, and the shape of the `Ensemble` (also available via {py:attr}`qp.Ensemble.shape`). The first value is the number of distributions and the second value is the number of data values per distribution, which in this case is equal to the number of $xvals$.
+
+#### Alternate creation methods
 
 Another method is to use {py:meth}`qp.create() <qp.factory.Factory.create>`, which allows you to create an `Ensemble` of any parameterization type. The function requires the parameterization type as an argument, as well as a dictionary of the necessary data, and an optional `ancil` argument for any ancillary data. So to create an `Ensemble` using the same data above, you would use the following commands:
 
@@ -105,7 +115,7 @@ dict
 
 What can we do with our `Ensemble`? <project:methods.md> lists all of the available methods of an `Ensemble` object, and links to their docstrings. Or you can see the [API documentation of the class](#qp.core.ensemble.Ensemble) for a complete list of its attributes and methods all in one place. Here we will go over a few of the most commonly-used methods and attributes.
 
-### Attributes
+### Getting basic properties
 
 We can check the data an `Ensemble` contains using {py:attr}`qp.Ensemble.metadata` or {py:attr}`qp.Ensemble.objdata`. These show the dictionaries of data that define our `Ensemble`. To select one or more of the distributions in our `Ensemble`, you can easily slice the `Ensemble` object itself, for example `ens[0]` will yield an `Ensemble` object with just the data for the first distribution. Another way to select just the data for a specific distribution is to slice the `objdata` dictionary, i.e. `ens.objdata["yvals"][0]` as used below.
 
@@ -152,7 +162,7 @@ An `Ensemble` also has other attributes that provide information about it. Some 
 
 A complete list of attributes can be found in the [API class documentation](#qp.core.ensemble.Ensemble).
 
-#### Statistical methods
+### Statistical methods
 
 One of the main functions of an `Ensemble` is the ability to calculate the probability distribution function (PDF) or cumulative distribution function (CDF) of the distributions. This can be done via the {py:meth}`qp.Ensemble.pdf` and {py:meth}`qp.Ensemble.cdf` methods, which return values that correspond to the given $x$ values for each distribution. For example, to get the value of the PDFs at a specific $x$ value, one can do the following:
 
@@ -167,7 +177,7 @@ array([[1.20683683],
 
 This returns an array of shape ($n_{pdf}$, $n$), where $n$ is the number of $x$ values given to the function.
 
-#### Converting between parameterizations
+### Converting between parameterizations
 
 It is possible to convert an `Ensemble` of distributions to a different parameterization. There are two main methods for conversion:
 
@@ -178,11 +188,11 @@ Both functions also allow you to provide a specific conversion method via the `m
 
 :::{note}
 
-You can only convert to a parameterization that has a conversion method. This means that you cannot convert to any parameterization that inherits from SciPy (i.e. any parameterization that starts with `qp.stats` -- see <project:./parameterizations/index.md> for more information about these parameterizations).
+You can only convert to a parameterization that has a conversion method. This means that you cannot convert to any of the analytic parameterizations from SciPy (i.e. any parameterization that starts with `qp.stats` -- see <project:./parameterizations/index.md> for more information about these parameterizations).
 
 :::
 
-For example, let's say we wanted to convert our `Ensemble` from an interpolation to a histogram ({py:class}`qp.hist <qp.parameterizations.hist.hist.hist_gen>`). The [histogram parameterization](./parameterizations/hist.md) has two conversion methods, {py:func}`extract_hist_values() <qp.parameterizations.hist.hist_utils.extract_hist_values>` and {py:func}`extract_hist_samples() <qp.parameterizations.hist.hist_utils.extract_hist_samples>` (see [the histogram documentation](./parameterizations/hist.md#conversion) for more details on these functions). For this example we'll use `extract_hist_values`, which requires the `bins` argument.
+For example, let's say we wanted to convert our `Ensemble` from an interpolation to a histogram ({py:class}`qp.hist <qp.parameterizations.hist.hist.hist_gen>`). The [histogram parameterization](./parameterizations/hist.md#conversion) has two conversion methods, {py:func}`extract_hist_values() <qp.parameterizations.hist.hist_utils.extract_hist_values>` and {py:func}`extract_hist_samples() <qp.parameterizations.hist.hist_utils.extract_hist_samples>`. For this example we'll use `extract_hist_values`, which requires the `bins` argument.
 
 ```{doctest}
 
@@ -222,13 +232,15 @@ array([[1.20683683],
 
 ```
 
-These values are slightly different, even though the distributions match up quite well. Depending on the scenario there can be even more significant differences in distribution shape. Typically, ensuring that your `Ensemble` has a high density of coordinate values, and that the parameters you convert to have similarly high density, will aid in producing converted distributions that match their initial distributions more closely. **Make sure to check your converted `Ensemble` looks the way you expect it to.**
+These values are slightly different, even though the distributions match up quite well. Depending on the scenario there can be even more significant differences in distribution shape. Typically, ensuring that your `Ensemble` has a high density of coordinate values, and that the parameters you convert to have similarly high density, will aid in producing converted distributions that match their initial distributions more closely.
+
+**Make sure to check your converted `Ensemble` looks the way you expect it to.**
 
 ## Writing an Ensemble to file
 
 Once you're done working with your `Ensemble`, you can write it to a `qp` file. The main method to use for this is {py:meth}`qp.Ensemble.write_to`. This uses {py:meth}`qp.Ensemble.build_tables` to turn the three data tables, metadata, objdata and ancil into one `TableDict-like` object (essentially a dictionary of tables), and then uses [`tables_io`](https://tables-io.readthedocs.io/en/latest/#) to write it to one of the compatible file types.
 
-The available file formats are given in the table below. The recommended file type is **HDF5** (suffix 'hdf5'), as this requires no conversion to other table types in memory (which may cause slow downs on larger files), and no additional packages that may not be loaded already.
+The available file formats are given in the table below. The recommended file type is **HDF5** (suffix 'hdf5'), as this requires no in-memory conversion or additional packages.
 
 | File format name | File suffix    | Produced by                                                                            |
 | ---------------- | -------------- | -------------------------------------------------------------------------------------- |
