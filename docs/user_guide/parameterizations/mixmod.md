@@ -16,8 +16,8 @@ Gaussian mixture models are well suited to fitting real data distributions with 
 
 Gaussian mixture model `Ensembles` operate in the following ways:
 
-- `Ensemble.pdf()` and `Ensemble.cdf()` are computed as a weighted sum of each of the component Gaussian's `pdf()` and `cdf()`.
-- `Ensemble.ppf()` is calculated from a fixed grid of `cdf()` values that are interpolated linearly using `scipy.interp1d`. `ppf(0)` returns negative infinity, and `ppf(1)` returns positive infinity.
+- `Ensemble.pdf(x)` and `Ensemble.cdf(x)` are computed as a weighted sum of each of the component Gaussian's `pdf(x)` and `cdf(x)`.
+- `Ensemble.ppf(x)` is calculated from a fixed grid of `cdf()` values that are interpolated linearly using <inv:#scipy.interpolate.interp1d>. `ppf(0)` returns negative infinity, and `ppf(1)` returns positive infinity.
 - `Ensemble.x_samples()` returns a range of $x$ values that should plot the majority of all the distributions. It may exclude the tail of some distributions. The minimum of the range is calculated as the lowest mean minus the largest standard deviation, and the maximum is calculated as the reverse.
 
 ## Data structure
@@ -73,7 +73,7 @@ Ensemble(the_class=mixmod,shape=(1,5))
 
 ## Conversion
 
-There is only one method to convert an `Ensemble` to this parameterization: {py:func}`extract_mixmod_fit_samples() <qp.parameterizations.mixmod.mixmod_utils.extract_mixmod_fit_samples>`.
+The method used to convert an `Ensemble` to this parameterization is: {py:func}`extract_mixmod_fit_samples() <qp.parameterizations.mixmod.mixmod_utils.extract_mixmod_fit_samples>`.
 
 **Example:**
 
@@ -91,7 +91,7 @@ Ensemble(the_class=mixmod,shape=(1,5))
 - `nsamples`: The number of samples to generate from each distribution, by default 1000.
 - `random_state`: The random state to provide to {py:meth}`qp.Ensemble.rvs`, by default None.
 
-This conversion method uses the {py:meth}`qp.Ensemble.rvs` to sample `nsamples` data points from each of the input distributions. Then it uses `sklearn.mixture.GaussianMixture` to estimate the parameters of a Gaussian mixture model distribution for each of the distributions.
+This conversion method uses {py:meth}`qp.Ensemble.rvs` to sample `nsamples` data points from each of the input distributions. Then it uses <inv:#sklearn.mixture.GaussianMixture.fit> to estimate the parameters of a Gaussian mixture model distribution for each of the distributions.
 
 ## Known issues
 

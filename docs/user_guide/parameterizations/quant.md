@@ -84,7 +84,7 @@ For more details on creating an `Ensemble`, see <project:../basicusage.md#creati
 
 ## Conversion
 
-There is only one method to convert an `Ensemble` to this parameterization: {py:func}`extract_quantiles() <qp.parameterizations.quant.quant_utils.extract_quantiles>`.
+The method used to convert an `Ensemble` to this parameterization is: {py:func}`extract_quantiles() <qp.parameterizations.quant.quant_utils.extract_quantiles>`.
 
 **Example:**
 

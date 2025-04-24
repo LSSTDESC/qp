@@ -21,9 +21,9 @@ This distribution can be slow when given many distributions with lots of $x$ val
 
 Interpolated `Ensembles` operate in the following way:
 
-- `Ensemble.pdf(x)` uses `scipy.interpolate.interp1d` to linearly interpolate the PDF inside the range of given `xvals`, and returns 0 outside that range.
-- `Ensemble.cdf(x)` uses `scipy.interpolate.interp1d` to linearly interpolate the CDF from the cumulative sum at the given `xvals`. It is not the direct integral of `Ensemble.pdf()`. Outside the range of given `xvals` it returns 0 or 1 as appropriate.
-- `Ensemble.ppf(x)` uses `scipy.interpolate.interp1d` to linearly interpolate based on the cumulative sum at the given `xvals`, with the $x$ and $y$ inputs inverted.
+- `Ensemble.pdf(x)` uses <inv:#scipy.interpolate.interp1d> to linearly interpolate the PDF inside the range of given `xvals`, and returns 0 outside that range.
+- `Ensemble.cdf(x)` uses <inv:#scipy.interpolate.interp1d> to linearly interpolate the CDF from the cumulative sum at the given `xvals`. It is not the direct integral of `Ensemble.pdf()`. Outside the range of given `xvals` it returns 0 or 1 as appropriate.
+- `Ensemble.ppf(x)` uses <inv:#scipy.interpolate.interp1d> to linearly interpolate based on the cumulative sum at the given `xvals`, with the $x$ and $y$ inputs inverted.
 - `Ensemble.x_samples()` returns an array of $x$ values that can be used to plot all of the distributions. It covers the range from the minimum $x$ value to the maximum $x$ value, with a step size equal to the minimum step size across all the `Ensemble`'s $x$ values.
 
 ## Data structure
@@ -77,7 +77,7 @@ For more details on creating an `Ensemble`, see <project:../basicusage.md#creati
 
 ## Conversion
 
-There is only one method to convert an `Ensemble` to this parameterization: {py:func}`irreg_interp_extract_xy_vals() <qp.parameterizations.interp.interp_utils.irreg_interp_extract_xy_vals>`.
+The method used to convert an `Ensemble` to this parameterization is: {py:func}`irreg_interp_extract_xy_vals() <qp.parameterizations.interp.interp_utils.irreg_interp_extract_xy_vals>`.
 
 **Example:**
 

@@ -17,9 +17,9 @@ To get around this requirement, you can use the <project:irregularinterp.md> par
 
 Interpolated `Ensembles` operate in the following ways:
 
-- `Ensemble.pdf(x)` uses `scipy.interpolate.interp1d` to linearly interpolate the PDF inside the range of given `xvals`, and returns 0 outside that range.
-- `Ensemble.cdf(x)` uses `scipy.interpolate.interp1d` to linearly interpolate the CDF from the cumulative sum at the given `xvals`. It is not the direct integral of `Ensemble.pdf()`. Outside the range of given `xvals` it returns 0 or 1 as appropriate.
-- `Ensemble.ppf(x)` uses `scipy.interpolate.interp1d` to linearly interpolate based on the cumulative sum at the given `xvals`, with the x and y inputs inverted.
+- `Ensemble.pdf(x)` uses <inv:#scipy.interpolate.interp1d> to linearly interpolate the PDF inside the range of given `xvals`, and returns 0 outside that range.
+- `Ensemble.cdf(x)` uses <inv:#scipy.interpolate.interp1d> to linearly interpolate the CDF from the cumulative sum at the given `xvals`. It is not the direct integral of `Ensemble.pdf()`. Outside the range of given `xvals` it returns 0 or 1 as appropriate.
+- `Ensemble.ppf(x)` uses <inv:#scipy.interpolate.interp1d> to linearly interpolate based on the cumulative sum at the given `xvals`, with the x and y inputs inverted.
 - `Ensemble.x_samples()` returns the $x$ values from the metadata.
 
 ## Data structure
@@ -73,7 +73,7 @@ For more details on creating an `Ensemble`, see <project:../basicusage.md#creati
 
 ## Conversion
 
-There is only one method to convert an `Ensemble` to this parameterization: {py:func}`extract_vals_at_x() <qp.parameterizations.interp.interp_utils.extract_vals_at_x>`.
+There method used to convert an `Ensemble` to this parameterization is: {py:func}`extract_vals_at_x() <qp.parameterizations.interp.interp_utils.extract_vals_at_x>`.
 
 **Example:**
 
