@@ -31,7 +31,13 @@ extensions = [
     "numpydoc",
 ]
 
-myst_enable_extensions = ["colon_fence", "dollarmath", "attrs_inline", "tasklist"]
+myst_enable_extensions = [
+    "colon_fence",
+    "dollarmath",
+    "attrs_inline",
+    "tasklist",
+    "deflist",
+]
 myst_heading_anchors = 5
 nb_execution_mode = "auto"
 nb_execution_allow_errors = True
