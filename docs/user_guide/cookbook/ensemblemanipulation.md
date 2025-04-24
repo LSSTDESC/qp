@@ -1,10 +1,10 @@
 # Ensemble manipulation
 
-This page covers examples of `Ensemble` creation and some basic usage.
+This page covers examples of Ensemble creation and some basic usage.
 
 (creating-an-ensemble-from-a-qp-stats-distribution)=
 
-## Creating an `Ensemble` from a parameterization inherited from SciPy
+## Creating an Ensemble from a parameterization inherited from SciPy
 
 The `create_ensemble` function for the `qp.stats` distributions is slightly different than for the other parameterizations, as it requires a dictionary of the data to create the Ensemble, instead of being able to take individual arguments. See below for an example using the `qp.stats.norm` distribution:
 
@@ -21,7 +21,7 @@ Ensemble(the_class=norm, shape=(3,1))
 
 ```
 
-We provided an array of 3 values each for 'loc' and 'scale' and ended up with an `Ensemble` with 3 distributions. This is due to the automatic reshaping of the input arrays that `qp` does to ensure that the resulting `Ensemble` looks and behaves like the other `Ensemble` types.
+We provided an array of 3 values each for 'loc' and 'scale' and ended up with an Ensemble with 3 distributions. This is due to the automatic reshaping of the input arrays that `qp` does to ensure that the resulting Ensemble looks and behaves like the other Ensemble types.
 
 `qp.stats` distributions only require one value per parameter per distribution. So you can input the data either as 1D arrays with shape ($n$,) (above), or as 2D arrays with shape ($n$,1) (below), and both result in the same outcome. Additionally, any arrays input with other shapes will be reshaped to 2D arrays of shape ($n$,1), where $n$ is the number of elements in the input array.
 
@@ -38,7 +38,7 @@ Ensemble(the_class=norm, shape=(3,1))
 
 ## Sampling
 
-Sampling from an `Ensemble` can be done easily using the {py:meth}`qp.Ensemble.rvs` method. Below is an example sampling from our example `Ensemble` from the <project:../basicusage.md> documentation, which has 3 distributions:
+Sampling from an Ensemble can be done easily using the {py:meth}`qp.Ensemble.rvs` method. Below is an example sampling from our example Ensemble from the <project:../basicusage.md> documentation, which has 3 distributions:
 
 ```{doctest}
 
@@ -50,11 +50,11 @@ Sampling from an `Ensemble` can be done easily using the {py:meth}`qp.Ensemble.r
 
 ```
 
-You now have `samples`, which contains a set of $x$ values that are randomly drawn from each distribution in the `Ensemble`.
+You now have `samples`, which contains a set of $x$ values that are randomly drawn from each distribution in the Ensemble.
 
-## Appending an `Ensemble` to another `Ensemble` of the same type
+## Appending an Ensemble to another Ensemble of the same type
 
-If you have created multiple `Ensembles` with the same parameterization, it can be easier to handle if they are all part of one `Ensemble`. You can use the {py:meth}`qp.Ensemble.append` method of the `Ensemble` to add an `Ensemble` of the same type to an existing `Ensemble`. This can only be done if the metadata for both `Ensembles` are the same. In particular, the coordinates (i.e. "xvals" or "bins") must be the same for both `Ensembles`. For example, to append two histogram `Ensembles` together, first we create the two separate `Ensembles`:
+If you have created multiple Ensembles with the same parameterization, it can be easier to handle if they are all part of one Ensemble. You can use the {py:meth}`qp.Ensemble.append` method of the Ensemble to add an Ensemble of the same type to an existing Ensemble. This can only be done if the metadata for both Ensembles are the same. In particular, the coordinates (i.e. "xvals" or "bins") must be the same for both Ensembles. For example, to append two histogram Ensembles together, first we create the two separate Ensembles:
 
 ```{doctest}
 
@@ -74,7 +74,7 @@ Ensemble(the_class=hist,shape=(1,8))
 
 ```
 
-Now that we have our `Ensembles`, we can append the second one to the first using {py:meth}`qp.Ensemble.append`:
+Now that we have our Ensembles, we can append the second one to the first using {py:meth}`qp.Ensemble.append`:
 
 ```{doctest}
 
@@ -84,11 +84,11 @@ Ensemble(the_class=hist,shape=(2,8))
 
 ```
 
-Our new `Ensemble` now contains both distributions.
+Our new Ensemble now contains both distributions.
 
-## Concatenating a list of `Ensembles` of the same type
+## Concatenating a list of Ensembles of the same type
 
-If you have created multiple `Ensembles` with the same parameterization, it can be easier to handle if they are all part of one `Ensemble`. You can use the {py:meth}`qp.concatenate() <qp.core.factory.Factory.concatenate>` method to add multiple `Ensembles` of the same type together. This can only be done if the metadata for all `Ensembles` are the same. In particular, the coordinates (i.e. "xvals" or "bins") must be the same for both `Ensembles`. For example, to append three interpolated `Ensembles` together, first we create the three separate `Ensembles`:
+If you have created multiple Ensembles with the same parameterization, it can be easier to handle if they are all part of one Ensemble. You can use the {py:meth}`qp.concatenate() <qp.core.factory.Factory.concatenate>` method to add multiple Ensembles of the same type together. This can only be done if the metadata for all Ensembles are the same. In particular, the coordinates (i.e. "xvals" or "bins") must be the same for both Ensembles. For example, to append three interpolated Ensembles together, first we create the three separate Ensembles:
 
 ```{doctest}
 
@@ -113,7 +113,7 @@ Ensemble(the_class=interp,shape=(1,9))
 
 ```
 
-Then we use {py:meth}`qp.concatenate() <qp.core.factory.Factory.concatenate>` to put them all into one `Ensemble`.
+Then we use {py:meth}`qp.concatenate() <qp.core.factory.Factory.concatenate>` to put them all into one Ensemble.
 
 ```{doctest}
 
@@ -131,11 +131,11 @@ There is no way to concatenate Ensembles of different types together. You can [c
 
 ## Iterating over HDF5 files
 
-This tutorial notebook covers the use of the {py:meth}`qp.iterator() <qp.factory.Factory.iterator>` function to read in `Ensembles` from a file, as well as how to iteratively write `Ensembles` to HDF5 files in series and in parallel: <project:../../nb/iterator_demo.md> (download {download}`here <../../nb/iterator_demo.ipynb>`).
+This tutorial notebook covers the use of the {py:meth}`qp.iterator() <qp.factory.Factory.iterator>` function to read in Ensembles from a file, as well as how to iteratively write Ensembles to HDF5 files in series and in parallel: <project:../../nb/iterator_demo.md> (download {download}`here <../../nb/iterator_demo.ipynb>`).
 
 ### Parallelizing iteration via MPI
 
-The {py:meth}`qp.iterator() <qp.factory.Factory.iterator>` function can also be used in parallel, allowing for each process to iterate through some of the distributions. Let's test this out on a sample file of `Ensembles`. First we need to know how many distributions are in the file:
+The {py:meth}`qp.iterator() <qp.factory.Factory.iterator>` function can also be used in parallel, allowing for each process to iterate through some of the distributions. Let's test this out on a sample file of Ensembles. First we need to know how many distributions are in the file:
 
 ```{doctest}
 
@@ -162,7 +162,7 @@ You may need to edit the file path in the example program above.
 
 ## Plotting using x_samples
 
-A useful method for quickly plotting a distribution or distributions in your `Ensemble` is the {py:meth}`qp.Ensemble.x_samples` method. This is meant to provide a series of $x$ values that should cover the range of data given in all distributions in the `Ensemble`, which can be provided to the appropriate method ({py:meth}`qp.Ensemble.pdf` for most parameterizations, {py:meth}`qp.Ensemble.cdf` for quantiles) to get the relevant $y$ values.
+A useful method for quickly plotting a distribution or distributions in your Ensemble is the {py:meth}`qp.Ensemble.x_samples` method. This is meant to provide a series of $x$ values that should cover the range of data given in all distributions in the Ensemble, which can be provided to the appropriate method ({py:meth}`qp.Ensemble.pdf` for most parameterizations, {py:meth}`qp.Ensemble.cdf` for quantiles) to get the relevant $y$ values.
 
 :::{note}
 The {py:meth}`qp.Ensemble.x_samples` method only works properly for the five main supported parameterizations. For the rest it returns just a default set of points between a given minimum and maximum value.
@@ -197,7 +197,7 @@ array([[-0.6071293 , -0.59023231,  1.28345605,  1.73715452,  2.07018928,
 
 ```
 
-You can see that for the quantile parameterization, {py:meth}`qp.Ensemble.x_samples` returns a set of values that are evenly spaced between the minimum and the maximum value of the 'locs' for all distributions in the `Ensemble`. Now let's use this array to plot the first distribution in the `Ensemble`:
+You can see that for the quantile parameterization, {py:meth}`qp.Ensemble.x_samples` returns a set of values that are evenly spaced between the minimum and the maximum value of the 'locs' for all distributions in the Ensemble. Now let's use this array to plot the first distribution in the Ensemble:
 
 ```{doctest}
 >>> plt.plot(ens_q.x_samples(), ens_q[0].cdf(ens_q.x_samples()))
@@ -209,4 +209,4 @@ You can see that for the quantile parameterization, {py:meth}`qp.Ensemble.x_samp
 
 ![quant-plot](../../assets/cookbook-plotting-quant.svg)
 
-For an example of plotting an interpolated `Ensemble`, see [the Basic Usage documentation](../basicusage.md#converting-between-parameterizations).
+For an example of plotting an interpolated Ensemble, see [the Basic Usage documentation](../basicusage.md#converting-between-parameterizations).

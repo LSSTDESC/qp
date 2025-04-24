@@ -1,31 +1,31 @@
 # Ensemble Methods
 
-The following tables are lists of existing methods for use on `Ensembles`, with short summaries of their purpose. The methods link to their API documentation for more detailed information.
+The following tables are lists of existing methods for use on Ensembles, with short summaries of their purpose. The methods link to their API documentation for more detailed information.
 
 ## Base Methods
 
-These are some base methods used to perform operations on one or more `Ensembles`.
+These are some base methods used to perform operations on one or more Ensembles.
 
-| Method                                                           | Description                                                                    |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| {py:meth}`qp.create() <qp.factory.Factory.create>`               | Creates an `Ensemble` from a dictionary of data.                               |
-| {py:meth}`qp.from_tables() <qp.factory.Factory.from_tables>`     | Creates an `Ensemble` from a dictionary of tables.                             |
-| {py:meth}`qp.read_metadata() <qp.factory.Factory.read_metadata>` | Reads just an `Ensemble`'s metadata from a file.                               |
-| {py:meth}`qp.is_qp_file() <qp.factory.Factory.is_qp_file>`       | Tests if a file is a `qp` file containing a metadata table.                    |
-| {py:meth}`qp.read() <qp.factory.Factory.read>`                   | Reads an `Ensemble` from a file.                                               |
-| {py:meth}`qp.data_length() <qp.factory.Factory.data_length>`     | Gets the number of distributions present in the file.                          |
-| {py:meth}`qp.iterator() <qp.factory.Factory.iterator>`           | Iterates through an `Ensemble` in a given file.                                |
-| {py:meth}`qp.convert() <qp.factory.Factory.convert>`             | Converts an `Ensemble` to a different parameterization.                        |
-| {py:meth}`qp.concatenate() <qp.factory.Factory.concatenate>`     | Concatenates a list of `Ensembles` with the same metadata into one `Ensemble`. |
-| {py:meth}`qp.write_dict() <qp.factory.Factory.write_dict>`       | Writes a dictionary of `Ensembles` to an HDF5 file.                            |
-| {py:meth}`qp.read_dict() <qp.factory.Factory.read_dict>`         | Reads a dictionary of `Ensembles` from an HDF5 file.                           |
-| {py:meth}`qp.add_class() <qp.factory.Factory.add_class>`         | Adds a new parameterization class to the dictionary of classes.                |
+| Method                                                           | Description                                                                |
+| ---------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| {py:meth}`qp.create() <qp.factory.Factory.create>`               | Creates an Ensemble from a dictionary of data.                             |
+| {py:meth}`qp.from_tables() <qp.factory.Factory.from_tables>`     | Creates an Ensemble from a dictionary of tables.                           |
+| {py:meth}`qp.read_metadata() <qp.factory.Factory.read_metadata>` | Reads just an Ensemble's metadata from a file.                             |
+| {py:meth}`qp.is_qp_file() <qp.factory.Factory.is_qp_file>`       | Tests if a file is a `qp` file containing a metadata table.                |
+| {py:meth}`qp.read() <qp.factory.Factory.read>`                   | Reads an Ensemble from a file.                                             |
+| {py:meth}`qp.data_length() <qp.factory.Factory.data_length>`     | Gets the number of distributions present in the file.                      |
+| {py:meth}`qp.iterator() <qp.factory.Factory.iterator>`           | Iterates through an Ensemble in a given file.                              |
+| {py:meth}`qp.convert() <qp.factory.Factory.convert>`             | Converts an Ensemble to a different parameterization.                      |
+| {py:meth}`qp.concatenate() <qp.factory.Factory.concatenate>`     | Concatenates a list of Ensembles with the same metadata into one Ensemble. |
+| {py:meth}`qp.write_dict() <qp.factory.Factory.write_dict>`       | Writes a dictionary of Ensembles to an HDF5 file.                          |
+| {py:meth}`qp.read_dict() <qp.factory.Factory.read_dict>`         | Reads a dictionary of Ensembles from an HDF5 file.                         |
+| {py:meth}`qp.add_class() <qp.factory.Factory.add_class>`         | Adds a new parameterization class to the dictionary of classes.            |
 
-## Methods of the `Ensemble` class
+## Methods of the Ensemble class
 
 ### General use methods
 
-These are more methods that are used to perform operations on `Ensembles`, from creating them to writing them to file. These are methods of an existing `Ensemble`, and so you would write `ens.set_ancil(ancil)`, for example.
+These are more methods that are used to perform operations on Ensembles, from creating them to writing them to file. These are methods of an existing Ensemble, and so you would write `ens.set_ancil(ancil)`, for example.
 
 | Method &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | Description                                                                                                                   |
 | --------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |

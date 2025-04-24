@@ -1,16 +1,16 @@
 # Data manipulation
 
-This notebook covers use cases of accessing and manipulating the data contained in `Ensembles` and `Ensemble` files.
+This notebook covers use cases of accessing and manipulating the data contained in Ensembles and Ensemble files.
 
 ## Exploring the structure of an Ensemble file
 
-This tutorial notebook does an in-depth look of what the actual data structure of an `Ensemble` file looks like, and how to create one from data tables: <project:../../nb/ensemble_file.md> (download {download}`here <../../nb/ensemble_file.ipynb>`).
+This tutorial notebook does an in-depth look of what the actual data structure of an Ensemble file looks like, and how to create one from data tables: <project:../../nb/ensemble_file.md> (download {download}`here <../../nb/ensemble_file.ipynb>`).
 
-## Accessing `Ensemble` data
+## Accessing Ensemble data
 
 Below are examples of how to access the relevant metadata and data coordinates for each of the supported parameterizations, as well as the normal parameterization.
 
-### Accessing the bins and pdf values of a histogram `Ensemble`
+### Accessing the bins and pdf values of a histogram Ensemble
 
 The bin edges are common to all distributions, so they are found in the {py:attr}`qp.Ensemble.metadata` dictionary. The bin values ('pdfs') are unique to each distribution, and so they are found in the {py:attr}`qp.Ensemble.objdata` dictionary.
 
@@ -45,7 +45,7 @@ array([[9.32923960e-18, 1.97897967e-13, 9.45298950e-10, 1.02855210e-06,
 
 ```
 
-### Accessing the x and y values of an interpolation `Ensemble`
+### Accessing the x and y values of an interpolation Ensemble
 
 The $x$ values are shared across all distributions, so they are found in the {py:attr}`qp.Ensemble.metadata` dictionary. The $y$ values are unique to each distribution, so they are found in the {py:attr}`qp.Ensemble.objdata` dictionary.
 
@@ -84,9 +84,9 @@ array([[3.84729931e-22, 1.45447239e-19, 3.77974403e-17, 6.75191079e-15,
 
 ```
 
-### Accessing the x and y values of an irregular interpolation `Ensemble`
+### Accessing the x and y values of an irregular interpolation Ensemble
 
-The $x$ and $y$ values are unique to each distribution in an irregular interpolation `Ensemble`, so they are both found in the {py:attr}`qp.Ensemble.objdata` dictionary.
+The $x$ and $y$ values are unique to each distribution in an irregular interpolation Ensemble, so they are both found in the {py:attr}`qp.Ensemble.objdata` dictionary.
 
 ```{doctest}
 
@@ -99,7 +99,7 @@ array([[1.93480833, 0.17750059, 1.88439427, 0.68718763, 1.25091751],
 
 ```
 
-### Accessing the quantiles and locations of a quantile `Ensemble`
+### Accessing the quantiles and locations of a quantile Ensemble
 
 The quantiles are common to all distributions, so these are found in the {py:attr}`qp.Ensemble.metadata` dictionary. The locations are specific to each distribution, so are found in the {py:attr}`qp.Ensemble.objdata` dictionary.
 
@@ -115,7 +115,7 @@ array([2.        , 2.24254695, 2.35428008, 2.44998068, 2.5417504 ,
 
 ```
 
-### Accessing the means, standard deviations, and weights of a Gaussian mixture model `Ensemble`
+### Accessing the means, standard deviations, and weights of a Gaussian mixture model Ensemble
 
 Since each distribution has its own mean, standard deviation and weight, these values are all found in the {py:attr}`qp.Ensemble.objdata` dictionary:
 
@@ -130,7 +130,7 @@ array([0.1, 0.3, 0.2, 0.2, 0.2])
 
 ```
 
-### Accessing the mean and standard deviation of a normal `Ensemble`
+### Accessing the mean and standard deviation of a normal Ensemble
 
 Since each distribution has its own mean and standard deviation, these values are all found in the {py:attr}`qp.Ensemble.objdata` dictionary:
 
@@ -147,9 +147,9 @@ array([[0.5 ],
 
 This is true of all the {py:class}`qp.stats` distributions, though some will have different variables you can access. To find out what variables exist for a specific {py:class}`qp.stats` distribution, take a look at the <project:../parameterizations/index.md> page.
 
-## Updating the data in an `Ensemble`
+## Updating the data in an Ensemble
 
-To update the data in an `Ensemble` without changing its metadata, you can use the {py:meth}`qp.Ensemble.update_objdata` method. This will recreate the `Ensemble` with the existing metadata and the new data you've provided. If you'd like to preserve your old `Ensemble` and make a new `Ensemble` with this updated data, you should first save a copy of the old `Ensemble` to a different variable, like in the example below:
+To update the data in an Ensemble without changing its metadata, you can use the {py:meth}`qp.Ensemble.update_objdata` method. This will recreate the Ensemble with the existing metadata and the new data you've provided. If you'd like to preserve your old Ensemble and make a new Ensemble with this updated data, you should first save a copy of the old Ensemble to a different variable, like in the example below:
 
 ```{doctest}
 
@@ -168,7 +168,7 @@ To update the data in an `Ensemble` without changing its metadata, you can use t
 
 ```
 
-If you'd like to change not only the data but also the metadata of the `Ensemble`, you can use the {py:meth}`qp.Ensemble.update` method. Let's say we want to get a new version of our histogram `Ensemble` where we have one less bin:
+If you'd like to change not only the data but also the metadata of the Ensemble, you can use the {py:meth}`qp.Ensemble.update` method. Let's say we want to get a new version of our histogram Ensemble where we have one less bin:
 
 ```{doctest}
 
@@ -180,11 +180,11 @@ If you'd like to change not only the data but also the metadata of the `Ensemble
 
 ```
 
-## Normalizing an `Ensemble`
+## Normalizing an Ensemble
 
-If you have an `Ensemble` and want to ensure it's normalized, you can use the {py:meth}`qp.Ensemble.norm` method. This method will only work for interpolation, irregular interpolation, and histogram `Ensembles`.
+If you have an Ensemble and want to ensure it's normalized, you can use the {py:meth}`qp.Ensemble.norm` method. This method will only work for interpolation, irregular interpolation, and histogram Ensembles.
 
-Let's say you created an `Ensemble` without normalizing, but now you've changed your mind and want it normalized:
+Let's say you created an Ensemble without normalizing, but now you've changed your mind and want it normalized:
 
 ```{doctest}
 

@@ -19,16 +19,16 @@ This distribution can be slow when given many distributions with lots of $x$ val
 
 ## Behaviour
 
-Interpolated `Ensembles` operate in the following way:
+Interpolated Ensembles operate in the following way:
 
 - `Ensemble.pdf(x)` uses <inv:#scipy.interpolate.interp1d> to linearly interpolate the PDF inside the range of given `xvals`, and returns 0 outside that range.
 - `Ensemble.cdf(x)` uses <inv:#scipy.interpolate.interp1d> to linearly interpolate the CDF from the cumulative sum at the given `xvals`. It is not the direct integral of `Ensemble.pdf()`. Outside the range of given `xvals` it returns 0 or 1 as appropriate.
 - `Ensemble.ppf(x)` uses <inv:#scipy.interpolate.interp1d> to linearly interpolate based on the cumulative sum at the given `xvals`, with the $x$ and $y$ inputs inverted.
-- `Ensemble.x_samples()` returns an array of $x$ values that can be used to plot all of the distributions. It covers the range from the minimum $x$ value to the maximum $x$ value, with a step size equal to the minimum step size across all the `Ensemble`'s $x$ values.
+- `Ensemble.x_samples()` returns an array of $x$ values that can be used to plot all of the distributions. It covers the range from the minimum $x$ value to the maximum $x$ value, with a step size equal to the minimum step size across all the Ensemble's $x$ values.
 
 ## Data structure
 
-See <project:../datastructure.md> for general details on the data structure of `Ensembles`.
+See <project:../datastructure.md> for general details on the data structure of Ensembles.
 
 ### Metadata Dictionary
 
@@ -45,7 +45,7 @@ See <project:../datastructure.md> for general details on the data structure of `
 | "yvals" | `array([[4,5,6],[1,2,3],[7,8,9]])`       | The values corresponding to each $x$ value, of shape ($n_{pdf}$, $n$) |
 
 ```{note}
-$n_{pdf}$ is the number of distributions in an `Ensemble`.
+$n_{pdf}$ is the number of distributions in an Ensemble.
 ```
 
 ## Ensemble creation
@@ -73,11 +73,11 @@ Ensemble(the_class=interp_irregular,shape=(2,5))
 - `norm`: If True, normalizes the input distributions. If False, assumes the given distributions are already normalized. By default True.
 - `warn`: If True, raises warnings if input is not valid PDF data (i.e. if data is negative). If False, no warnings are raised. By default True.
 
-For more details on creating an `Ensemble`, see <project:../basicusage.md#creating-an-ensemble>, and for more details on this function see its [API documentation](#qp.interp_irregular_gen.create_ensemble).
+For more details on creating an Ensemble, see <project:../basicusage.md#creating-an-ensemble>, and for more details on this function see its [API documentation](#qp.interp_irregular_gen.create_ensemble).
 
 ## Conversion
 
-The method used to convert an `Ensemble` to this parameterization is: {py:func}`irreg_interp_extract_xy_vals() <qp.parameterizations.interp.interp_utils.irreg_interp_extract_xy_vals>`.
+The method used to convert an Ensemble to this parameterization is: {py:func}`irreg_interp_extract_xy_vals() <qp.parameterizations.interp.interp_utils.irreg_interp_extract_xy_vals>`.
 
 **Example:**
 
@@ -92,4 +92,4 @@ Ensemble(the_class=interp_irregular,shape=(2,5))
 
 **Required argument:** `xvals`, where `xvals` are the $x$ points at which to calculate the value of the PDF for each distribution. This can either be an ($n_{pdf}$, $n$) array where you specify values for each distribution, or an ($n$, ) array that is reshaped to ($n_{pdf}$, $n$). Though if you are using this option, we recommend you convert to {py:class}`qp.interp` instead for more efficient code.
 
-When converting an `Ensemble` of another type to irregular interpolation, you need to provide a set of $x$ values. Make sure that the range of the $x$ values for each distribution covers the full range of data for that distributions, or the converted data will be inaccurate. The conversion process includes an automatic normalization of the data, which will change the input distributions if they are missing data points.
+When converting an Ensemble of another type to irregular interpolation, you need to provide a set of $x$ values. Make sure that the range of the $x$ values for each distribution covers the full range of data for that distributions, or the converted data will be inaccurate. The conversion process includes an automatic normalization of the data, which will change the input distributions if they are missing data points.

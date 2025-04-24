@@ -108,14 +108,12 @@ default_role = "py:obj"  # interpret `function` as crossref to the py object 'fu
 html_static_path = ["_static"]
 html_css_files = [
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css",
-    "custom.css"
+    "custom.css",
 ]
 html_theme_options = {"style_external_links": True}
 
 project = "qp"
 author = "DESC RAIL Team"
 copyright = "2025, " + author
-version = "1.0dev"
-release = "1.0dev"
-# version = qp.__version__
-# release = qp.__version__
+version = qp.__version__
+release = qp.__version__

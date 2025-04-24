@@ -9,11 +9,11 @@ Histograms are defined with:
 
 ## Use Cases
 
-The histogram parameterization is ideal for distributions derived from real data, particularly those that do not follow a smooth curved line. However, a histogram distribution is highly dependent on the bin widths. In an `Ensemble` all distributions must have the same bins, so keep in mind that the bins of an `Ensemble` must work well for **all** its distributions.
+The histogram parameterization is ideal for distributions derived from real data, particularly those that do not follow a smooth curved line. However, a histogram distribution is highly dependent on the bin widths. In an Ensemble all distributions must have the same bins, so keep in mind that the bins of an Ensemble must work well for **all** its distributions.
 
 ## Behaviour
 
-Histogram `Ensembles` operate in the following way:
+Histogram Ensembles operate in the following way:
 
 - `Ensemble.pdf(x)` provides the bin value for the bin containing x, or 0 if x is outside of the bins. No interpolation takes place.
 - `Ensemble.cdf(x)` provides values that are linearly interpolated using <inv:#scipy.interpolate.interp1d> across the bins, and return either 0 or 1 as appropriate outside of the bins.
@@ -22,7 +22,7 @@ Histogram `Ensembles` operate in the following way:
 
 ## Data structure
 
-See <project:../datastructure.md> for general details on the data structure of `Ensembles`.
+See <project:../datastructure.md> for general details on the data structure of Ensembles.
 
 ### Metadata Dictionary
 
@@ -69,13 +69,13 @@ Ensemble(the_class=hist,shape=(1,4))
 - `norm`: If True, normalizes the input distributions. If False, assumes the given distributions are already normalized. By default True.
 - `warn`: If True, raises warnings if input is not valid PDF data (i.e. if data is negative). If False, no warnings are raised. By default True.
 
-For more details on creating an `Ensemble`, see <project:../basicusage.md#creating-an-ensemble>, and for more details on this function see its [API documentation](#qp.hist_gen.create_ensemble).
+For more details on creating an Ensemble, see <project:../basicusage.md#creating-an-ensemble>, and for more details on this function see its [API documentation](#qp.hist_gen.create_ensemble).
 
 ## Conversion
 
-When converting an `Ensemble` of another type to a histogram, you must provide a set of bin edges. There are no checks during conversion that these bins cover the full range of the data in the input distribution, so keep in mind that it is up to you to ensure that the bin edges provided cover the full range of the input data distributions. Otherwise, the converted distributions will have altered data, as the new `Ensemble` of histograms will be normalized by default.
+When converting an Ensemble of another type to a histogram, you must provide a set of bin edges. There are no checks during conversion that these bins cover the full range of the data in the input distribution, so keep in mind that it is up to you to ensure that the bin edges provided cover the full range of the input data distributions. Otherwise, the converted distributions will have altered data, as the new Ensemble of histograms will be normalized by default.
 
-There are two methods that can be used to convert an `Ensemble` to this parameterization:
+There are two methods that can be used to convert an Ensemble to this parameterization:
 
 - [default method](#qp.parameterizations.hist.hist_utils.extract_hist_values)
 - [samples](#qp.parameterizations.hist.hist_utils.extract_hist_samples)

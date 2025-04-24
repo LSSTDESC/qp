@@ -9,13 +9,13 @@ Interpolated distributions are defined with:
 
 ## Use cases
 
-The interpolation parameterization works well for most distributions, provided there is a high enough density of $x$ values. It linearly interpolates between each point, so it does a poor job of reproducing curves. Keep in mind that all distributions in an `Ensemble` must have the same $x$ values, so the $x$ values have both the range and the density necessary to represent **all** of the distributions.
+The interpolation parameterization works well for most distributions, provided there is a high enough density of $x$ values. It linearly interpolates between each point, so it does a poor job of reproducing curves. Keep in mind that all distributions in an Ensemble must have the same $x$ values, so the $x$ values have both the range and the density necessary to represent **all** of the distributions.
 
 To get around this requirement, you can use the <project:irregularinterp.md> parameterization, though this will significantly slow down code performance for large datasets.
 
 ## Behaviour
 
-Interpolated `Ensembles` operate in the following ways:
+Interpolated Ensembles operate in the following ways:
 
 - `Ensemble.pdf(x)` uses <inv:#scipy.interpolate.interp1d> to linearly interpolate the PDF inside the range of given `xvals`, and returns 0 outside that range.
 - `Ensemble.cdf(x)` uses <inv:#scipy.interpolate.interp1d> to linearly interpolate the CDF from the cumulative sum at the given `xvals`. It is not the direct integral of `Ensemble.pdf()`. Outside the range of given `xvals` it returns 0 or 1 as appropriate.
@@ -24,7 +24,7 @@ Interpolated `Ensembles` operate in the following ways:
 
 ## Data structure
 
-See <project:../datastructure.md> for general details on the data structure of `Ensembles`.
+See <project:../datastructure.md> for general details on the data structure of Ensembles.
 
 ### Metadata Dictionary
 
@@ -41,7 +41,7 @@ See <project:../datastructure.md> for general details on the data structure of `
 | "yvals" | `array([[4,5,6],[1,2,3],[7,8,9]])` | The values corresponding to each $x$ value, of shape ($n_{pdf}$, $n$) |
 
 ```{note}
-$n_{pdf}$ is the number of distributions in an `Ensemble`.
+$n_{pdf}$ is the number of distributions in an Ensemble.
 ```
 
 ## Ensemble creation
@@ -69,11 +69,11 @@ Ensemble(the_class=interp,shape=(2,5))
 - `norm`: If True, normalizes the input distributions. If False, assumes the given distributions are already normalized. By default True.
 - `warn`: If True, raises warnings if input is not valid PDF data (i.e. if data is negative). If False, no warnings are raised. By default True.
 
-For more details on creating an `Ensemble`, see <project:../basicusage.md#creating-an-ensemble>, and for more details on this function see its [API documentation](#qp.interp_gen.create_ensemble).
+For more details on creating an Ensemble, see <project:../basicusage.md#creating-an-ensemble>, and for more details on this function see its [API documentation](#qp.interp_gen.create_ensemble).
 
 ## Conversion
 
-There method used to convert an `Ensemble` to this parameterization is: {py:func}`extract_vals_at_x() <qp.parameterizations.interp.interp_utils.extract_vals_at_x>`.
+There method used to convert an Ensemble to this parameterization is: {py:func}`extract_vals_at_x() <qp.parameterizations.interp.interp_utils.extract_vals_at_x>`.
 
 **Example:**
 
@@ -89,4 +89,4 @@ Ensemble(the_class=interp,shape=(2,5))
 
 Make sure that the range of the $x$ values covers the full range of data in the input distributions, or the converted data will be inaccurate. The conversion process includes an automatic normalization of the data, which will change the input distributions if they are missing data points.
 
-Conversion to an interpolation is quite simple. It calls the {py:meth}`qp.Ensemble.pdf` function of the input `Ensemble` with the given `xvals`, and creates the new interpolated `Ensemble` from using the given `xvals` and the PDF values as `yvals`.
+Conversion to an interpolation is quite simple. It calls the {py:meth}`qp.Ensemble.pdf` function of the input Ensemble with the given `xvals`, and creates the new interpolated Ensemble from using the given `xvals` and the PDF values as `yvals`.

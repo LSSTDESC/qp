@@ -17,7 +17,7 @@ There exist additional parameterizations, however they are in various stages of 
 
 ## SciPy parameterizations
 
-`qp` also incorporates all of the continuous distributions from <inv:scipy#scipy.stats> as parameterizations, allowing you to create `Ensembles` parameterized by these distributions. The main limitations on these parameterizations is that they cannot be converted to, as they have no conversion functions. Additionally, their `create_ensemble()` method takes a data dictionary instead of specific arguments, as shown in the [Cookbook](../cookbook/ensemblemanipulation.md#creating-an-ensemble-from-a-parameterization-inherited-from-scipy).
+`qp` also incorporates all of the continuous distributions from <inv:scipy#scipy.stats> as parameterizations, allowing you to create Ensembles parameterized by these distributions. The main limitations on these parameterizations is that they cannot be converted to, as they have no conversion functions. Additionally, their `create_ensemble()` method takes a data dictionary instead of specific arguments, as shown in the [Cookbook](../cookbook/ensemblemanipulation.md#creating-an-ensemble-from-a-parameterization-inherited-from-scipy).
 
 You can access these parameterizations from the `qp.stats` module, as shown below:
 

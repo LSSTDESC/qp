@@ -14,7 +14,7 @@ Gaussian mixture models are well suited to fitting real data distributions with 
 
 ## Behaviour
 
-Gaussian mixture model `Ensembles` operate in the following ways:
+Gaussian mixture model Ensembles operate in the following ways:
 
 - `Ensemble.pdf(x)` and `Ensemble.cdf(x)` are computed as a weighted sum of each of the component Gaussian's `pdf(x)` and `cdf(x)`.
 - `Ensemble.ppf(x)` is calculated from a fixed grid of `cdf()` values that are interpolated linearly using <inv:#scipy.interpolate.interp1d>. `ppf(0)` returns negative infinity, and `ppf(1)` returns positive infinity.
@@ -22,7 +22,7 @@ Gaussian mixture model `Ensembles` operate in the following ways:
 
 ## Data structure
 
-See <project:../datastructure.md> for general details on the data structure of `Ensembles`.
+See <project:../datastructure.md> for general details on the data structure of Ensembles.
 
 ### Metadata Dictionary
 
@@ -73,7 +73,7 @@ Ensemble(the_class=mixmod,shape=(1,5))
 
 ## Conversion
 
-The method used to convert an `Ensemble` to this parameterization is: {py:func}`extract_mixmod_fit_samples() <qp.parameterizations.mixmod.mixmod_utils.extract_mixmod_fit_samples>`.
+The method used to convert an Ensemble to this parameterization is: {py:func}`extract_mixmod_fit_samples() <qp.parameterizations.mixmod.mixmod_utils.extract_mixmod_fit_samples>`.
 
 **Example:**
 
@@ -95,4 +95,4 @@ This conversion method uses {py:meth}`qp.Ensemble.rvs` to sample `nsamples` data
 
 ## Known issues
 
-Currently the `rvs()` method of the Gaussian mixed model parameterization is not functional. This also means that converting Gaussian mixed model `Ensembles` to other types of `Ensembles` via conversion methods that use sampling will not work (i.e. converting to a histogram via the 'samples' method).
+Currently the `rvs()` method of the Gaussian mixed model parameterization is not functional. This also means that converting Gaussian mixed model Ensembles to other types of Ensembles via conversion methods that use sampling will not work (i.e. converting to a histogram via the 'samples' method).

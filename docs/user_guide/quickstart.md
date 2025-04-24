@@ -43,11 +43,11 @@ The main object of `qp` that stores these distributions is the {py:class}`qp.Ens
 _(optional)_ **Ancillary data table** ({py:attr}`qp.Ensemble.ancil`)
 : Additional data for each of the distributions, where there is one row per distribution
 
-The printed representation of an `Ensemble` tells you the parameterization type and the shape of the arrays in the `objdata`: ($n_{pdf}$, $n_{vals}$), where $n_{pdf}$ is the number of distributions and $n_{vals}$ is the number of values or data points for each distribution in the `Ensemble`.
+The printed representation of an Ensemble tells you the parameterization type and the shape of the arrays in the `objdata`: ($n_{pdf}$, $n_{vals}$), where $n_{pdf}$ is the number of distributions and $n_{vals}$ is the number of values or data points for each distribution in the Ensemble.
 
 ### Creating an Ensemble
 
-To create an `Ensemble` of any number of distributions, you can use the `create_ensemble` method of any of the existing parameterization classes. For example, to create an `Ensemble` of interpolations use {py:class}`qp.interp <qp.parameterizations.interp.interp.interp_gen>`:
+To create an Ensemble of any number of distributions, you can use the `create_ensemble` method of any of the existing parameterization classes. For example, to create an Ensemble of interpolations use {py:class}`qp.interp <qp.parameterizations.interp.interp.interp_gen>`:
 
 ```{doctest}
 
@@ -61,7 +61,7 @@ To create an `Ensemble` of any number of distributions, you can use the `create_
 Ensemble(the_class=interp,shape=(2,5))
 ```
 
-You can also read an `Ensemble` from a file using {py:meth}`qp.read <qp.factory.Factory.read>`. For example:
+You can also read an Ensemble from a file using {py:meth}`qp.read <qp.factory.Factory.read>`. For example:
 
 ```{doctest}
 
@@ -73,23 +73,23 @@ Ensemble(the_class=interp,shape=(3, 50))
 
 ### Working with an Ensemble
 
-Now that you have created an `Ensemble`, you can get a sense of what's in it by using some useful attributes:
+Now that you have created an Ensemble, you can get a sense of what's in it by using some useful attributes:
 
-- {py:attr}`qp.Ensemble.npdf`: Number of distributions in the `Ensemble`
+- {py:attr}`qp.Ensemble.npdf`: Number of distributions in the Ensemble
 - {py:attr}`qp.Ensemble.shape`: Shape of the data, ($n_{pdf}$, $n_{vals}$)
 - {py:attr}`qp.Ensemble.metadata` : The metadata dictionary
 - {py:attr}`qp.Ensemble.objdata` : The data dictionary
 - {py:attr}`qp.Ensemble.ancil` : The ancillary data (only works if there is an ancillary data table)
 
-You can also use the available [`Ensemble` methods](methods.md). These allow you to manipulate your `Ensemble`, or get statistical information about your `Ensembles`. For example, here are some useful methods:
+You can also use the available [Ensemble methods](methods.md). These allow you to manipulate your Ensemble, or get statistical information about your Ensembles. For example, here are some useful methods:
 
 - {py:meth}`qp.Ensemble.pdf`: Get the PDF values at specified $x$ values
 - {py:meth}`qp.Ensemble.cdf`: Get the CDF values at specified $x$ values
-- {py:meth}`qp.Ensemble.convert`: Convert the `Ensemble` to a different parameterization
+- {py:meth}`qp.Ensemble.convert`: Convert the Ensemble to a different parameterization
 
-### Writing an `Ensemble` to file
+### Writing an Ensemble to file
 
-To write an `Ensemble` to file, simply use the {py:meth}`qp.Ensemble.write_to` method. The only required argument is the full path to the file you would like to write. For example, we can write out the `Ensemble` we created like so:
+To write an Ensemble to file, simply use the {py:meth}`qp.Ensemble.write_to` method. The only required argument is the full path to the file you would like to write. For example, we can write out the Ensemble we created like so:
 
 ```{doctest}
 
@@ -112,4 +112,4 @@ For more detailed explanations, take a look at the user guide:
 Or for quick reference pages:
 
 - <project:./cookbook/index.md> contains detailed examples for specific use cases, i.e. conversion, plotting, iteration
-- <project:methods.md> lists all the available `Ensemble` methods
+- <project:methods.md> lists all the available Ensemble methods

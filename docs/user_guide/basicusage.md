@@ -4,16 +4,16 @@
 
 The main object of `qp` is the {py:class}`qp.Ensemble`. This is a data structure that can store one or more distributions with the same type, or **parameterization**. A **parameterization** is defined in this package as the way that the distribution is represented, for example a histogram represents a data set using bins and values inside those bins.
 
-An `Ensemble` object has three main components, which exist as dictionaries:
+An Ensemble object has three main components, which exist as dictionaries:
 
 **Metadata** ({py:attr}`qp.Ensemble.metadata`)
-: This tells you the parameters shared by all distributions in the `Ensemble`, including the name of the parameterization, the version, and the coordinates of that parameterization (i.e. bins for a histogram).
+: This tells you the parameters shared by all distributions in the Ensemble, including the name of the parameterization, the version, and the coordinates of that parameterization (i.e. bins for a histogram).
 
 **Data values** ({py:attr}`qp.Ensemble.objdata`)
-: Contains the data values for each distribution in the `Ensemble`, where each row in a value's array corresponds to a distribution.
+: Contains the data values for each distribution in the Ensemble, where each row in a value's array corresponds to a distribution.
 
 _(optional)_ **Ancillary data table** ({py:attr}`qp.Ensemble.ancil`)
-: Contains any additional parameters pertaining to the data, where there is one value or row per distribution. The arrays for each parameter must have the same first dimension as the number of distributions. For example, in an `Ensemble` of galaxy redshifts, the ancillary data table could have each galaxy's magnitudes.
+: Contains any additional parameters pertaining to the data, where there is one value or row per distribution. The arrays for each parameter must have the same first dimension as the number of distributions. For example, in an Ensemble of galaxy redshifts, the ancillary data table could have each galaxy's magnitudes.
 
 ```{note}
 The exact configuration of the data within these dictionaries differs for each parameterization, so see <project:datastructure.md> for more details.
@@ -23,7 +23,7 @@ The exact configuration of the data within these dictionaries differs for each p
 
 ## Creating an Ensemble
 
-There are three available methods to create an `Ensemble` from in-memory data, as well as the ability to read in an `Ensemble` from file.
+There are three available methods to create an Ensemble from in-memory data, as well as the ability to read in an Ensemble from file.
 
 (creating-ensemble-memory)=
 
@@ -54,7 +54,7 @@ For example, to create an interpolated parameterization, where the distributions
 
 ```
 
-Then we use this data to create our `Ensemble`:
+Then we use this data to create our Ensemble:
 
 ```{doctest}
 
@@ -64,11 +64,11 @@ Ensemble(the_class=interp,shape=(3, 50))
 
 ```
 
-Note that the representation of the `Ensemble` tells us what the parameterization is, and the shape of the `Ensemble` (also available via {py:attr}`qp.Ensemble.shape`). The first value is the number of distributions and the second value is the number of data values per distribution, which in this case is equal to the number of $xvals$.
+Note that the representation of the Ensemble tells us what the parameterization is, and the shape of the Ensemble (also available via {py:attr}`qp.Ensemble.shape`). The first value is the number of distributions and the second value is the number of data values per distribution, which in this case is equal to the number of $xvals$.
 
 #### Alternate creation methods
 
-Another method is to use {py:meth}`qp.create() <qp.factory.Factory.create>`, which allows you to create an `Ensemble` of any parameterization type. The function requires the parameterization type as an argument, as well as a dictionary of the necessary data, and an optional `ancil` argument for any ancillary data. So to create an `Ensemble` using the same data above, you would use the following commands:
+Another method is to use {py:meth}`qp.create() <qp.factory.Factory.create>`, which allows you to create an Ensemble of any parameterization type. The function requires the parameterization type as an argument, as well as a dictionary of the necessary data, and an optional `ancil` argument for any ancillary data. So to create an Ensemble using the same data above, you would use the following commands:
 
 ```{doctest}
 
@@ -79,7 +79,7 @@ Ensemble(the_class=interp,shape=(3, 50))
 
 ```
 
-Finally, you can instantiate the `Ensemble` class directly by using {py:class}`qp.Ensemble`, which takes the same arguments as the {py:meth}`qp.create() <qp.factory.Factory.create>` method, except the parameterization argument must be the actual class, instead of the string name of the class:
+Finally, you can instantiate the Ensemble class directly by using {py:class}`qp.Ensemble`, which takes the same arguments as the {py:meth}`qp.create() <qp.factory.Factory.create>` method, except the parameterization argument must be the actual class, instead of the string name of the class:
 
 ```{doctest}
 
@@ -91,7 +91,7 @@ Ensemble(the_class=interp,shape=(3, 50))
 
 ### Reading an Ensemble from file
 
-An `Ensemble` can be read from a file as well, if the file is in the appropriate format. To check if a file can be read in as an `Ensemble`, you can use {py:meth}`qp.is_qp_file() <qp.factory.Factory.is_qp_file>`, which returns `True` if it is in a compatible format. Once you have a file that can be read it, you can use {py:meth}`qp.read() <qp.factory.Factory.read>` as shown in the example below:
+An Ensemble can be read from a file as well, if the file is in the appropriate format. To check if a file can be read in as an Ensemble, you can use {py:meth}`qp.is_qp_file() <qp.factory.Factory.is_qp_file>`, which returns `True` if it is in a compatible format. Once you have a file that can be read it, you can use {py:meth}`qp.read() <qp.factory.Factory.read>` as shown in the example below:
 
 ```{doctest}
 
@@ -101,7 +101,7 @@ Ensemble(the_class=interp,shape=(3, 50))
 
 ```
 
-Alternatively, if you have multiple `Ensembles` to read in from an HDF5 file, you can use {py:meth}`qp.read_dict() <qp.factory.Factory.read_dict>`:
+Alternatively, if you have multiple Ensembles to read in from an HDF5 file, you can use {py:meth}`qp.read_dict() <qp.factory.Factory.read_dict>`:
 
 ```{doctest}
 
@@ -113,11 +113,11 @@ dict
 
 ## Working with an Ensemble
 
-What can we do with our `Ensemble`? <project:methods.md> lists all of the available methods of an `Ensemble` object, and links to their docstrings. Or you can see the [API documentation of the class](#qp.core.ensemble.Ensemble) for a complete list of its attributes and methods all in one place. Here we will go over a few of the most commonly-used methods and attributes.
+What can we do with our Ensemble? <project:methods.md> lists all of the available methods of an Ensemble object, and links to their docstrings. Or you can see the [API documentation of the class](#qp.core.ensemble.Ensemble) for a complete list of its attributes and methods all in one place. Here we will go over a few of the most commonly-used methods and attributes.
 
 ### Getting basic properties
 
-We can check the data an `Ensemble` contains using {py:attr}`qp.Ensemble.metadata` or {py:attr}`qp.Ensemble.objdata`. These show the dictionaries of data that define our `Ensemble`. To select one or more of the distributions in our `Ensemble`, you can easily slice the `Ensemble` object itself, for example `ens[0]` will yield an `Ensemble` object with just the data for the first distribution. Another way to select just the data for a specific distribution is to slice the `objdata` dictionary, i.e. `ens.objdata["yvals"][0]` as used below.
+We can check the data an Ensemble contains using {py:attr}`qp.Ensemble.metadata` or {py:attr}`qp.Ensemble.objdata`. These show the dictionaries of data that define our Ensemble. To select one or more of the distributions in our Ensemble, you can easily slice the Ensemble object itself, for example `ens[0]` will yield an Ensemble object with just the data for the first distribution. Another way to select just the data for a specific distribution is to slice the `objdata` dictionary, i.e. `ens.objdata["yvals"][0]` as used below.
 
 Let's use these data dictionaries to quickly plot one of our distributions (for more details on plotting distributions see <project:./cookbook/ensemblemanipulation.md#plotting-using-x_samples>):
 
@@ -136,7 +136,7 @@ Let's use these data dictionaries to quickly plot one of our distributions (for 
 
 :::{warning}
 
-Note that `objdata` and `metadata` do not store the exact input data. Instead they store what represents the `Ensemble`. For example, if you input a distribution that is not normalized, by default most parameterizations will normalize the data, and they store the normalized data in `objdata`. For a quick example, we create a new `Ensemble` below:
+Note that `objdata` and `metadata` do not store the exact input data. Instead they store what represents the Ensemble. For example, if you input a distribution that is not normalized, by default most parameterizations will normalize the data, and they store the normalized data in `objdata`. For a quick example, we create a new Ensemble below:
 
 ```{doctest}
 
@@ -155,16 +155,16 @@ Note that the $y_{vals}$ in `objdata` are different than the ones given to the `
 
 :::
 
-An `Ensemble` also has other attributes that provide information about it. Some useful ones are:
+An Ensemble also has other attributes that provide information about it. Some useful ones are:
 
-- {py:attr}`qp.Ensemble.npdf`: the number of distributions in the `Ensemble`
-- {py:attr}`qp.Ensemble.shape`: ($n_{pdf}$, $n_{data}$), where $n_{data}$ is the number of values that each distribution has, usually corresponding in some way to the number of coordinates in the metadata. For our sample `Ensemble`, $n_{data}$ is equal to the number of $x_{vals}$.
+- {py:attr}`qp.Ensemble.npdf`: the number of distributions in the Ensemble
+- {py:attr}`qp.Ensemble.shape`: ($n_{pdf}$, $n_{data}$), where $n_{data}$ is the number of values that each distribution has, usually corresponding in some way to the number of coordinates in the metadata. For our sample Ensemble, $n_{data}$ is equal to the number of $x_{vals}$.
 
 A complete list of attributes can be found in the [API class documentation](#qp.core.ensemble.Ensemble).
 
 ### Statistical methods
 
-One of the main functions of an `Ensemble` is the ability to calculate the probability distribution function (PDF) or cumulative distribution function (CDF) of the distributions. This can be done via the {py:meth}`qp.Ensemble.pdf` and {py:meth}`qp.Ensemble.cdf` methods, which return values that correspond to the given $x$ values for each distribution. For example, to get the value of the PDFs at a specific $x$ value, one can do the following:
+One of the main functions of an Ensemble is the ability to calculate the probability distribution function (PDF) or cumulative distribution function (CDF) of the distributions. This can be done via the {py:meth}`qp.Ensemble.pdf` and {py:meth}`qp.Ensemble.cdf` methods, which return values that correspond to the given $x$ values for each distribution. For example, to get the value of the PDFs at a specific $x$ value, one can do the following:
 
 ```{doctest}
 
@@ -179,9 +179,9 @@ This returns an array of shape ($n_{pdf}$, $n$), where $n$ is the number of $x$ 
 
 ### Converting between parameterizations
 
-It is possible to convert an `Ensemble` of distributions to a different parameterization. There are two main methods for conversion:
+It is possible to convert an Ensemble of distributions to a different parameterization. There are two main methods for conversion:
 
-- {py:meth}`qp.convert() <qp.factory.Factory.convert>`: takes as arguments the `Ensemble` to convert and the name of the parameterization we want to convert to (i.e. 'hist').
+- {py:meth}`qp.convert() <qp.factory.Factory.convert>`: takes as arguments the Ensemble to convert and the name of the parameterization we want to convert to (i.e. 'hist').
 - {py:meth}`qp.Ensemble.convert_to`: takes as an argument the class object for the parameterization we want to convert to (i.e. `qp.hist`)
 
 Both functions also allow you to provide a specific conversion method via the `method` keyword, if the parameterization has more than one conversion method. Most conversion methods also have additional required arguments, which differ between parameterizations. To get more information about the conversion methods for a specific parameterization, see the documentation page for that parameterization. For some more detailed examples of conversion and a look at how it affects the distributions, see <project:./cookbook/conversion.md#converting-ensembles-between-parameterizations>.
@@ -192,7 +192,7 @@ You can only convert to a parameterization that has a conversion method. This me
 
 :::
 
-For example, let's say we wanted to convert our `Ensemble` from an interpolation to a histogram ({py:class}`qp.hist <qp.parameterizations.hist.hist.hist_gen>`). The [histogram parameterization](./parameterizations/hist.md#conversion) has two conversion methods, {py:func}`extract_hist_values() <qp.parameterizations.hist.hist_utils.extract_hist_values>` and {py:func}`extract_hist_samples() <qp.parameterizations.hist.hist_utils.extract_hist_samples>`. For this example we'll use `extract_hist_values`, which requires the `bins` argument.
+For example, let's say we wanted to convert our Ensemble from an interpolation to a histogram ({py:class}`qp.hist <qp.parameterizations.hist.hist.hist_gen>`). The [histogram parameterization](./parameterizations/hist.md#conversion) has two conversion methods, {py:func}`extract_hist_values() <qp.parameterizations.hist.hist_utils.extract_hist_values>` and {py:func}`extract_hist_samples() <qp.parameterizations.hist.hist_utils.extract_hist_samples>`. For this example we'll use `extract_hist_values`, which requires the `bins` argument.
 
 ```{doctest}
 
@@ -203,7 +203,7 @@ Ensemble(the_class=hist,shape=(3, 25))
 
 ```
 
-[Our new `Ensemble` has a different class and a different shape, since now instead of 50 $x$ values we have 25 bins (and 26 bin edges). Let's plot them both to compare:]{#plotting-interp-ensemble}
+[Our new Ensemble has a different class and a different shape, since now instead of 50 $x$ values we have 25 bins (and 26 bin edges). Let's plot them both to compare:]{#plotting-interp-ensemble}
 
 ```{doctest}
 
@@ -216,7 +216,7 @@ Ensemble(the_class=hist,shape=(3, 25))
 
 ![comparison_plot](../assets/basic_usage_convert_comparison.svg)
 
-Overall they match up quite well. However, converting an `Ensemble` does not guarantee that the converted `Ensemble` will have _exactly_ the same distribution shape. For example, we can compare the value of the PDF at $x=1.2$ in the histogram `Ensemble` to that of the interpolated `Ensemble`:
+Overall they match up quite well. However, converting an Ensemble does not guarantee that the converted Ensemble will have _exactly_ the same distribution shape. For example, we can compare the value of the PDF at $x=1.2$ in the histogram Ensemble to that of the interpolated Ensemble:
 
 ```{doctest}
 
@@ -232,13 +232,13 @@ array([[1.20683683],
 
 ```
 
-These values are slightly different, even though the distributions match up quite well. Depending on the scenario there can be even more significant differences in distribution shape. Typically, ensuring that your `Ensemble` has a high density of coordinate values, and that the parameters you convert to have similarly high density, will aid in producing converted distributions that match their initial distributions more closely.
+These values are slightly different, even though the distributions match up quite well. Depending on the scenario there can be even more significant differences in distribution shape. Typically, ensuring that your Ensemble has a high density of coordinate values, and that the parameters you convert to have similarly high density, will aid in producing converted distributions that match their initial distributions more closely.
 
-**Make sure to check your converted `Ensemble` looks the way you expect it to.**
+**Make sure to check your converted Ensemble looks the way you expect it to.**
 
 ## Writing an Ensemble to file
 
-Once you're done working with your `Ensemble`, you can write it to a `qp` file. The main method to use for this is {py:meth}`qp.Ensemble.write_to`. This uses {py:meth}`qp.Ensemble.build_tables` to turn the three data tables, metadata, objdata and ancil into one `TableDict-like` object (essentially a dictionary of tables), and then uses [`tables_io`](https://tables-io.readthedocs.io/en/latest/#) to write it to one of the compatible file types.
+Once you're done working with your Ensemble, you can write it to a `qp` file. The main method to use for this is {py:meth}`qp.Ensemble.write_to`. This uses {py:meth}`qp.Ensemble.build_tables` to turn the three data tables, metadata, objdata and ancil into one `TableDict-like` object (essentially a dictionary of tables), and then uses [`tables_io`](https://tables-io.readthedocs.io/en/latest/#) to write it to one of the compatible file types.
 
 The available file formats are given in the table below. The recommended file type is **HDF5** (suffix 'hdf5'), as this requires no in-memory conversion or additional packages.
 
@@ -257,7 +257,7 @@ The available file formats are given in the table below. The recommended file ty
 See the [`tables_io` documentation](https://tables-io.readthedocs.io/en/latest/#) for more details about the file formats or the write functionality.
 :::
 
-As an example, let's write our interpolated `Ensemble` to an HDF5 file:
+As an example, let's write our interpolated Ensemble to an HDF5 file:
 
 ```{doctest}
 
@@ -274,7 +274,7 @@ True
 
 ```
 
-If we wanted to write both of our `Ensembles` to the same file, we can use method {py:meth}`qp.write_dict() <qp.factory.Factory.write_dict>`.
+If we wanted to write both of our Ensembles to the same file, we can use method {py:meth}`qp.write_dict() <qp.factory.Factory.write_dict>`.
 
 ```{doctest}
 
@@ -285,4 +285,4 @@ If we wanted to write both of our `Ensembles` to the same file, we can use metho
 
 This function **only** writes to HDF5 files.
 
-It is also possible to iteratively write a chunk of an `Ensemble` at a time to an HDF5 file. For a more detailed example of this, see <project:./cookbook/ensemblemanipulation.md#iterating-over-hdf5-files>.
+It is also possible to iteratively write a chunk of an Ensemble at a time to an HDF5 file. For a more detailed example of this, see <project:./cookbook/ensemblemanipulation.md#iterating-over-hdf5-files>.

@@ -1,14 +1,14 @@
 # Conversion
 
-This page contains example use cases of converting `Ensembles` to different parameterizations.
+This page contains example use cases of converting Ensembles to different parameterizations.
 
 ## Converting Ensembles between parameterizations
 
-This tutorial covers converting between a few different parameterizations and how this affects the distributions in the `Ensemble` across different parameterizations and conversion methods: <project:../../nb/conversion_example.md> (download {download}`here <../../nb/conversion_example.ipynb>`).
+This tutorial covers converting between a few different parameterizations and how this affects the distributions in the Ensemble across different parameterizations and conversion methods: <project:../../nb/conversion_example.md> (download {download}`here <../../nb/conversion_example.ipynb>`).
 
-## Converting a Gaussian `Ensemble` to a histogram
+## Converting a Gaussian Ensemble to a histogram
 
-First we make our Gaussian `Ensemble`:
+First we make our Gaussian Ensemble:
 
 ```{doctest}
 
@@ -17,7 +17,7 @@ First we make our Gaussian `Ensemble`:
 
 ```
 
-Then we convert it to a histogram `Ensemble` using the default conversion method, which requires the `bins` argument:
+Then we convert it to a histogram Ensemble using the default conversion method, which requires the `bins` argument:
 
 ```{doctest}
 
@@ -28,9 +28,9 @@ Then we convert it to a histogram `Ensemble` using the default conversion method
 
 For more details on the available methods for conversion to a histogram parameterization and how they work, see <project:../parameterizations/hist.md>.
 
-## Converting a Gaussian `Ensemble` to an interpolation
+## Converting a Gaussian Ensemble to an interpolation
 
-First we make our Gaussian `Ensemble`:
+First we make our Gaussian Ensemble:
 
 ```{doctest}
 
@@ -39,7 +39,7 @@ First we make our Gaussian `Ensemble`:
 
 ```
 
-Then we convert it to a interpolation `Ensemble` using the default conversion method, which requires the `xvals` argument:
+Then we convert it to a interpolation Ensemble using the default conversion method, which requires the `xvals` argument:
 
 ```{doctest}
 
@@ -51,9 +51,9 @@ Ensemble(the_class=interp,shape=(2, 10))
 
 For more details on the available methods for conversion to a interpolation parameterization and how they work, see <project:../parameterizations/interp.md>.
 
-## Converting a Gaussian `Ensemble` to an irregular interpolation
+## Converting a Gaussian Ensemble to an irregular interpolation
 
-First we make our Gaussian `Ensemble`:
+First we make our Gaussian Ensemble:
 
 ```{doctest}
 
@@ -62,7 +62,7 @@ First we make our Gaussian `Ensemble`:
 
 ```
 
-Then we convert it to an irregular interpolation `Ensemble` using the default conversion method, which requires the `xvals` argument:
+Then we convert it to an irregular interpolation Ensemble using the default conversion method, which requires the `xvals` argument:
 
 ```{doctest}
 
@@ -74,9 +74,9 @@ Ensemble(the_class=interp_irregular,shape=(2, 10))
 
 For more details on the available methods for conversion to an irregular interpolation parameterization and how they work, see <project:../parameterizations/irregularinterp.md>.
 
-## Converting a Gaussian `Ensemble` to a quantile
+## Converting a Gaussian Ensemble to a quantile
 
-First we make our Gaussian `Ensemble`:
+First we make our Gaussian Ensemble:
 
 ```{doctest}
 
@@ -85,7 +85,7 @@ First we make our Gaussian `Ensemble`:
 
 ```
 
-Then we convert it to a quantile `Ensemble` using the default conversion method, which requires the `quants` argument:
+Then we convert it to a quantile Ensemble using the default conversion method, which requires the `quants` argument:
 
 ```{doctest}
 
@@ -97,9 +97,9 @@ Ensemble(the_class=quant,shape=(2, 12))
 
 Since we did not provide 0 or 1, the shape of the quantiles has been expanded to include 0 and 1, resulting in 12 quantiles instead of 10. For more details on the available methods for conversion to a quantile parameterization and how they work, see <project:../parameterizations/quant.md>.
 
-## Converting a histogram `Ensemble` to a Gaussian mixture model
+## Converting a histogram Ensemble to a Gaussian mixture model
 
-First we make our histogram `Ensemble`:
+First we make our histogram Ensemble:
 
 ```{doctest}
 
@@ -110,7 +110,7 @@ First we make our histogram `Ensemble`:
 
 ```
 
-Then we convert it to a Gaussian mixture model `Ensemble` using the default conversion method, using the optional argument `ncomps` to determine how many Gaussians will be used for each distribution:
+Then we convert it to a Gaussian mixture model Ensemble using the default conversion method, using the optional argument `ncomps` to determine how many Gaussians will be used for each distribution:
 
 ```{doctest}
 

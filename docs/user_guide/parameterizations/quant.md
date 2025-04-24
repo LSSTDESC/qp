@@ -15,7 +15,7 @@ One thing to note when using this parameterization is that it does not require t
 
 ## Behaviour
 
-Quantile parameterized `Ensembles` behave in the following ways:
+Quantile parameterized Ensembles behave in the following ways:
 
 - `Ensemble.cdf(x)` is created by interpolating quadratically between the quantiles using <inv:#scipy.interpolate.interp1d>.
 - `Ensemble.ppf(0)` returns negative infinity and `Ensemble.ppf(1)` returns positive infinity.
@@ -28,7 +28,7 @@ Quantile parameterized `Ensembles` behave in the following ways:
 
 ## Data structure
 
-See <project:../datastructure.md> for general details on the data structure of `Ensembles`.
+See <project:../datastructure.md> for general details on the data structure of Ensembles.
 
 ### Metadata Dictionary
 
@@ -47,7 +47,7 @@ See <project:../datastructure.md> for general details on the data structure of `
 | "locs" | `array([[2,4,5,6,8],[0.5,1,2,3,3.5],[6.8,7,8,9,9.5]])` | The values corresponding to each quantile, of shape ($n_{pdf}$, $n$) |
 
 ```{note}
-$n_{pdf}$ is the number of distributions in an `Ensemble`.
+$n_{pdf}$ is the number of distributions in an Ensemble.
 ```
 
 ## Ensemble creation
@@ -80,11 +80,11 @@ Ensemble(the_class=quant,shape=(2,5))
 - `ensure_extent`: If True, ensures that the quants start at 0 and end at 1 by linearly interpolating data points at the edges of the given data as necessary until the quants extend from 0 to 1. By default True.
 - `warn`: If True, raises warnings if input is not valid PDF data (i.e. if data is negative). If False, no warnings are raised. By default True.
 
-For more details on creating an `Ensemble`, see <project:../basicusage.md#creating-an-ensemble>, and for more details on this function see its [API documentation](#qp.quant_gen.create_ensemble).
+For more details on creating an Ensemble, see <project:../basicusage.md#creating-an-ensemble>, and for more details on this function see its [API documentation](#qp.quant_gen.create_ensemble).
 
 ## Conversion
 
-The method used to convert an `Ensemble` to this parameterization is: {py:func}`extract_quantiles() <qp.parameterizations.quant.quant_utils.extract_quantiles>`.
+The method used to convert an Ensemble to this parameterization is: {py:func}`extract_quantiles() <qp.parameterizations.quant.quant_utils.extract_quantiles>`.
 
 **Example:**
 
@@ -98,7 +98,7 @@ Ensemble(the_class=quant,shape=(2,5))
 
 **Required argument:** `quants`, the $n$ quantiles at which to evaluate each distribution.
 
-The conversion function calls the {py:meth}`qp.Ensemble.ppf()` method of the input `Ensemble` at the given quantiles, and then uses the returned values with the given quantiles to create a new quantile parameterized `Ensemble`. This will use all of the defaults for optional parameters.
+The conversion function calls the {py:meth}`qp.Ensemble.ppf()` method of the input Ensemble at the given quantiles, and then uses the returned values with the given quantiles to create a new quantile parameterized Ensemble. This will use all of the defaults for optional parameters.
 
 ```{warning}
 
