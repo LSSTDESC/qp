@@ -40,7 +40,7 @@ pip install -e '.[dev]'
 
 For more details see the [installation instructions](http://qp.readthedocs.io/user_guide/installation.html) on Read the Docs.
 
-## Building the documentation
+## Building the documentation locally
 
 To build the documentation locally, start by making sure that you have the appropriate documentation packages installed:
 
