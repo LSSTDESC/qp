@@ -32,16 +32,18 @@ The different parameterizations allow users to store both analytically and data-
 
 It also allows for use of any of the <inv:scipy#scipy.stats.rv_continuous> distributions as parameterization types under the `qp.stats` module. For a full list of supported parameterizations and more detailed explanations, see <project:./parameterizations/index.md>.
 
-The main object of `qp` that stores these distributions is the {py:class}`qp.Ensemble`. It can store one or more distributions of the same parameterization. It has three main data dictionaries:
+The main object of `qp` that stores these distributions is the {py:class}`qp.Ensemble`. It can store one or more distributions of the same parameterization. It has three components:
 
-- **Metadata** ({py:attr}`qp.Ensemble.metadata`)
-  - tells you the shared parameters, including the parameterization type
-- **Data values** ({py:attr}`qp.Ensemble.objdata`)
-  - the data values for each distribution, where one row = one distribution
-- _(optional)_ **Ancillary data table** ({py:attr}`qp.Ensemble.ancil`)
-  - any additional data for the distributions, where there must be one row per distribution
+**Metadata** ({py:attr}`qp.Ensemble.metadata`)
+: Shared parameters of all distributions in the qp object, including the parameterization type
 
-The printed representation of an `Ensemble` tells you the parameterization type and the shape of the arrays in the `objdata`, which is essentially ($n_{pdf}$, $n_{vals}$), where $n_{pdf}$ is the number of distributions and $n_{vals}$ is the number of values or data points for each distribution in the `Ensemble`.
+**Data values** ({py:attr}`qp.Ensemble.objdata`)
+: underlying data of each distribution, where one row = one distribution
+
+_(optional)_ **Ancillary data table** ({py:attr}`qp.Ensemble.ancil`)
+: Additional data for each of the distributions, where there is one row per distribution
+
+The printed representation of an `Ensemble` tells you the parameterization type and the shape of the arrays in the `objdata`: ($n_{pdf}$, $n_{vals}$), where $n_{pdf}$ is the number of distributions and $n_{vals}$ is the number of values or data points for each distribution in the `Ensemble`.
 
 ### Creating an Ensemble
 
