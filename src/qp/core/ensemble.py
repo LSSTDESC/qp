@@ -128,7 +128,7 @@ class Ensemble:
         return self.npdf
 
     def __getitem__(self, key: Union[int, slice]) -> Ensemble:
-        """Build an `Ensemble` object for a sub-set of the distributions in this ensemble
+        """Build an Ensemble object for a sub-set of the distributions in this ensemble
 
         Parameters
         ----------

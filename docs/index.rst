@@ -133,7 +133,7 @@ Features
     :maxdepth: 2
     :caption: Demo Notebooks
 
-    nb/index.rst
+    nb/index.md
 
 
 .. toctree::
@@ -143,7 +143,7 @@ Features
 
     license
     acknowledgements
-    GitHub <https://github.com/LSSTDESC/tables_io>
+    GitHub <https://github.com/LSSTDESC/qp>
 
 
 .. rst-class:: center
