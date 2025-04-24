@@ -1,10 +1,10 @@
 [project]
 name = "qp-prob"
 requires-python = ">=3.10"
-license = {file = "LICENSE"}
+license = { file = "LICENSE" }
 readme = "README.md"
 authors = [
-    { name = "LSST Dark Energy Science Collaboration (DESC)", email = "later@later.com" }
+    { name = "LSST Dark Energy Science Collaboration (DESC)", email = "later@later.com" },
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -34,9 +34,9 @@ dev = [
     "matplotlib",
     "scikit-learn>=1.0",
     "pytest",
-    "pytest-cov", # Used to report total code coverage
-    "pre-commit", # Used to run checks before finalizing a git commit
-    "pylint", # Used for static linting of files
+    "pytest-cov",                                                            # Used to report total code coverage
+    "pre-commit",                                                            # Used to run checks before finalizing a git commit
+    "pylint",                                                                # Used for static linting of files
     "packaging",
     "pillow",
     "cycler",
@@ -53,21 +53,21 @@ dev = [
 
 docs = [
     "nbsphinx",
-    "sphinx>6.3.1", # Used to automatically generate documentation
-    "sphinx_rtd_theme", # Used to render documentation
-    "sphinx-autoapi", # Used to automatically generate api documentation 
+    "sphinx>6.3.1",      # Used to automatically generate documentation
+    "sphinx_rtd_theme",  # Used to render documentation
+    "sphinx-autoapi",    # Used to automatically generate api documentation 
     "sphinx_design",
-    "myst-nb", # used to render notebooks in markdown 
-    "myst-parser>=4", # used to write documentation in markdown
+    "myst-nb",           # used to render notebooks in markdown 
+    "myst-parser>=4",    # used to write documentation in markdown
     "sphinx-copybutton",
-    "numpydoc", # alternative to sphinx napoleon
+    "numpydoc",          # alternative to sphinx napoleon
 ]
 
 
 [build-system]
 requires = [
     "wheel",
-    "setuptools>=62", # Used to build and package the Python project
+    "setuptools>=62",      # Used to build and package the Python project
     "setuptools_scm>=6.2", # Gets release version from git. Makes it available programmatically
 ]
 build-backend = "setuptools.build_meta"
@@ -76,13 +76,8 @@ build-backend = "setuptools.build_meta"
 write_to = "src/qp/_version.py"
 
 [tool.pytest.ini_options]
-testpaths = [
-    "tests",
-]
-addopts = [
-    "--cov=qp",
-    "--cov-report=html"
-]
+testpaths = ["tests"]
+addopts = ["--cov=qp", "--cov-report=html"]
 
 [tool.pylint]
 disable = [
