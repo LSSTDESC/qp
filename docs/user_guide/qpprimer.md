@@ -12,16 +12,25 @@ To represent such complex distributions can then become a hassle, requiring you 
 
 ## Statistics Refresher
 
-Within `qp`, a distribution (or probability distribution) is a way to relate the probability of a quantity being at a specific value. This can be represented in two different ways, a **Probability Density Function (PDF)** or **Cumulative Distribution Function (CDF)**.
+The power of `qp` is that regardless of how you parameterize your distribution, you will be able to access common statistical properties in the same way.
+
+The underlying information about a distribution within `qp` is data that represents either a **Probability Density Function (PDF)** or **Cumulative Distribution Function (CDF)**.
 
 ```{figure} ../assets/primer-PDF-norm.svg
 :alt: Plot of the PDF of a normal distribution
 ```
 
-The PDF gives the probability of a random variable falling within a range of values. For a given outcome {math}`x`, {math}`P(x)` is the relative likelihood that a random variable would give that outcome. Such a function has the following qualities:
+The PDF gives the probability of a random variable falling within a range of values. For a given outcome range {math}`(x_0, x_1)`:
+
+```{math}
+P = \int_{x_0}^{x_1} p(x') dx'
+
+```
+
+is the relative probability that a random variable would provide an outcome within that range. Such a function has the following qualities:
 
 - always be positive, since an outcome can't have a negative probability
-- normalized, because the overall probability that one of the outcomes happens is 1.
+- normalized, because the overall probability that one of the outcomes happens is 1
 
 For a more detailed explanation see [the Wikipedia page](https://en.wikipedia.org/wiki/Probability_density_function).
 
@@ -29,10 +38,10 @@ For a more detailed explanation see [the Wikipedia page](https://en.wikipedia.or
 :alt: Plot of the CDF of a normal distribution
 ```
 
-The CDF is essentially the integral of the PDF. The CDF at a given $x$ value is the probability that the outcome is less than or equal to {math}`x` as described by
+The CDF is essentially the integral of the PDF. The CDF at a given $x$ value is the probability that the outcome is less than or equal to {math}`x` as described by:
 
 ```{math}
-F_X(x) = \int_{-\infty}^{x} f_X (t)dt
+P(x) = \int_{-\infty}^{x} p (x')dx'
 ```
 
 Thus the minimum of the CDF is 0 at the minimum $x$ value, and from there it must be a non-decreasing, one-to-one function that reaches its maximum value of 1 at the maximum $x$ value. For a more detailed explanation see [the Wikipedia page](https://en.wikipedia.org/wiki/Cumulative_distribution_function).
@@ -83,14 +92,23 @@ The inverse survival function (ISF) serves the same purpose for the survival fun
 
 ## Parameterizations
 
-A **parameterization** in `qp` refers to how a distribution of outcomes is represented. For example, in the above sample plots, the distribution functions (PDF, CDF, etc) are applied to an analytic function called the normal distribution. This analytic parameterization is one way of representing this distribution of outcomes, and has parameters "mean" and "standard deviation". However, there are other ways to parameterize the same distribution. The figure below shows the same normal distribution parameterized in each of the four ways supported by `qp`:
+A **parameterization** in `qp` refers to how a distribution of outcomes is represented. For example, in the above sample plots, the distribution functions (PDF, CDF, etc) are applied to an analytic function called the normal distribution. This analytic parameterization is one way of representing this distribution of outcomes, and has parameters "mean" and "standard deviation". However, there are other ways to parameterize the same distribution.
 
-- Gaussian mixture model: parameters are mean and standard deviation
-- Histogram: parameters are bin edges and bin values
-- Interpolation: parameters are a set of $x$ and $y$ values
-- Quantiles: parameters are the quantiles and the corresponding locations or $x$ values
+The figure below shows the same normal distribution parameterized in each of the four ways supported by `qp`:
 
 ![parameterizing-a-distribution](../assets/primer-parameterizations-annotated.svg)
+
+Gaussian mixture model
+: parameters are means and standard deviations of each Gaussian component
+
+Histogram
+: parameters are bin edges and bin values
+
+Interpolation
+: parameters are a set of $x$ and $y$ values
+
+Quantiles
+: parameters are the quantiles and the corresponding locations or $x$ values
 
 In the case of a normal distribution, the analytic parameterization is clearly superior, as it contains the most accurate information in the least number of parameters. However, for the more complex, real-life distributions, the other parameterizations can provide more accuracy than attempting to fit to an analytic function. There is a trade-off for all of these parameterizations in that the more parameters, the more accurately your distribution will be represented, but the slower those distributions will be to work with and store.
 
