@@ -2,24 +2,21 @@
 qp : quantile-parametrized PDF approximation
 ============================================
 
-`qp` is a software package for the storage and manipulation of probability distributions. 
-It aims to provide similar functionality as `scipy.stats` (i.e. performing 
-statistical functions on probability distributions), but expanded for users 
-who have probability distributions based on real-world data that do not easily fit to analytic functions. 
-It also expands upon that functionality by allowing users to write and read groups of distributions to 
-file, providing the ability to have persistent and easily shareable distributions.  
+`qp` is a python library for the storage and manipulation of tables of probability distributions. 
 
-**Useful links**: `Source repository <https://github.com/LSSTDESC/qp>`_ | `PyPI <https://pypi.org/project/qp-prob/>`_
 
 
 Features
 --------
 
-- ability to read and write distributions to file
-- parameterizations exist for distributions that come from real data and don't fit easily to an analytic function
-- ability to convert between distribution parameterization types 
-- ability to perform statistical methods on many distributions at a time
+- Read and write tables of probability distributions to/from file
+- Parameterize probability distributions inferred from real data
+- Convert between different methods of parameterizing probability distributions  
+- Perform statistical methods on many distributions at a time
 
+.. rst-class:: center
+
+**Useful links**: `Source repository <https://github.com/LSSTDESC/qp>`_ | `PyPI <https://pypi.org/project/qp-prob/>`_
 
 `qp` is currently a part of the `LSST DESC <https://lsstdesc.org/>`_ `RAIL <https://github.com/LSSTDESC/rail>`_ package and its sub-packages. 
 
@@ -37,13 +34,16 @@ Features
         :link-alt: quickstart
         :text-align: center 
 
+
         :fas:`fa-solid fa-rocket; fa-5x`
 
-        **Quickstart**
 
+        **Quickstart**
+        
         A quick introduction to some of the main functionality of `qp`. This guide is 
         short and sweet for when you're in a rush or need a quick refresher.
-        
+
+
     .. grid-item-card::
         :link: user_guide/installation
         :link-type: doc
@@ -142,12 +142,13 @@ Features
     license
     acknowledgements
     GitHub <https://github.com/LSSTDESC/tables_io>
-    
-Indices and tables
-==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+
+.. rst-class:: center
+
+:ref:`genindex` | 
+:ref:`modindex` | 
+:ref:`search`
+
 
 
