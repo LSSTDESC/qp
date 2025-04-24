@@ -10,7 +10,7 @@ Gaussian mixture models are defined with:
 
 ## Use cases
 
-Gaussian mixture models are well suited to fitting real data distributions. They can be represented with only a few parameters, and so are a more efficient way to store large numbers of distributions at a time than parameterizations like histograms or interpolations.
+Gaussian mixture models are well suited to fitting real data distributions with multiple distinct modes. They can be represented with only a few parameters, and so are a more efficient way to store large numbers of distributions at a time than parameterizations like histograms or interpolations.
 
 ## Behaviour
 

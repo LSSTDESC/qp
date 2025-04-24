@@ -9,9 +9,9 @@ Quantile distributions are parameterized by values from the CDF. They have:
 
 ## Use cases
 
-The quantile parameterization works well for data that has a well-behaved CDF. As well, it is easier to represent distributions that may be spread out in the $x$ coordinate space with this parameterization than with interpolation or histogram parameterizations., as all distributions will fall into the same range of quantiles.
+The quantile parameterization works well for data that has a well-behaved CDF. As well, it is easier to represent distributions that may be spread out in the $x$ coordinate space with this parameterization than with interpolation or histogram parameterizations, as all distributions will fall into the same range of quantiles.
 
-One thing to note when using this parameterization is that it does not require that the PDF be positive. So the interpolation of the PDFs can become negative, particularly near the edges of a distribution, which may not be desirable in certain use cases.
+One thing to note when using this parameterization is that it does not require that the PDF be positive. So the interpolation of the PDFs can become negative, particularly in areas where the CDF is flat or close to flat, which may not be desirable in certain use cases.
 
 ## Behaviour
 
@@ -72,7 +72,11 @@ Ensemble(the_class=quant,shape=(2,5))
 **Optional parameters**:
 
 - `ancil`: The dictionary of arrays of additional data containing $n_{pdf}$ values
-- `pdf_constructor_name`: The construction algorithm used to create the PDF, by default "piecewise_linear". The options are: "piecewise_linear", "piecewise_constant", "cdf_spline_derivative", and "dual_spline_average".
+- `pdf_constructor_name`: The construction algorithm used to create the PDF, by default "piecewise_linear". The options are:
+  - "piecewise_linear"
+  - "piecewise_constant"
+  - "cdf_spline_derivative"
+  - "dual_spline_average"
 - `ensure_extent`: If True, ensures that the quants start at 0 and end at 1 by linearly interpolating data points at the edges of the given data as necessary until the quants extend from 0 to 1. By default True.
 - `warn`: If True, raises warnings if input is not valid PDF data (i.e. if data is negative). If False, no warnings are raised. By default True.
 

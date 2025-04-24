@@ -123,9 +123,17 @@ Then we use {py:meth}`qp.concatenate() <qp.core.factory.Factory.concatenate>` to
 
 ```
 
-## Iteration example
+```{note}
+
+There is no way to concatenate Ensembles of different types together. You can [convert](#./conversion.md) all of the Ensembles to the same parameterization first and then concatenate.
+
+```
+
+## Iterating over HDF5 files
 
 This tutorial notebook covers the use of the {py:meth}`qp.iterator() <qp.factory.Factory.iterator>` function to read in `Ensembles` from a file, as well as how to iteratively write `Ensembles` to HDF5 files in series and in parallel: <project:../../nb/iterator_demo.md> (download {download}`here <../../nb/iterator_demo.ipynb>`).
+
+### Parallelizing iteration via MPI
 
 The {py:meth}`qp.iterator() <qp.factory.Factory.iterator>` function can also be used in parallel, allowing for each process to iterate through some of the distributions. Let's test this out on a sample file of `Ensembles`. First we need to know how many distributions are in the file:
 
