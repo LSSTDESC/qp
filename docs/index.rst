@@ -14,11 +14,13 @@ Features
 - Convert between different methods of parameterizing probability distributions  
 - Perform statistical methods on many distributions at a time
 
+`qp` is currently a part of the `LSST DESC <https://lsstdesc.org/>`_ `RAIL <https://github.com/LSSTDESC/rail>`_ package and its sub-packages. 
+
+
 .. rst-class:: center
 
 **Useful links**: `Source repository <https://github.com/LSSTDESC/qp>`_ | `PyPI <https://pypi.org/project/qp-prob/>`_
 
-`qp` is currently a part of the `LSST DESC <https://lsstdesc.org/>`_ `RAIL <https://github.com/LSSTDESC/rail>`_ package and its sub-packages. 
 
 
 .. _cards-clickable: 
