@@ -104,15 +104,17 @@ default_role = "py:obj"  # interpret `function` as crossref to the py object 'fu
 # html_sidebars = {
 #     "**": ["globaltoc.html", "relations.html", "sourcelink.html", "searchbox.html"],
 # }
+html_static_path = ["_static"]
 html_css_files = [
-    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css",
+    "custom.css"
 ]
 html_theme_options = {"style_external_links": True}
 
 project = "qp"
-author = "Alex Malz and Phil Marshall"
-copyright = "2016, " + author
-version = "0.1dev"
-release = "0.1dev"
+author = "DESC RAIL Team"
+copyright = "2025, " + author
+version = "1.0dev"
+release = "1.0dev"
 # version = qp.__version__
 # release = qp.__version__
