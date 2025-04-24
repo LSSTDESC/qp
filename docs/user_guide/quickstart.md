@@ -16,7 +16,21 @@ For more information on alternate installation methods see <project:installation
 
 ## How to use `qp`
 
-`qp` stores and manipulates sets of probability distributions that can be represented, or parameterized, in different ways. The different parameterization options allow users to store analytically parameterized distributions, such as Gaussian mixture models, in addition to more data-based parameterizations such as histograms or distributions interpolated from a set of $x$ and $y$ values. It also allows for use of any of the <inv:scipy#scipy.stats.rv_continuous> distributions as parameterization types under the `qp.stats` module. For a full list of supported parameterizations and more detailed explanations, see <project:./parameterizations/index.md>.
+`qp` is a library that allows you to store and manipulate tables of probability distribution data. These data can be represented, or **"parameterized"**, in different ways, including:
+
+- Histogram Bins and Edges
+- Multiple Gaussian Components
+- Sampled X, Y Points
+- Sampled Quantiles
+
+The different parameterizations allow users to store both analytically and data-based parameterized distributions and derive standard statistical quantities from them through a common interface. Some of the quantities include:
+
+- Probability Distribution Functions
+- Cumulative Distribution Functions
+- Quantiles
+- Generating Random Samples
+
+It also allows for use of any of the <inv:scipy#scipy.stats.rv_continuous> distributions as parameterization types under the `qp.stats` module. For a full list of supported parameterizations and more detailed explanations, see <project:./parameterizations/index.md>.
 
 The main object of `qp` that stores these distributions is the {py:class}`qp.Ensemble`. It can store one or more distributions of the same parameterization. It has three main data dictionaries:
 
