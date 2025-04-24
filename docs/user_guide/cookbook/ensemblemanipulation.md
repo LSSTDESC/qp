@@ -125,7 +125,7 @@ Then we use {py:meth}`qp.concatenate() <qp.core.factory.Factory.concatenate>` to
 
 ```{note}
 
-There is no way to concatenate Ensembles of different types together. You can [convert](#./conversion.md) all of the Ensembles to the same parameterization first and then concatenate.
+There is no way to concatenate Ensembles of different types together. You can [convert](./conversion) all of the Ensembles to the same parameterization first and then concatenate.
 
 ```
 

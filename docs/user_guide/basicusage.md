@@ -184,7 +184,7 @@ It is possible to convert an `Ensemble` of distributions to a different paramete
 - {py:meth}`qp.convert() <qp.factory.Factory.convert>`: takes as arguments the `Ensemble` to convert and the name of the parameterization we want to convert to (i.e. 'hist').
 - {py:meth}`qp.Ensemble.convert_to`: takes as an argument the class object for the parameterization we want to convert to (i.e. `qp.hist`)
 
-Both functions also allow you to provide a specific conversion method via the `method` keyword, if the parameterization has more than one conversion method. Most conversion methods also have additional required arguments, which differ between parameterizations. To get more information about the conversion methods for a specific parameterization, see the documentation page for that parameterization. For some more detailed examples of conversion and a look at how it affects the distributions, see <project:./cookbook/conversion.md#conversion-tutorial>.
+Both functions also allow you to provide a specific conversion method via the `method` keyword, if the parameterization has more than one conversion method. Most conversion methods also have additional required arguments, which differ between parameterizations. To get more information about the conversion methods for a specific parameterization, see the documentation page for that parameterization. For some more detailed examples of conversion and a look at how it affects the distributions, see <project:./cookbook/conversion.md#converting-ensembles-between-parameterizations>.
 
 :::{note}
 
@@ -285,4 +285,4 @@ If we wanted to write both of our `Ensembles` to the same file, we can use metho
 
 This function **only** writes to HDF5 files.
 
-It is also possible to iteratively write a chunk of an `Ensemble` at a time to an HDF5 file. For a more detailed example of this, see <project:./cookbook/ensemblemanipulation.md#iteration-example>.
+It is also possible to iteratively write a chunk of an `Ensemble` at a time to an HDF5 file. For a more detailed example of this, see <project:./cookbook/ensemblemanipulation.md#iterating-over-hdf5-files>.

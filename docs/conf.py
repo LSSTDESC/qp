@@ -97,6 +97,7 @@ intersphinx_mapping = {
     "matplotlib": ("https://matplotlib.org/stable/", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/", None),
     "h5py": ("https://docs.h5py.org/en/stable", None),
+    "sklearn": ("https://scikit-learn.org/stable/", None),
 }
 default_role = "py:obj"  # interpret `function` as crossref to the py object 'function'
 
