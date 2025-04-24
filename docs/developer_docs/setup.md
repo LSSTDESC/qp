@@ -8,6 +8,29 @@ In this guide, we will name this developer environment `qp_dev` and we will assu
 
 To install the developer environment:
 
+::::{tab-set}
+
+:::{tab-item} bash
+
+```bash
+# Clone the repo and enter it
+git clone https://github.com/LSSTDESC/qp.git
+cd qp
+
+# Creating the environment from the YAML
+conda env create -n qp_dev -f environment.yml
+
+# Activate the environment
+conda activate qp_dev
+
+# Install qp in editable mode with dev dependencies
+pip install -e .[dev]
+```
+
+:::
+
+:::{tab-item} zsh
+
 ```bash
 # Clone the repo and enter it
 git clone https://github.com/LSSTDESC/qp.git
@@ -22,6 +45,10 @@ conda activate qp_dev
 # Install qp in editable mode with dev dependencies
 pip install -e '.[dev]'
 ```
+
+:::
+
+::::
 
 ## Running tests
 
@@ -39,10 +66,27 @@ The output is in the `cover/` folder, which will output HTML files that provide 
 
 To build the documentation locally, start by making sure that you have the appropriate documentation packages installed:
 
+::::{tab-set}
+
+:::{tab-item} bash
+
 ```bash
-pip install -e '.[docs]'
+pip install -e .[docs]
 
 ```
+
+:::
+
+:::{tab-item} zsh
+
+```bash
+pip install -e .[docs]
+
+```
+
+:::
+
+::::
 
 Once you have the appropriate packages, run the following lines of code to make the documentation:
 
