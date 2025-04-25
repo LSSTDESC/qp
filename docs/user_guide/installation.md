@@ -15,7 +15,7 @@ pip install .
 
 ## Parallel Installation
 
-To install `qp` with parallel functionality, first make sure that your installations of h5py and HDF5 are built with MPI support. If you are running it in a conda environment, you can do this by running the following installation command:
+To install `qp` with parallel functionality, first make sure that your installations of [h5py](https://docs.h5py.org/en/stable/quick.html#) and [HDF5](https://support.hdfgroup.org/documentation/index.html) are built with MPI support. If you are running it in a conda environment, you can do this by running the following installation command:
 
 ```bash
 

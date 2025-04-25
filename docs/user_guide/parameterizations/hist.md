@@ -15,7 +15,7 @@ The histogram parameterization is ideal for distributions derived from real data
 
 Histogram Ensembles operate in the following way:
 
-- `Ensemble.pdf(x)` provides the bin value for the bin containing x, or 0 if x is outside of the bins. No interpolation takes place.
+- `Ensemble.pdf(x)` provides the bin value for the bin containing $x$, or 0 if $x$ is outside of the bins. No interpolation takes place.
 - `Ensemble.cdf(x)` provides values that are linearly interpolated using <inv:#scipy.interpolate.interp1d> across the bins, and return either 0 or 1 as appropriate outside of the bins.
 - `Ensemble.ppf(x)` provides values within the bin edges, e.g. `Ensemble.ppf(0)` returns the first bin edge, and `Ensemble.ppf(1)` returns the last bin edge.
 - `Ensemble.x_samples()` provides the $n$ bin centers of the existing bin edges in the metadata.
