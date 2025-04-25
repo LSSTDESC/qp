@@ -37,6 +37,7 @@ def normalize_quantiles(in_data, threshold=epsilon, vb=False):
     out_data: tuple, ndarray, float
         tuple of values x at which CDF is achieved, including extrema, and
         normalized PDF values y at x
+
     (iy, x) = in_data
     (xs, ys) = evaluate_quantiles((iy, x), vb=vb)
     # xs = xs[1:-1]
@@ -47,6 +48,7 @@ def normalize_quantiles(in_data, threshold=epsilon, vb=False):
     ys = sandwich(ys, (threshold, threshold))
     out_data = (xs, ys)
     return out_data
+
 """
 
 
@@ -106,6 +108,7 @@ def get_eval_case(x: ArrayLike, row: ArrayLike) -> tuple[int, np.ndarray, np.nda
                   (i.e., they were flattened by scipy)
     CASE_PRODUCT : x, row have shapes (1, nx) and (npdf, 1)
     CASE_2D : x, row have shapes (npdf, nx) and (npdf, nx)
+
     """
     nd_x = np.ndim(x)
     nd_row = np.ndim(row)
