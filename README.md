@@ -4,7 +4,16 @@
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/LSSTDESC/qp/python-package.yml)
 ![Read the Docs](https://img.shields.io/readthedocs/qp)
 
-`qp` is a library that allows you to store and manipulate tables of probability distribution data.
+`qp` is a python library for the storage and manipulation of tables of probability distributions.
+
+### Features
+
+- Read and write tables of probability distributions to/from file
+- Parameterize probability distributions inferred from real data
+- Convert between different methods of parameterizing probability distributions
+- Perform statistical methods on many distributions at a time
+
+### Links
 
 - [Read the Docs](http://qp.readthedocs.io/)
 - [PyPI](https://pypi.org/project/qp-prob/)
