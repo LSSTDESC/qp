@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 import numpy as np
-from matplotlib.axes import Axes
+
 from scipy.interpolate import splev, splint, splrep
 from scipy.special import errstate  # pylint: disable=no-name-in-module
 from scipy.stats import rv_continuous
@@ -258,7 +258,7 @@ class spline_gen(Pdf_rows_gen):
         return dict(splx=(shape, "f4"), sply=(shape, "f4"), spln=((shape[0], 1), "i4"))
 
     @classmethod
-    def plot_native(cls, pdf, **kwargs) -> Axes:
+    def plot_native(cls, pdf, **kwargs):
         """Plot the PDF in a way that is particular to this type of distibution
 
         For a spline this shows the spline knots

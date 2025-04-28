@@ -6,8 +6,7 @@ from collections.abc import Mapping
 from typing import Any
 
 import numpy as np
-from matplotlib.axes import Axes
-from matplotlib.figure import Figure
+
 from numpy.typing import ArrayLike, NDArray
 
 from .core.lazy_modules import mpl, plt
@@ -48,7 +47,7 @@ STYLES["histogram"] = ":"  # (0,(3,6))
 STYLES["samples"] = "-."  # (0,(1,2))
 
 
-def make_figure_axes(xlim: tuple[float, float], **kwargs: Any) -> tuple[Figure, Axes]:
+def make_figure_axes(xlim: tuple[float, float], **kwargs: Any):
     """
     Build a figure and a set of figure axes to plot data on
 
@@ -77,8 +76,18 @@ def make_figure_axes(xlim: tuple[float, float], **kwargs: Any) -> tuple[Figure, 
     return (fig, axes)
 
 
-def get_axes_and_xlims(**kwargs: Any) -> tuple[Axes, tuple[float,float], Mapping]:
-    """Get and return the axes and xlims from the kwargs"""
+def get_axes_and_xlims(**kwargs: Any):
+    """Get and return the axes and xlims from the kwargs
+
+    Returns
+    -------
+    axes : Axes
+        The axes for the figure
+    xlim : tuple[float, float]
+        The limits for the x axis
+    kwargs
+        Additional kwargs to be passed on.
+    """
     axes = kwargs.pop("axes", None)
     xlim = kwargs.pop("xlim", None)
     if axes is None:
@@ -93,8 +102,8 @@ def get_axes_and_xlims(**kwargs: Any) -> tuple[Axes, tuple[float,float], Mapping
 
 
 def plot_pdf_on_axes(
-    axes: Axes, pdf: "Ensemble", xvals: ArrayLike, **kwargs: Any
-) -> Axes:
+    axes: "Axes", pdf: "Ensemble", xvals: ArrayLike, **kwargs: Any
+) -> "Axes":
     """
     Plot a PDF on a set of axes, by evaluating it a set of points
 
@@ -121,7 +130,7 @@ def plot_pdf_on_axes(
     return axes
 
 
-def plot_dist_pdf(pdf: "Ensemble", **kwargs: Any) -> Axes:
+def plot_dist_pdf(pdf: "Ensemble", **kwargs: Any) -> "Axes":
     """
     Plot a PDF on a set of axes, using the axes limits
 
@@ -156,12 +165,12 @@ def plot_dist_pdf(pdf: "Ensemble", **kwargs: Any) -> Axes:
 
 
 def plot_pdf_quantiles_on_axes(
-    axes: Axes,
+    axes: "Axes",
     xvals: ArrayLike,
     yvals: ArrayLike,
     quantiles: tuple[np.ndarray, np.ndarray],
     **kwargs: Any,
-) -> Axes:
+) -> "Axes":
     """
     Plot a PDF on a set of axes, by evaluating at the quantiles provided
 
@@ -207,7 +216,7 @@ def plot_pdf_quantiles_on_axes(
     return axes
 
 
-def plot_pdf_histogram_on_axes(axes: Axes, hist: ArrayLike, **kwargs: Any) -> Axes:
+def plot_pdf_histogram_on_axes(axes: "Axes", hist: ArrayLike, **kwargs: Any) -> "Axes":
     """
     Plot a PDF on a set of axes, by plotting the histogrammed data
 
@@ -254,8 +263,8 @@ def plot_pdf_histogram_on_axes(axes: Axes, hist: ArrayLike, **kwargs: Any) -> Ax
 
 
 def plot_pdf_samples_on_axes(
-    axes: Axes, pdf: "Ensemble", samples: ArrayLike, **kwargs: Any
-) -> Axes:
+    axes: "Axes", pdf: "Ensemble", samples: ArrayLike, **kwargs: Any
+) -> "Axes":
     """
     Plot a PDF on a set of axes, by displaying a set of samples from the PDF
 

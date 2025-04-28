@@ -9,7 +9,6 @@ from numpy.typing import ArrayLike
 
 
 import warnings
-from matplotlib.axes import Axes
 
 from .hist_utils import (
     evaluate_hist_x_multi_y,
@@ -303,7 +302,7 @@ class hist_gen(Pdf_rows_gen):
         return dict(pdfs=((npdf, nbins - 1), "f4"))
 
     @classmethod
-    def plot_native(cls, pdf: Ensemble, **kwargs) -> Axes:
+    def plot_native(cls, pdf: Ensemble, **kwargs) -> "Axes":
         """Plot the PDF in a way that is particular to this type of distribution
 
         For a histogram this shows the bin edges.

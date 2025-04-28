@@ -9,7 +9,6 @@ import numpy as np
 import tables_io
 from tables_io import hdf5
 from typing import Mapping, Optional, Union
-from matplotlib.axes import Axes
 from numpy.typing import ArrayLike
 
 from ..utils.dictionary import (
@@ -1352,7 +1351,7 @@ class Ensemble:
         self,
         key: Union[int, slice] = 0,
         **kwargs: str,
-    ) -> Axes:
+    ) -> "Axes":
         """Plot the selected distribution as a curve.
 
         Parameters
@@ -1377,7 +1376,7 @@ class Ensemble:
         """
         return self._gen_class.plot(self[key], **kwargs)
 
-    def plot_native(self, key: Union[int, slice] = 0, **kwargs: str) -> Axes:
+    def plot_native(self, key: Union[int, slice] = 0, **kwargs: str) -> "Axes":
         """Plot the selected distribution in the default format for this parameterization. To find what arguments are
         required for specific parameterizations, you can check the docstrings
         of ``qp.[parameterization].plot_native``, where ``[parameterization]`` is the parameterization
