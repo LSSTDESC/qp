@@ -20,14 +20,12 @@ dependencies = [
     "numpy>=2.0",
     "scipy>=1.13",
     "tables-io@git+https://github.com/sidratresearch/tables_io@staging-sidrat",
-    "deprecated",
-    "pytdigest",
-    "scikit-learn>=1.0"
+    "deprecated"
 ]
 
 # On a mac, install optional dependencies with `pip install '.[dev]'` (include the single quotes)
 [project.optional-dependencies]
-full = ["tables-io[full]", "matplotlib"] # enables ability to write to all file formats and plot
+full = ["tables-io[full]", "matplotlib","pytdigest","scikit-learn>=1.0"] # enables ability to write to all file formats and plot
 dev = [
     "tables-io@git+https://github.com/sidratresearch/tables_io@dev-working",
     "matplotlib",
