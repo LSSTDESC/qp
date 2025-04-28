@@ -356,7 +356,7 @@ class quant_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attributes
         return dict(locs=((npdf, nquants), "f4"))
 
     @classmethod
-    def plot_native(cls, pdf, **kwargs) -> "Axes":
+    def plot_native(cls, pdf, **kwargs):
         """Plot the PDF in a way that is particular to this type of distribution
 
         For a quantile this shows the quantiles points.

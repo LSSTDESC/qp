@@ -302,7 +302,7 @@ class hist_gen(Pdf_rows_gen):
         return dict(pdfs=((npdf, nbins - 1), "f4"))
 
     @classmethod
-    def plot_native(cls, pdf: Ensemble, **kwargs) -> "Axes":
+    def plot_native(cls, pdf: Ensemble, **kwargs):
         """Plot the PDF in a way that is particular to this type of distribution
 
         For a histogram this shows the bin edges.

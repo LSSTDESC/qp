@@ -2,7 +2,7 @@
 API Documentation
 ========================
 
-**TODO: qp summary here**
+This page contains auto-generated documentation of the major modules, functions, and classes of ``qp``. 
 
 
 .. toctree::

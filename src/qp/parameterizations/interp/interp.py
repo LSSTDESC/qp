@@ -314,7 +314,7 @@ class interp_gen(Pdf_rows_gen):
         return dict(yvals=((npdf, ngrid), "f4"))
 
     @classmethod
-    def plot_native(cls, pdf, **kwargs) -> "Axes":
+    def plot_native(cls, pdf, **kwargs):
         """Plot the PDF in a way that is particular to this type of distribution
 
         For a interpolated PDF this uses the interpolation points.
@@ -683,7 +683,7 @@ class interp_irregular_gen(Pdf_rows_gen):
         return dict(xvals=((npdf, ngrid), "f4"), yvals=((npdf, ngrid), "f4"))
 
     @classmethod
-    def plot_native(cls, pdf, **kwargs) -> "Axes":
+    def plot_native(cls, pdf, **kwargs):
         """Plot the PDF in a way that is particular to this type of distribution
 
         For a interpolated PDF this uses the interpolation points.

@@ -41,8 +41,12 @@ myst_enable_extensions = [
 myst_heading_anchors = 5
 nb_execution_mode = "auto"
 nb_execution_allow_errors = True
-exclude_patterns = ["_build", "_build/jupyter_execute", "_build/html/_downloads"]
-copybutton_exclude = ".linenos, .gp"
+exclude_patterns = [
+    "_build",
+    "_build/jupyter_execute",
+    "_build/html/_downloads",
+]  # where not to render notebook files to markdown
+copybutton_exclude = ".linenos, .gp"  # what to exclude from copied code blocks
 
 # set up autodocs
 master_doc = "index"

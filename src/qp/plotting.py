@@ -101,9 +101,7 @@ def get_axes_and_xlims(**kwargs: Any):
     return axes, xlim, kwargs
 
 
-def plot_pdf_on_axes(
-    axes: "Axes", pdf: "Ensemble", xvals: ArrayLike, **kwargs: Any
-) -> "Axes":
+def plot_pdf_on_axes(axes, pdf: "Ensemble", xvals: ArrayLike, **kwargs: Any):
     """
     Plot a PDF on a set of axes, by evaluating it a set of points
 
@@ -130,7 +128,7 @@ def plot_pdf_on_axes(
     return axes
 
 
-def plot_dist_pdf(pdf: "Ensemble", **kwargs: Any) -> "Axes":
+def plot_dist_pdf(pdf: "Ensemble", **kwargs: Any):
     """
     Plot a PDF on a set of axes, using the axes limits
 
@@ -165,12 +163,12 @@ def plot_dist_pdf(pdf: "Ensemble", **kwargs: Any) -> "Axes":
 
 
 def plot_pdf_quantiles_on_axes(
-    axes: "Axes",
+    axes,
     xvals: ArrayLike,
     yvals: ArrayLike,
     quantiles: tuple[np.ndarray, np.ndarray],
     **kwargs: Any,
-) -> "Axes":
+):
     """
     Plot a PDF on a set of axes, by evaluating at the quantiles provided
 
@@ -216,7 +214,7 @@ def plot_pdf_quantiles_on_axes(
     return axes
 
 
-def plot_pdf_histogram_on_axes(axes: "Axes", hist: ArrayLike, **kwargs: Any) -> "Axes":
+def plot_pdf_histogram_on_axes(axes, hist: ArrayLike, **kwargs: Any):
     """
     Plot a PDF on a set of axes, by plotting the histogrammed data
 
@@ -262,9 +260,7 @@ def plot_pdf_histogram_on_axes(axes: "Axes", hist: ArrayLike, **kwargs: Any) -> 
     return axes
 
 
-def plot_pdf_samples_on_axes(
-    axes: "Axes", pdf: "Ensemble", samples: ArrayLike, **kwargs: Any
-) -> "Axes":
+def plot_pdf_samples_on_axes(axes, pdf: "Ensemble", samples: ArrayLike, **kwargs: Any):
     """
     Plot a PDF on a set of axes, by displaying a set of samples from the PDF
 

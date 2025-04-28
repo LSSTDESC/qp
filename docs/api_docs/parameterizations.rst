@@ -112,7 +112,7 @@ Utility functions
 Packed Interpolation
 --------------------
 
-.. autoclass :: qp.packed_interp
+.. autoclass :: qp.packed_interp_gen
     :members:
     :show-inheritance:
     :undoc-members:
@@ -126,7 +126,7 @@ Utility functions
 Sparse Interpolation
 --------------------
 
-.. autoclass :: qp.sparse
+.. autoclass :: qp.sparse_gen
     :members:
     :show-inheritance:
     :undoc-members:
