@@ -86,6 +86,11 @@ Features
 
         Detailed setup and contribution workflow for new developers, and a reference for ongoing issues in need of development.  
 
+.. admonition:: Citation
+    :class: note
+
+    If you end up using any of the code or ideas you find here in your academic research, please cite our paper: `A. I. Malz et al 2018 AJ 156 35 <https://ui.adsabs.harvard.edu/abs/2018AJ....156...35M/abstract>`_ (`ADS - BibTex <https://ui.adsabs.harvard.edu/abs/2018AJ....156...35M/exportcitation>`_).
+
 .. toctree:: 
     :hidden:
     :maxdepth: 3
@@ -151,6 +156,4 @@ Features
 :ref:`genindex` | 
 :ref:`modindex` | 
 :ref:`search`
-
-
 

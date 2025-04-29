@@ -26,7 +26,7 @@ dependencies = [
 # On a mac, install optional dependencies with `pip install '.[dev]'` (include the single quotes)
 [project.optional-dependencies]
 
-full = ["tables-io[full]", "matplotlib","pytdigest","scikit-learn>=1.0"] # enables ability to write to all file formats and plot
+full = ["tables-io[full]", "matplotlib","pytdigest","scikit-learn>=1.0"] # enables full code capability, including writing to all file formats and plottting
 
 dev = [
     "tables-io@git+https://github.com/sidratresearch/tables_io@dev-working",

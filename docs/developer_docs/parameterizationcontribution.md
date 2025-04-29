@@ -59,4 +59,4 @@ Utility functions
 :members:
 ```
 
-We recommend consulting the RAIL group before adding a new parameterization documentation page to the `docs/user_guide/parameterizations/` folder, however, as that documentation covers only parameterizations that are fully supported by the developers. To add a page, copy the format used for other parameterizations.
+We recommend discussing with other developers before adding a new parameterization documentation page to the `docs/user_guide/parameterizations/` folder, however, as that documentation covers only parameterizations that are fully supported by the developers. To add a page, copy the format used for other parameterizations.

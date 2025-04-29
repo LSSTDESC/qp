@@ -77,7 +77,7 @@ The HTML files will be generated in the `_build/` folder inside the `docs/` fold
 
 ## Citation
 
-If you end up using any of the code or ideas you find here in your academic research, please cite us as `Malz et al, ApJ 156 1 35`.
+If you end up using any of the code or ideas you find here in your academic research, please cite our paper: [A. I. Malz et al 2018 AJ 156 35](https://ui.adsabs.harvard.edu/abs/2018AJ....156...35M/abstract) ([ADS - BibTex](https://ui.adsabs.harvard.edu/abs/2018AJ....156...35M/exportcitation)).
 
 ## Contribution
 
