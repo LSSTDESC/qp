@@ -7,15 +7,37 @@ To install the basic version of `qp`, you can run the following commands:
 ```bash
 # Clone the repository
 git clone https://github.com/LSSTDESC/qp.git
-
-# Enter the new directory and install
 cd qp
+
+# Install
 pip install .
 ```
 
+This installs a minimal version of `qp` that can only write HDF5 files and doesn't have plotting enabled. We recommend you install the full version of `qp` to get all of the available functionality by using the following command:
+
+::::{tab-set}
+
+:::{tab-item} bash
+
+```bash
+pip install .[full]
+```
+
+:::
+
+:::{tab-item} zsh
+
+```zsh
+pip install '.[full]'
+```
+
+:::
+
+::::
+
 ## Parallel Installation
 
-To install `qp` with parallel functionality, first make sure that your installations of [h5py](https://docs.h5py.org/en/stable/quick.html#) and [HDF5](https://support.hdfgroup.org/documentation/index.html) are built with MPI support. If you are running it in a conda environment, you can do this by running the following installation command:
+To install `qp` with parallel functionality, first make sure that your installations of [h5py](https://docs.h5py.org/en/stable/quick.html#) and [HDF5](https://support.hdfgroup.org/documentation/index.html) are built with MPI support. If you are running it in a [conda](https://anaconda.org/anaconda/conda) environment, you can do this by running the following installation command:
 
 ```bash
 
