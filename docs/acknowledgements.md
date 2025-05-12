@@ -6,7 +6,11 @@ If you end up using any of the code or ideas you find here in your academic rese
 
 ## Contributors
 
-- Alex Malz (NYU)
-- Phil Marshall (SLAC)
-- Eric Charles (SLAC)
-- Sam Schmidt (UC Davis)
+For an up-to-date dynamic list of contributors go to the [github contributors page](https://github.com/LSSTDESC/qp/graphs/contributors).
+
+- Alex Malz
+- Phil Marshall
+- Eric Charles
+- Sam Schmidt
+- Jennifer Scora
+- Mubdi Rahman
