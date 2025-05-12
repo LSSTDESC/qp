@@ -70,10 +70,10 @@ The HTML files will be generated in the `_build/` folder inside the `docs/` fold
 
 ## People
 
-- [Alex Malz](https://github.com/LSSTDESC/qp/issues/new?body=@aimalz) (NYU)
-- [Phil Marshall](https://github.com/LSSTDESC/qp/issues/new?body=@drphilmarshall) (SLAC)
-- [Eric Charles](https://github.com/LSSTDESC/qp/issues/new?body=@eacharles) (SLAC)
-- [Sam Schmidt](https://github.com/LSSTDESC/qp/issues/new?body=@sschmidt) (UC Davis)
+- [Alex Malz](https://github.com/LSSTDESC/qp/issues/new?body=@aimalz)
+- [Phil Marshall](https://github.com/LSSTDESC/qp/issues/new?body=@drphilmarshall)
+- [Eric Charles](https://github.com/LSSTDESC/qp/issues/new?body=@eacharles)
+- [Sam Schmidt](https://github.com/LSSTDESC/qp/issues/new?body=@sschmidt)
 
 ## Citation
 
