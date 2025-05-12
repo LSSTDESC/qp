@@ -70,6 +70,8 @@ The HTML files will be generated in the `_build/` folder inside the `docs/` fold
 
 ## People
 
+See the [contributors page](https://github.com/LSSTDESC/qp/graphs/contributors) for an up-to-date list of the major contributors. Some of the main contributors are listed here:
+
 - [Alex Malz](https://github.com/LSSTDESC/qp/issues/new?body=@aimalz)
 - [Phil Marshall](https://github.com/LSSTDESC/qp/issues/new?body=@drphilmarshall)
 - [Eric Charles](https://github.com/LSSTDESC/qp/issues/new?body=@eacharles)
@@ -81,7 +83,7 @@ If you end up using any of the code or ideas you find here in your academic rese
 
 ## Contribution
 
-If you are interested in this project, please do drop us a line via the hyperlinked contact names above, or by [writing us an issue](https://github.com/LSSTDESC/qp/issues/new). To get started contributing to the `qp` project, take a look at the [Contribution Guidelines](http://qp.readthedocs.io/developer_docs/contribution.html).
+If you are interested in this project, please [write us an issue](https://github.com/LSSTDESC/qp/issues/new). Before contributing to the `qp` project, take a look at the [Contribution Guidelines](http://qp.readthedocs.io/developer_docs/contribution.html).
 
 ## License
 
