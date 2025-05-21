@@ -1,49 +1,90 @@
 # qp
 
-Quantile parametrization for probability distribution functions.
-
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/LSSTDESC/qp)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/LSSTDESC/qp/python-package.yml)
 ![Read the Docs](https://img.shields.io/readthedocs/qp)
 
-## Motivation
+`qp` is a python library for the storage and manipulation of tables of probability distributions.
 
-In a scientific inference we typically seek to characterize the posterior probability density function (PDF) for our parameter(s), which means we need to find a suitable, calculable approximation to it. Popular choices include an ensemble of samples, a histogram estimator based on those samples, or (in 1 dimensional problems) a tabulation of the PDF on a regular parameter grid. qp is a python package that supports these approximations, as well as the “quantile parameterization” from which the package gets its name.
+### Features
 
-The [scipy.stats](https://docs.scipy.org/doc/scipy/reference/stats.html) package provides an interface to many probability distributions for parameterized analytic forms (e.g., Gaussians, LogNormal Distributions, etc...)  `qp` extends that functionality to numerically-evaluated forms, such as the histograms and interpolated grids mentioned above.
+- Read and write tables of probability distributions to/from file
+- Parameterize probability distributions inferred from real data
+- Convert between different methods of parameterizing probability distributions
+- Perform statistical methods on many distributions at a time
 
+### Links
 
+- [Read the Docs](http://qp.readthedocs.io/)
+- [PyPI](https://pypi.org/project/qp-prob/)
 
-## Examples
+## Installation
 
-Here are some example notebooks to help new users explore `qp` functionality.
+For a basic install of `qp`:
 
-* **[Basic Demo](http://htmlpreview.github.io/?https://github.com/LSSTDESC/qp/blob/master/docs/demo.html)** [(raw notebook)](https://github.com/LSSTDESC/qp/blob/master/nb/demo.ipynb)
+```bash
 
-* **[Practical Example](http://htmlpreview.github.io/?https://github.com/LSSTDESC/qp/blob/master/docs/practical_example.html)** [(raw notebook)](https://github.com/LSSTDESC/qp/blob/master/nb/practical_example.ipynb)
+git clone https://github.com/LSSTDESC/qp.git
+cd qp
+pip install .
 
-* **[Using Metrics](http://htmlpreview.github.io/?https://github.com/LSSTDESC/qp/blob/master/docs/metrics_examples.html)** [(raw notebook)](https://github.com/LSSTDESC/qp/blob/master/nb/metrics_examples.ipynb)
+```
 
-* **[Using iterarors](http://htmlpreview.github.io/?https://github.com/LSSTDESC/qp/blob/master/docs/iterator_demo.html)** [(raw notebook)](https://github.com/LSSTDESC/qp/blob/master/nb/iterator_demo.ipynb)
+To install the developer environment:
 
-* **[Quantile parameterization](http://htmlpreview.github.io/?https://github.com/LSSTDESC/qp/blob/master/docs/quantile_parameterization_demo.html)** [(raw notebook)](https://github.com/LSSTDESC/qp/blob/master/nb/quantile_parameterization_demo.ipynb)
+```bash
+# Clone the repo and enter it
+git clone https://github.com/LSSTDESC/qp.git
+cd qp
 
+# Creating the environment from the YAML
+conda env create -n qp_dev -f environment.yml
 
-Also the read the docs page has significantly more information:  [Read the Docs](http://qp.readthedocs.io/)
+# Activate the environment
+conda activate qp_dev
 
+# Install qp in editable mode with dev dependencies
+pip install -e '.[dev]'
+```
+
+For more details see the [installation instructions](http://qp.readthedocs.io/user_guide/installation.html) on Read the Docs.
+
+## Building the documentation locally
+
+To build the documentation locally, start by making sure that you have the appropriate documentation packages installed:
+
+```bash
+pip install -e '.[docs]'
+
+```
+
+Once you have the appropriate packages, run the following lines of code to make the documentation:
+
+```bash
+cd docs/
+make html
+
+```
+
+The HTML files will be generated in the `_build/` folder inside the `docs/` folder.
 
 ## People
 
-* [Alex Malz](https://github.com/LSSTDESC/qp/issues/new?body=@aimalz) (NYU)
-* [Phil Marshall](https://github.com/LSSTDESC/qp/issues/new?body=@drphilmarshall) (SLAC)
-* [Eric Charles](https://github.com/LSSTDESC/qp/issues/new?body=@eacharles) (SLAC)
-* [Sam Schmidt](https://github.com/LSSTDESC/qp/issues/new?body=@sschmidt) (UC Davis)
+See the [contributors page](https://github.com/LSSTDESC/qp/graphs/contributors) for an up-to-date list of the major contributors. Some of the main contributors are listed here:
 
-## License, Contributing etc
+- [Alex Malz](https://github.com/LSSTDESC/qp/issues/new?body=@aimalz)
+- [Phil Marshall](https://github.com/LSSTDESC/qp/issues/new?body=@drphilmarshall)
+- [Eric Charles](https://github.com/LSSTDESC/qp/issues/new?body=@eacharles)
+- [Sam Schmidt](https://github.com/LSSTDESC/qp/issues/new?body=@sschmidt)
 
-The code in this repo is available for re-use under the MIT license, which means that you can do whatever you like with it, just don't blame us. If you end up using any of the code or ideas you find here in your academic research, please cite us as `Malz et al, ApJ 156 1 35`. If you are interested in this project, please do drop us a line via the hyperlinked contact names above, or by [writing us an issue](https://github.com/aimalz/qp/issues/new). To get started contributing to the `qp` project, just fork the repo - pull requests are always welcome!
+## Citation
 
+If you end up using any of the code or ideas you find here in your academic research, please cite our paper: [A. I. Malz et al 2018 AJ 156 35](https://ui.adsabs.harvard.edu/abs/2018AJ....156...35M/abstract) ([ADS - BibTex](https://ui.adsabs.harvard.edu/abs/2018AJ....156...35M/exportcitation)).
 
+## Contribution
 
+If you are interested in this project, please [write us an issue](https://github.com/LSSTDESC/qp/issues/new). Before contributing to the `qp` project, take a look at the [Contribution Guidelines](http://qp.readthedocs.io/developer_docs/contribution.html).
 
+## License
 
+The code in this repo is available for re-use under the MIT license (see the [license](./LICENSE) file).

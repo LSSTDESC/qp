@@ -4,8 +4,8 @@ import numpy as np
 from scipy import stats
 
 import qp
-from qp.metrics.array_metrics import quick_anderson_ksamp
-from qp.metrics.metrics import calculate_outlier_rate
+from .array_metrics import quick_anderson_ksamp
+from .metrics import calculate_outlier_rate
 
 DEFAULT_QUANTS = np.linspace(0, 1, 100)
 
@@ -181,7 +181,7 @@ class PIT:
         # efficiently on line 61 with `data_quants = np.nanquantile(...)`.`
         sample_mask = np.isfinite(pit_samples)
         pit_samples[~sample_mask] = 0
-        if not np.all(sample_mask):  #pragma: no cover
+        if not np.all(sample_mask):  # pragma: no cover
             logging.warning(
                 "Some PIT samples were `NaN`. They have been replacd with 0."
             )

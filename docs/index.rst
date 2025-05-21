@@ -2,100 +2,158 @@
 qp : quantile-parametrized PDF approximation
 ============================================
 
-In a scientific inference we typically seek to characterize the
-posterior probability density function (PDF) for our parameter(s),
-which means we need to fund a suitable, calculable approximation to it.
-Popular choices include an ensemble of samples, a histogram estimator
-based on those samples, or (in 1 dimensional problems) a tabulation of
-the PDF on a regular parameter grid. `qp` is a python package that
-supports these approximations, as well as the "quantile
-parameterization" from which the package gets its name.
+`qp` is a python library for the storage and manipulation of tables of probability distributions. 
 
 
-Quick examples
---------------
+
+Features
+--------
+
+- Read and write tables of probability distributions to/from file
+- Parameterize probability distributions inferred from real data
+- Convert between different methods of parameterizing probability distributions  
+- Perform statistical methods on many distributions at a time
+
+`qp` is currently a part of the `LSST DESC <https://lsstdesc.org/>`_ `RAIL <https://github.com/LSSTDESC/rail>`_ package and its sub-packages. 
 
 
-Building an ensemble
+.. rst-class:: center
 
-.. code-block:: python
+**Useful links**: `Source repository <https://github.com/LSSTDESC/qp>`_ | `PyPI <https://pypi.org/project/qp-prob/>`_
 
-    #Here we will create 100 Gaussians with means distributed between -1 and 1
-    #and widths distributed between 0.9 and 1.
+
+
+.. _cards-clickable: 
+
+.. grid:: 2
+    :gutter: 3
+    :margin: 5 5 0 0
+    :padding: 0
+
+    .. grid-item-card::
+        :link: user_guide/quickstart
+        :link-type: doc 
+        :link-alt: quickstart
+        :text-align: center 
+
+
+        :fas:`fa-solid fa-rocket; fa-5x`
+
+
+        **Quickstart**
+        
+        A quick introduction to some of the main functionality of `qp`. This guide is 
+        short and sweet for when you're in a rush or need a quick refresher.
+
+
+    .. grid-item-card::
+        :link: user_guide/installation
+        :link-type: doc
+        :link-alt: user-guide-installation
+        :text-align: center
+
+        :fas:`fa-solid fa-book; fa-5x`
+
+        **User guide**
+
+        A good starting place for new users who have never used `qp` before. Includes a short 
+        primer on statistics and `qp` terminology, and detailed usage explanations and examples. 
+     
+
+
+    .. grid-item-card::
+        :link: user_guide/cookbook/index
+        :link-type: doc
+        :link-alt: cookbook
+        :text-align: center
+
+        :fas:`fa-solid fa-terminal; fa-5x`
+
+        **Cookbook**
+
+        Contains useful examples of `qp` usage. These examples range from quick reference one-liners 
+        to in-depth tutorials of more complex usage cases.
+
+    .. grid-item-card::
+        :link: developer_docs/setup
+        :link-type: doc
+        :link-alt: developer-documentation
+        :text-align: center
+
+        :fas:`fa-solid fa-code-compare; fa-5x`
+
+        **Developer Documentation**
+
+        Detailed setup and contribution workflow for new developers, and a reference for ongoing issues in need of development.  
+
+.. admonition:: Citation
+    :class: note
+
+    If you end up using any of the code or ideas you find here in your academic research, please cite our paper: `A. I. Malz et al 2018 AJ 156 35 <https://ui.adsabs.harvard.edu/abs/2018AJ....156...35M/abstract>`_ (`ADS - BibTex <https://ui.adsabs.harvard.edu/abs/2018AJ....156...35M/exportcitation>`_).
+
+.. toctree:: 
+    :hidden:
+    :maxdepth: 3
+
+    whatisqp
     
-    locs = 2* (np.random.uniform(size=(100,1))-0.5)
-    scales = 1 + 0.2*(np.random.uniform(size=(100,1))-0.5)
-    ens_n = qp.Ensemble(qp.stats.norm, data=dict(loc=locs, scale=scales))
+.. toctree::
+    :hidden:
+    :maxdepth: 4
+    :caption: User Guide
 
+    user_guide/quickstart
+    user_guide/installation
+    user_guide/qpprimer
+    user_guide/basicusage
+    user_guide/datastructure
+    user_guide/parameterizations/index.md
+    user_guide/cookbook/index
+    user_guide/methods
+    user_guide/troubleshooting
 
-    #Here we create a 100 PDF using the histogram representation and
-    #61 bins running from 0 to 3, filled with random values
-    bins = np.linspace(0, 3, 61)
-    pdfs = np.random.random((100, 61))
-
-    ens_h = qp.Ensemble(qp.hist, data=dict(bins=bins, pdfs=pdfs))
-
-
-Evaluating functions of the distribution
-
-.. code-block:: python
-
-    # Here we will evaluate the pdfs() and cdfs() on a grid of 501 points from 0 to 3.
-    # Since there are 100 pdfs, this will return an array of shape (100, 501)
-    grid = np.linscape(0, 3, 501)
-    pdf_vals = ens_n.pdf(grid)
-    cdf_vals = ens_n.cdf(grid)
-
-
-Converting an ensemble to a different representation
-
-.. code-block:: python
-
-    #Here we convert our ensemble of Gaussians to an representation using an interpolated grid
-    #with 201 grid points between 0 and 3
     
-    xvals = np.linspace(0, 3, 201)
-    ens_i = ens_n.convert_to(qp.interp_gen, xvals=vals)
- 
-
-Reading and writing ensembles
-
-.. code-block:: python
-
-    #Here we write our interpolated grid representation ensemble to an hdf5 file and read it back
-    ens_i.writeto("qp_interp_ensemble.hdf5")
-
-    ens_read = qp.read("qp_interp_ensemble.hdf5")
-    
-
-Computing a point estimate and storing it with the ensemble
-
-.. code-block:: python
-
-    #Here compute the mode (i.e., the location of the maximum) on a grid of 501 values
-    modes = ens_i.mode(grid=np.linspace(0, 3, 501)
-    ens_i.set_ancil(dict(modes=modes))
-
-
-Sampling the pdf and storing the samples
-
-.. code-block:: python
-
-    #Pull 5 samples from each PDF, this will return an array of shape (100, 5)
-    samples = ens_i.rvs(size=5)
-    ens_i.set_ancil(dict(samples=samples))
-
-
-
-Documentation Contents
-----------------------
 
 .. toctree::
-   :includehidden:
-   :maxdepth: 3
+    :hidden:
+    :maxdepth: 4
+    :caption: Developer Documentation
 
-   install
-   tutorials
-   contributing
-   qp
-   
+    developer_docs/setup
+    developer_docs/codestructure
+    developer_docs/contribution
+    developer_docs/parameterizationcontribution
+    developer_docs/techdebt
+    developer_docs/roadmap
+
+.. toctree:: 
+    :hidden:
+    :maxdepth: 5
+    :caption: API Documentation
+    
+    api_docs/index.rst
+
+.. toctree::
+    :hidden:
+    :maxdepth: 2
+    :caption: Demo Notebooks
+
+    nb/index.md
+
+
+.. toctree::
+    :hidden:
+    :maxdepth: 2
+    :caption: More
+
+    license
+    acknowledgements
+    GitHub <https://github.com/LSSTDESC/qp>
+
+
+.. rst-class:: center
+
+:ref:`genindex` | 
+:ref:`modindex` | 
+:ref:`search`
+
