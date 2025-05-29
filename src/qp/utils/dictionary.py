@@ -167,7 +167,7 @@ def concatenate_dicts(in_dicts: list[dict]) -> dict:
     check_keys(in_dicts)
     out_dict = {key: None for key in in_dicts[0].keys()}
     for key in out_dict.keys():
-        out_dict[key] = np.concatenate([in_dict[key] for in_dict in in_dicts])
+        out_dict[key] = np.concatenate([np.atleast_2d(in_dict[key]) for in_dict in in_dicts])
     return out_dict
 
 
