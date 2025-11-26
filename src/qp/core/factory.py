@@ -6,7 +6,7 @@ import os
 
 from collections import OrderedDict
 from collections.abc import Iterator
-from typing_extensions import Mapping, Union, Optional, Tuple
+from typing import Mapping, Union, Optional, Tuple
 
 import numpy as np
 
