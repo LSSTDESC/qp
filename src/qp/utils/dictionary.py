@@ -314,7 +314,7 @@ def ensure_2d_array(arr: np.ndarray, add_axis: int = 0) -> np.ndarray:
     """
 
     if np.ndim(arr) == 1:
-        # make array 2D by adding a dimension to axis 1
+        # make array 2D by adding a dimension to given
         return np.expand_dims(arr, add_axis)
     elif np.ndim(arr) >= 2:
         # array is already 2D, no changes needed
