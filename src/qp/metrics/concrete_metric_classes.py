@@ -329,7 +329,7 @@ class CDELossMetric(DistToPointMetricDigester):
         npdf = estimate.npdf
 
         # Calculate first term E[\int f*(z | X)^2 dz]
-        term1 = np.mean(np.trapz(pdfs**2, x=self._xvals))
+        term1 = np.mean(np.trapezoid(pdfs**2, x=self._xvals))
         # z bin closest to ztrue
         nns = [np.argmin(np.abs(self._xvals - z)) for z in reference]
         # Calculate second term E[f*(Z | X)]
@@ -340,7 +340,7 @@ class CDELossMetric(DistToPointMetricDigester):
     def accumulate(self, estimate, reference):
         pdfs = estimate.pdf(self._xvals)
         npdf = estimate.npdf
-        term1_sum = np.sum(np.trapz(pdfs**2, x=self._xvals))
+        term1_sum = np.sum(np.trapezoid(pdfs**2, x=self._xvals))
 
         nns = [np.argmin(np.abs(self._xvals - z)) for z in reference]
         term2_sum = np.sum(pdfs[range(npdf), nns])
