@@ -184,9 +184,15 @@ class packed_interp_gen(Pdf_rows_gen):  # pylint: disable=too-many-instance-attr
         # pylint: disable=arguments-differ
         if self._yvals is None:  # pragma: no cover
             self._unpack()
-        return interpolate_x_multi_y(
+        pdf = interpolate_x_multi_y(
             x, row, self._xvals, self._yvals, bounds_error=False, fill_value=0.0
         ).ravel()
+
+        # reduce dimension to 0 if there's only one value
+        if np.shape(pdf) == (1,) and len(pdf) == 1:
+            return pdf[0]
+        else:
+            return pdf
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
