@@ -3,7 +3,7 @@
 from __future__ import annotations
 import numpy as np
 
-from scipy.interpolate import splev, splint, splrep
+from scipy.interpolate import splev, splint, splrep, interp1d
 from scipy.special import errstate  # pylint: disable=no-name-in-module
 from scipy.stats import rv_continuous
 from typing import Mapping, Optional
@@ -220,6 +220,44 @@ class spline_gen(Pdf_rows_gen):
         with errstate(all="ignore"):
             vv = np.vectorize(cdf_row)
         return vv(x, row).ravel()
+
+
+    def _ppf(self, quants, row):
+        # pylint: disable=arguments-differ
+
+        # get the cdfs on a grid
+        n_pts = 1001
+        grid = np.linspace(self._xmin, self._xmax, n_pts)
+        unique_rows = np.unique(row)
+        cdf_vals = self._cdf(np.expand_dims(grid, -1), unique_rows).reshape(len(unique_rows), n_pts)
+
+        def ppf_row(quantsv, irow):
+            cdf_row = cdf_vals[irow]
+            # Filter out the bits where it fluctuations down
+            arg_sorted = np.argsort(cdf_row)
+            sorted_vals = cdf_row[arg_sorted]
+            sorted_grid = grid[arg_sorted]
+            mask = np.zeros((len(sorted_grid)), dtype=bool)
+            mask[1:] = sorted_grid[1:] > sorted_grid[0:-1]
+            mask[1:] &= sorted_vals[1:] > sorted_vals[0:-1]
+            sorted_masked_vals = sorted_vals[mask]
+            sorted_masked_grid = sorted_grid[mask]
+            sorted_masked_vals /= sorted_masked_vals[-1]
+            # Build an interpolater, but reverse x and y to get the inverse function
+            interp = interp1d(
+                np.squeeze(sorted_vals[mask]),
+                sorted_grid[mask],
+                bounds_error=False,
+                fill_value=(sorted_grid[0], sorted_grid[-1]),
+            )
+            return interp(quantsv)
+
+        with errstate(all="ignore"):
+            vv = np.vectorize(ppf_row)
+        ret_vals = vv(quants, row).ravel()
+        return ret_vals
+
+
 
     def _updated_ctor_param(self):
         """
