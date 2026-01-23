@@ -107,7 +107,6 @@ def pdf_func_tests(pdf, test_data, short=False, check_props=True):
     ppfs = pdf.ppf(quants)
     check_cdf_2 = pdf.cdf(ppfs)
     check_ppf = check_cdf_2 - quants
-    breakpoint()
     assert_all_small(check_ppf, atol=2e-2, test_name="ppf")
 
     if pdf.ndim <= 2:  # changed from ==1
