@@ -651,7 +651,7 @@ class Factory(OrderedDict):
         metadata = metadata_list[0]
         data = concatenate_dicts(objdata_list)
         if ancil_list is not None:  # pragma: no cover
-            ancil = concatenate_dicts(ancil_list)
+            ancil = concatenate_dicts(ancil_list, 1)
         else:
             ancil = None
         for k, v in metadata.items():

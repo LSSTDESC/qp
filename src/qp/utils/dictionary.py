@@ -149,13 +149,16 @@ def check_keys(in_dicts: list[dict]) -> None:
             )
 
 
-def concatenate_dicts(in_dicts: list[dict]) -> dict:
+def concatenate_dicts(in_dicts: list[dict], add_axis: int = 0) -> dict:
     """Create a new dict by concatenate each array in `in_dicts`
 
     Parameters
     ----------
     in_dicts : list[dict]
         The dictionaries to stack
+
+    add_axis: int
+        The axis to add when ensuring an array is 2D
 
     Returns
     -------
@@ -167,7 +170,9 @@ def concatenate_dicts(in_dicts: list[dict]) -> dict:
     check_keys(in_dicts)
     out_dict = {key: None for key in in_dicts[0].keys()}
     for key in out_dict.keys():
-        out_dict[key] = np.concatenate([np.atleast_2d(in_dict[key]) for in_dict in in_dicts])
+        out_dict[key] = np.concatenate(
+            [ensure_2d_array(in_dict[key], add_axis) for in_dict in in_dicts]
+        )
     return out_dict
 
 
@@ -209,7 +214,7 @@ def compare_two_dicts(d1: dict, d2: dict) -> bool:
     return True
 
 
-def compare_dicts(in_dicts:list[dict]) -> bool:
+def compare_dicts(in_dicts: list[dict]) -> bool:
     """Check that all the dicts in in_dicts match
 
     Returns
@@ -286,3 +291,34 @@ def expand_dimensions(
         in_dict[key] = reshape_to_pdf_shape(value, npdf, nvals)
 
     return in_dict
+
+
+def ensure_2d_array(arr: np.ndarray, add_axis: int = 0) -> np.ndarray:
+    """Makes sure that the input array is at least 2 dimensions, by adding a new axis
+    to 1D arrays. By default, the new axis is added as axis=0, so the new array will
+    have shape (1, len(arr)).
+
+    Parameters
+    ----------
+    arr : np.ndarray
+        The input array
+    add_axis : int
+        Where to add the new axis.
+
+    Returns
+    -------
+    np.ndarray
+        Returns the input array if it's 2D, or an array with an extra dimension if
+        given a 1D array.
+
+    """
+
+    if np.ndim(arr) == 1:
+        # make array 2D by adding a dimension to given
+        return np.expand_dims(arr, add_axis)
+    elif np.ndim(arr) >= 2:
+        # array is already 2D, no changes needed
+        return arr
+    elif np.ndim(arr) == 0:
+        # this should return the given number with the appropriate number of dimensions
+        return np.atleast_2d(arr)

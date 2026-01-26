@@ -16,7 +16,7 @@ from ...core.factory import add_class
 from ...core.ensemble import Ensemble
 from ..base import Pdf_rows_gen
 from ...plotting import get_axes_and_xlims, plot_pdf_on_axes
-from ...utils.array import reshape_to_pdf_size
+from ...utils.array import reshape_to_pdf_size, reduce_dimensions
 from ...utils.interpolation import (
     interpolate_multi_x_multi_y,
     interpolate_multi_x_y,
@@ -224,9 +224,15 @@ class interp_gen(Pdf_rows_gen):
 
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
-        return interpolate_x_multi_y(
+        pdf = interpolate_x_multi_y(
             x, row, self._xvals, self._yvals, bounds_error=False, fill_value=0.0
         ).ravel()
+
+        # reduce dimension to 0 if there's only one value
+        if np.shape(pdf) == (1,) and len(pdf) == 1:
+            return pdf[0]
+        else:
+            return pdf
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
@@ -610,9 +616,15 @@ class interp_irregular_gen(Pdf_rows_gen):
 
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
-        return interpolate_multi_x_multi_y(
+        pdf = interpolate_multi_x_multi_y(
             x, row, self._xvals, self._yvals, bounds_error=False, fill_value=0.0
         ).ravel()
+
+        # reduce dimension to 0 if there's only one value
+        if np.shape(pdf) == (1,) and len(pdf) == 1:
+            return pdf[0]
+        else:
+            return pdf
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ

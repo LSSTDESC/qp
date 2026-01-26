@@ -17,7 +17,7 @@ from .hist_utils import (
 )
 from ..base import Pdf_rows_gen
 from ...plotting import get_axes_and_xlims, plot_pdf_histogram_on_axes
-from ...utils.array import reshape_to_pdf_size
+from ...utils.array import reshape_to_pdf_size, reduce_dimensions
 
 from ...utils.interpolation import interpolate_multi_x_y, interpolate_x_multi_y
 
@@ -216,7 +216,13 @@ class hist_gen(Pdf_rows_gen):
 
     def _pdf(self, x, row):
         # pylint: disable=arguments-differ
-        return evaluate_hist_x_multi_y(x, row, self._hbins, self._hpdfs).ravel()
+        pdf = evaluate_hist_x_multi_y(x, row, self._hbins, self._hpdfs).ravel()
+
+        # reduce dimension to 0 if there's only one value
+        if np.shape(pdf) == (1,) and len(pdf) == 1:
+            return pdf[0]
+        else:
+            return pdf
 
     def _cdf(self, x, row):
         # pylint: disable=arguments-differ
