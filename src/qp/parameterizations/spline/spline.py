@@ -221,6 +221,11 @@ class spline_gen(Pdf_rows_gen):
             vv = np.vectorize(cdf_row)
         return vv(x, row).ravel()
 
+    def ppf(self, quants):
+        # FIXME: remove this function once the issue with spline ppf is fixed
+        raise NotImplementedError(
+            "This function is buggy and currently not working properly, and will be restored once it's been fixed."
+        )
 
     def _ppf(self, quants, row):
         # pylint: disable=arguments-differ
@@ -229,7 +234,9 @@ class spline_gen(Pdf_rows_gen):
         n_pts = 1001
         grid = np.linspace(self._xmin, self._xmax, n_pts)
         unique_rows = np.unique(row)
-        cdf_vals = self._cdf(np.expand_dims(grid, -1), unique_rows).reshape(len(unique_rows), n_pts)
+        cdf_vals = self._cdf(np.expand_dims(grid, -1), unique_rows).reshape(
+            len(unique_rows), n_pts
+        )
 
         def ppf_row(quantsv, irow):
             cdf_row = cdf_vals[irow]
@@ -256,8 +263,6 @@ class spline_gen(Pdf_rows_gen):
             vv = np.vectorize(ppf_row)
         ret_vals = vv(quants, row).ravel()
         return ret_vals
-
-
 
     def _updated_ctor_param(self):
         """
