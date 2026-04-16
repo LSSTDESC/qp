@@ -8,6 +8,8 @@ from collections import OrderedDict
 from collections.abc import Iterator
 from typing import Mapping, Union, Optional, Tuple
 
+import json
+
 import numpy as np
 
 from scipy import stats as sps
@@ -347,7 +349,31 @@ class Factory(OrderedDict):
             print(f"This is not a qp file because {msg}")
         return False
 
-    def read(self, filename: str, fmt: Optional[str] = None) -> Ensemble:
+    def from_json(
+        self,
+        json_data: dict[str, str],
+    ) -> Ensemble:
+        """Build an Ensemble from json
+
+        Parameters
+        ----------
+        json_data : dict[str, str]
+            Data to json-ify
+
+        Returns
+       -------
+        ens : Ensemble
+            The ensemble constructed from the data in the file.
+        """
+        tables = tables_io.convert(json_data, tables_io.types.NUMPY_DICT)
+        return self.from_tables(tables)
+
+    def read(
+        self,
+        filename: str,
+        fmt: Optional[str] = None,
+        read_slice: slice|None = None,
+    ) -> Ensemble:
         """Read this ensemble from a file. The file must be a `qp` file.
 
         The function will create the ensemble with the parameterization given in the metadata
@@ -362,9 +388,12 @@ class Factory(OrderedDict):
             File format, if `None` it will be taken from the file extension.
             Allowed formats are: 'hdf5','h5','hf5','hd5','fits','fit','pq',
             'parq','parquet'
+        read_slice : slice, optional
+            If provided, read only a slice of the data and ancil from
+            the file.
 
         Returns
-        -------
+       -------
         ens : Ensemble
             The ensemble constructed from the data in the file.
 
@@ -383,12 +412,21 @@ class Factory(OrderedDict):
             keys = None
             allow_missing_keys = False
 
+        if read_slice is not None:
+            slice_dict = dict(
+                data=read_slice,
+                ancil=read_slice,
+            )
+        else:
+            slice_dict = None
+
         tables = tables_io.read(
             filename,
             NUMPY_DICT,
             fmt=fmt,
             keys=keys,
             allow_missing_keys=allow_missing_keys,
+            slice_dict=slice_dict,
         )  # pylint: disable=no-member
 
         # set up file_fmt to have the file extension information
@@ -772,3 +810,4 @@ from_tables = _FACTORY.from_tables
 is_qp_file = _FACTORY.is_qp_file
 write_dict = _FACTORY.write_dict
 read_dict = _FACTORY.read_dict
+from_json = _FACTORY.from_json

@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 from typing import Mapping, Optional, Union
 
+import json
 import h5py
 import numpy as np
 import tables_io
@@ -673,6 +674,15 @@ class Ensemble:
         basename, ext = os.path.splitext(filename)
         tables = self.build_tables(encode=True, ext=ext[1:])
         tables_io.write(tables, basename, ext[1:])
+
+    def to_json(self) -> dict[str, str]:
+        """Convert this ensemble to a json string
+        """
+        tables = self.build_tables()
+        # fix the type to make json happier
+        tables['meta']['pdf_name'] = np.array([tables['meta']['pdf_name'][0].decode()])
+        json_dict = tables_io.convert(tables, tables_io.types.JSON_STRING)
+        return json_dict
 
     def pdf(self, x: ArrayLike) -> ArrayLike:
         """
