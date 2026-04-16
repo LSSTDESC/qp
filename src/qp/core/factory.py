@@ -351,24 +351,21 @@ class Factory(OrderedDict):
 
     def from_json(
         self,
-        json_str: str,
+        json_data: dict[str, str],
     ) -> Ensemble:
         """Build an Ensemble from json
 
         Parameters
         ----------
-        json_str : str
-            String to json-ify
+        json_data : dict[str, str]
+            Data to json-ify
 
         Returns
        -------
         ens : Ensemble
             The ensemble constructed from the data in the file.
         """
-        data = json.loads(json_str)
-        tables = {}
-        for k, v in data.items():
-            tables[k] = {kk: np.array(vv) for kk, vv in v.items()}
+        tables = tables_io.convert(json_data, tables_io.types.NUMPY_DICT)
         return self.from_tables(tables)       
         
     def read(
