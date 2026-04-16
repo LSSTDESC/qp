@@ -683,7 +683,7 @@ class Ensemble:
         tables['meta']['pdf_name'] = np.array([tables['meta']['pdf_name'][0].decode()])
         json_dict = tables_io.convert(tables, tables_io.types.JSON_STRING)
         return json_dict
-        
+
     def pdf(self, x: ArrayLike) -> ArrayLike:
         """
         Evaluates the probability density function (PDF) for each of the distributions in the ensemble

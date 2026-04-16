@@ -366,8 +366,8 @@ class Factory(OrderedDict):
             The ensemble constructed from the data in the file.
         """
         tables = tables_io.convert(json_data, tables_io.types.NUMPY_DICT)
-        return self.from_tables(tables)       
-        
+        return self.from_tables(tables)
+
     def read(
         self,
         filename: str,
@@ -419,7 +419,7 @@ class Factory(OrderedDict):
             )
         else:
             slice_dict = None
-            
+
         tables = tables_io.read(
             filename,
             NUMPY_DICT,
