@@ -92,6 +92,11 @@ class EnsembleTestCase(unittest.TestCase):
         _ = ens.stats()
         modes = ens.mode(xpts)
 
+        json_str = ens.to_json()
+        ens_json_check = qp.from_json(json_str)
+
+        assert ens.npdf == ens_json_check.npdf
+                
         assert median.size == ens.npdf
         assert mean.size == ens.npdf
         assert np.std(mean) > 1e-8
@@ -156,6 +161,11 @@ class EnsembleTestCase(unittest.TestCase):
                 readens = qp.read(filepath)
                 assert readens.metadata.keys() == ens.metadata.keys()
                 assert readens.objdata.keys() == ens.objdata.keys()
+
+                readens_slice = qp.read(filepath, read_slice=slice(0, 2))
+                assert readens_slice.metadata.keys() == ens.metadata.keys()
+                assert readens_slice.objdata.keys() == ens.objdata.keys()
+               
                 # os.remove("testwrite.hdf5")
 
     @staticmethod

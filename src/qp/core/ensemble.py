@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 from typing import Mapping, Optional, Union
 
+import json
 import h5py
 import numpy as np
 import tables_io
@@ -674,6 +675,16 @@ class Ensemble:
         tables = self.build_tables(encode=True, ext=ext[1:])
         tables_io.write(tables, basename, ext[1:])
 
+    def to_json(self) -> str:
+        """Convert this ensemble to a json string
+        """
+        tables = self.build_tables()
+        json_str = json.dumps(
+            tables,
+            default=lambda x: x.tolist() if isinstance(x, np.ndarray) else None
+        )
+        return json_str        
+        
     def pdf(self, x: ArrayLike) -> ArrayLike:
         """
         Evaluates the probability density function (PDF) for each of the distributions in the ensemble

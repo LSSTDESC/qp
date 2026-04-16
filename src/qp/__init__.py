@@ -47,6 +47,7 @@ from .core.factory import (
     is_qp_file,
     write_dict,
     read_dict,
+    from_json,
     stats,
 )
 from .core.lazy_modules import *

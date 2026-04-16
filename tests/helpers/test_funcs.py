@@ -83,7 +83,7 @@ def pdf_func_tests(pdf, test_data, short=False, check_props=True):
         assert_all_small(check_pdfs_slice, atol=2e-2, test_name="pdf_slice")
 
     if short:  # pragma: no cover
-        return pdf
+        return
 
     cdfs = pdf.cdf(xpts)
     quants = np.linspace(0.01, 0.99, 50)
@@ -102,7 +102,7 @@ def pdf_func_tests(pdf, test_data, short=False, check_props=True):
 
     # FIXME, spline has issues with inversion
     if isinstance(pdf.dist, spline_gen):
-        return pdf
+        return
 
     ppfs = pdf.ppf(quants)
     check_cdf_2 = pdf.cdf(ppfs)
@@ -124,7 +124,6 @@ def pdf_func_tests(pdf, test_data, short=False, check_props=True):
     _ = pdf.isf(quants)
     check_isf = pdf.cdf(ppfs) + quants[::-1]
     assert_all_small(check_isf - 1, atol=5e-2, test_name="isf")
-    return pdf
 
 
 def run_pdf_func_tests(test_class, test_data, short=False, check_props=True):
