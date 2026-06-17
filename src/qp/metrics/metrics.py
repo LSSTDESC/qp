@@ -80,6 +80,82 @@ def calculate_moment(p, N, limits, dx=0.01):
 
     return M
 
+def calculate_distribution_moment_bias_score(p_true_list, p_estimated_list, limits, N=2, dx=0.01):
+    """
+    Per-bin score for bias in estimated PDFs vs truth, using the mean or variance.
+
+    For each tomographic bin, computes the mean (``N=1``) or variance (``N=2``) of
+    every PDF in the true and estimated ``qp.Ensemble`` objects on the same 1D grid
+    (``limits``, ``dx``). For ``N=2``, variance uses the mean from
+    ``calculate_moment(..., 1, ...)`` and
+    ``calculate_moment(..., 2, ...) - mean**2``.
+    It then takes the difference (estimated minus true) across
+    realizations, and combines:
+
+    - within-bin spread: variance of those moment differences across PDFs in the bin;
+    - between-bin structure: the mean squared moment bias across bins,
+      added identically to every bin's score before the square root.
+
+    Parameters
+    ----------
+    p_true_list : sequence of qp.Ensemble
+        True PDF ensembles, one per bin. Must match ``p_estimated_list`` in length.
+    p_estimated_list : sequence of qp.Ensemble
+        Estimated PDF ensembles, one per bin.
+    limits : tuple of float
+        Integration interval ``(low, high)`` passed to :func:`calculate_moment`.
+    N : int, optional
+        ``1`` for mean, ``2`` for variance (central second moment). Only ``N <= 2``
+        is supported.
+    dx : float, optional
+        Grid spacing for moment integration (default 0.01).
+
+    Returns
+    -------
+    scores : ndarray of shape (n_bins,)
+        Non-negative score per bin (square root of within-bin variance plus the
+        shared between-bin mean squared bias term).
+
+    Raises
+    ------
+    NotImplementedError
+        If ``N > 2``.
+    ValueError
+        If ``p_true_list`` and ``p_estimated_list`` differ in length or either is empty.
+    """
+    if N > 2:
+        raise NotImplementedError("Only moments up to order 2 are supported.")
+    if not (len(p_true_list) == len(p_estimated_list) > 0):
+        raise ValueError("p_true_list and p_estimated_list must be non-empty and have the same length.")
+    ntomobin = len(p_true_list)
+    scores = np.zeros(ntomobin)
+    mean_m_delta_within_bin = np.zeros(ntomobin)
+    
+    for i in range(ntomobin):
+        p_true = p_true_list[i]
+        p_estimated = p_estimated_list[i]
+        mean_true = calculate_moment(p_true, 1, limits, dx)
+        mean_estimated = calculate_moment(p_estimated, 1, limits, dx)
+
+        if N == 1:
+            m_true = mean_true
+            m_estimated = mean_estimated
+        else:  # N == 2: Var = E[X^2] - E[X]^2
+            m_true = calculate_moment(p_true, 2, limits, dx) - mean_true**2
+            m_estimated = calculate_moment(p_estimated, 2, limits, dx) - mean_estimated**2
+        m_delta = m_estimated - m_true
+
+        mean_m_delta_within_bin[i] = np.mean(m_delta)
+        var_m_delta_within_bin_term = np.var(m_delta)
+        
+        scores[i] += var_m_delta_within_bin_term
+    ms_m_delta_btwn_bins_term = np.sum(mean_m_delta_within_bin**2)/ntomobin
+    scores += ms_m_delta_btwn_bins_term # update all bins with ms delta btwn bins
+    scores = np.sqrt(scores)
+    
+    scores = np.where(scores <= 0, np.inf, scores)
+        
+    return scores
 
 def calculate_kld(p, q, limits, dx=0.01):
     """
