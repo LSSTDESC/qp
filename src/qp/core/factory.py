@@ -416,6 +416,7 @@ class Factory(OrderedDict):
             slice_dict = dict(
                 data=read_slice,
                 ancil=read_slice,
+                meta=None,
             )
         else:
             slice_dict = None

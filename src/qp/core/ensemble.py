@@ -623,7 +623,7 @@ class Ensemble:
 
         """
         new_grid, griddata = self.gridded(grid)
-        return np.expand_dims(new_grid[np.argmax(griddata, axis=1)], -1)
+        return np.expand_dims(new_grid[np.argmax(np.atleast_2d(griddata), axis=1)], -1)
 
     def gridded(self, grid: ArrayLike) -> tuple[ArrayLike, ArrayLike]:
         """Build, cache and return the PDF values at the given grid points.
