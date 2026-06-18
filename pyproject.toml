@@ -1,7 +1,7 @@
 [project]
 name = "qp-prob"
-requires-python = ">=3.10"
-license = { file = "LICENSE" }
+requires-python = ">=3.11"
+license = {file = "LICENSE"}
 readme = "README.md"
 authors = [
     { name = "LSST Dark Energy Science Collaboration (DESC)", email = "later@later.com" },
