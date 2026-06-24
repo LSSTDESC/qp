@@ -170,8 +170,9 @@ def concatenate_dicts(in_dicts: list[dict], add_axis: int = 0) -> dict:
     check_keys(in_dicts)
     out_dict = {key: None for key in in_dicts[0].keys()}
     for key in out_dict.keys():
-        out_dict[key] = np.concatenate(
-            [ensure_2d_array(in_dict[key], add_axis) for in_dict in in_dicts]
+        # Actually, we want to vstack, not concatenate
+        out_dict[key] = np.vstack(
+            [ensure_2d_array(in_dict[key], add_axis) for in_dict in in_dicts], axis=0,
         )
     return out_dict
 
