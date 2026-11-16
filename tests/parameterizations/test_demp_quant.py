@@ -1,0 +1,212 @@
+"""Tests for the DEmP 30-Gaussian-quantile parameterization."""
+
+import tempfile
+import os
+
+import numpy as np
+import pytest
+import qp
+
+from qp.parameterizations.demp_quant.demp_quant_utils import (
+    NQ,
+    KNOT_Y,
+    LEVELS,
+    decode_locs,
+    encode_locs,
+    build_knots,
+    pchip_slopes,
+)
+
+NPDF = 11
+ZLO, ZHI = -0.005, 6.005
+rng = np.random.default_rng(1234)
+LOCS = np.sort(rng.uniform(0.1, 3.0, (NPDF, NQ)), axis=1)
+
+
+@pytest.fixture
+def ensemble():
+    return qp.demp_quant.create_ensemble(LOCS, zlo=ZLO, zhi=ZHI)
+
+
+# ------------------------------------------------------------------
+# Utils
+# ------------------------------------------------------------------
+
+
+def test_levels_shape():
+    assert LEVELS.shape == (NQ,)
+    assert KNOT_Y.shape == (NQ + 2,)
+    assert KNOT_Y[0] == 0.0
+    assert KNOT_Y[-1] == 1.0
+    assert np.all(np.diff(KNOT_Y) > 0)
+
+
+def test_encode_decode_roundtrip():
+    codes = encode_locs(LOCS, ZLO, ZHI)
+    assert codes.dtype == np.uint16
+    assert codes.shape == (NPDF, NQ)
+    locs_rt = decode_locs(codes, ZLO, ZHI)
+    # Quantization step = (ZHI - ZLO) / 65535; expect at most half a step
+    max_err = (ZHI - ZLO) / 65535 * 0.5 + 1e-9
+    assert np.max(np.abs(locs_rt - LOCS)) < max_err + 1e-9
+
+
+def test_int16_decode():
+    """FITS files may deliver uint16 data as int16 when TZERO is absent."""
+    codes_u16 = encode_locs(LOCS, ZLO, ZHI)
+    codes_i16 = codes_u16.view(np.int16)
+    locs_from_i16 = decode_locs(codes_i16, ZLO, ZHI)
+    locs_from_u16 = decode_locs(codes_u16, ZLO, ZHI)
+    np.testing.assert_array_equal(locs_from_i16, locs_from_u16)
+
+
+def test_build_knots_monotone():
+    knot_x = build_knots(LOCS, ZLO, ZHI)
+    assert knot_x.shape == (NPDF, NQ + 2)
+    assert np.all(np.diff(knot_x, axis=1) > 0), "knot_x must be strictly increasing"
+
+
+def test_pchip_slopes_shape():
+    knot_x = build_knots(LOCS, ZLO, ZHI)
+    slopes = pchip_slopes(knot_x)
+    assert slopes.shape == (NPDF, NQ + 2)
+    assert np.all(slopes >= 0), "PCHIP slopes should be non-negative for monotone CDF"
+
+
+# ------------------------------------------------------------------
+# Ensemble construction
+# ------------------------------------------------------------------
+
+
+def test_create_ensemble(ensemble):
+    assert ensemble.npdf == NPDF
+    assert "zlo" in ensemble.metadata
+    assert "zhi" in ensemble.metadata
+    assert ensemble.dist.zlo == ZLO
+    assert ensemble.dist.zhi == ZHI
+    assert ensemble.dist.locs.shape == (NPDF, NQ)
+
+
+def test_create_ensemble_from_codes():
+    codes = encode_locs(LOCS, ZLO, ZHI)
+    ens = qp.demp_quant.create_ensemble_from_codes(codes, ZLO, ZHI)
+    assert ens.npdf == NPDF
+    # Locs should match the decoded values
+    np.testing.assert_allclose(ens.dist.locs, decode_locs(codes, ZLO, ZHI))
+
+
+def test_to_codes(ensemble):
+    codes = ensemble.dist.to_codes()
+    assert codes.dtype == np.uint16
+    assert codes.shape == (NPDF, NQ)
+
+
+# ------------------------------------------------------------------
+# CDF / PDF / PPF
+# ------------------------------------------------------------------
+
+
+def test_cdf_monotone(ensemble):
+    z = np.linspace(0.1, 2.9, 50)
+    for i in range(NPDF):
+        cdf = ensemble[i].cdf(z)
+        assert np.all(np.diff(cdf) >= 0), f"CDF not monotone for PDF {i}"
+
+
+def test_cdf_bounds(ensemble):
+    z_lo = np.array([ZLO - 1.0])
+    z_hi = np.array([ZHI + 1.0])
+    for i in range(NPDF):
+        assert ensemble[i].cdf(z_lo) >= 0.0
+        assert ensemble[i].cdf(z_hi) <= 1.0
+
+
+def test_pdf_nonnegative(ensemble):
+    z = np.linspace(0.0, 3.0, 100)
+    for i in range(NPDF):
+        pdf = ensemble[i].pdf(z)
+        assert np.all(pdf >= 0), f"PDF negative for PDF {i}"
+
+
+def test_pdf_outside_support_is_zero(ensemble):
+    # Outside knot range the PDF should be 0
+    z_far = np.array([ZLO - 2.0, ZHI + 2.0])
+    for i in range(NPDF):
+        assert np.all(ensemble[i].pdf(z_far) == 0.0)
+
+
+def test_ppf_monotone(ensemble):
+    p = np.linspace(0.01, 0.99, 50)
+    for i in range(NPDF):
+        ppf = ensemble[i].ppf(p)
+        assert np.all(np.diff(ppf) >= 0), f"PPF not monotone for PDF {i}"
+
+
+def test_cdf_ppf_roundtrip(ensemble):
+    # Only test z values strictly within each PDF's PCHIP knot range
+    # (outside the range CDF == 0 or 1, so PPF returns ±inf by convention)
+    ensemble.dist._ensure_knots()
+    for i in range(NPDF):
+        kx_i = ensemble.dist._knot_x[i]
+        z_test = np.linspace(kx_i[1], kx_i[-2], 15)  # skip endpoint knots
+        z_rt = ensemble[i].ppf(ensemble[i].cdf(z_test))
+        np.testing.assert_allclose(z_rt, z_test, atol=1e-4)
+
+
+def test_ppf_cdf_roundtrip(ensemble):
+    # Avoid p=0 and p=1 (which map to ±inf in z)
+    p_test = np.linspace(0.05, 0.95, 20)
+    for i in range(NPDF):
+        p_rt = ensemble[i].cdf(ensemble[i].ppf(p_test))
+        np.testing.assert_allclose(p_rt, p_test, atol=1e-4)
+
+
+# ------------------------------------------------------------------
+# Normalization
+# ------------------------------------------------------------------
+
+
+def test_pdf_integrates_to_one(ensemble):
+    z_edges = np.linspace(-0.005, 6.005, 601)
+    _, h = ensemble[0].histogramize(z_edges)
+    np.testing.assert_allclose(h.sum(), 1.0, atol=1e-3)
+
+
+# ------------------------------------------------------------------
+# HDF5 round-trip
+# ------------------------------------------------------------------
+
+
+def test_hdf5_roundtrip(ensemble):
+    with tempfile.NamedTemporaryFile(suffix=".hdf5", delete=False) as f:
+        fname = f.name
+    try:
+        ensemble.write_to(fname)
+        ens_rt = qp.read(fname)
+        assert ens_rt.npdf == NPDF
+        assert ens_rt.dist.zlo == ZLO
+        assert ens_rt.dist.zhi == ZHI
+        np.testing.assert_array_equal(ens_rt.dist.locs, ensemble.dist.locs)
+        # CDF values should be identical after round-trip
+        z = np.array([0.5, 1.0, 2.0])
+        for i in range(NPDF):
+            np.testing.assert_array_equal(ens_rt[i].cdf(z), ensemble[i].cdf(z))
+    finally:
+        os.unlink(fname)
+
+
+# ------------------------------------------------------------------
+# Conversion
+# ------------------------------------------------------------------
+
+
+def test_convert_to_hist(ensemble):
+    bins = np.linspace(0.0, 3.0, 61)
+    ens_h = ensemble.convert_to(qp.hist, bins=bins)
+    assert ens_h.npdf == NPDF
+
+
+def test_convert_to_quant(ensemble):
+    quants = np.linspace(0.01, 0.99, 20)
+    ens_q = ensemble.convert_to(qp.quant, quants=quants)
+    assert ens_q.npdf == NPDF
