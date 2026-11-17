@@ -2,10 +2,13 @@
 
 import tempfile
 import os
+from pathlib import Path
 
 import numpy as np
 import pytest
 import qp
+
+SAMPLE_FITS = Path(__file__).resolve().parents[1] / "test_data" / "pdzq30_sample.fits"
 
 from qp.parameterizations.demp_quant.demp_quant_utils import (
     NQ,
@@ -210,3 +213,52 @@ def test_convert_to_quant(ensemble):
     quants = np.linspace(0.01, 0.99, 20)
     ens_q = ensemble.convert_to(qp.quant, quants=quants)
     assert ens_q.npdf == NPDF
+
+
+# ------------------------------------------------------------------
+# Sample FITS file (tests/test_data/pdzq30_sample.fits)
+# qp-format file: readable with qp.read(); written from the original
+# DEmP FITS via create_ensemble_from_codes + write_to.
+# ------------------------------------------------------------------
+
+
+@pytest.mark.skipif(not SAMPLE_FITS.exists(), reason="sample FITS file not present")
+def test_read_sample_fits():
+    """qp.read() loads the sample file and returns a valid demp_quant Ensemble."""
+    ens = qp.read(str(SAMPLE_FITS))
+
+    assert isinstance(ens.dist, qp.demp_quant_gen)
+    assert ens.npdf > 0
+    assert ens.dist.locs.shape == (ens.npdf, NQ)
+    assert ens.ancil is not None and "ids" in ens.ancil
+
+    zlo, zhi = ens.dist.zlo, ens.dist.zhi
+    assert zlo < zhi
+
+    # CDF is monotone for a handful of objects spread across the ensemble
+    indices = np.linspace(0, ens.npdf - 1, 5, dtype=int)
+    z = np.linspace(zlo + 0.01, zhi - 0.01, 50)
+    for i in indices:
+        cdf = ens[i].cdf(z)
+        assert np.all(np.diff(cdf) >= 0), f"CDF not monotone for object {i}"
+
+    # PDF integrates to ~1 over the full stored z range
+    z_edges = np.linspace(zlo, zhi, 801)
+    _, h_bins = ens[0].histogramize(z_edges)
+    np.testing.assert_allclose(h_bins.sum(), 1.0, atol=1e-3)
+
+
+@pytest.mark.skipif(not SAMPLE_FITS.exists(), reason="sample FITS file not present")
+def test_sample_fits_roundtrip(tmp_path):
+    """Write and re-read the sample ensemble; data should be identical."""
+    ens = qp.read(str(SAMPLE_FITS))
+
+    out = tmp_path / "roundtrip.fits"
+    ens.write_to(str(out))
+    ens2 = qp.read(str(out))
+
+    assert ens2.npdf == ens.npdf
+    assert ens2.dist.zlo == ens.dist.zlo
+    assert ens2.dist.zhi == ens.dist.zhi
+    np.testing.assert_array_equal(ens2.dist.locs, ens.dist.locs)
+    np.testing.assert_array_equal(ens2.ancil["ids"], ens.ancil["ids"])
