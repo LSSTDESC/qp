@@ -277,15 +277,20 @@ def test_sample_fits_roundtrip(tmp_path):
     reason="sample or reference FITS file not present",
 )
 def test_demp_matches_reference():
-    """qp histogramize agrees with demp_quantiles.decode to < 1e-4 per bin."""
+    """qp CDF-diff agrees with demp_quantiles reference PDFs to < 1e-6 per bin.
+
+    For each reference object: evaluate qp CDF at the 802 bin edges
+    (bin_center ± 0.005), take differences, renormalise to sum 1, then
+    compare to the reference row.  Empirical max difference is ~2e-8.
+    """
     from astropy.io import fits
 
     ens = qp.read(str(SAMPLE_FITS))
     id_to_idx = {int(v): i for i, v in enumerate(ens.ancil["ids"])}
 
     with fits.open(str(REFERENCE_FITS)) as h:
-        ref_ids  = np.asarray(h["REFERENCE"].data["ID"])
-        ref_pdfs = np.asarray(h["REFERENCE"].data["PDF"], dtype=np.float64)
+        ref_ids     = np.asarray(h["REFERENCE"].data["ID"])
+        ref_pdfs    = np.asarray(h["REFERENCE"].data["PDF"], dtype=np.float64)
         bin_centers = np.asarray(h["BINS"].data["BINS"])
 
     dz = bin_centers[1] - bin_centers[0]
@@ -293,8 +298,10 @@ def test_demp_matches_reference():
 
     for ref_id, ref_pdf in zip(ref_ids, ref_pdfs):
         idx = id_to_idx[int(ref_id)]
-        _, hist = ens[idx].histogramize(bin_edges)
+        cdf_vals = ens[idx].cdf(bin_edges).ravel()      # (802,)
+        probs    = np.clip(np.diff(cdf_vals), 0, None)  # (801,)
+        probs   /= probs.sum()
         np.testing.assert_allclose(
-            hist.ravel(), ref_pdf, atol=1e-4,
-            err_msg=f"ID {ref_id}: qp histogramize differs from reference",
+            probs, ref_pdf, atol=1e-6,
+            err_msg=f"ID {ref_id}: qp CDF-diff differs from reference",
         )
