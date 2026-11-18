@@ -190,11 +190,13 @@ def test_hdf5_roundtrip(ensemble):
         assert ens_rt.npdf == NPDF
         assert ens_rt.dist.zlo == ZLO
         assert ens_rt.dist.zhi == ZHI
-        np.testing.assert_array_equal(ens_rt.dist.locs, ensemble.dist.locs)
-        # CDF values should be identical after round-trip
+        # locs are stored as uint16 codes; first round-trip introduces at most
+        # half a quantisation step of error, subsequent round-trips are exact.
+        quant_tol = (ZHI - ZLO) / 65535 * 0.5 + 1e-9
+        np.testing.assert_allclose(ens_rt.dist.locs, ensemble.dist.locs, atol=quant_tol)
         z = np.array([0.5, 1.0, 2.0])
         for i in range(NPDF):
-            np.testing.assert_array_equal(ens_rt[i].cdf(z), ensemble[i].cdf(z))
+            np.testing.assert_allclose(ens_rt[i].cdf(z), ensemble[i].cdf(z), atol=1e-3)
     finally:
         os.unlink(fname)
 

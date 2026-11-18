@@ -62,7 +62,12 @@ class demp_quant_gen(Pdf_rows_gen):
     ):
         self._zlo = float(zlo)
         self._zhi = float(zhi)
-        self._locs = reshape_to_pdf_size(np.asarray(locs, np.float64), -1)
+        raw = np.asarray(locs)
+        if raw.dtype.kind in ("u", "i") and raw.dtype.itemsize == 2:
+            # int16/uint16 codes from file → decode to float64 locs
+            self._locs = reshape_to_pdf_size(decode_locs(raw, self._zlo, self._zhi), -1)
+        else:
+            self._locs = reshape_to_pdf_size(np.asarray(raw, np.float64), -1)
 
         self._xmin = float(np.min(self._locs))
         self._xmax = float(np.max(self._locs))
@@ -76,7 +81,9 @@ class demp_quant_gen(Pdf_rows_gen):
 
         self._addmetadata("zlo", self._zlo)
         self._addmetadata("zhi", self._zhi)
-        self._addobjdata("locs", self._locs)
+        # Store as uint16 codes (60 bytes/object) via int16 view for FITS/HDF5
+        codes = encode_locs(self._locs, self._zlo, self._zhi)
+        self._addobjdata("locs", codes.view(np.int16))
 
     # ------------------------------------------------------------------
     # Properties
@@ -267,7 +274,7 @@ class demp_quant_gen(Pdf_rows_gen):
 
     def _updated_ctor_param(self):
         dct = super()._updated_ctor_param()
-        dct["locs"] = self._locs
+        dct["locs"] = encode_locs(self._locs, self._zlo, self._zhi).view(np.int16)
         dct["zlo"] = self._zlo
         dct["zhi"] = self._zhi
         return dct
@@ -296,7 +303,7 @@ class demp_quant_gen(Pdf_rows_gen):
     @classmethod
     def get_allocation_kwds(cls, npdf: int, **kwargs) -> dict:
         """Return kwds for allocating an empty HDF5 file with ``npdf`` entries."""
-        return dict(locs=((npdf, NQ), "f4"))
+        return dict(locs=((npdf, NQ), np.int16))
 
     @classmethod
     def add_mappings(cls) -> None:
