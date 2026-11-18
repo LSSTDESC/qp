@@ -8,7 +8,8 @@ import numpy as np
 import pytest
 import qp
 
-SAMPLE_FITS = Path(__file__).resolve().parents[1] / "test_data" / "pdzq30_sample.fits"
+SAMPLE_FITS    = Path(__file__).resolve().parents[1] / "test_data" / "pdzq30_sample.fits"
+REFERENCE_FITS = Path(__file__).resolve().parents[1] / "test_data" / "pdzq30_reference.fits"
 
 from qp.parameterizations.demp_quant.demp_quant_utils import (
     NQ,
@@ -262,3 +263,38 @@ def test_sample_fits_roundtrip(tmp_path):
     assert ens2.dist.zhi == ens.dist.zhi
     np.testing.assert_array_equal(ens2.dist.locs, ens.dist.locs)
     np.testing.assert_array_equal(ens2.ancil["ids"], ens.ancil["ids"])
+
+
+# ------------------------------------------------------------------
+# Reference comparison (pdzq30_reference.fits)
+# Verifies qp histogramize matches the demp_quantiles.decode output
+# (the original DEmP reference implementation) for the same codes.
+# ------------------------------------------------------------------
+
+
+@pytest.mark.skipif(
+    not SAMPLE_FITS.exists() or not REFERENCE_FITS.exists(),
+    reason="sample or reference FITS file not present",
+)
+def test_demp_matches_reference():
+    """qp histogramize agrees with demp_quantiles.decode to < 1e-4 per bin."""
+    from astropy.io import fits
+
+    ens = qp.read(str(SAMPLE_FITS))
+    id_to_idx = {int(v): i for i, v in enumerate(ens.ancil["ids"])}
+
+    with fits.open(str(REFERENCE_FITS)) as h:
+        ref_ids  = np.asarray(h["REFERENCE"].data["ID"])
+        ref_pdfs = np.asarray(h["REFERENCE"].data["PDF"], dtype=np.float64)
+        bin_centers = np.asarray(h["BINS"].data["BINS"])
+
+    dz = bin_centers[1] - bin_centers[0]
+    bin_edges = np.concatenate([[bin_centers[0] - dz / 2], bin_centers + dz / 2])
+
+    for ref_id, ref_pdf in zip(ref_ids, ref_pdfs):
+        idx = id_to_idx[int(ref_id)]
+        _, hist = ens[idx].histogramize(bin_edges)
+        np.testing.assert_allclose(
+            hist.ravel(), ref_pdf, atol=1e-4,
+            err_msg=f"ID {ref_id}: qp histogramize differs from reference",
+        )
