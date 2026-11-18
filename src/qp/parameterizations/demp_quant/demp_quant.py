@@ -214,11 +214,17 @@ class demp_quant_gen(Pdf_rows_gen):
         return np.where(in_range, pdf, 0.0)
 
     def _eval_ppf(self, p_flat, row_flat):
-        """Evaluate the PPF (inverse CDF) using bracket-clamped Newton iterations.
+        """Evaluate the PPF (inverse CDF) using Newton / bisection hybrid.
 
         Each p value is bracketed within its PCHIP segment (where the CDF is
-        guaranteed to be monotone), then Newton's method is applied with the
-        iterate clamped to the bracket at each step to prevent divergence.
+        guaranteed to be monotone).  Newton's method is used when the PDF is
+        large enough and the step stays inside the bracket; otherwise the
+        bracket midpoint is used (bisection fallback).  50 iterations give
+        full double precision even in flat tails where Newton stalls.
+
+        At exactly the 30 stored quantile levels the initial linear estimate
+        already lands on the knot, dz = 0, and the bracket check keeps z
+        there, so no extra logic is needed for those points.
         """
         self._ensure_knots()
 
@@ -239,17 +245,20 @@ class demp_quant_gen(Pdf_rows_gen):
         t = np.where(dy > 0.0, (p_flat - y0) / dy, 0.5)
         z = z_lo + t * (z_hi - z_lo)
 
-        # Bracket-clamped Newton: update bracket after each step so the
-        # iterate never leaves [z_lo, z_hi] where CDF is monotone.
-        for _ in range(10):
+        for _ in range(50):
             cdf_z = self._eval_cdf(z, row_flat)
             pdf_z = self._eval_pdf(z, row_flat)
             dz = np.where(pdf_z > 1e-12, (cdf_z - p_flat) / pdf_z, 0.0)
-            # Tighten bracket
+            z_newton = z - dz
+            # Tighten bracket around the current point
             above = cdf_z > p_flat
             z_lo = np.where(above, z_lo, z)
             z_hi = np.where(above, z, z_hi)
-            z = np.clip(z - dz, z_lo, z_hi)
+            # Accept Newton step when pdf is large and step stays in bracket
+            # (>= / <= so a zero step at a knot boundary is accepted as-is);
+            # fall back to bisection midpoint for flat tails or overshoot.
+            use_newton = (pdf_z > 1e-12) & (z_newton >= z_lo) & (z_newton <= z_hi)
+            z = np.where(use_newton, z_newton, 0.5 * (z_lo + z_hi))
 
         return z
 

@@ -139,6 +139,29 @@ def test_pdf_outside_support_is_zero(ensemble):
         assert np.all(ensemble[i].pdf(z_far) == 0.0)
 
 
+@pytest.mark.skipif(not SAMPLE_FITS.exists(), reason="sample FITS file not present")
+def test_ppf_flat_tail_accuracy():
+    """ppf is accurate in flat tails where pdf ≈ 0 and Newton stalls.
+
+    ~10 % of objects in the sample have pdf = 0 at the extension knot.
+    For those objects, check that cdf(ppf(p)) ≈ p at extreme quantiles.
+    """
+    ens = qp.read(str(SAMPLE_FITS))
+    ens.dist._ensure_knots()
+    # Objects with pdf=0 at left extension knot
+    bad_idx = np.where(ens.dist._knot_d[:, 0] == 0.0)[0]
+    assert len(bad_idx) > 0, "fixture has no flat-tail objects — update test"
+
+    p_extreme = np.array([1e-4, 1e-6, 1e-8, 1e-10])
+    for obj in bad_idx[:20]:
+        z = ens[int(obj)].ppf(p_extreme).ravel()
+        cdf_rt = ens[int(obj)].cdf(z).ravel()
+        np.testing.assert_allclose(
+            cdf_rt, p_extreme, atol=1e-12,
+            err_msg=f"PPF inaccurate in flat tail for object {obj}",
+        )
+
+
 def test_ppf_monotone(ensemble):
     p = np.linspace(0.01, 0.99, 50)
     for i in range(NPDF):
