@@ -31,6 +31,7 @@ from .parameterizations.packed_interp.packed_interp import (
     packed_interp,
     packed_interp_gen,
 )
+from .parameterizations.demp_quant.demp_quant import demp_quant, demp_quant_gen
 
 from .core.ensemble import Ensemble
 from .core.factory import (
