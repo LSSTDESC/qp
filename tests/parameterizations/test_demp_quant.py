@@ -19,6 +19,7 @@ from qp.parameterizations.demp_quant.demp_quant_utils import (
     encode_locs,
     build_knots,
     pchip_slopes,
+    file_range,
 )
 
 NPDF = 11
@@ -79,6 +80,15 @@ def test_build_knots_clips_to_range():
     assert knot_x[:, 0].min() >= ZLO
     assert knot_x[:, -1].max() <= ZHI + (NQ + 1) * 1e-7
     np.testing.assert_array_equal(knot_x, build_knots(np.clip(locs, ZLO, ZHI), ZLO, ZHI))
+
+
+def test_file_range():
+    assert file_range({"PDFFMT": "QUANT30G16"}) == (-0.005, 6.005)
+    assert file_range({"PDFFMT": "QUANT30G16R", "QZLO": -0.005, "QZHI": 8.005}) == (-0.005, 8.005)
+    with pytest.raises(ValueError):
+        file_range({"PDFFMT": "OTHER"})
+    with pytest.raises(ValueError):
+        file_range({})
 
 
 def test_pchip_slopes_shape():

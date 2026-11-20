@@ -373,10 +373,11 @@ class demp_quant_gen(Pdf_rows_gen):
             int16 (FITS files without TZERO) is accepted and reinterpreted.
         zlo : float
             Lower outer edge of the redshift range (header keyword ``QZLO``;
-            use -0.005 for the legacy ``QUANT30G16`` format).
+            -0.005 for the legacy ``QUANT30G16`` format).  ``file_range``
+            reads both from the header.
         zhi : float
             Upper outer edge of the redshift range (header keyword ``QZHI``;
-            use 6.005 for the legacy ``QUANT30G16`` format).
+            6.005 for the legacy ``QUANT30G16`` format).
         ancil : Mapping, optional
             Ancillary data, e.g. ``{'ids': np.asarray(h[1].data['ID'])}``.
 
@@ -388,9 +389,9 @@ class demp_quant_gen(Pdf_rows_gen):
         --------
         >>> from astropy.io import fits
         >>> import qp
+        >>> from qp.parameterizations.demp_quant.demp_quant_utils import file_range
         >>> with fits.open('PDzQ30.fits') as h:
-        ...     zlo = float(h[1].header.get('QZLO', -0.005))
-        ...     zhi = float(h[1].header.get('QZHI', 6.005))
+        ...     zlo, zhi = file_range(h[1].header)
         ...     ids = np.asarray(h[1].data['ID'])
         ...     codes = np.asarray(h[1].data['PDF_Q'])
         >>> ens = qp.demp_quant.create_ensemble_from_codes(

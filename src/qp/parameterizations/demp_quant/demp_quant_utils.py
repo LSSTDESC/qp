@@ -15,6 +15,38 @@ NQ = 30
 LEVELS = ndtr(np.linspace(-3.0, 3.0, NQ))  # (30,) Gaussian CDF levels
 KNOT_Y = np.concatenate([[0.0], LEVELS, [1.0]])  # (32,) CDF values at PCHIP knots
 SCALE = 65535  # uint16 max value used for encoding
+LEGACY_FORMAT = "QUANT30G16"  # redshift range fixed to LEGACY_RANGE
+FORMAT = "QUANT30G16R"  # redshift range in the header keywords QZLO, QZHI
+LEGACY_RANGE = (-0.005, 6.005)
+
+
+def file_range(header):
+    """Return the redshift range (zlo, zhi) of a DEmP quantile file.
+
+    Parameters
+    ----------
+    header : Mapping
+        Header of the FITS extension holding ``PDF_Q`` (an astropy
+        ``Header`` or any dict-like object with the same keywords).
+
+    Returns
+    -------
+    zlo, zhi : float
+        Outer edges of the redshift range: (-0.005, 6.005) for the legacy
+        ``QUANT30G16`` format, the ``QZLO`` and ``QZHI`` keywords for
+        ``QUANT30G16R``.
+
+    Raises
+    ------
+    ValueError
+        If the ``PDFFMT`` keyword names neither format.
+    """
+    fmt = header.get("PDFFMT")
+    if fmt == LEGACY_FORMAT:
+        return LEGACY_RANGE
+    if fmt == FORMAT:
+        return float(header["QZLO"]), float(header["QZHI"])
+    raise ValueError(f"not a DEmP 30-quantile PDF file (PDFFMT {fmt!r})")
 
 
 def decode_locs(codes, zlo, zhi):
