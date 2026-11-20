@@ -61,9 +61,10 @@ def encode_locs(locs, zlo, zhi):
 def build_knots(locs, zlo, zhi):
     """Build PCHIP CDF knot x-positions from float quantile z-positions.
 
-    Extends the first and last quantile segments linearly to z-values where
-    CDF = 0 and CDF = 1 respectively (clipped to [zlo, zhi]), then enforces
-    strict monotonicity by accumulating maxima and adding a small offset.
+    Clips the quantile positions to [zlo, zhi], extends the first and last
+    quantile segments linearly to z-values where CDF = 0 and CDF = 1
+    respectively (clipped to [zlo, zhi]), then enforces strict monotonicity
+    by accumulating maxima and adding a small offset.
 
     Parameters
     ----------
@@ -77,7 +78,7 @@ def build_knots(locs, zlo, zhi):
     knot_x : ndarray, shape (N, 32), float64
         Strictly increasing knot x-positions for each of the N PDFs.
     """
-    q = np.asarray(locs, np.float64)
+    q = np.clip(np.asarray(locs, np.float64), zlo, zhi)
     L = LEVELS
     # Extrapolate first segment to CDF = 0
     a = np.maximum(

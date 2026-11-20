@@ -70,6 +70,17 @@ def test_build_knots_monotone():
     assert np.all(np.diff(knot_x, axis=1) > 0), "knot_x must be strictly increasing"
 
 
+def test_build_knots_clips_to_range():
+    # quantiles outside [zlo, zhi] are clipped, as in the DEmP reference decoder
+    locs = LOCS.copy()
+    locs[:, 0] = ZLO - 0.5
+    locs[:, -1] = ZHI + 0.5
+    knot_x = build_knots(locs, ZLO, ZHI)
+    assert knot_x[:, 0].min() >= ZLO
+    assert knot_x[:, -1].max() <= ZHI + (NQ + 1) * 1e-7
+    np.testing.assert_array_equal(knot_x, build_knots(np.clip(locs, ZLO, ZHI), ZLO, ZHI))
+
+
 def test_pchip_slopes_shape():
     knot_x = build_knots(LOCS, ZLO, ZHI)
     slopes = pchip_slopes(knot_x)
